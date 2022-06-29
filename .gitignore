@@ -1,3 +1,7 @@
+# kaprien-rest-api specifics
+.secrets.ini
+metadata/*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -127,3 +131,6 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Ignore dynaconf secret files
+.secrets.*
