@@ -172,10 +172,8 @@ def post_bootstrap(payload):
         metadata = tuf.Metadata.from_dict(
             data.dict(by_alias=True, exclude_none=True)
         )
-        if "." not in rolename:
+        if "." not in rolename and rolename != tuf.Roles.TIMESTAMP.value:
             filename = f"1.{rolename}.json"
-        elif rolename == tuf.Roles.TIMESTAMP.value:
-            filename = rolename
         else:
             filename = f"{rolename}.json"
 
