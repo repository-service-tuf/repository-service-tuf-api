@@ -5,7 +5,12 @@ from typing import Dict, List, Literal, Optional
 from fastapi import HTTPException, status
 
 from kaprien_api import keyvault, storage, tuf, tuf_repository
-from kaprien_api.utils import BaseErrorResponse, BaseModel, save_settings
+from kaprien_api.utils import (
+    BaseErrorResponse,
+    BaseModel,
+    TUFMetadata,
+    save_settings,
+)
 
 
 class SettingsKeyBody(BaseModel):
@@ -33,72 +38,6 @@ class Settings(BaseModel):
     number_hash_prefixes: Optional[int] = None
 
 
-class TUFSignedDelegationsRoles(BaseModel):
-    name: str
-    terminating: bool
-    keyids: List[str]
-    threshold: int
-    paths: Optional[List[str]]
-    path_hash_prefixes: Optional[List[str]]
-
-
-class TUFKeys(BaseModel):
-    keytype: str
-    scheme: str
-    keyval: Dict[Literal["public", "private"], str]
-
-
-class TUFSignedDelegations(BaseModel):
-    keys: Dict[str, TUFKeys]
-    roles: List[TUFSignedDelegationsRoles]
-
-
-class TUFSignedMetaFile(BaseModel):
-    version: int
-
-
-class TUFSignedRoles(BaseModel):
-    keyids: List[str]
-    threshold: int
-
-
-class TUFSigned(BaseModel):
-    type: str
-    version: int
-    spec_version: str
-    expires: str
-    keys: Optional[Dict[str, TUFKeys]]
-    roles: Optional[
-        Dict[
-            Literal[
-                tuf.Roles.ROOT.value,
-                tuf.Roles.TARGETS.value,
-                tuf.Roles.SNAPSHOT.value,
-                tuf.Roles.TIMESTAMP.value,
-                tuf.Roles.BIN.value,
-                tuf.Roles.BINS.value,
-            ],
-            TUFSignedRoles,
-        ]
-    ]
-    meta: Optional[Dict[str, TUFSignedMetaFile]]
-    targets: Optional[Dict[str, str]]
-    delegations: Optional[TUFSignedDelegations]
-
-    class Config:
-        fields = {"type": "_type"}
-
-
-class TUFSignatures(BaseModel):
-    keyid: str
-    sig: str
-
-
-class TUFMetadata(BaseModel):
-    signatures: List[TUFSignatures]
-    signed: TUFSigned
-
-
 class BootstrapPayload(BaseModel):
     settings: Dict[
         Literal[
@@ -121,7 +60,7 @@ class BootstrapPayload(BaseModel):
 
 
 class BootstrapResponse(BaseModel):
-    data: Optional[TUFMetadata]
+    data: Optional[Dict[str, TUFMetadata]]
     bootstrap: Optional[bool]
     message: Optional[str]
 

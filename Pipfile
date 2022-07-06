@@ -19,6 +19,9 @@ black = "*"
 isort = "*"
 flake8 = "*"
 tox = "*"
+coverage = "*"
+pytest = "*"
+pretend = "*"
 
 [requires]
 python_version = "3.9"

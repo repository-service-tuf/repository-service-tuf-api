@@ -3,6 +3,7 @@ import json
 from fastapi import APIRouter, FastAPI
 
 from kaprien_api.api.bootstrap import router as bootstrap_v1
+from kaprien_api.api.metadata import router as metadata_v1
 
 kaprien_app = FastAPI(
     docs_url="/",
@@ -15,6 +16,7 @@ api_v1 = APIRouter(
 )
 
 api_v1.include_router(bootstrap_v1)
+api_v1.include_router(metadata_v1)
 
 kaprien_app.include_router(api_v1)
 
