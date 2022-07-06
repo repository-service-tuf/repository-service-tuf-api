@@ -65,12 +65,6 @@ $ pipenv install -d {package}
 ```
 
 Updating packages
-```shell
-$ pipenv update
 ```
-
-Updating the ``requirements.txt`` and ``requirements-dev.txt``
-```shell
-$ pipenv lock -r > requirements.txt
-$ pipenv lock -r -d > requirements-dev.txt
+$ make requirements
 ```
