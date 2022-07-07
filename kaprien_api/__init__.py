@@ -1,4 +1,5 @@
 import importlib
+import os
 
 from dynaconf import Dynaconf
 
@@ -6,7 +7,7 @@ from kaprien_api import services  # noqa
 from kaprien_api.tuf import MetadataRepository
 from kaprien_api.tuf.interfaces import IKeyVault, IStorage
 
-SETTINGS_FILE = "settings.ini"
+SETTINGS_FILE = os.getenv("SETTINGS_FILE", "settings.ini")
 settings = Dynaconf(
     envvar_prefix="KAPRIEN",
     settings_files=[SETTINGS_FILE],

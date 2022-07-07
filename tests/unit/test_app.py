@@ -1,4 +1,47 @@
+from tempfile import TemporaryDirectory
+
+import pytest
 from fastapi import status
+
+
+def test_wrong_storage_backend(monkeypatch):
+    monkeypatch.setenv("KAPRIEN_STORAGE_BACKEND", "InvalidStorage")
+
+    with pytest.raises(ValueError) as err:
+        from app import kaprien_app  # noqa
+
+    assert "Invalid Storage Backend InvalidStorage" in str(err.value)
+
+
+def test_localstorage_backend_missing_required_argument(monkeypatch):
+    monkeypatch.setenv("SETTINGS_FILE", f"{TemporaryDirectory}/settings.ini")
+    monkeypatch.setenv("KAPRIEN_STORAGE_BACKEND", "LocalStorage")
+
+    with pytest.raises(AttributeError) as err:
+        from app import kaprien_app  # noqa
+
+    assert "not attribute(s) LOCAL_STORAGE_BACKEND_PATH" in str(err.value)
+
+
+def test_wrong_keyvault_backend(monkeypatch):
+    monkeypatch.setenv("KAPRIEN_KEYVAULT_BACKEND", "InvalidKeyVault")
+
+    with pytest.raises(ValueError) as err:
+        from app import kaprien_app  # noqa
+
+    assert "Invalid Key Vault Backend InvalidKeyVault" in str(err.value)
+
+
+def test_localkeyvault_backend_missing_required_argument(monkeypatch):
+    monkeypatch.setenv("SETTINGS_FILE", f"{TemporaryDirectory}/settings.ini")
+    monkeypatch.setenv("KAPRIEN_STORAGE_BACKEND", "LocalStorage")
+    monkeypatch.setenv("KAPRIEN_LOCAL_STORAGE_BACKEND_PATH", "storage/")
+    monkeypatch.setenv("KAPRIEN_KEYVAULT_BACKEND", "LocalKeyVault")
+
+    with pytest.raises(AttributeError) as err:
+        from app import kaprien_app  # noqa
+
+    assert "not attribute(s) LOCAL_KEYVAULT_PATH" in str(err.value)
 
 
 def test_root(test_client):
