@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, status
 
 from kaprien_api import bootstrap
 
@@ -20,7 +20,7 @@ def get():
 
 @router.post(
     "/",
-    response_model=bootstrap.BootstrapResponse,
+    status_code=status.HTTP_201_CREATED,
     response_model_exclude_none=True,
 )
 def post(payload: bootstrap.BootstrapPayload):

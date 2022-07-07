@@ -91,7 +91,6 @@ def get_bootstrap():
 
 
 def post_bootstrap(payload):
-    # Store online keys to the KeyVault Service and configuration
     if tuf_repository.is_initialized:
         raise HTTPException(
             status_code=status.HTTP_200_OK,
@@ -100,6 +99,7 @@ def post_bootstrap(payload):
             ).dict(exclude_none=True),
         )
 
+    # Store online keys to the KeyVault Service and configuration
     for rolename, settings in payload.settings.items():
         save_settings(f"{rolename.upper()}_EXPIRATION", settings.expiration)
 
