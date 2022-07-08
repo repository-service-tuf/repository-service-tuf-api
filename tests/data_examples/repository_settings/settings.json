@@ -1,0 +1,28 @@
+{
+    "storage_backend": {
+        "type": "LocalStorage",
+        "parameters": {
+            "LOCAL_STORAGE_BACKEND_PATH": {
+                "required": true,
+                "value": "metadata"
+            }
+        }
+    },
+    "keyvault_backend": {
+        "type": "LocalKeyVault",
+        "parameters": {
+            "LOCAL_KEYVAULT_PATH": {
+                "required": true,
+                "value": "keys"
+            }
+        }
+    },
+    "roles_expirations": {
+        "root": "356",
+        "targets": "365",
+        "snapshot": "1",
+        "timestamp": "1",
+        "bin": "365",
+        "bins": "1"
+    }
+}
