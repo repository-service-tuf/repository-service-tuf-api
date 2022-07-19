@@ -1,115 +1,120 @@
 {
     "settings": {
-        "root": {
-            "expiration": 356,
-            "num_of_keys": 2,
-            "threshold": 1,
-            "keys": {},
-            "offline_keys": true,
-            "paths": null,
-            "number_hash_prefixes": null
-        },
-        "targets": {
-            "expiration": 365,
-            "num_of_keys": 2,
-            "threshold": 1,
-            "keys": {},
-            "offline_keys": true,
-            "paths": [
-                "*",
-                "*/*"
-            ],
-            "number_hash_prefixes": null
-        },
-        "snapshot": {
-            "expiration": 1,
-            "num_of_keys": 1,
-            "threshold": 1,
-            "keys": {
-                "snapshot_1": {
-                    "filename": "snapshot1.key",
-                    "password": "strongPass",
-                    "key": {
-                        "keytype": "ed25519",
-                        "scheme": "ed25519",
-                        "keyid": "139c406ac6150598fb9f7cafd1463bc07e03183541bd55208559c4c08633554e",
-                        "keyid_hash_algorithms": [
-                            "sha256",
-                            "sha512"
-                        ],
-                        "keyval": {
-                            "public": "04b07d3935f9756e1739f33fe38d36ab9ce00492bc80b3482a6d5322f488f5e0",
-                            "private": "9eafbd1c3cf5a0cb34614029df51f58393ad27c4c5813f1971fc0448d1815271"
+        "roles": {
+            "root": {
+                "expiration": 356,
+                "num_of_keys": 2,
+                "threshold": 1,
+                "keys": {},
+                "offline_keys": true,
+                "paths": null,
+                "number_hash_prefixes": null
+            },
+            "targets": {
+                "expiration": 365,
+                "num_of_keys": 2,
+                "threshold": 1,
+                "keys": {},
+                "offline_keys": true,
+                "paths": [
+                    "*",
+                    "*/*"
+                ],
+                "number_hash_prefixes": null
+            },
+            "snapshot": {
+                "expiration": 1,
+                "num_of_keys": 1,
+                "threshold": 1,
+                "keys": {
+                    "snapshot_1": {
+                        "filename": "snapshot1.key",
+                        "password": "strongPass",
+                        "key": {
+                            "keytype": "ed25519",
+                            "scheme": "ed25519",
+                            "keyid": "139c406ac6150598fb9f7cafd1463bc07e03183541bd55208559c4c08633554e",
+                            "keyid_hash_algorithms": [
+                                "sha256",
+                                "sha512"
+                            ],
+                            "keyval": {
+                                "public": "04b07d3935f9756e1739f33fe38d36ab9ce00492bc80b3482a6d5322f488f5e0",
+                                "private": "9eafbd1c3cf5a0cb34614029df51f58393ad27c4c5813f1971fc0448d1815271"
+                            }
                         }
                     }
-                }
+                },
+                "offline_keys": false,
+                "paths": null,
+                "number_hash_prefixes": null
             },
-            "offline_keys": false,
-            "paths": null,
-            "number_hash_prefixes": null
-        },
-        "timestamp": {
-            "expiration": 1,
-            "num_of_keys": 1,
-            "threshold": 1,
-            "keys": {
-                "timestamp_1": {
-                    "filename": "timestamp1.key",
-                    "password": "strongPass",
-                    "key": {
-                        "keytype": "ed25519",
-                        "scheme": "ed25519",
-                        "keyid": "19f5992640ab71f49fb64d5b5d198ee0115c3e7879861fb7114819a41a3b2c9b",
-                        "keyid_hash_algorithms": [
-                            "sha256",
-                            "sha512"
-                        ],
-                        "keyval": {
-                            "public": "5c7074da53333957bfbb78a35944fcac61b0e63f0d3398370510d9cc5e0b3e59",
-                            "private": "d93b48b3ca04be28ebcc9fa7fc682683c08c1e428c2faf8bcb5f386ced63982d"
+            "timestamp": {
+                "expiration": 1,
+                "num_of_keys": 1,
+                "threshold": 1,
+                "keys": {
+                    "timestamp_1": {
+                        "filename": "timestamp1.key",
+                        "password": "strongPass",
+                        "key": {
+                            "keytype": "ed25519",
+                            "scheme": "ed25519",
+                            "keyid": "19f5992640ab71f49fb64d5b5d198ee0115c3e7879861fb7114819a41a3b2c9b",
+                            "keyid_hash_algorithms": [
+                                "sha256",
+                                "sha512"
+                            ],
+                            "keyval": {
+                                "public": "5c7074da53333957bfbb78a35944fcac61b0e63f0d3398370510d9cc5e0b3e59",
+                                "private": "d93b48b3ca04be28ebcc9fa7fc682683c08c1e428c2faf8bcb5f386ced63982d"
+                            }
                         }
                     }
-                }
+                },
+                "offline_keys": false,
+                "paths": null,
+                "number_hash_prefixes": null
             },
-            "offline_keys": false,
-            "paths": null,
-            "number_hash_prefixes": null
-        },
-        "bin": {
-            "expiration": 365,
-            "num_of_keys": 1,
-            "threshold": 1,
-            "keys": {},
-            "offline_keys": true,
-            "paths": null,
-            "number_hash_prefixes": null
-        },
-        "bins": {
-            "expiration": 1,
-            "num_of_keys": 1,
-            "threshold": 1,
-            "keys": {
-                "bins_1": {
-                    "filename": "bins1.key",
-                    "password": "strongPass",
-                    "key": {
-                        "keytype": "ed25519",
-                        "scheme": "ed25519",
-                        "keyid": "9b2a880bd470e8373e24efb0dc54df3909e180e44582785b0f48d6a196ddc055",
-                        "keyid_hash_algorithms": [
-                            "sha256",
-                            "sha512"
-                        ],
-                        "keyval": {
-                            "public": "bd119f5d9bff4c935e57c971b45abd207cdbb95fb28a67aed6bf9d31964032c2",
-                            "private": "6abb44dd78118fcfcb44aa75ef7a8d61f66cfb7656b281711c940d7a09f5b539"
+            "bin": {
+                "expiration": 365,
+                "num_of_keys": 1,
+                "threshold": 1,
+                "keys": {},
+                "offline_keys": true,
+                "paths": null,
+                "number_hash_prefixes": null
+            },
+            "bins": {
+                "expiration": 1,
+                "num_of_keys": 1,
+                "threshold": 1,
+                "keys": {
+                    "bins_1": {
+                        "filename": "bins1.key",
+                        "password": "strongPass",
+                        "key": {
+                            "keytype": "ed25519",
+                            "scheme": "ed25519",
+                            "keyid": "9b2a880bd470e8373e24efb0dc54df3909e180e44582785b0f48d6a196ddc055",
+                            "keyid_hash_algorithms": [
+                                "sha256",
+                                "sha512"
+                            ],
+                            "keyval": {
+                                "public": "bd119f5d9bff4c935e57c971b45abd207cdbb95fb28a67aed6bf9d31964032c2",
+                                "private": "6abb44dd78118fcfcb44aa75ef7a8d61f66cfb7656b281711c940d7a09f5b539"
+                            }
                         }
                     }
-                }
-            },
-            "offline_keys": false,
-            "paths": null,
-            "number_hash_prefixes": 8
+                },
+                "offline_keys": false,
+                "paths": null,
+                "number_hash_prefixes": 8
+            }
+        },
+        "service": {
+            "targets_base_url": "https://www.example.com"
         }
     },
     "metadata": {
