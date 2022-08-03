@@ -1,0 +1,44 @@
+version: "3.9"
+
+volumes:
+  kaprien-mq-data:
+  kaprien-storage:
+  kaprien-keystorage:
+  kaprien-settings:
+
+services:
+  kaprien-mq:
+    image: rabbitmq:3-management-alpine
+    container_name: kaprien-mq
+    ports:
+      - 5672:5672
+    volumes:
+     - "kaprien-mq-data:/var/lib/rabbitmq"
+     - "kaprien-storage:/var/opt/kaprien/storage"
+     - "kaprien-keystorage:/var/opt/kaprien/keystorage"
+     - "kaprien-settings:/var/opt/kaprien/settings/"
+    healthcheck:
+      test: "exit 0"
+    restart: always
+    tty: true
+
+  kaprien-rest-api:
+    build:
+      context: .
+    command: uvicorn app:kaprien_app --host 0.0.0.0 --port 8000 --reload
+    ports:
+      - 8000:8000
+    environment:
+      - KAPRIEN_STORAGE_BACKEND="LocalStorage"
+      - KAPRIEN_KEYVAULT_BACKEND="LocalKeyVault"
+      - KAPRIEN_LOCAL_STORAGE_BACKEND_PATH="/var/opt/kaprien/storage"
+      - KAPRIEN_LOCAL_KEYVAULT_PATH="/var/opt/kaprien/keystorage"
+    volumes:
+      - ./kaprien_api:/opt/kaprien-rest-api/kaprien_api:z
+      - ./kaprien_api:/opt/kaprien-rest-api/test:z
+      - kaprien-storage:/var/opt/kaprien/storage
+      - kaprien-keystorage:/var/opt/kaprien/keystorage
+      - kaprien-settings:/var/opt/kaprien/settings/
+    depends_on:
+      kaprien-mq:
+        condition: service_healthy

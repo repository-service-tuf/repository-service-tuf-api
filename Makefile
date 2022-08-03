@@ -14,3 +14,18 @@ requirements:
 coverage:
 	coverage report
 	coverage html -i
+
+build-dev:
+	docker build -t kaprien-rest-api:dev .
+
+run-dev:
+	$(MAKE) build-dev
+	docker-compose up --remove-orphans
+
+stop:
+	docker-compose down -v
+
+clean:
+	docker-compose rm --force
+	rm -rf metadata/*
+	rm -rf keys/*
