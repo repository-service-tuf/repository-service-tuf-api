@@ -24,5 +24,6 @@
         "timestamp": "1",
         "bin": "365",
         "bins": "1"
-    }
+    },
+    "targets_base_url": "https://www.example.com/downloads/"
 }

@@ -27,7 +27,7 @@ class SettingsKeys(BaseModel):
     key: SettingsKeyBody
 
 
-class Settings(BaseModel):
+class RoleSettings(BaseModel):
     # This is the from kaprien-cli RolesKeysInput
     expiration: int
     num_of_keys: int
@@ -38,8 +38,12 @@ class Settings(BaseModel):
     number_hash_prefixes: Optional[int] = None
 
 
-class BootstrapPayload(BaseModel):
-    settings: Dict[
+class ServiceSettings(BaseModel):
+    targets_base_url: str
+
+
+class Settings(BaseModel):
+    roles: Dict[
         Literal[
             tuf.Roles.ROOT.value,
             tuf.Roles.TARGETS.value,
@@ -48,8 +52,13 @@ class BootstrapPayload(BaseModel):
             tuf.Roles.BIN.value,
             tuf.Roles.BINS.value,
         ],
-        Settings,
+        RoleSettings,
     ]
+    service: ServiceSettings
+
+
+class BootstrapPayload(BaseModel):
+    settings: Settings
     metadata: Dict[str, TUFMetadata]
 
     class Config:
@@ -100,12 +109,16 @@ def post_bootstrap(payload):
         )
 
     # Store online keys to the KeyVault Service and configuration
-    for rolename, settings in payload.settings.items():
+    for rolename, settings in payload.settings.roles.items():
         save_settings(f"{rolename.upper()}_EXPIRATION", settings.expiration)
 
         # online keys
         if settings.offline_keys is False:
             keyvault.put(rolename, settings.dict().get("keys").values())
+
+    save_settings(
+        "TARGETS_BASE_URL", payload.settings.service.targets_base_url
+    )
 
     for rolename, data in payload.metadata.items():
         metadata = tuf.Metadata.from_dict(
