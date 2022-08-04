@@ -13,6 +13,7 @@ configobj = "*"
 hvac = "*"
 cryptography = "*"
 pynacl = "*"
+celery = "*"
 
 [dev-packages]
 black = "*"

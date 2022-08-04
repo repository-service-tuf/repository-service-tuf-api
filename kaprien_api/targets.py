@@ -46,6 +46,6 @@ class Payload(BaseModel):
 
 def post(payload):
 
-    # TODO: Implement the publisher to the kaprien-mq (issue #39)
+    # TODO: Implement the submission to the kaprien-mq (issue #43)
     data = [target.path for target in payload.targets]
     return Response(data=data, message="Target file(s) successfully added.")

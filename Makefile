@@ -26,6 +26,7 @@ stop:
 	docker-compose down -v
 
 clean:
+	$(MAKE) stop
 	docker-compose rm --force
 	rm -rf metadata/*
 	rm -rf keys/*
