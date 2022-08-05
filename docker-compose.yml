@@ -12,6 +12,7 @@ services:
     container_name: kaprien-mq
     ports:
       - 5672:5672
+      - 15672:15672
     volumes:
      - "kaprien-mq-data:/var/lib/rabbitmq"
      - "kaprien-storage:/var/opt/kaprien/storage"

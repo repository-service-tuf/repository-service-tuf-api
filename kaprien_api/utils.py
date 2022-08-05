@@ -1,4 +1,5 @@
 from typing import Any, Dict, List, Literal, Optional
+from uuid import uuid4
 
 from dynaconf import loaders
 from dynaconf.utils.boxing import DynaBox
@@ -87,3 +88,7 @@ def save_settings(key: str, value: Any):
         DynaBox(settings_data).to_dict(),
         env=settings.current_env,
     )
+
+
+def task_id():
+    return uuid4().hex
