@@ -1,5 +1,4 @@
 import importlib
-import logging
 import os
 
 from celery import Celery
@@ -11,6 +10,12 @@ from kaprien_api.tuf.interfaces import IKeyVault, IStorage
 
 SETTINGS_FILE = os.getenv("SETTINGS_FILE", "settings.ini")
 settings = Dynaconf(
+    envvar_prefix="KAPRIEN",
+    settings_files=[SETTINGS_FILE],
+    environments=True,
+)
+
+simple_settings = Dynaconf(
     envvar_prefix="KAPRIEN",
     settings_files=[SETTINGS_FILE],
     environments=True,
@@ -98,6 +103,5 @@ celery.conf.broker_pool_limit = None
 
 
 @celery.task(name="app.metadata_repository")
-def submit_task(data):
-    logging.info(data)
+def repository_metadata(action, settings, payload):
     return True
