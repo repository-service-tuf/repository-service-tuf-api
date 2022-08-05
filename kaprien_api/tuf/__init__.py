@@ -5,6 +5,7 @@ from kaprien_api.tuf.interfaces import IKeyVault, IStorage, ServiceSettings
 from kaprien_api.tuf.repository import (
     TOP_LEVEL_ROLE_NAMES,
     DelegatedRole,
+    JSONSerializer,
     Key,
     Metadata,
     MetadataRepository,
@@ -40,6 +41,7 @@ __all__ = [
     MetadataRepository,
     DelegatedRole,
     TOP_LEVEL_ROLE_NAMES,
+    JSONSerializer,
     MetadataRepository,
     Timestamp,
     Targets.__name__,
