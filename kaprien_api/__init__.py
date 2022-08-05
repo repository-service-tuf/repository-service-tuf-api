@@ -1,6 +1,8 @@
 import importlib
+import logging
 import os
 
+from celery import Celery
 from dynaconf import Dynaconf
 
 from kaprien_api import services  # noqa
@@ -80,3 +82,22 @@ keyvault = settings.KEYVAULT_BACKEND(**keyvault_kwargs)
 tuf_repository = MetadataRepository(
     storage_backend=storage, key_backend=keyvault, settings=settings
 )
+
+celery = Celery(__name__)
+celery.conf.broker_url = f"amqp://{settings.RABBITMQ_SERVER}"
+celery.conf.result_backend = "rpc://"
+celery.conf.accept_content = ["json", "application/json"]
+celery.conf.task_serializer = "json"
+celery.conf.result_serializer = "json"
+celery.conf.task_track_started = True
+celery.conf.broker_heartbeat = 0
+celery.conf.result_persistent = True
+celery.conf.task_acks_late = True
+celery.conf.broker_pool_limit = None
+# celery.conf.broker_use_ssl = True
+
+
+@celery.task(name="app.metadata_repository")
+def submit_task(data):
+    logging.info(data)
+    return True
