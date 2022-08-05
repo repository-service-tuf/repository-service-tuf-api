@@ -102,6 +102,6 @@ celery.conf.broker_pool_limit = None
 # celery.conf.broker_use_ssl = True
 
 
-@celery.task(name="app.metadata_repository")
+@celery.task(name="app.kaprien_repo_worker")
 def repository_metadata(action, settings, payload):
     return True
