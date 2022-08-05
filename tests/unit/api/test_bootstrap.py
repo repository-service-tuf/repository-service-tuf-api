@@ -48,6 +48,7 @@ class TestPostBootstrap:
             Metadata=pretend.stub(
                 from_dict=pretend.call_recorder(lambda *a: fake_metadata)
             ),
+            JSONSerializer=pretend.call_recorder(lambda: None),
             Roles=pretend.stub(TIMESTAMP=pretend.stub(value="timestamp")),
         )
         fake_storage = pretend.stub()

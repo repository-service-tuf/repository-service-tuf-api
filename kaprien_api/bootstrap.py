@@ -129,4 +129,6 @@ def post_bootstrap(payload):
         else:
             filename = f"{rolename}.json"
 
-        metadata.to_file(filename, storage_backend=storage)
+        metadata.to_file(
+            filename, tuf.JSONSerializer(), storage_backend=storage
+        )
