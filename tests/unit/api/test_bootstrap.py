@@ -8,8 +8,10 @@ class TestGetBoostrap:
     def test_get_boostrap_available(self, test_client, monkeypatch):
 
         url = "/api/v1/bootstrap/"
-        fake_repo = pretend.stub(is_initialized=False)
-        monkeypatch.setattr("kaprien_api.bootstrap.tuf_repository", fake_repo)
+        fake_check_metadata = pretend.call_recorder(lambda: False)
+        monkeypatch.setattr(
+            "kaprien_api.bootstrap.check_metadata", fake_check_metadata
+        )
 
         response = test_client.get(url)
         assert response.status_code == status.HTTP_200_OK
@@ -18,12 +20,16 @@ class TestGetBoostrap:
             "bootstrap": False,
             "message": "System available for bootstrap.",
         }
+        assert fake_check_metadata.calls == [pretend.call()]
 
     def test_get_boostrap_not_available(self, test_client, monkeypatch):
 
         url = "/api/v1/bootstrap/"
-        fake_repo = pretend.stub(is_initialized=True)
-        monkeypatch.setattr("kaprien_api.bootstrap.tuf_repository", fake_repo)
+
+        fake_check_metadata = pretend.call_recorder(lambda: True)
+        monkeypatch.setattr(
+            "kaprien_api.bootstrap.check_metadata", fake_check_metadata
+        )
 
         response = test_client.get(url)
         assert response.status_code == status.HTTP_200_OK
@@ -32,30 +38,28 @@ class TestGetBoostrap:
             "bootstrap": True,
             "message": "System already has a Metadata.",
         }
+        assert fake_check_metadata.calls == [pretend.call()]
 
 
 class TestPostBootstrap:
     def test_post_bootstrap(self, test_client, monkeypatch):
         url = "/api/v1/bootstrap/"
 
+        fake_check_metadata = pretend.call_recorder(lambda: False)
+        fakse_save_settings = pretend.call_recorder(lambda *a: None)
         fake_metadata = pretend.stub(
             to_file=pretend.call_recorder(lambda *a, **kw: None)
         )
-        fake_repo = pretend.stub(
-            is_initialized=False,
+        fake_Metadata = pretend.stub(
+            from_dict=pretend.call_recorder(lambda *a: fake_metadata)
         )
-        fake_tuf = pretend.stub(
-            Metadata=pretend.stub(
-                from_dict=pretend.call_recorder(lambda *a: fake_metadata)
-            ),
-            JSONSerializer=pretend.call_recorder(lambda: None),
-            Roles=pretend.stub(TIMESTAMP=pretend.stub(value="timestamp")),
+        monkeypatch.setattr(
+            "kaprien_api.bootstrap.save_settings", fakse_save_settings
         )
-        fake_storage = pretend.stub()
-
-        monkeypatch.setattr("kaprien_api.bootstrap.tuf", fake_tuf)
-        monkeypatch.setattr("kaprien_api.bootstrap.tuf_repository", fake_repo)
-        monkeypatch.setattr("kaprien_api.bootstrap.storage", fake_storage)
+        monkeypatch.setattr(
+            "kaprien_api.bootstrap.check_metadata", fake_check_metadata
+        )
+        monkeypatch.setattr("kaprien_api.bootstrap.Metadata", fake_Metadata)
 
         with open("tests/data_examples/bootstrap/payload.json") as f:
             f_data = f.read()
@@ -70,11 +74,10 @@ class TestPostBootstrap:
     def test_post_bootstrap_already_bootstrap(self, test_client, monkeypatch):
         url = "/api/v1/bootstrap/"
 
-        fake_repo = pretend.stub(
-            is_initialized=True,
+        fake_check_metadata = pretend.call_recorder(lambda: True)
+        monkeypatch.setattr(
+            "kaprien_api.bootstrap.check_metadata", fake_check_metadata
         )
-
-        monkeypatch.setattr("kaprien_api.bootstrap.tuf_repository", fake_repo)
 
         with open("tests/data_examples/bootstrap/payload.json") as f:
             f_data = f.read()

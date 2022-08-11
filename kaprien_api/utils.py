@@ -4,8 +4,9 @@ from uuid import uuid4
 from dynaconf import loaders
 from dynaconf.utils.boxing import DynaBox
 from pydantic import BaseModel, Field
+from securesystemslib.exceptions import StorageError
 
-from kaprien_api import SETTINGS_FILE, settings, tuf
+from kaprien_api import SETTINGS_FILE, settings, storage, tuf
 
 
 class BaseErrorResponse(BaseModel):
@@ -23,6 +24,13 @@ class TUFSignedDelegationsRoles(BaseModel):
     path_hash_prefixes: Optional[List[str]]
 
 
+class TUFSignedDelegationsSuccinctRoles(BaseModel):
+    bit_length: int = Field(gt=0, lt=33)
+    name_prefix: str
+    keyids: List[str]
+    threshold: int
+
+
 class TUFKeys(BaseModel):
     keytype: str
     scheme: str
@@ -31,7 +39,8 @@ class TUFKeys(BaseModel):
 
 class TUFSignedDelegations(BaseModel):
     keys: Dict[str, TUFKeys]
-    roles: List[TUFSignedDelegationsRoles]
+    roles: Optional[List[TUFSignedDelegationsRoles]]
+    succinct_roles: Optional[TUFSignedDelegationsSuccinctRoles]
 
 
 class TUFSignedMetaFile(BaseModel):
@@ -88,6 +97,15 @@ def save_settings(key: str, value: Any):
         DynaBox(settings_data).to_dict(),
         env=settings.current_env,
     )
+
+
+# FIXME: Implement a consistent check (Issue #16)
+def check_metadata():
+    try:
+        tuf.Metadata.from_file(filename="root", storage_backend=storage)
+        return True
+    except StorageError:
+        return False
 
 
 def task_id():

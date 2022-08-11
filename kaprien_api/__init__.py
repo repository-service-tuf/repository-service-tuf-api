@@ -4,8 +4,7 @@ import os
 from celery import Celery
 from dynaconf import Dynaconf
 
-from kaprien_api import services  # noqa
-from kaprien_api.tuf import MetadataRepository
+from kaprien_api.tuf import services  # noqa
 from kaprien_api.tuf.interfaces import IKeyVault, IStorage
 
 SETTINGS_FILE = os.getenv("SETTINGS_FILE", "settings.ini")
@@ -32,7 +31,7 @@ if settings.STORAGE_BACKEND.upper() not in storage_backends:
     )
 else:
     settings.STORAGE_BACKEND = getattr(
-        importlib.import_module("kaprien_api.services"),
+        importlib.import_module("kaprien_api.tuf.services"),
         settings.STORAGE_BACKEND,
     )
 
@@ -61,7 +60,7 @@ if settings.KEYVAULT_BACKEND.upper() not in keyvault_backends:
     )
 else:
     settings.KEYVAULT_BACKEND = getattr(
-        importlib.import_module("kaprien_api.services"),
+        importlib.import_module("kaprien_api.tuf.services"),
         settings.KEYVAULT_BACKEND,
     )
 
@@ -84,9 +83,6 @@ else:
 storage = settings.STORAGE_BACKEND(**storage_kwargs)
 keyvault = settings.KEYVAULT_BACKEND(**keyvault_kwargs)
 
-tuf_repository = MetadataRepository(
-    storage_backend=storage, key_backend=keyvault, settings=settings
-)
 
 celery = Celery(__name__)
 celery.conf.broker_url = f"amqp://{settings.RABBITMQ_SERVER}"

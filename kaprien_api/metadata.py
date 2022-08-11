@@ -5,7 +5,7 @@ from typing import Dict, Optional, Union
 from fastapi import HTTPException, Query, status
 from securesystemslib.exceptions import StorageError
 
-from kaprien_api import tuf, tuf_repository
+from kaprien_api import storage, tuf
 from kaprien_api.tuf import TOP_LEVEL_ROLE_NAMES
 from kaprien_api.utils import BaseModel, TUFMetadata
 
@@ -39,33 +39,33 @@ class Response(BaseModel):
 
 
 def get(params: GetParameters) -> Optional[Dict[str, tuf.Metadata]]:
-    if tuf_repository.is_initialized is False:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail={"error": "No metadata found in the Storage."},
-        )
-
     metadata: Dict[str, tuf.Metadata] = dict()
-
     try:
         if params.rolename:
-            metadata[params.rolename] = tuf_repository.load_role(
-                params.rolename
+            metadata[params.rolename] = tuf.Metadata.from_file(
+                filename=params.rolename, storage_backend=storage
             ).to_dict()
             return Response(data=metadata)
+
+        for role in TOP_LEVEL_ROLE_NAMES:
+            metadata[role] = tuf.Metadata.from_file(
+                filename=role, storage_backend=storage
+            ).to_dict()
+
+            bin_metadata = tuf.Metadata.from_file(
+                filename=tuf.Roles.BIN.value, storage_backend=storage
+            )
+            metadata[tuf.Roles.BIN.value] = bin_metadata.to_dict()
+            bin_succinct_roles = bin_metadata.signed.delegations.succinct_roles
+            for role in bin_succinct_roles.get_roles():
+                metadata[role] = tuf.Metadata.from_file(
+                    filename=role, storage_backend=storage
+                ).to_dict()
+
+        return Response(data=metadata)
 
     except StorageError as err:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail={"error": str(err)},
         )
-
-    for role in TOP_LEVEL_ROLE_NAMES:
-        metadata[role] = tuf_repository.load_role(role).to_dict()
-
-    bin_metadata = tuf_repository.load_role(tuf.Roles.BIN.value)
-    metadata[tuf.Roles.BIN.value] = bin_metadata.to_dict()
-    for role in bin_metadata.signed.delegations.roles:
-        metadata[role] = tuf_repository.load_role(role).to_dict()
-
-    return Response(data=metadata)

@@ -6,9 +6,10 @@ class TestGetSettings:
     def test_get_settings(self, test_client, monkeypatch):
         url = "/api/v1/settings"
 
-        fake_repo = pretend.stub(is_initialized=True)
+        mocked_check_metadata = pretend.call_recorder(lambda: True)
         monkeypatch.setattr(
-            "kaprien_api.repository_settings.tuf_repository", fake_repo
+            "kaprien_api.repository_settings.check_metadata",
+            mocked_check_metadata,
         )
 
         def fake_get(arg):
@@ -62,9 +63,10 @@ class TestGetSettings:
     def test_get_settings_without_bootstrap(self, test_client, monkeypatch):
         url = "/api/v1/settings"
 
-        fake_repo = pretend.stub(is_initialized=False)
+        mocked_check_metadata = pretend.call_recorder(lambda: False)
         monkeypatch.setattr(
-            "kaprien_api.repository_settings.tuf_repository", fake_repo
+            "kaprien_api.repository_settings.check_metadata",
+            mocked_check_metadata,
         )
 
         test_response = test_client.get(url)

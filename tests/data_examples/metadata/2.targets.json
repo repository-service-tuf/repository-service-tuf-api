@@ -1,44 +1,44 @@
 {
-    "signatures": [
-        {
-            "keyid": "208fc4139cf7482abbe84f837091f304c8a948aafee911470e2b5dcbf989874a",
-            "sig": "f14f643355ec8955749611d33cbb7b2360b253f74e8199c8c57877ba11f5f6951c5f83b140722ae0c5f0dcf037e35668f9af518ab5eb712420c65aee644caf0c"
-        },
-        {
-            "keyid": "c2e9ee4a292e5d08bc0d3adaad5dce0235321cde04e9ff4e5f232d494b4bb4af",
-            "sig": "584a3e219d31890c7e0238c0ab6ef41c77427379e4dd5a532bfbcc8fe8fd63bf079f25b13048f01d54eb08a3a40fcb78a0a325a61bdc2c600660c65aa48efb03"
-        }
-    ],
-    "signed": {
-        "_type": "targets",
-        "delegations": {
-            "keys": {
-                "be95ae808ff4f17e248470c941700247d8c7f34f101633a696ee523024790907": {
-                    "keytype": "ed25519",
-                    "keyval": {
-                        "public": "441e6d545efc8bd67da3643148a107a924a533caff4e39d960482c755c453dfe"
-                    },
-                    "scheme": "ed25519"
-                }
-            },
-            "roles": [
-                {
-                    "keyids": [
-                        "be95ae808ff4f17e248470c941700247d8c7f34f101633a696ee523024790907"
-                    ],
-                    "name": "bin",
-                    "paths": [
-                        "*",
-                        "*/*"
-                    ],
-                    "terminating": false,
-                    "threshold": 1
-                }
-            ]
-        },
-        "expires": "2023-06-29T11:39:45Z",
-        "spec_version": "1.0.29",
-        "targets": {},
-        "version": 2
+ "signatures": [
+  {
+   "keyid": "9cda09da6031636ad670affa56cc99673cdaded064c744bbc4c0a49461242b76",
+   "sig": "4b8886b6b845d132f72cf77943a414636541c6d8380e030735ee6c2cf3ae95a0910f09ac103b97e5524c5cd74a0acf2c5e76497a82f0bded3feff0a388d4f401"
+  },
+  {
+   "keyid": "02ca3d87f41fe36a01c80fa279639262f7caa40f94c3232eef2308a34ccc0dad",
+   "sig": "ca0bd563b3ab5bbb2a68ec39647adb807da43e59bb990a23f15384386a3276e12a3505a39fd7cf68d90d08708d81fa1362a187a06d9408355002754a4d089d05"
+  }
+ ],
+ "signed": {
+  "_type": "targets",
+  "delegations": {
+   "keys": {
+    "f72f77e031b3aa601dbb14a3cc977473766c67204cec572911d58c362818907b": {
+     "keytype": "ed25519",
+     "keyval": {
+      "public": "5c3ba1ee3a9a4a71272ae34e7f72592101327d82bccde135bd6f42ed12dbe9e2"
+     },
+     "scheme": "ed25519"
     }
+   },
+   "roles": [
+    {
+     "keyids": [
+      "f72f77e031b3aa601dbb14a3cc977473766c67204cec572911d58c362818907b"
+     ],
+     "name": "bin",
+     "paths": [
+      "*/*",
+      "*/*/*/*"
+     ],
+     "terminating": false,
+     "threshold": 1
+    }
+   ]
+  },
+  "expires": "2022-08-10T20:16:44Z",
+  "spec_version": "1.0.30",
+  "targets": {},
+  "version": 2
+ }
 }

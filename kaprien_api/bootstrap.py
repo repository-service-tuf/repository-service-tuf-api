@@ -4,11 +4,13 @@ from typing import Dict, List, Literal, Optional
 
 from fastapi import HTTPException, status
 
-from kaprien_api import keyvault, storage, tuf, tuf_repository
+from kaprien_api import keyvault, storage
+from kaprien_api.tuf import JSONSerializer, Metadata, Roles
 from kaprien_api.utils import (
     BaseErrorResponse,
     BaseModel,
     TUFMetadata,
+    check_metadata,
     save_settings,
 )
 
@@ -45,12 +47,12 @@ class ServiceSettings(BaseModel):
 class Settings(BaseModel):
     roles: Dict[
         Literal[
-            tuf.Roles.ROOT.value,
-            tuf.Roles.TARGETS.value,
-            tuf.Roles.SNAPSHOT.value,
-            tuf.Roles.TIMESTAMP.value,
-            tuf.Roles.BIN.value,
-            tuf.Roles.BINS.value,
+            Roles.ROOT.value,
+            Roles.TARGETS.value,
+            Roles.SNAPSHOT.value,
+            Roles.TIMESTAMP.value,
+            Roles.BIN.value,
+            Roles.BINS.value,
         ],
         RoleSettings,
     ]
@@ -89,7 +91,7 @@ class BootstrapResponse(BaseModel):
 def get_bootstrap():
     response = BootstrapResponse()
 
-    if tuf_repository.is_initialized is True:
+    if check_metadata() is True:
         response.bootstrap = True
         response.message = "System already has a Metadata."
     else:
@@ -100,7 +102,7 @@ def get_bootstrap():
 
 
 def post_bootstrap(payload):
-    if tuf_repository.is_initialized:
+    if check_metadata() is True:
         raise HTTPException(
             status_code=status.HTTP_200_OK,
             detail=BaseErrorResponse(
@@ -121,14 +123,12 @@ def post_bootstrap(payload):
     )
 
     for rolename, data in payload.metadata.items():
-        metadata = tuf.Metadata.from_dict(
+        metadata = Metadata.from_dict(
             data.dict(by_alias=True, exclude_none=True)
         )
-        if "." not in rolename and rolename != tuf.Roles.TIMESTAMP.value:
+        if "." not in rolename and rolename != Roles.TIMESTAMP.value:
             filename = f"1.{rolename}.json"
         else:
             filename = f"{rolename}.json"
 
-        metadata.to_file(
-            filename, tuf.JSONSerializer(), storage_backend=storage
-        )
+        metadata.to_file(filename, JSONSerializer(), storage_backend=storage)

@@ -6,7 +6,6 @@ name = "pypi"
 [packages]
 fastapi = "*"
 uvicorn = "*"
-tuf = "*"
 securesystemslib = "*"
 dynaconf = "*"
 configobj = "*"
@@ -14,6 +13,7 @@ hvac = "*"
 cryptography = "*"
 pynacl = "*"
 celery = "*"
+tuf = {ref = "develop", git = "https://github.com/theupdateframework/tuf"}
 
 [dev-packages]
 black = "*"
