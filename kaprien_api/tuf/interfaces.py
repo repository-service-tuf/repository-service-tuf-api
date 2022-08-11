@@ -14,7 +14,8 @@ from dataclasses import dataclass
 from io import TextIOBase
 from typing import Any, Dict, List
 
-from tuf.api.metadata import (  # type: ignore
+from tuf.api import exceptions  # noqa
+from tuf.api.metadata import (  # type: ignore noqa
     Metadata,
     StorageBackendInterface,
     T,

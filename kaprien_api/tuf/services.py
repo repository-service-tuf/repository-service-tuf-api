@@ -10,8 +10,13 @@ from dynaconf.utils.boxing import DynaBox
 from dynaconf.vendor.box.exceptions import BoxKeyError
 from securesystemslib.keys import decrypt_key, encrypt_key
 
-from kaprien_api.tuf import IStorage, ServiceSettings, Timestamp, exceptions
-from kaprien_api.tuf.interfaces import IKeyVault
+from kaprien_api.tuf import Timestamp
+from kaprien_api.tuf.interfaces import (
+    IKeyVault,
+    IStorage,
+    ServiceSettings,
+    exceptions,
+)
 
 
 class LocalStorage(IStorage):

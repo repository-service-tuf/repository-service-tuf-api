@@ -3,8 +3,8 @@ from typing import Dict, Optional
 
 from fastapi import HTTPException, status
 
-from kaprien_api import settings, tuf, tuf_repository
-from kaprien_api.utils import BaseModel
+from kaprien_api import settings, tuf
+from kaprien_api.utils import BaseModel, check_metadata
 
 
 class CurrentSettingsServiceBackendParams(BaseModel):
@@ -43,7 +43,7 @@ class Response(BaseModel):
 
 
 def get():
-    if tuf_repository.is_initialized is False:
+    if check_metadata() is False:
         raise HTTPException(
             status.HTTP_404_NOT_FOUND,
             detail={"error": "System has not a Repository Metadata"},
