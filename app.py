@@ -8,6 +8,8 @@ from kaprien_api.api.repository_settings import router as settings_v1
 from kaprien_api.api.targets import router as targets_v1
 
 kaprien_app = FastAPI(
+    title="Kaprien Rest API",
+    description="Kaprien Rest API service for Kaprien Server",
     docs_url="/",
 )
 
