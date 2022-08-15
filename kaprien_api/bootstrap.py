@@ -112,7 +112,14 @@ def post_bootstrap(payload):
 
     # Store online keys to the KeyVault Service and configuration
     for rolename, settings in payload.settings.roles.items():
-        save_settings(f"{rolename.upper()}_EXPIRATION", settings.expiration)
+        rolename = rolename.upper()
+        save_settings(f"{rolename}_EXPIRATION", settings.expiration)
+        save_settings(f"{rolename}_THRESHOLD", settings.threshold)
+        save_settings(f"{rolename}_NUM_KEYS", settings.num_of_keys)
+        save_settings(f"{rolename}_PATHS", settings.paths)
+        save_settings(
+            f"{rolename}_NUMBER_PREFIXES", settings.number_hash_prefixes
+        )
 
         # online keys
         if settings.offline_keys is False:
