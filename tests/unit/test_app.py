@@ -57,8 +57,8 @@ def test_root(test_client):
     response = test_client.get("/")
 
     assert response.url == test_client.base_url + "/"
-    response.status_code == status.HTTP_200_OK
-    "FastAPI" in response.text
+    assert response.status_code == status.HTTP_200_OK
+    assert "Kaprien Rest API" in response.text
 
 
 def test_default_notfound(test_client):
