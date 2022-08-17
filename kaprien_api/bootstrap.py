@@ -1,16 +1,16 @@
-import glob
 import json
 from typing import Dict, List, Literal, Optional
 
 from fastapi import HTTPException, status
 
-from kaprien_api import keyvault, storage
-from kaprien_api.tuf import JSONSerializer, Metadata, Roles
+from kaprien_api import keyvault, repository_metadata, simple_settings
+from kaprien_api.tuf import Roles
 from kaprien_api.utils import (
     BaseErrorResponse,
     BaseModel,
     TUFMetadata,
     check_metadata,
+    get_task_id,
     save_settings,
 )
 
@@ -70,26 +70,32 @@ class BootstrapPayload(BaseModel):
         schema_extra = {"example": example}
 
 
-class BootstrapResponse(BaseModel):
-    data: Optional[Dict[str, TUFMetadata]]
+class BootstrapPostResponse(BaseModel):
+    task_id: Optional[str]
+    message: Optional[str]
+
+    class Config:
+        example = {
+            "task_id": "7a634b556f784ae88785d36425f9a218",
+            "message": "Bootstrap accepted.",
+        }
+        schema_extra = {"example": example}
+
+
+class BootstrapGetResponse(BaseModel):
     bootstrap: Optional[bool]
     message: Optional[str]
 
     class Config:
-        metadata_files = glob.glob("tests/data_examples/metadata/*.json")
-        metadata: dict = dict()
-        for metadata_file in metadata_files:
-            with open(metadata_file) as f:
-                content = f.read()
-                example_metadata = json.loads(content)
-            filename = metadata_file.split("/")[-1].replace(".json", "")
-            metadata[filename] = example_metadata
-
-        schema_extra = {"example": metadata}
+        example = {
+            "bootstrap": False,
+            "message": "System available for bootstrap.",
+        }
+        schema_extra = {"example": example}
 
 
 def get_bootstrap():
-    response = BootstrapResponse()
+    response = BootstrapGetResponse()
 
     if check_metadata() is True:
         response.bootstrap = True
@@ -129,13 +135,17 @@ def post_bootstrap(payload):
         "TARGETS_BASE_URL", payload.settings.service.targets_base_url
     )
 
-    for rolename, data in payload.metadata.items():
-        metadata = Metadata.from_dict(
-            data.dict(by_alias=True, exclude_none=True)
-        )
-        if "." not in rolename and rolename != Roles.TIMESTAMP.value:
-            filename = f"1.{rolename}.json"
-        else:
-            filename = f"{rolename}.json"
+    task_id = get_task_id()
+    repository_metadata.apply_async(
+        kwargs={
+            "action": "add_initial_metadata",
+            "settings": simple_settings.to_dict(),
+            "payload": payload.dict(by_alias=True, exclude_none=True),
+        },
+        task_id=task_id,
+        queue="metadata_repository",
+    )
 
-        metadata.to_file(filename, JSONSerializer(), storage_backend=storage)
+    return BootstrapPostResponse(
+        task_id=task_id, message="Bootstrap accepted."
+    )

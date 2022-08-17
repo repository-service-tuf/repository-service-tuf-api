@@ -102,11 +102,11 @@ def save_settings(key: str, value: Any):
 # FIXME: Implement a consistent check (Issue #16)
 def check_metadata():
     try:
-        tuf.Metadata.from_file(filename="root", storage_backend=storage)
+        tuf.Metadata.from_file(filename="1.root", storage_backend=storage)
         return True
     except StorageError:
         return False
 
 
-def task_id():
+def get_task_id():
     return uuid4().hex

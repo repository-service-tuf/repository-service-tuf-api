@@ -2,7 +2,7 @@ import json
 from typing import Any, Dict, List, Optional
 
 from kaprien_api import repository_metadata, simple_settings
-from kaprien_api.utils import BaseModel, task_id
+from kaprien_api.utils import BaseModel, get_task_id
 
 
 class ResponseData(BaseModel):
@@ -54,18 +54,18 @@ class Payload(BaseModel):
 
 
 def post(payload):
-    add_targets_id = task_id()
+    task_id = get_task_id()
     repository_metadata.apply_async(
         kwargs={
             "action": "add_targets",
             "settings": simple_settings.to_dict(),
             "payload": payload.dict(by_alias=True),
         },
-        task_id=add_targets_id,
+        task_id=task_id,
         queue="metadata_repository",
     )
     data = {
         "targets": [target.path for target in payload.targets],
-        "task_id": add_targets_id,
+        "task_id": task_id,
     }
     return Response(data=data, message="Target(s) successfully submitted.")
