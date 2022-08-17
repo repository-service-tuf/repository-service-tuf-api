@@ -13,7 +13,7 @@ hvac = "*"
 cryptography = "*"
 pynacl = "*"
 celery = "*"
-tuf = {ref = "develop", git = "https://github.com/theupdateframework/tuf"}
+tuf = "==2.0.0"
 
 [dev-packages]
 black = "*"

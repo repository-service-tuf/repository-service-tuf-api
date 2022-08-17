@@ -11,7 +11,7 @@ router = APIRouter(
 
 @router.get(
     "/",
-    response_model=bootstrap.BootstrapResponse,
+    response_model=bootstrap.BootstrapGetResponse,
     response_model_exclude_none=True,
 )
 def get():
@@ -20,8 +20,9 @@ def get():
 
 @router.post(
     "/",
-    status_code=status.HTTP_201_CREATED,
+    response_model=bootstrap.BootstrapPostResponse,
     response_model_exclude_none=True,
+    status_code=status.HTTP_202_ACCEPTED,
 )
 def post(payload: bootstrap.BootstrapPayload):
     return bootstrap.post_bootstrap(payload)

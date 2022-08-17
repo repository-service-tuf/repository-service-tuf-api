@@ -11,7 +11,7 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ADD requirements.txt /builder/requirements.txt
 
 WORKDIR /builder
-RUN apt-get update && apt-get install libpq-dev gcc git -y
+RUN apt-get update && apt-get install libpq-dev gcc -y
 RUN pip install --user -r requirements.txt
 RUN apt-get remove gcc --purge -y \
     && rm -rf /var/lib/apt/lists/* \

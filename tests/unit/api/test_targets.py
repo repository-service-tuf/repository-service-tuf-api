@@ -23,7 +23,7 @@ class TestPostTargets:
             mocked_repository_metadata,
         )
         monkeypatch.setattr(
-            "kaprien_api.targets.task_id", lambda: fake_task_id
+            "kaprien_api.targets.get_task_id", lambda: fake_task_id
         )
         response = test_client.post(url, json=payload)
         assert response.status_code == status.HTTP_200_OK
