@@ -1,6 +1,7 @@
-from fastapi import APIRouter, status
+from fastapi import APIRouter, Security, status
 
 from kaprien_api import bootstrap
+from kaprien_api.token import validate_token
 
 router = APIRouter(
     prefix="/bootstrap",
@@ -14,7 +15,7 @@ router = APIRouter(
     response_model=bootstrap.BootstrapGetResponse,
     response_model_exclude_none=True,
 )
-def get():
+def get(_user=Security(validate_token, scopes=["read:bootstrap"])):
     return bootstrap.get_bootstrap()
 
 
@@ -24,5 +25,8 @@ def get():
     response_model_exclude_none=True,
     status_code=status.HTTP_202_ACCEPTED,
 )
-def post(payload: bootstrap.BootstrapPayload):
+def post(
+    payload: bootstrap.BootstrapPayload,
+    _user=Security(validate_token, scopes=["write:bootstrap"]),
+):
     return bootstrap.post_bootstrap(payload)

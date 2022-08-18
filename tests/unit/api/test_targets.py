@@ -6,7 +6,7 @@ from fastapi import status
 
 
 class TestPostTargets:
-    def test_post(self, monkeypatch, test_client):
+    def test_post(self, monkeypatch, test_client, token_headers):
         from kaprien_api import simple_settings  # noqa
 
         url = "/api/v1/targets/"
@@ -25,7 +25,7 @@ class TestPostTargets:
         monkeypatch.setattr(
             "kaprien_api.targets.get_task_id", lambda: fake_task_id
         )
-        response = test_client.post(url, json=payload)
+        response = test_client.post(url, json=payload, headers=token_headers)
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == {
             "data": {
@@ -46,7 +46,7 @@ class TestPostTargets:
             )
         ]
 
-    def test_post_missing_required_field(self, test_client):
+    def test_post_missing_required_field(self, test_client, token_headers):
         url = "/api/v1/targets/"
         payload = {
             "targets": [
@@ -59,5 +59,44 @@ class TestPostTargets:
             ]
         }
 
-        response = test_client.post(url, json=payload)
+        response = test_client.post(url, json=payload, headers=token_headers)
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+    def test_post_unauthorized_invalid_token(self, test_client):
+        headers = {
+            "Authorization": "Bearer 123456789abcef",
+        }
+        url = "/api/v1/targets/"
+        with open("tests/data_examples/targets/payload.json") as f:
+            f_data = f.read()
+
+        payload = json.loads(f_data)
+
+        response = test_client.post(url, json=payload, headers=headers)
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+        assert response.json() == {
+            "detail": {"error": "Failed to validate token"}
+        }
+
+    def test_post_forbidden_user_incorrect_scope_token(self, test_client):
+        token_url = "/api/v1/token/?expires=1"
+        token_payload = {
+            "username": "admin",
+            "password": "secret",
+            "scope": "read:targets",
+        }
+        token = test_client.post(token_url, data=token_payload)
+        headers = {
+            "Authorization": f"Bearer {token.json()['access_token']}",
+        }
+        url = "/api/v1/targets/"
+        with open("tests/data_examples/targets/payload.json") as f:
+            f_data = f.read()
+
+        payload = json.loads(f_data)
+
+        response = test_client.post(url, json=payload, headers=headers)
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.json() == {
+            "detail": {"error": "scope 'write:targets' not allowed"}
+        }
