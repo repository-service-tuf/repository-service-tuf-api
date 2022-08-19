@@ -14,6 +14,10 @@ cryptography = "*"
 pynacl = "*"
 celery = "*"
 tuf = "==2.0.0"
+python-multipart = "*"
+python-jose = "*"
+fastapi-users = {extras = ["sqlalchemy"], version = "*"}
+sqlalchemy = "*"
 
 [dev-packages]
 black = "*"

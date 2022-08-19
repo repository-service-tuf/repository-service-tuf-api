@@ -3,23 +3,72 @@ import os
 
 from celery import Celery
 from dynaconf import Dynaconf
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
 from kaprien_api.tuf import services  # noqa
 from kaprien_api.tuf.interfaces import IKeyVault, IStorage
+from kaprien_api.users import crud, schemas
+from kaprien_api.users.models import Base
+
+SCOPES = {
+    "read:targets": "Read (GET) targets",
+    "read:bootstrap": "Read (GET) bootstrap",
+    "read:settings": "Read (GET) settings",
+    "write:targets": "write (POST) targets",
+    "write:bootstrap": "write (POST) bootstrap",
+}
 
 SETTINGS_FILE = os.getenv("SETTINGS_FILE", "settings.ini")
+TOKEN_SETTINGS_FILE = os.getenv("TOKEN_SETTINGS_FILE", ".secrets.ini")
+
 settings = Dynaconf(
     envvar_prefix="KAPRIEN",
     settings_files=[SETTINGS_FILE],
     environments=True,
 )
-
 simple_settings = Dynaconf(
     envvar_prefix="KAPRIEN",
     settings_files=[SETTINGS_FILE],
     environments=True,
 )
+token_settings = Dynaconf(
+    envvar_prefix="KAPRIEN_SECRETS",
+    settings_files=[TOKEN_SETTINGS_FILE],
+    environments=True,
+)
 
+# Tokens
+SECRET_KEY = token_settings.TOKEN_KEY
+
+# User database
+DATABASE_URL = (
+    f"sqlite:///{settings.get('DATABASE_DATA', './database/users.sqlite')}"
+)
+engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+
+Base.metadata.create_all(bind=engine)
+db = SessionLocal()
+
+for scope in SCOPES:
+    scope_entry = crud.get_scope_by_name(db, name=scope)
+    if not scope_entry:
+        add_scope = schemas.ScopeCreate(name=scope, description=SCOPES[scope])
+        crud.create_user_scope(db, add_scope)
+
+user = crud.get_user_by_username(db, username="admin")
+
+if not user:
+    user_in = schemas.UserCreate(
+        username="admin",
+        password=token_settings.ADMIN_PASSWORD,
+    )
+    user = crud.create_user(db, user_in)
+    crud.user_add_scopes(db, user, [scope for scope in crud.get_scopes(db)])
+
+# Services
 storage_backends = [
     storage.__name__.upper() for storage in IStorage.__subclasses__()
 ]

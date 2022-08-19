@@ -35,6 +35,8 @@ services:
       - KAPRIEN_LOCAL_STORAGE_BACKEND_PATH="/var/opt/kaprien/storage"
       - KAPRIEN_LOCAL_KEYVAULT_PATH="/var/opt/kaprien/keystorage"
       - KAPRIEN_RABBITMQ_SERVER="guest:guest@kaprien-mq:5672"
+      - KAPRIEN_SECRETS_TOKEN_KEY='secret'
+      - KAPRIEN_SECRETS_ADMIN_PASSWORD='secret'
     volumes:
       - ./:/opt/kaprien-rest-api:z
       - kaprien-storage:/var/opt/kaprien/storage

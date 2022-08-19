@@ -30,3 +30,8 @@ clean:
 	docker-compose rm --force
 	rm -rf metadata/*
 	rm -rf keys/*
+	rm -rf database/*.sqlite
+
+purge:
+	$(MAKE) clean
+	docker rmi kaprien-rest-api_kaprien-rest-api --force

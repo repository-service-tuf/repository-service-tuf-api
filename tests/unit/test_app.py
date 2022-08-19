@@ -9,6 +9,9 @@ def test_wrong_storage_backend(monkeypatch):
     tmp = TemporaryDirectory().name
     monkeypatch.setenv("SETTINGS_FILE", os.path.join(tmp, "settings.ini"))
     monkeypatch.setenv("KAPRIEN_STORAGE_BACKEND", "InvalidStorage")
+    monkeypatch.setenv("KAPRIEN_SECRETS_TOKEN_KEY", "test")
+    monkeypatch.setenv("KAPRIEN_SECRETS_ADMIN_PASSWORD", "secret")
+    monkeypatch.setenv("KAPRIEN_DATABASE_DATA", "./database/test.sqlite")
 
     with pytest.raises(ValueError) as err:
         from app import kaprien_app  # noqa
@@ -20,6 +23,8 @@ def test_localstorage_backend_missing_required_argument(monkeypatch):
     tmp = TemporaryDirectory().name
     monkeypatch.setenv("SETTINGS_FILE", os.path.join(tmp, "settings.ini"))
     monkeypatch.setenv("KAPRIEN_STORAGE_BACKEND", "LocalStorage")
+    monkeypatch.setenv("KAPRIEN_SECRETS_TOKEN_KEY", "test")
+    monkeypatch.setenv("KAPRIEN_DATABASE_DATA", "./database/test.sqlite")
 
     with pytest.raises(AttributeError) as err:
         from app import kaprien_app  # noqa
@@ -30,9 +35,12 @@ def test_localstorage_backend_missing_required_argument(monkeypatch):
 def test_wrong_keyvault_backend(monkeypatch):
     tmp = TemporaryDirectory().name
     monkeypatch.setenv("SETTINGS_FILE", os.path.join(tmp, "settings.ini"))
+    monkeypatch.setenv("KAPRIEN_SECRETS_TOKEN_KEY", "test")
+    monkeypatch.setenv("KAPRIEN_SECRETS_ADMIN_PASSWORD", "secret")
     monkeypatch.setenv("KAPRIEN_STORAGE_BACKEND", "LocalStorage")
     monkeypatch.setenv("KAPRIEN_LOCAL_STORAGE_BACKEND_PATH", "metadata")
     monkeypatch.setenv("KAPRIEN_KEYVAULT_BACKEND", "InvalidKeyVault")
+    monkeypatch.setenv("KAPRIEN_DATABASE_DATA", "./database/test.sqlite")
 
     with pytest.raises(ValueError) as err:
         from app import kaprien_app  # noqa
@@ -43,9 +51,12 @@ def test_wrong_keyvault_backend(monkeypatch):
 def test_localkeyvault_backend_missing_required_argument(monkeypatch):
     tmp = TemporaryDirectory().name
     monkeypatch.setenv("SETTINGS_FILE", os.path.join(tmp, "settings.ini"))
+    monkeypatch.setenv("KAPRIEN_SECRETS_TOKEN_KEY", "test")
+    monkeypatch.setenv("KAPRIEN_SECRETS_ADMIN_PASSWORD", "secret")
     monkeypatch.setenv("KAPRIEN_STORAGE_BACKEND", "LocalStorage")
     monkeypatch.setenv("KAPRIEN_LOCAL_STORAGE_BACKEND_PATH", "storage/")
     monkeypatch.setenv("KAPRIEN_KEYVAULT_BACKEND", "LocalKeyVault")
+    monkeypatch.setenv("KAPRIEN_DATABASE_DATA", "./database/test.sqlite")
 
     with pytest.raises(AttributeError) as err:
         from app import kaprien_app  # noqa

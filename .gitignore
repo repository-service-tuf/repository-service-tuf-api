@@ -1,6 +1,7 @@
 # kaprien-rest-api specifics
 .secrets.ini
 metadata/**
+database/*.sqlite
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -5,6 +5,7 @@ from fastapi import APIRouter, FastAPI
 from kaprien_api.api.bootstrap import router as bootstrap_v1
 from kaprien_api.api.repository_settings import router as settings_v1
 from kaprien_api.api.targets import router as targets_v1
+from kaprien_api.api.token import router as token_v1
 
 kaprien_app = FastAPI(
     title="Kaprien Rest API",
@@ -18,9 +19,11 @@ api_v1 = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
+
 api_v1.include_router(bootstrap_v1)
 api_v1.include_router(settings_v1)
 api_v1.include_router(targets_v1)
+api_v1.include_router(token_v1)
 
 kaprien_app.include_router(api_v1)
 
