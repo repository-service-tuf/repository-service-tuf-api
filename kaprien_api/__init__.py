@@ -15,6 +15,7 @@ SCOPES = {
     "read:targets": "Read (GET) targets",
     "read:bootstrap": "Read (GET) bootstrap",
     "read:settings": "Read (GET) settings",
+    "read:token": "Read (GET) tokens",
     "write:targets": "write (POST) targets",
     "write:bootstrap": "write (POST) bootstrap",
 }
