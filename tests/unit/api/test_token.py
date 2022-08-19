@@ -1,16 +1,69 @@
-import datetime
 from dataclasses import dataclass
+from datetime import datetime
 from typing import List
 
 import pretend
 from fastapi import status
 
 
-class TestPostTargets:
+class TestGetToken:
+    def test_get(self, test_client, token_headers):
+        token_url = "/api/v1/token/?expires=1"
+        token_payload = {
+            "username": "admin",
+            "password": "secret",
+            "scope": "write:targets",
+        }
+        response = test_client.post(token_url, data=token_payload)
+        test_token = response.json().get("access_token")
+
+        url = f"/api/v1/token/?token={test_token}"
+        response = test_client.get(url, headers=token_headers)
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json()["data"]["scopes"] == ["write:targets"]
+        assert response.json()["data"]["expired"] is False
+
+    def test_get_fake_token(self, test_client, token_headers):
+        url = "/api/v1/token/?token=fake_token"
+        response = test_client.get(url, headers=token_headers)
+
+        assert response.status_code == status.HTTP_200_OK
+
+    def test_get_expired_token(self, test_client, monkeypatch, token_headers):
+        token_url = "/api/v1/token/?expires=1"
+        token_payload = {
+            "username": "admin",
+            "password": "secret",
+            "scope": "write:targets",
+        }
+        response = test_client.post(token_url, data=token_payload)
+        test_token = response.json().get("access_token")
+        mocked_datetime = pretend.stub(
+            utcnow=datetime.utcnow(),
+            now=pretend.call_recorder(lambda: datetime.now()),
+            fromtimestamp=pretend.call_recorder(
+                lambda *a: datetime(2019, 6, 16, 7, 5, 00, 355186)
+            ),
+        )
+
+        monkeypatch.setattr(
+            "kaprien_api.token.datetime",
+            mocked_datetime,
+        )
+        url = f"/api/v1/token/?token={test_token}"
+        response = test_client.get(url, headers=token_headers)
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json()["data"]["scopes"] == ["write:targets"]
+        assert response.json()["data"]["expired"] is True
+
+
+class TestPostToken:
     def test_post(self, monkeypatch, test_client):
         mocked_datetime = pretend.stub(
             utcnow=pretend.call_recorder(
-                lambda: datetime.datetime(2019, 6, 16, 7, 5, 00, 355186)
+                lambda: datetime(2019, 6, 16, 7, 5, 00, 355186)
             )
         )
         monkeypatch.setattr("kaprien_api.token.datetime", mocked_datetime)
@@ -27,7 +80,7 @@ class TestPostTargets:
     def test_post_without_expires(self, monkeypatch, test_client):
         mocked_datetime = pretend.stub(
             utcnow=pretend.call_recorder(
-                lambda: datetime.datetime(2019, 6, 16, 9, 5, 00, 355186)
+                lambda: datetime(2019, 6, 16, 9, 5, 00, 355186)
             )
         )
         monkeypatch.setattr("kaprien_api.token.datetime", mocked_datetime)
@@ -88,7 +141,7 @@ class TestPostTargets:
             )
         )
         monkeypatch.setattr(
-            "kaprien_api.api.token.get_user_by_username", fake_user_db
+            "kaprien_api.token.get_user_by_username", fake_user_db
         )
 
         token_url = "/api/v1/token/?expires=1"

@@ -1,12 +1,7 @@
-import logging
-from datetime import timedelta
-
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, Security
 from fastapi.security import OAuth2PasswordRequestForm
 
-from kaprien_api import db
-from kaprien_api.token import GetParameters, create_access_token
-from kaprien_api.users.crud import get_user_by_username
+from kaprien_api import token
 
 router = APIRouter(
     prefix="/token",
@@ -15,37 +10,23 @@ router = APIRouter(
 )
 
 
-@router.post("/", description="Return tokens")
-def get(
-    data: OAuth2PasswordRequestForm = Depends(),
-    params: GetParameters = Depends(),
+@router.post(
+    "/", description="Return tokens", response_model=token.PostTokenResponse
+)
+def post(
+    token_data: OAuth2PasswordRequestForm = Depends(),
+    params: token.PostParameters = Depends(),
 ):
-    user = get_user_by_username(db, data.username)
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-        )
-    elif data.password != user.password:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-        )
-    for scope in data.scopes:
-        if scope not in [scope.name for scope in user.scopes]:
-            logging.debug(f"User '{user}' forbidden for '{scope}'")
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail={"error": f"scope '{scope}' forbidden"},
-            )
+    return token.post(token_data, params)
 
-    # return data with requested scopes -- approved :D
-    data = {
-        "sub": f"user_{user.id}",
-        "username": user.username,
-        "password": user.password,
-        "scopes": data.scopes,
-    }
-    access_token = create_access_token(
-        data=data,
-        expires_delta=timedelta(hours=params.expires),
-    )
-    return {"access_token": access_token}
+
+@router.get(
+    "/",
+    response_model=token.GetTokenResponse,
+    response_model_exclude_none=True,
+)
+def get(
+    params: token.GetParameters = Depends(),
+    _user=Security(token.validate_token, scopes=["read:token"]),
+):
+    return token.get(params)

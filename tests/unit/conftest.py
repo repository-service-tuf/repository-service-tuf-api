@@ -30,6 +30,7 @@ def token_headers(test_client):
             "write:bootstrap "
             "read:bootstrap "
             "read:settings "
+            "read:token "
         ),
     }
     token = test_client.post(token_url, data=token_payload)
