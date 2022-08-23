@@ -1,5 +1,6 @@
 import importlib
 import os
+from enum import Enum
 
 from celery import Celery
 from dynaconf import Dynaconf
@@ -11,13 +12,25 @@ from kaprien_api.tuf.interfaces import IKeyVault, IStorage
 from kaprien_api.users import crud, schemas
 from kaprien_api.users.models import Base
 
+
+class SCOPES_NAMES(Enum):
+    read_bootstrap = "read:bootstrap"
+    read_settings = "read:settings"
+    read_targets = "read:targets"
+    read_token = "read:token"
+    write_bootstrap = "write:bootstrap"
+    write_targets = "write:targets"
+    write_token = "write:token"
+
+
 SCOPES = {
-    "read:targets": "Read (GET) targets",
-    "read:bootstrap": "Read (GET) bootstrap",
-    "read:settings": "Read (GET) settings",
-    "read:token": "Read (GET) tokens",
-    "write:targets": "write (POST) targets",
-    "write:bootstrap": "write (POST) bootstrap",
+    SCOPES_NAMES.read_targets.value: "Read (GET) targets",
+    SCOPES_NAMES.read_bootstrap.value: "Read (GET) bootstrap",
+    SCOPES_NAMES.read_settings.value: "Read (GET) settings",
+    SCOPES_NAMES.read_token.value: "Read (GET) tokens",
+    SCOPES_NAMES.write_targets.value: "Write (POST) targets",
+    SCOPES_NAMES.write_token.value: "Write (POST) token",
+    SCOPES_NAMES.write_bootstrap.value: "Write (POST) bootstrap",
 }
 
 SETTINGS_FILE = os.getenv("SETTINGS_FILE", "settings.ini")

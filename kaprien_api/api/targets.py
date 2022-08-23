@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Security, status
 
-from kaprien_api import targets
+from kaprien_api import SCOPES_NAMES, targets
 from kaprien_api.token import validate_token
 
 router = APIRouter(
@@ -19,6 +19,6 @@ router = APIRouter(
 )
 def post(
     payload: targets.Payload,
-    _user=Security(validate_token, scopes=["write:targets"]),
+    _user=Security(validate_token, scopes=[SCOPES_NAMES.write_targets.value]),
 ):
     return targets.post(payload)

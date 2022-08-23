@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Security, status
 
-from kaprien_api import bootstrap
+from kaprien_api import SCOPES_NAMES, bootstrap
 from kaprien_api.token import validate_token
 
 router = APIRouter(
@@ -15,7 +15,9 @@ router = APIRouter(
     response_model=bootstrap.BootstrapGetResponse,
     response_model_exclude_none=True,
 )
-def get(_user=Security(validate_token, scopes=["read:bootstrap"])):
+def get(
+    _user=Security(validate_token, scopes=[SCOPES_NAMES.read_bootstrap.value])
+):
     return bootstrap.get_bootstrap()
 
 
@@ -27,6 +29,8 @@ def get(_user=Security(validate_token, scopes=["read:bootstrap"])):
 )
 def post(
     payload: bootstrap.BootstrapPayload,
-    _user=Security(validate_token, scopes=["write:bootstrap"]),
+    _user=Security(
+        validate_token, scopes=[SCOPES_NAMES.write_bootstrap.value]
+    ),
 ):
     return bootstrap.post_bootstrap(payload)
