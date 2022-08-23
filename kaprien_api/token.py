@@ -1,34 +1,47 @@
 from datetime import datetime, timedelta
-from typing import List, Optional, Union
+from typing import List, Literal, Optional
 
 from fastapi import Depends, HTTPException, Query, status
+from fastapi.param_functions import Form
 from fastapi.security import OAuth2PasswordBearer, SecurityScopes
 from jose import JWTError, jwt
-from pydantic import ValidationError
+from pydantic import Field, ValidationError
 
-from kaprien_api import SCOPES, SECRET_KEY, db
+from kaprien_api import SCOPES, SCOPES_NAMES, SECRET_KEY, db
 from kaprien_api.users.crud import get_user_by_username
 from kaprien_api.utils import BaseModel, uuid4
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/token", scopes=SCOPES)
 
 
-class PostParameters:
+class TokenRequestForm:
     def __init__(
         self,
-        expires: int = Query(
-            default=1, description="Token expiration in hour(s)"
+        username: str = Form(),
+        password: str = Form(),
+        scope: Optional[str] = Form(
+            default="",
+            description=(
+                "Add scopes separeted by space. "
+                "Default user scopes. Users might not have all scopes. "
+                "Available scopes: "
+                f"{' '.join([scope.value for scope in SCOPES_NAMES])}"
+            ),
+        ),
+        expires: Optional[int] = Form(
+            default=1, description="Expiration in hours. Default: 1 hour"
         ),
     ):
-
+        self.username = username
+        self.password = password
+        self.scope = scope.split()
         self.expires = expires
 
 
 class GetParameters:
     def __init__(
         self,
-        token: str = Query(description="Token to be validated"),
-        required=True,
+        token: str = Query(description="Token to be validated", required=True),
     ):
         self.token = token
 
@@ -46,14 +59,7 @@ class GetTokenResponse(BaseModel):
     class Config:
         example = {
             "data": {
-                "scopes": [
-                    "read:targets",
-                    "read:bootstrap",
-                    "read:settings",
-                    "read:token",
-                    "write:targets",
-                    "write:bootstrap",
-                ],
+                "scopes": [scope.value for scope in SCOPES_NAMES],
                 "expired": False,
                 "expiration": "2022-08-19T17:29:39",
             },
@@ -72,6 +78,30 @@ class PostTokenResponse(BaseModel):
         schema_extra = {"example": example}
 
 
+class TokenRequestPayload(BaseModel):
+    scopes: List[
+        Literal[
+            SCOPES_NAMES.read_bootstrap.value,
+            SCOPES_NAMES.read_settings.value,
+            SCOPES_NAMES.read_targets.value,
+            SCOPES_NAMES.read_token.value,
+            SCOPES_NAMES.write_targets,
+        ]
+    ]
+    expires: int = Field(description="In hour(s)")
+
+    class Config:
+        example = {
+            "scopes": [
+                SCOPES_NAMES.read_token.value,
+                SCOPES_NAMES.read_settings.value,
+            ],
+            "expires": 24,
+        }
+
+        schema_extra = {"example": example}
+
+
 def _decode_token(token):
     try:
         user_token = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
@@ -80,12 +110,10 @@ def _decode_token(token):
     return user_token
 
 
-def create_access_token(
-    data: dict, expires_delta: Union[timedelta, None] = None
-):
+def create_access_token(data: dict, expires_delta: int = 1):
 
     to_encode = data.copy()
-    expires = datetime.utcnow() + expires_delta
+    expires = datetime.utcnow() + timedelta(hours=expires_delta)
 
     to_encode.update({"exp": expires})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm="HS256")
@@ -121,7 +149,7 @@ def validate_token(
     return user_token
 
 
-def post(token_data, params):
+def post(token_data):
     user = get_user_by_username(db, token_data.username)
     if not user:
         raise HTTPException(
@@ -131,7 +159,11 @@ def post(token_data, params):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
         )
-    for scope in token_data.scopes:
+
+    if len(token_data.scope) == 0:
+        token_data.scope = [scope.name for scope in user.scopes]
+
+    for scope in token_data.scope:
         if scope not in [scope.name for scope in user.scopes]:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
@@ -143,14 +175,27 @@ def post(token_data, params):
         "sub": f"user_{user.id}_{uuid4().hex}",
         "username": user.username,
         "password": user.password,
-        "scopes": token_data.scopes,
+        "scopes": token_data.scope,
     }
     access_token = create_access_token(
         data=data,
-        expires_delta=timedelta(hours=params.expires),
+        expires_delta=token_data.expires,
     )
 
     return {"access_token": access_token}
+
+
+def post_new(payload, user):
+    db_user = get_user_by_username(db, user["username"])
+    data = {
+        "sub": f"user_{db_user.id}_{uuid4().hex}",
+        "username": db_user.username,
+        "password": db_user.password,
+        "scopes": payload.scopes,
+    }
+    token = create_access_token(data=data, expires_delta=payload.expires)
+
+    return {"access_token": token}
 
 
 def get(params):
