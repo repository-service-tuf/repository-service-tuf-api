@@ -10,13 +10,8 @@ from dynaconf.utils.boxing import DynaBox
 from dynaconf.vendor.box.exceptions import BoxKeyError
 from securesystemslib.keys import decrypt_key, encrypt_key
 
-from kaprien_api.tuf import Timestamp
-from kaprien_api.tuf.interfaces import (
-    IKeyVault,
-    IStorage,
-    ServiceSettings,
-    exceptions,
-)
+from kaprien_api.tuf import Roles, StorageError
+from kaprien_api.tuf.interfaces import IKeyVault, IStorage, ServiceSettings
 
 
 class LocalStorage(IStorage):
@@ -45,7 +40,7 @@ class LocalStorage(IStorage):
         None).
         """
 
-        if role == Timestamp.type:
+        if role == Roles.TIMESTAMP.value:
             filename = os.path.join(self._path, f"{role}.json")
         else:
             if version is None:
@@ -68,7 +63,7 @@ class LocalStorage(IStorage):
             file_object = open(filename, "rb")
             yield file_object
         except OSError:
-            raise exceptions.StorageError(f"Can't open {filename}")
+            raise StorageError(f"Can't open {filename}")
         finally:
             if file_object is not None:
                 file_object.close()
@@ -88,7 +83,7 @@ class LocalStorage(IStorage):
                 destination_file.flush()
                 os.fsync(destination_file.fileno())
         except OSError:
-            raise exceptions.StorageError(f"Can't write file {filename}")
+            raise StorageError(f"Can't write file {filename}")
 
 
 class LocalKeyVault(IKeyVault):
@@ -119,7 +114,7 @@ class LocalKeyVault(IKeyVault):
         try:
             keys: Dict[str, Any] = self.keyvault.store[rolename]
         except BoxKeyError:
-            raise exceptions.KeyVaultError(f"{rolename} not found.")
+            raise ValueError(f"{rolename} not found.")
         keys_sslib_format: List[Dict[str, Any]] = []
         for key in keys:
             keys_sslib_format.append(decrypt_key(key["key"], key["password"]))

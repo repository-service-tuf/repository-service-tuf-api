@@ -14,13 +14,6 @@ from dataclasses import dataclass
 from io import TextIOBase
 from typing import Any, Dict, List
 
-from tuf.api import exceptions  # noqa
-from tuf.api.metadata import (  # type: ignore noqa
-    Metadata,
-    StorageBackendInterface,
-    T,
-)
-
 
 @dataclass
 class ServiceSettings:
@@ -55,7 +48,7 @@ class IKeyVault(ABC):
         raise NotImplementedError
 
 
-class IStorage(StorageBackendInterface):
+class IStorage(ABC):
     @classmethod
     def configure(cls, settings: Any):
         """
@@ -70,7 +63,7 @@ class IStorage(StorageBackendInterface):
         """
         raise NotImplementedError
 
-    def get(self, rolename: str, version: int) -> "Metadata[T]":
+    def get(self, rolename: str, version: int):
         """
         Return metadata from specific role name, optionally specific version.
         """
