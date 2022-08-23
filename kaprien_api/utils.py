@@ -102,7 +102,8 @@ def save_settings(key: str, value: Any):
 # FIXME: Implement a consistent check (Issue #16)
 def check_metadata():
     try:
-        tuf.Metadata.from_file(filename="1.root", storage_backend=storage)
+        with storage.get("root") as f:
+            f.read()
         return True
     except StorageError:
         return False
