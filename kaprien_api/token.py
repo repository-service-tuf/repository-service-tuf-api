@@ -8,7 +8,7 @@ from pydantic import ValidationError
 
 from kaprien_api import SCOPES, SECRET_KEY, db
 from kaprien_api.users.crud import get_user_by_username
-from kaprien_api.utils import BaseModel
+from kaprien_api.utils import BaseModel, uuid4
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/token", scopes=SCOPES)
 
@@ -140,7 +140,7 @@ def post(token_data, params):
 
     # return data with requested scopes -- approved :D
     data = {
-        "sub": f"user_{user.id}",
+        "sub": f"user_{user.id}_{uuid4().hex}",
         "username": user.username,
         "password": user.password,
         "scopes": token_data.scopes,
