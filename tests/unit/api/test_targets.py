@@ -26,7 +26,7 @@ class TestPostTargets:
             "kaprien_api.targets.get_task_id", lambda: fake_task_id
         )
         response = test_client.post(url, json=payload, headers=token_headers)
-        assert response.status_code == status.HTTP_200_OK
+        assert response.status_code == status.HTTP_202_ACCEPTED
         assert response.json() == {
             "data": {
                 "targets": ["file1.tar.gz", "file2.tar.gz"],
