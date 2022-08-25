@@ -1,4 +1,3 @@
-import importlib
 import os
 from enum import Enum
 
@@ -7,8 +6,6 @@ from dynaconf import Dynaconf
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from kaprien_api.tuf import services  # noqa
-from kaprien_api.tuf.interfaces import IKeyVault, IStorage
 from kaprien_api.users import crud, schemas
 from kaprien_api.users.models import Base
 
@@ -34,7 +31,7 @@ SCOPES = {
 }
 
 SETTINGS_FILE = os.getenv("SETTINGS_FILE", "settings.ini")
-TOKEN_SETTINGS_FILE = os.getenv("TOKEN_SETTINGS_FILE", ".secrets.ini")
+SECRET_SETTINGS_FILE = os.getenv("SECRET_SETTINGS_FILE", ".secrets.ini")
 
 settings = Dynaconf(
     envvar_prefix="KAPRIEN",
@@ -46,14 +43,14 @@ simple_settings = Dynaconf(
     settings_files=[SETTINGS_FILE],
     environments=True,
 )
-token_settings = Dynaconf(
-    envvar_prefix="KAPRIEN_SECRETS",
-    settings_files=[TOKEN_SETTINGS_FILE],
+secrets_settings = Dynaconf(
+    envvar_prefix="SECRETS_KAPRIEN",
+    settings_files=[SECRET_SETTINGS_FILE],
     environments=True,
 )
 
 # Tokens
-SECRET_KEY = token_settings.TOKEN_KEY
+SECRET_KEY = secrets_settings.TOKEN_KEY
 
 # User database
 DATABASE_URL = (
@@ -77,74 +74,74 @@ user = crud.get_user_by_username(db, username="admin")
 if not user:
     user_in = schemas.UserCreate(
         username="admin",
-        password=token_settings.ADMIN_PASSWORD,
+        password=secrets_settings.ADMIN_PASSWORD,
     )
     user = crud.create_user(db, user_in)
     crud.user_add_scopes(db, user, [scope for scope in crud.get_scopes(db)])
 
-# Services
-storage_backends = [
-    storage.__name__.upper() for storage in IStorage.__subclasses__()
-]
+# # Services
+# storage_backends = [
+#     storage.__name__.upper() for storage in IStorage.__subclasses__()
+# ]
 
-if settings.STORAGE_BACKEND.upper() not in storage_backends:
-    raise ValueError(
-        f"Invalid Storage Backend {settings.STORAGE_BACKEND}. Supported "
-        f"Storage Backends {', '.join(storage_backends)}"
-    )
-else:
-    settings.STORAGE_BACKEND = getattr(
-        importlib.import_module("kaprien_api.tuf.services"),
-        settings.STORAGE_BACKEND,
-    )
+# if settings.STORAGE_BACKEND.upper() not in storage_backends:
+#     raise ValueError(
+#         f"Invalid Storage Backend {settings.STORAGE_BACKEND}. Supported "
+#         f"Storage Backends {', '.join(storage_backends)}"
+#     )
+# else:
+#     settings.STORAGE_BACKEND = getattr(
+#         importlib.import_module("kaprien_api.tuf.services"),
+#         settings.STORAGE_BACKEND,
+#     )
 
-    if missing := [
-        s.name
-        for s in settings.STORAGE_BACKEND.settings()
-        if s.required and s.name not in settings
-    ]:
-        raise AttributeError(
-            f"'Settings' object has not attribute(s) {', '.join(missing)}"
-        )
+#     if missing := [
+#         s.name
+#         for s in settings.STORAGE_BACKEND.settings()
+#         if s.required and s.name not in settings
+#     ]:
+#         raise AttributeError(
+#             f"'Settings' object has not attribute(s) {', '.join(missing)}"
+#         )
 
-    settings.STORAGE_BACKEND.configure(settings)
-    storage_kwargs = {
-        s.argument: settings.store[s.name]
-        for s in settings.STORAGE_BACKEND.settings()
-    }
+#     settings.STORAGE_BACKEND.configure(settings)
+#     storage_kwargs = {
+#         s.argument: settings.store[s.name]
+#         for s in settings.STORAGE_BACKEND.settings()
+#     }
 
-keyvault_backends = [
-    keyvault.__name__.upper() for keyvault in IKeyVault.__subclasses__()
-]
-if settings.KEYVAULT_BACKEND.upper() not in keyvault_backends:
-    raise ValueError(
-        f"Invalid Key Vault Backend {settings.KEYVAULT_BACKEND}. Supported "
-        f"Key Vault Backends: {', '.join(keyvault_backends)}"
-    )
-else:
-    settings.KEYVAULT_BACKEND = getattr(
-        importlib.import_module("kaprien_api.tuf.services"),
-        settings.KEYVAULT_BACKEND,
-    )
+# keyvault_backends = [
+#     keyvault.__name__.upper() for keyvault in IKeyVault.__subclasses__()
+# ]
+# if settings.KEYVAULT_BACKEND.upper() not in keyvault_backends:
+#     raise ValueError(
+#         f"Invalid Key Vault Backend {settings.KEYVAULT_BACKEND}. Supported "
+#         f"Key Vault Backends: {', '.join(keyvault_backends)}"
+#     )
+# else:
+#     settings.KEYVAULT_BACKEND = getattr(
+#         importlib.import_module("kaprien_api.tuf.services"),
+#         settings.KEYVAULT_BACKEND,
+#     )
 
-    if missing := [
-        s.name
-        for s in settings.KEYVAULT_BACKEND.settings()
-        if s.required and s.name not in settings
-    ]:
-        raise AttributeError(
-            f"'Settings' object has not attribute(s) {', '.join(missing)}"
-        )
+#     if missing := [
+#         s.name
+#         for s in settings.KEYVAULT_BACKEND.settings()
+#         if s.required and s.name not in settings
+#     ]:
+#         raise AttributeError(
+#             f"'Settings' object has not attribute(s) {', '.join(missing)}"
+#         )
 
-    settings.KEYVAULT_BACKEND.configure(settings)
-    keyvault_kwargs = {
-        s.argument: settings.store[s.name]
-        for s in settings.KEYVAULT_BACKEND.settings()
-    }
+#     settings.KEYVAULT_BACKEND.configure(settings)
+#     keyvault_kwargs = {
+#         s.argument: settings.store[s.name]
+#         for s in settings.KEYVAULT_BACKEND.settings()
+#     }
 
 
-storage = settings.STORAGE_BACKEND(**storage_kwargs)
-keyvault = settings.KEYVAULT_BACKEND(**keyvault_kwargs)
+# storage = settings.STORAGE_BACKEND(**storage_kwargs)
+# keyvault = settings.KEYVAULT_BACKEND(**keyvault_kwargs)
 
 
 celery = Celery(__name__)

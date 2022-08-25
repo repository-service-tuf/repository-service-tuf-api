@@ -3,8 +3,8 @@ from typing import Dict, Optional
 
 from fastapi import HTTPException, status
 
-from kaprien_api import settings, tuf
-from kaprien_api.utils import BaseModel, check_metadata
+from kaprien_api import settings
+from kaprien_api.utils import BaseModel, Roles, is_bootstrap_done
 
 
 class CurrentSettingsServiceBackendParams(BaseModel):
@@ -43,7 +43,7 @@ class Response(BaseModel):
 
 
 def get():
-    if check_metadata() is False:
+    if is_bootstrap_done() is False:
         raise HTTPException(
             status.HTTP_404_NOT_FOUND,
             detail={"error": "System has not a Repository Metadata"},
@@ -73,7 +73,7 @@ def get():
     roles_settings = {
         "roles_expirations": {
             role.value: settings.get(f"{role.value}_EXPIRATION")
-            for role in tuf.Roles
+            for role in Roles
         },
     }
     current_settings = {**services_backend, **roles_settings}

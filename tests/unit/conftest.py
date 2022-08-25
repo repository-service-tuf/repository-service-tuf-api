@@ -7,9 +7,9 @@ from fastapi.testclient import TestClient
 
 @pytest.fixture()
 def test_client(monkeypatch):
-    monkeypatch.setenv("KAPRIEN_SECRETS_TOKEN_KEY", "secret")
-    monkeypatch.setenv("KAPRIEN_SECRETS_ADMIN_PASSWORD", "secret")
-    monkeypatch.setenv("KAPRIEN_DATABASE_DATA", "./database/test.sqlite")
+    monkeypatch.setenv("SECRETS_KAPRIEN_TOKEN_KEY", "secret")
+    monkeypatch.setenv("SECRETS_KAPRIEN_ADMIN_PASSWORD", "secret")
+    monkeypatch.setenv("KAPRIEN_STORAGE_BACKEND", "LocalStorage")
 
     from app import kaprien_app
 

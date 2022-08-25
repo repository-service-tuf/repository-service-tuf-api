@@ -1,16 +1,17 @@
 import json
+import logging
 from typing import Dict, List, Literal, Optional
 
 from fastapi import HTTPException, status
 
-from kaprien_api import keyvault, repository_metadata, simple_settings
-from kaprien_api.tuf import Roles
+from kaprien_api import repository_metadata, settings, simple_settings
 from kaprien_api.utils import (
     BaseErrorResponse,
     BaseModel,
+    Roles,
     TUFMetadata,
-    check_metadata,
     get_task_id,
+    is_bootstrap_done,
     save_settings,
 )
 
@@ -97,9 +98,9 @@ class BootstrapGetResponse(BaseModel):
 def get_bootstrap():
     response = BootstrapGetResponse()
 
-    if check_metadata() is True:
+    if is_bootstrap_done() is True:
         response.bootstrap = True
-        response.message = "System already has a Metadata."
+        response.message = "System LOCKED for bootstrap."
     else:
         response.bootstrap = False
         response.message = "System available for bootstrap."
@@ -108,7 +109,7 @@ def get_bootstrap():
 
 
 def post_bootstrap(payload):
-    if check_metadata() is True:
+    if is_bootstrap_done() is True:
         raise HTTPException(
             status_code=status.HTTP_200_OK,
             detail=BaseErrorResponse(
@@ -116,20 +117,17 @@ def post_bootstrap(payload):
             ).dict(exclude_none=True),
         )
 
-    # Store online keys to the KeyVault Service and configuration
-    for rolename, settings in payload.settings.roles.items():
+    # Store settings
+    logging.debug("Saving settings")
+    for rolename, role_settings in payload.settings.roles.items():
         rolename = rolename.upper()
-        save_settings(f"{rolename}_EXPIRATION", settings.expiration)
-        save_settings(f"{rolename}_THRESHOLD", settings.threshold)
-        save_settings(f"{rolename}_NUM_KEYS", settings.num_of_keys)
-        save_settings(f"{rolename}_PATHS", settings.paths)
+        save_settings(f"{rolename}_EXPIRATION", role_settings.expiration)
+        save_settings(f"{rolename}_THRESHOLD", role_settings.threshold)
+        save_settings(f"{rolename}_NUM_KEYS", role_settings.num_of_keys)
+        save_settings(f"{rolename}_PATHS", role_settings.paths)
         save_settings(
-            f"{rolename}_NUMBER_PREFIXES", settings.number_hash_prefixes
+            f"{rolename}_NUMBER_PREFIXES", role_settings.number_hash_prefixes
         )
-
-        # online keys
-        if settings.offline_keys is False:
-            keyvault.put(rolename, settings.dict().get("keys").values())
 
     save_settings(
         "TARGETS_BASE_URL", payload.settings.service.targets_base_url
@@ -145,6 +143,11 @@ def post_bootstrap(payload):
         task_id=task_id,
         queue="metadata_repository",
     )
+    logging.debug(f"Bootstrap task {task_id} sent")
+
+    settings.BOOTSTRAP = task_id
+    save_settings("BOOTSTRAP", task_id)
+    logging.debug(f"Bootstrap locked with id {task_id}")
 
     return BootstrapPostResponse(
         task_id=task_id, message="Bootstrap accepted."
