@@ -43,6 +43,7 @@ class TestPostTargets:
                 },
                 task_id=fake_task_id,
                 queue="metadata_repository",
+                acks_late=True,
             )
         ]
 

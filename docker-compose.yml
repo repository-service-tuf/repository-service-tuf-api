@@ -2,9 +2,11 @@ version: "3.9"
 
 volumes:
   kaprien-mq-data:
+  kaprien-rest-api-data:
   kaprien-storage:
   kaprien-keystorage:
   kaprien-settings:
+  kaprien-redis-data:
 
 services:
   kaprien-mq:
@@ -28,19 +30,13 @@ services:
       context: .
     command: uvicorn app:kaprien_app --host 0.0.0.0 --port 8000 --reload
     ports:
-      - 8000:8000
+      - 80:8000
     environment:
-      - KAPRIEN_STORAGE_BACKEND="LocalStorage"
-      - KAPRIEN_KEYVAULT_BACKEND="LocalKeyVault"
-      - KAPRIEN_LOCAL_STORAGE_BACKEND_PATH="/var/opt/kaprien/storage"
-      - KAPRIEN_LOCAL_KEYVAULT_PATH="/var/opt/kaprien/keystorage"
       - KAPRIEN_RABBITMQ_SERVER="guest:guest@kaprien-mq:5672"
       - SECRETS_KAPRIEN_TOKEN_KEY='secret'
       - SECRETS_KAPRIEN_ADMIN_PASSWORD='secret'
     volumes:
       - ./:/opt/kaprien-rest-api:z
-      - kaprien-storage:/var/opt/kaprien/storage
-      - kaprien-keystorage:/var/opt/kaprien/keystorage
       - kaprien-settings:/var/opt/kaprien/settings/
     depends_on:
       kaprien-mq:

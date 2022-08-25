@@ -63,6 +63,7 @@ def post(payload):
         },
         task_id=task_id,
         queue="metadata_repository",
+        acks_late=True,
     )
     data = {
         "targets": [target.path for target in payload.targets],

@@ -142,6 +142,7 @@ def post_bootstrap(payload):
         },
         task_id=task_id,
         queue="metadata_repository",
+        acks_late=True,
     )
     logging.debug(f"Bootstrap task {task_id} sent")
 
