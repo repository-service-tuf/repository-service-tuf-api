@@ -1,6 +1,8 @@
+import logging
 import os
 from enum import Enum
 
+from apscheduler.schedulers.background import BackgroundScheduler
 from celery import Celery
 from dynaconf import Dynaconf
 from sqlalchemy import create_engine
@@ -79,71 +81,6 @@ if not user:
     user = crud.create_user(db, user_in)
     crud.user_add_scopes(db, user, [scope for scope in crud.get_scopes(db)])
 
-# # Services
-# storage_backends = [
-#     storage.__name__.upper() for storage in IStorage.__subclasses__()
-# ]
-
-# if settings.STORAGE_BACKEND.upper() not in storage_backends:
-#     raise ValueError(
-#         f"Invalid Storage Backend {settings.STORAGE_BACKEND}. Supported "
-#         f"Storage Backends {', '.join(storage_backends)}"
-#     )
-# else:
-#     settings.STORAGE_BACKEND = getattr(
-#         importlib.import_module("kaprien_api.tuf.services"),
-#         settings.STORAGE_BACKEND,
-#     )
-
-#     if missing := [
-#         s.name
-#         for s in settings.STORAGE_BACKEND.settings()
-#         if s.required and s.name not in settings
-#     ]:
-#         raise AttributeError(
-#             f"'Settings' object has not attribute(s) {', '.join(missing)}"
-#         )
-
-#     settings.STORAGE_BACKEND.configure(settings)
-#     storage_kwargs = {
-#         s.argument: settings.store[s.name]
-#         for s in settings.STORAGE_BACKEND.settings()
-#     }
-
-# keyvault_backends = [
-#     keyvault.__name__.upper() for keyvault in IKeyVault.__subclasses__()
-# ]
-# if settings.KEYVAULT_BACKEND.upper() not in keyvault_backends:
-#     raise ValueError(
-#         f"Invalid Key Vault Backend {settings.KEYVAULT_BACKEND}. Supported "
-#         f"Key Vault Backends: {', '.join(keyvault_backends)}"
-#     )
-# else:
-#     settings.KEYVAULT_BACKEND = getattr(
-#         importlib.import_module("kaprien_api.tuf.services"),
-#         settings.KEYVAULT_BACKEND,
-#     )
-
-#     if missing := [
-#         s.name
-#         for s in settings.KEYVAULT_BACKEND.settings()
-#         if s.required and s.name not in settings
-#     ]:
-#         raise AttributeError(
-#             f"'Settings' object has not attribute(s) {', '.join(missing)}"
-#         )
-
-#     settings.KEYVAULT_BACKEND.configure(settings)
-#     keyvault_kwargs = {
-#         s.argument: settings.store[s.name]
-#         for s in settings.KEYVAULT_BACKEND.settings()
-#     }
-
-
-# storage = settings.STORAGE_BACKEND(**storage_kwargs)
-# keyvault = settings.KEYVAULT_BACKEND(**keyvault_kwargs)
-
-
 celery = Celery(__name__)
 celery.conf.broker_url = f"amqp://{settings.RABBITMQ_SERVER}"
 celery.conf.result_backend = "rpc://"
@@ -160,4 +97,49 @@ celery.conf.broker_pool_limit = None
 
 @celery.task(name="app.kaprien_repo_worker")
 def repository_metadata(action, settings, payload):
+    logging.debug(f"New tasks action submitted {action}")
     return True
+
+
+@celery.task(name="app.kaprien_repo_worker")
+def bump_snapshot(action, settings, payload):
+    logging.debug(f"New tasks action submitted {action}")
+    return True
+
+
+@celery.task(name="app.kaprien_repo_worker")
+def bump_bins_roles(action, settings, payload):
+    logging.debug(f"New tasks action submitted {action}")
+    return True
+
+
+def run_schedule(action):
+    repository_metadata.apply_async(
+        kwargs={
+            "action": action,
+            "settings": simple_settings.to_dict(),
+            "payload": {},
+        },
+        task_id=action,
+        queue="metadata_repository",
+        acks_late=True,
+    )
+    logging.debug(f"scheduled task {action} sent")
+
+
+scheduler = BackgroundScheduler()
+scheduler.add_job(
+    func=run_schedule,
+    name="bump_snapshot",
+    trigger="cron",
+    minute="*/5",
+    kwargs={"action": "bump_snapshot"},
+)
+scheduler.add_job(
+    func=run_schedule,
+    name="bump_bins_roles",
+    trigger="cron",
+    minute="*/5",
+    kwargs={"action": "bump_bins_roles"},
+)
+scheduler.start()

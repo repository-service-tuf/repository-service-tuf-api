@@ -14,6 +14,7 @@ python-multipart = "*"
 python-jose = "*"
 fastapi-users = {extras = ["sqlalchemy"], version = "*"}
 sqlalchemy = "*"
+apscheduler = "*"
 
 [dev-packages]
 black = "*"
