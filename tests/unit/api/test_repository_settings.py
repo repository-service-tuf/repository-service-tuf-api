@@ -8,7 +8,7 @@ class TestGetSettings:
 
         mocked_check_metadata = pretend.call_recorder(lambda: True)
         monkeypatch.setattr(
-            "kaprien_api.repository_settings.check_metadata",
+            "kaprien_api.repository_settings.is_bootstrap_done",
             mocked_check_metadata,
         )
 
@@ -67,7 +67,7 @@ class TestGetSettings:
 
         mocked_check_metadata = pretend.call_recorder(lambda: False)
         monkeypatch.setattr(
-            "kaprien_api.repository_settings.check_metadata",
+            "kaprien_api.repository_settings.is_bootstrap_done",
             mocked_check_metadata,
         )
 
@@ -83,7 +83,7 @@ class TestGetSettings:
 
         mocked_check_metadata = pretend.call_recorder(lambda: True)
         monkeypatch.setattr(
-            "kaprien_api.repository_settings.check_metadata",
+            "kaprien_api.repository_settings.is_bootstrap_done",
             mocked_check_metadata,
         )
 

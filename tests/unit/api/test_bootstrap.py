@@ -12,7 +12,7 @@ class TestGetBoostrap:
         url = "/api/v1/bootstrap/"
         mocked_check_metadata = pretend.call_recorder(lambda: False)
         monkeypatch.setattr(
-            "kaprien_api.bootstrap.check_metadata", mocked_check_metadata
+            "kaprien_api.bootstrap.is_bootstrap_done", mocked_check_metadata
         )
 
         response = test_client.get(url, headers=token_headers)
@@ -32,7 +32,7 @@ class TestGetBoostrap:
 
         mocked_check_metadata = pretend.call_recorder(lambda: True)
         monkeypatch.setattr(
-            "kaprien_api.bootstrap.check_metadata", mocked_check_metadata
+            "kaprien_api.bootstrap.is_bootstrap_done", mocked_check_metadata
         )
 
         response = test_client.get(url, headers=token_headers)
@@ -40,7 +40,7 @@ class TestGetBoostrap:
         assert response.url == test_client.base_url + url
         assert response.json() == {
             "bootstrap": True,
-            "message": "System already has a Metadata.",
+            "message": "System LOCKED for bootstrap.",
         }
         assert mocked_check_metadata.calls == [pretend.call()]
 
@@ -49,7 +49,7 @@ class TestGetBoostrap:
         url = "/api/v1/bootstrap/"
         mocked_check_metadata = pretend.call_recorder(lambda: False)
         monkeypatch.setattr(
-            "kaprien_api.bootstrap.check_metadata", mocked_check_metadata
+            "kaprien_api.bootstrap.is_bootstrap_done", mocked_check_metadata
         )
         token_headers = {"Authorization": "Bearer h4ck3r"}
         response = test_client.get(url, headers=token_headers)
@@ -74,7 +74,7 @@ class TestGetBoostrap:
         url = "/api/v1/bootstrap/"
         mocked_check_metadata = pretend.call_recorder(lambda: False)
         monkeypatch.setattr(
-            "kaprien_api.bootstrap.check_metadata", mocked_check_metadata
+            "kaprien_api.bootstrap.is_bootstrap_done", mocked_check_metadata
         )
 
         response = test_client.get(url, headers=token_headers)
@@ -96,7 +96,7 @@ class TestPostBootstrap:
 
         mocked_check_metadata = pretend.call_recorder(lambda: False)
         monkeypatch.setattr(
-            "kaprien_api.bootstrap.check_metadata", mocked_check_metadata
+            "kaprien_api.bootstrap.is_bootstrap_done", mocked_check_metadata
         )
 
         mocked_repository_metadata = pretend.stub(
@@ -128,7 +128,7 @@ class TestPostBootstrap:
 
         mocked_check_metadata = pretend.call_recorder(lambda: True)
         monkeypatch.setattr(
-            "kaprien_api.bootstrap.check_metadata", mocked_check_metadata
+            "kaprien_api.bootstrap.is_bootstrap_done", mocked_check_metadata
         )
 
         with open("tests/data_examples/bootstrap/payload.json") as f:
@@ -176,7 +176,7 @@ class TestPostBootstrap:
 
         mocked_check_metadata = pretend.call_recorder(lambda: False)
         monkeypatch.setattr(
-            "kaprien_api.bootstrap.check_metadata", mocked_check_metadata
+            "kaprien_api.bootstrap.is_bootstrap_done", mocked_check_metadata
         )
 
         mocked_repository_metadata = pretend.stub(
@@ -222,7 +222,7 @@ class TestPostBootstrap:
 
         mocked_check_metadata = pretend.call_recorder(lambda: False)
         monkeypatch.setattr(
-            "kaprien_api.bootstrap.check_metadata", mocked_check_metadata
+            "kaprien_api.bootstrap.is_bootstrap_done", mocked_check_metadata
         )
 
         mocked_repository_metadata = pretend.stub(

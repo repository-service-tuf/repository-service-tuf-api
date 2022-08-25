@@ -1,12 +1,21 @@
+from enum import Enum
 from typing import Any, Dict, List, Literal, Optional
 from uuid import uuid4
 
 from dynaconf import loaders
 from dynaconf.utils.boxing import DynaBox
 from pydantic import BaseModel, Field
-from securesystemslib.exceptions import StorageError
 
-from kaprien_api import SETTINGS_FILE, settings, storage, tuf
+from kaprien_api import SETTINGS_FILE, settings
+
+
+class Roles(Enum):
+    ROOT = "root"
+    TARGETS = "targets"
+    SNAPSHOT = "snapshot"
+    TIMESTAMP = "timestamp"
+    BIN = "bin"
+    BINS = "bins"
 
 
 class BaseErrorResponse(BaseModel):
@@ -61,12 +70,12 @@ class TUFSigned(BaseModel):
     roles: Optional[
         Dict[
             Literal[
-                tuf.Roles.ROOT.value,
-                tuf.Roles.TARGETS.value,
-                tuf.Roles.SNAPSHOT.value,
-                tuf.Roles.TIMESTAMP.value,
-                tuf.Roles.BIN.value,
-                tuf.Roles.BINS.value,
+                Roles.ROOT.value,
+                Roles.TARGETS.value,
+                Roles.SNAPSHOT.value,
+                Roles.TIMESTAMP.value,
+                Roles.BIN.value,
+                Roles.BINS.value,
             ],
             TUFSignedRoles,
         ]
@@ -99,13 +108,10 @@ def save_settings(key: str, value: Any):
     )
 
 
-# FIXME: Implement a consistent check (Issue #16)
-def check_metadata():
-    try:
-        with storage.get("root") as f:
-            f.read()
+def is_bootstrap_done():
+    if settings.get("BOOTSTRAP"):
         return True
-    except StorageError:
+    else:
         return False
 
 
