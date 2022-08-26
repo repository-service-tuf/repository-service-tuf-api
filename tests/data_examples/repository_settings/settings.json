@@ -1,29 +1,27 @@
 {
-    "storage_backend": {
-        "type": "LocalStorage",
-        "parameters": {
-            "LOCAL_STORAGE_BACKEND_PATH": {
-                "required": true,
-                "value": "metadata"
-            }
-        }
-    },
-    "keyvault_backend": {
-        "type": "LocalKeyVault",
-        "parameters": {
-            "LOCAL_KEYVAULT_PATH": {
-                "required": true,
-                "value": "keys"
-            }
-        }
-    },
-    "roles_expirations": {
-        "root": "356",
-        "targets": "365",
-        "snapshot": "1",
-        "timestamp": "1",
-        "bin": "365",
-        "bins": "1"
-    },
-    "targets_base_url": "https://www.example.com/downloads/"
+    "targets_base_url": "http://www.example.com/repository/",
+    "bootstrap": "893eb4aec8af499a9f5cc90984ddf3a3",
+    "bins_number_prefixes": "4",
+    "bins_num_keys": "1",
+    "bins_threshold": "1",
+    "bins_expiration": "1",
+    "bin_num_keys": "1",
+    "bin_threshold": "1",
+    "bin_expiration": "365",
+    "timestamp_num_keys": "1",
+    "timestamp_threshold": "1",
+    "timestamp_expiration": "1",
+    "snapshot_num_keys": "1",
+    "snapshot_threshold": "1",
+    "snapshot_expiration": "1",
+    "targets_paths": [
+        "*",
+        "*/*"
+    ],
+    "targets_num_keys": "2",
+    "targets_threshold": "1",
+    "targets_expiration": "365",
+    "root_num_keys": "2",
+    "root_threshold": "1",
+    "root_expiration": "356"
 }

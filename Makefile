@@ -20,6 +20,8 @@ build-dev:
 
 run-dev:
 	$(MAKE) build-dev
+	docker login ghcr.io
+	docker pull ghcr.io/kaprien/kaprien-repo-worker:dev
 	docker-compose up --remove-orphans
 
 stop:
@@ -28,9 +30,11 @@ stop:
 clean:
 	$(MAKE) stop
 	docker-compose rm --force
-	rm -rf metadata/*
-	rm -rf keys/*
-	rm -rf database/*.sqlite
+	rm -rf ./metadata/*
+	rm -rf ./keys/*
+	rm -rf ./database/*.sqlite
+	rm -rf ./data
+	rm -rf ./data_test
 
 purge:
 	$(MAKE) clean

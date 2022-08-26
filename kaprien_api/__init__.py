@@ -2,7 +2,6 @@ import logging
 import os
 from enum import Enum
 
-from apscheduler.schedulers.background import BackgroundScheduler
 from celery import Celery
 from dynaconf import Dynaconf
 from sqlalchemy import create_engine
@@ -32,22 +31,22 @@ SCOPES = {
     SCOPES_NAMES.write_bootstrap.value: "Write (POST) bootstrap",
 }
 
-SETTINGS_FILE = os.getenv("SETTINGS_FILE", "settings.ini")
-SECRET_SETTINGS_FILE = os.getenv("SECRET_SETTINGS_FILE", ".secrets.ini")
+DATA_DIR = os.getenv("DATA_DIR", "/data")
+os.makedirs(DATA_DIR, exist_ok=True)
+SETTINGS_FILE = os.path.join(DATA_DIR, "settings.ini")
+REPOSITORY_SETTINGS_FILE = os.path.join(DATA_DIR, "repository_settings.ini")
 
 settings = Dynaconf(
     envvar_prefix="KAPRIEN",
     settings_files=[SETTINGS_FILE],
     environments=True,
 )
-simple_settings = Dynaconf(
-    envvar_prefix="KAPRIEN",
-    settings_files=[SETTINGS_FILE],
+settings_repository = Dynaconf(
+    settings_files=[REPOSITORY_SETTINGS_FILE],
     environments=True,
 )
 secrets_settings = Dynaconf(
     envvar_prefix="SECRETS_KAPRIEN",
-    settings_files=[SECRET_SETTINGS_FILE],
     environments=True,
 )
 
@@ -55,9 +54,11 @@ secrets_settings = Dynaconf(
 SECRET_KEY = secrets_settings.TOKEN_KEY
 
 # User database
-DATABASE_URL = (
-    f"sqlite:///{settings.get('DATABASE_DATA', './database/users.sqlite')}"
+
+DATABASE_URL = settings.get(
+    "DATABASE_URL", f"sqlite:///{os.path.join(DATA_DIR, 'users.sqlite')}"
 )
+
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
@@ -83,7 +84,7 @@ if not user:
 
 celery = Celery(__name__)
 celery.conf.broker_url = f"amqp://{settings.RABBITMQ_SERVER}"
-celery.conf.result_backend = "rpc://"
+celery.conf.result_backend = "redis://redis"
 celery.conf.accept_content = ["json", "application/json"]
 celery.conf.task_serializer = "json"
 celery.conf.result_serializer = "json"
@@ -99,47 +100,3 @@ celery.conf.broker_pool_limit = None
 def repository_metadata(action, settings, payload):
     logging.debug(f"New tasks action submitted {action}")
     return True
-
-
-@celery.task(name="app.kaprien_repo_worker")
-def bump_snapshot(action, settings, payload):
-    logging.debug(f"New tasks action submitted {action}")
-    return True
-
-
-@celery.task(name="app.kaprien_repo_worker")
-def bump_bins_roles(action, settings, payload):
-    logging.debug(f"New tasks action submitted {action}")
-    return True
-
-
-def run_schedule(action):
-    repository_metadata.apply_async(
-        kwargs={
-            "action": action,
-            "settings": simple_settings.to_dict(),
-            "payload": {},
-        },
-        task_id=action,
-        queue="metadata_repository",
-        acks_late=True,
-    )
-    logging.debug(f"scheduled task {action} sent")
-
-
-scheduler = BackgroundScheduler()
-scheduler.add_job(
-    func=run_schedule,
-    name="bump_snapshot",
-    trigger="cron",
-    minute="*/5",
-    kwargs={"action": "bump_snapshot"},
-)
-scheduler.add_job(
-    func=run_schedule,
-    name="bump_bins_roles",
-    trigger="cron",
-    minute="*/5",
-    kwargs={"action": "bump_bins_roles"},
-)
-scheduler.start()

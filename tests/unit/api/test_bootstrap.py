@@ -99,8 +99,10 @@ class TestPostBootstrap:
             "kaprien_api.bootstrap.is_bootstrap_done", mocked_check_metadata
         )
 
+        mocked_async_result = pretend.stub(state="SUCCESS")
         mocked_repository_metadata = pretend.stub(
-            apply_async=pretend.call_recorder(lambda *a, **kw: None)
+            apply_async=pretend.call_recorder(lambda *a, **kw: None),
+            AsyncResult=pretend.call_recorder(lambda *a: mocked_async_result),
         )
         monkeypatch.setattr(
             "kaprien_api.bootstrap.repository_metadata",

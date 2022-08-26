@@ -1,7 +1,7 @@
 import json
 from typing import Any, Dict, List, Optional
 
-from kaprien_api import repository_metadata, simple_settings
+from kaprien_api import repository_metadata, settings_repository
 from kaprien_api.utils import BaseModel, get_task_id
 
 
@@ -58,7 +58,7 @@ def post(payload):
     repository_metadata.apply_async(
         kwargs={
             "action": "add_targets",
-            "settings": simple_settings.to_dict(),
+            "settings": settings_repository.to_dict(),
             "payload": payload.dict(by_alias=True),
         },
         task_id=task_id,

@@ -2,9 +2,10 @@ import json
 import logging
 from typing import Dict, List, Literal, Optional
 
+from celery import states as celery_state
 from fastapi import HTTPException, status
 
-from kaprien_api import repository_metadata, settings, simple_settings
+from kaprien_api import repository_metadata, settings_repository
 from kaprien_api.utils import (
     BaseErrorResponse,
     BaseModel,
@@ -121,33 +122,71 @@ def post_bootstrap(payload):
     logging.debug("Saving settings")
     for rolename, role_settings in payload.settings.roles.items():
         rolename = rolename.upper()
-        save_settings(f"{rolename}_EXPIRATION", role_settings.expiration)
-        save_settings(f"{rolename}_THRESHOLD", role_settings.threshold)
-        save_settings(f"{rolename}_NUM_KEYS", role_settings.num_of_keys)
-        save_settings(f"{rolename}_PATHS", role_settings.paths)
         save_settings(
-            f"{rolename}_NUMBER_PREFIXES", role_settings.number_hash_prefixes
+            f"{rolename}_EXPIRATION",
+            role_settings.expiration,
+            settings_repository,
+        )
+        save_settings(
+            f"{rolename}_THRESHOLD",
+            role_settings.threshold,
+            settings_repository,
+        )
+        save_settings(
+            f"{rolename}_NUM_KEYS",
+            role_settings.num_of_keys,
+            settings_repository,
+        )
+        save_settings(
+            f"{rolename}_PATHS", role_settings.paths, settings_repository
+        )
+        save_settings(
+            f"{rolename}_NUMBER_PREFIXES",
+            role_settings.number_hash_prefixes,
+            settings_repository,
         )
 
     save_settings(
-        "TARGETS_BASE_URL", payload.settings.service.targets_base_url
+        "TARGETS_BASE_URL",
+        payload.settings.service.targets_base_url,
+        settings_repository,
     )
 
     task_id = get_task_id()
+
+    logging.debug(f"Bootstrap task {task_id} sent")
     repository_metadata.apply_async(
         kwargs={
             "action": "add_initial_metadata",
-            "settings": simple_settings.to_dict(),
+            "settings": settings_repository.to_dict(),
             "payload": payload.dict(by_alias=True, exclude_none=True),
         },
         task_id=task_id,
         queue="metadata_repository",
         acks_late=True,
     )
-    logging.debug(f"Bootstrap task {task_id} sent")
 
-    settings.BOOTSTRAP = task_id
-    save_settings("BOOTSTRAP", task_id)
+    task_result = repository_metadata.AsyncResult(task_id)
+    while task_result.state is not celery_state.SUCCESS:
+        if task_result.state == celery_state.PENDING:
+            logging.info("Bootstrap is submitted")
+
+        elif task_result.state == celery_state.STARTED:
+            logging.info("Bootstrap started by repository worker")
+
+        elif task_result.state == celery_state.SUCCESS:
+            break
+
+        elif task_result.state == celery_state.FAILURE:
+            logging.info("Bootstrap failed")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Error: unexpected failure {str(task_result.result)}",
+            )
+
+    logging.info("Bootstrap success by repository worker")
+    settings_repository.BOOTSTRAP = task_id
+    save_settings("BOOTSTRAP", task_id, settings_repository)
     logging.debug(f"Bootstrap locked with id {task_id}")
 
     return BootstrapPostResponse(
