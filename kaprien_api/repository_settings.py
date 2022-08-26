@@ -1,30 +1,14 @@
 import json
-from typing import Dict, Optional
+from typing import Any, Dict
 
 from fastapi import HTTPException, status
 
-from kaprien_api import settings
-from kaprien_api.utils import BaseModel, Roles, is_bootstrap_done
-
-
-class CurrentSettingsServiceBackendParams(BaseModel):
-    required: bool
-    current_value: str
-
-
-class CurrentSettingsServiceBackend(BaseModel):
-    using: str
-    parameters: Optional[Dict[str, CurrentSettingsServiceBackendParams]]
-
-
-class CurrentSettings(BaseModel):
-    storage_backend: CurrentSettingsServiceBackend
-    keyvault_backend: CurrentSettingsServiceBackend
-    roles_expirations: Dict[str, int]
+from kaprien_api import settings_repository
+from kaprien_api.utils import BaseModel, is_bootstrap_done
 
 
 class Response(BaseModel):
-    data: CurrentSettings
+    data: Dict[str, Any]
     message: str
 
     class Config:
@@ -48,34 +32,17 @@ def get():
             status.HTTP_404_NOT_FOUND,
             detail={"error": "System has not a Repository Metadata"},
         )
-    services_backend = {
-        "storage_backend": {
-            "using": settings.STORAGE_BACKEND.__name__,
-            "parameters": {
-                i.name: {
-                    "required": i.required,
-                    "current_value": settings.get(i.name),
-                }
-                for i in settings.STORAGE_BACKEND.settings()
-            },
-        },
-        "keyvault_backend": {
-            "using": settings.KEYVAULT_BACKEND.__name__,
-            "parameters": {
-                i.name: {
-                    "required": i.required,
-                    "current_value": settings.get(i.name),
-                }
-                for i in settings.KEYVAULT_BACKEND.settings()
-            },
-        },
-    }
-    roles_settings = {
-        "roles_expirations": {
-            role.value: settings.get(f"{role.value}_EXPIRATION")
-            for role in Roles
-        },
-    }
-    current_settings = {**services_backend, **roles_settings}
+
+    lower_case_settings = {}
+    for k, v in settings_repository.to_dict().items():
+        if isinstance(v, str):
+            v = v.lower()
+
+        if v == "none":
+            continue
+
+        lower_case_settings[k.lower()] = v
+
+    current_settings = {**lower_case_settings}
 
     return Response(data=current_settings, message="Current Settings")

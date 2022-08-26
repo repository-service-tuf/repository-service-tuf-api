@@ -7,7 +7,7 @@ from fastapi import status
 
 class TestPostTargets:
     def test_post(self, monkeypatch, test_client, token_headers):
-        from kaprien_api import simple_settings  # noqa
+        from kaprien_api import settings_repository  # noqa
 
         url = "/api/v1/targets/"
         with open("tests/data_examples/targets/payload.json") as f:
@@ -38,7 +38,7 @@ class TestPostTargets:
             pretend.call(
                 kwargs={
                     "action": "add_targets",
-                    "settings": simple_settings.to_dict(),
+                    "settings": settings_repository.to_dict(),
                     "payload": payload,
                 },
                 task_id=fake_task_id,
