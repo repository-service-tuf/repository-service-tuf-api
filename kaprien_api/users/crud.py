@@ -1,5 +1,6 @@
 from typing import List
 
+import bcrypt
 from sqlalchemy.orm import Session
 
 from kaprien_api.users import models, schemas
@@ -20,8 +21,10 @@ def get_users(db: Session, skip: int = 0, limit: int = 100):
 
 
 def create_user(db: Session, user: schemas.UserCreate):
-    # password = user.password + "notreallyhashed"
-    db_user = models.User(username=user.username, password=user.password)
+    hashed_password = bcrypt.hashpw(
+        user.password.encode("utf-8"), bcrypt.gensalt()
+    )
+    db_user = models.User(username=user.username, password=hashed_password)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)

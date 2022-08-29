@@ -15,6 +15,7 @@ python-jose = "*"
 fastapi-users = {extras = ["sqlalchemy"], version = "*"}
 sqlalchemy = "*"
 redis = "*"
+bcrypt = "*"
 
 [dev-packages]
 black = "*"

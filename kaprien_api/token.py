@@ -8,7 +8,7 @@ from jose import JWTError, jwt
 from pydantic import Field, ValidationError
 
 from kaprien_api import SCOPES, SCOPES_NAMES, SECRET_KEY, db
-from kaprien_api.users.crud import get_user_by_username
+from kaprien_api.users.crud import bcrypt, get_user_by_username
 from kaprien_api.utils import BaseModel, uuid4
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/token", scopes=SCOPES)
@@ -110,6 +110,10 @@ def _decode_token(token):
     return user_token
 
 
+def _decrypt_password(password):
+    return bcrypt.checkpw(password.encode("utf-8"))
+
+
 def create_access_token(data: dict, expires_delta: int = 1):
 
     to_encode = data.copy()
@@ -155,7 +159,9 @@ def post(token_data):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
         )
-    elif token_data.password != user.password:
+    elif not bcrypt.checkpw(
+        token_data.password.encode("utf-8"), user.password
+    ):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
         )
@@ -174,7 +180,7 @@ def post(token_data):
     data = {
         "sub": f"user_{user.id}_{uuid4().hex}",
         "username": user.username,
-        "password": user.password,
+        "password": str(user.password),
         "scopes": token_data.scope,
     }
     access_token = create_access_token(
@@ -190,7 +196,7 @@ def post_new(payload, user):
     data = {
         "sub": f"user_{db_user.id}_{uuid4().hex}",
         "username": db_user.username,
-        "password": db_user.password,
+        "password": str(db_user.password),
         "scopes": payload.scopes,
     }
     token = create_access_token(data=data, expires_delta=payload.expires)
