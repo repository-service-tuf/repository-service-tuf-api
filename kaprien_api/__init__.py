@@ -51,10 +51,27 @@ secrets_settings = Dynaconf(
 )
 
 # Tokens
-SECRET_KEY = secrets_settings.TOKEN_KEY
+if secrets_settings.TOKEN_KEY.startswith("/run/secrets/"):
+    try:
+        with open(secrets_settings.TOKEN_KEY) as f:
+            SECRET_KEY = f.read().rstrip('\n')
+    except OSError as err:
+        logging.error(str(err))
+
+else:
+    SECRET_KEY = secrets_settings.TOKEN_KEY
+
+if secrets_settings.ADMIN_PASSWORD.startswith("/run/secrets/"):
+    try:
+        with open(secrets_settings.ADMIN_PASSWORD) as f:
+            ADMIN_PASSWORD = f.read().rstrip('\n')
+    except OSError as err:
+        logging.error(str(err))
+
+else:
+    ADMIN_PASSWORD = secrets_settings.ADMIN_PASSWORD
 
 # User database
-
 DATABASE_URL = settings.get(
     "DATABASE_URL", f"sqlite:///{os.path.join(DATA_DIR, 'users.sqlite')}"
 )
@@ -77,7 +94,7 @@ user = crud.get_user_by_username(db, username="admin")
 if not user:
     user_in = schemas.UserCreate(
         username="admin",
-        password=secrets_settings.ADMIN_PASSWORD,
+        password=ADMIN_PASSWORD,
     )
     user = crud.create_user(db, user_in)
     crud.user_add_scopes(db, user, [scope for scope in crud.get_scopes(db)])
