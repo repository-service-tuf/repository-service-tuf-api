@@ -144,6 +144,11 @@ class TestPostToken:
             "kaprien_api.token.get_user_by_username", fake_user_db
         )
 
+        mocked_bcrypt = pretend.stub(
+            checkpw=pretend.call_recorder(lambda *a: True)
+        )
+        monkeypatch.setattr("kaprien_api.token.bcrypt", mocked_bcrypt)
+
         token_url = "/api/v1/token/?expires=1"
         token_payload = {
             "username": "read_user",
@@ -156,3 +161,4 @@ class TestPostToken:
         assert token.json() == {
             "detail": {"error": "scope 'write:targets' forbidden"}
         }
+        assert mocked_bcrypt.checkpw.calls == [pretend.call(b"test", "test")]
