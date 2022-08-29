@@ -54,7 +54,7 @@ secrets_settings = Dynaconf(
 if secrets_settings.TOKEN_KEY.startswith("/run/secrets/"):
     try:
         with open(secrets_settings.TOKEN_KEY) as f:
-            SECRET_KEY = f.read().rstrip('\n')
+            SECRET_KEY = f.read().rstrip("\n")
     except OSError as err:
         logging.error(str(err))
 
@@ -64,7 +64,7 @@ else:
 if secrets_settings.ADMIN_PASSWORD.startswith("/run/secrets/"):
     try:
         with open(secrets_settings.ADMIN_PASSWORD) as f:
-            ADMIN_PASSWORD = f.read().rstrip('\n')
+            ADMIN_PASSWORD = f.read().rstrip("\n")
     except OSError as err:
         logging.error(str(err))
 
