@@ -85,7 +85,7 @@ class TokenRequestPayload(BaseModel):
             SCOPES_NAMES.read_settings.value,
             SCOPES_NAMES.read_targets.value,
             SCOPES_NAMES.read_token.value,
-            SCOPES_NAMES.write_targets,
+            SCOPES_NAMES.write_targets.value,
         ]
     ]
     expires: int = Field(description="In hour(s)")
