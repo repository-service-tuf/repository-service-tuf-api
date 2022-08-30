@@ -153,6 +153,9 @@ def post_bootstrap(payload):
     )
 
     task_id = get_task_id()
+    settings_repository.BOOTSTRAP = task_id
+    save_settings("BOOTSTRAP", task_id, settings_repository)
+    logging.debug(f"Bootstrap locked with id {task_id}")
 
     logging.debug(f"Bootstrap task {task_id} sent")
     repository_metadata.apply_async(
@@ -165,29 +168,6 @@ def post_bootstrap(payload):
         queue="metadata_repository",
         acks_late=True,
     )
-
-    task_result = repository_metadata.AsyncResult(task_id)
-    while task_result.state is not celery_state.SUCCESS:
-        if task_result.state == celery_state.PENDING:
-            logging.info("Bootstrap is submitted")
-
-        elif task_result.state == celery_state.STARTED:
-            logging.info("Bootstrap started by repository worker")
-
-        elif task_result.state == celery_state.SUCCESS:
-            break
-
-        elif task_result.state == celery_state.FAILURE:
-            logging.info("Bootstrap failed")
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"Error: unexpected failure {str(task_result.result)}",
-            )
-
-    logging.info("Bootstrap success by repository worker")
-    settings_repository.BOOTSTRAP = task_id
-    save_settings("BOOTSTRAP", task_id, settings_repository)
-    logging.debug(f"Bootstrap locked with id {task_id}")
 
     return BootstrapPostResponse(
         task_id=task_id, message="Bootstrap accepted."
