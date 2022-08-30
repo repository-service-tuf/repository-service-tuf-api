@@ -2,7 +2,6 @@ import json
 import logging
 from typing import Dict, List, Literal, Optional
 
-from celery import states as celery_state
 from fastapi import HTTPException, status
 
 from kaprien_api import repository_metadata, settings_repository
