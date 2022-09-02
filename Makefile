@@ -1,4 +1,5 @@
 
+.PHONY: all docs
 
 reformat:
 	black -l 79 .
@@ -39,3 +40,7 @@ clean:
 purge:
 	$(MAKE) clean
 	docker rmi kaprien-rest-api_kaprien-rest-api --force
+
+
+docs:
+	tox -e docs
