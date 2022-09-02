@@ -5,7 +5,7 @@ AddRelTag("validate", $textColor="orange", $lineColor="Blue", $lineStyle = Dashe
 AddRelTag("download", $textColor="orange", $lineColor="Blue")
 
 
-Person(user, "Downloader User")  #Grey
+Person(user, "API User")  #Grey
 
 System(kaprien, "KAPRIEN-REST-API", "Signed Metadata")
 System(queue, "Broker", "Redis, RabbitMQ, etc") #Grey

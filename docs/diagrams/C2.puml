@@ -40,14 +40,14 @@ AddRelTag("share", $textColor="orange", $lineColor="grey", $lineStyle = DashedLi
 Person(administration_user, "Admin", $tags="admin") #Grey
 
 Container(kaprien_rest_api, "KAPRIEN-REST-API", $tags="rest_api")
+ContainerDb(data_dir, "/$DATA_DIR", "File System", "Service settings\nRepository settings\nUsers db", $tags="storage_service")
 Container_Ext(broker, "Broker/Backend", "RabbitMQ, Redis, etc", $tags="queue") #Grey
 Container_Ext(ci_cd, "Third Part Software", "Jenkis, Github, Gitlab, etc", $tags="ci_cd") #Grey
-ContainerDb_Ext(data_dir, "/data", "File System", "Service settings\nRepository settings\nUsers db", $tags="storage_service")
 
 Rel(administration_user, kaprien_rest_api, "KAPRIEN-CLI", $tags="terminal")
 Rel_R(ci_cd, kaprien_rest_api, "HTTPS + Tokens")
-Rel_D(kaprien_rest_api, broker, "Consumer", "Tasks")
-Rel_R(kaprien_rest_api, data_dir, "Write data")
+Rel_D(kaprien_rest_api, broker, "Publisher/Consumer", "Tasks")
+Rel_R(kaprien_rest_api, data_dir, "Write/Read data")
 
 
 HIDE_STEREOTYPE()
