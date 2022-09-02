@@ -1,12 +1,8 @@
 from enum import Enum
-from typing import Any, Dict, List, Literal, Optional
+from typing import Dict, List, Literal, Optional
 from uuid import uuid4
 
-from dynaconf import Dynaconf, loaders
-from dynaconf.utils.boxing import DynaBox
 from pydantic import BaseModel, Field
-
-from kaprien_api import settings_repository
 
 
 class Roles(Enum):
@@ -96,23 +92,6 @@ class TUFSignatures(BaseModel):
 class TUFMetadata(BaseModel):
     signatures: List[TUFSignatures]
     signed: TUFSigned
-
-
-def save_settings(key: str, value: Any, settings: Dynaconf):
-    settings.store[key] = value
-    settings_data = settings.as_dict(env=settings.current_env)
-    loaders.write(
-        settings.SETTINGS_FILE_FOR_DYNACONF[0],
-        DynaBox(settings_data).to_dict(),
-        env=settings.current_env,
-    )
-
-
-def is_bootstrap_done():
-    if settings_repository.get("BOOTSTRAP"):
-        return True
-    else:
-        return False
 
 
 def get_task_id():

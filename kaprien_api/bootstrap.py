@@ -5,14 +5,13 @@ from typing import Dict, List, Literal, Optional
 from fastapi import HTTPException, status
 
 from kaprien_api import repository_metadata, settings_repository
+from kaprien_api.config import is_bootstrap_done, save_settings
 from kaprien_api.utils import (
     BaseErrorResponse,
     BaseModel,
     Roles,
     TUFMetadata,
     get_task_id,
-    is_bootstrap_done,
-    save_settings,
 )
 
 
