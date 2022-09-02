@@ -15,7 +15,7 @@ import sys
 
 sys.path.insert(0, os.path.abspath("../../"))
 
-from kaprien_api.__version__ import (version, copyright, author)
+from kaprien_api.__version__ import author, copyright, version
 
 # -- Project information -----------------------------------------------------
 
