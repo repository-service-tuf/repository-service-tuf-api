@@ -39,3 +39,6 @@ clean:
 purge:
 	$(MAKE) clean
 	docker rmi kaprien-rest-api_kaprien-rest-api --force
+
+api-docs:
+	tox -e api-docs

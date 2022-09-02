@@ -1,7 +1,8 @@
 {
     "openapi": "3.0.2",
     "info": {
-        "title": "FastAPI",
+        "title": "Kaprien Rest API",
+        "description": "Kaprien Rest API service for Kaprien Server",
         "version": "0.1.0"
     },
     "paths": {
@@ -19,7 +20,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/BootstrapResponse"
+                                    "$ref": "#/components/schemas/BootstrapGetResponse"
                                 }
                             }
                         }
@@ -27,7 +28,14 @@
                     "404": {
                         "description": "Not found"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "OAuth2PasswordBearer": [
+                            "read:bootstrap"
+                        ]
+                    }
+                ]
             },
             "post": {
                 "tags": [
@@ -47,12 +55,205 @@
                     "required": true
                 },
                 "responses": {
+                    "202": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BootstrapPostResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "OAuth2PasswordBearer": [
+                            "write:bootstrap"
+                        ]
+                    }
+                ]
+            }
+        },
+        "/api/v1/config/": {
+            "get": {
+                "tags": [
+                    "v1",
+                    "v1"
+                ],
+                "summary": "Get",
+                "description": "Returns the config settings",
+                "operationId": "get_api_v1_config__get",
+                "responses": {
                     "200": {
                         "description": "Successful Response",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/BootstrapResponse"
+                                    "$ref": "#/components/schemas/kaprien_api__config__Response"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                },
+                "security": [
+                    {
+                        "OAuth2PasswordBearer": [
+                            "read:settings"
+                        ]
+                    }
+                ]
+            }
+        },
+        "/api/v1/targets/": {
+            "post": {
+                "tags": [
+                    "v1",
+                    "v1"
+                ],
+                "summary": "Post",
+                "description": "Add targets files to Metadata",
+                "operationId": "post_api_v1_targets__post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Payload"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "202": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/kaprien_api__targets__Response"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "OAuth2PasswordBearer": [
+                            "write:targets"
+                        ]
+                    }
+                ]
+            }
+        },
+        "/api/v1/token/": {
+            "get": {
+                "tags": [
+                    "v1",
+                    "v1"
+                ],
+                "summary": "Get",
+                "operationId": "get_api_v1_token__get",
+                "security": [
+                    {
+                        "OAuth2PasswordBearer": [
+                            "read:token"
+                        ]
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "title": "Token",
+                            "description": "Token to be validated",
+                            "required": true,
+                            "type": "string"
+                        },
+                        "description": "Token to be validated"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GetTokenResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "v1",
+                    "v1"
+                ],
+                "summary": "Post",
+                "description": "Issue token user/password authentication",
+                "operationId": "post_api_v1_token__post",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Body_post_api_v1_token__post"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PostTokenResponse"
                                 }
                             }
                         }
@@ -72,10 +273,111 @@
                     }
                 }
             }
+        },
+        "/api/v1/token/new/": {
+            "post": {
+                "tags": [
+                    "v1",
+                    "v1"
+                ],
+                "summary": "Issue token from token.",
+                "description": "Issue token by an authenticated token.Requires scope 'read:token'",
+                "operationId": "post_token_api_v1_token_new__post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TokenRequestPayload"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PostTokenResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "OAuth2PasswordBearer": [
+                            "write:token"
+                        ]
+                    }
+                ]
+            }
         }
     },
     "components": {
         "schemas": {
+            "Body_post_api_v1_token__post": {
+                "title": "Body_post_api_v1_token__post",
+                "required": [
+                    "username",
+                    "password"
+                ],
+                "type": "object",
+                "properties": {
+                    "username": {
+                        "title": "Username",
+                        "type": "string"
+                    },
+                    "password": {
+                        "title": "Password",
+                        "type": "string"
+                    },
+                    "scope": {
+                        "title": "Scope",
+                        "type": "string",
+                        "description": "Add scopes separeted by space. Default user scopes. Users might not have all scopes. Available scopes: read:bootstrap read:settings read:targets read:token write:bootstrap write:targets write:token",
+                        "default": ""
+                    },
+                    "expires": {
+                        "title": "Expires",
+                        "type": "integer",
+                        "description": "Expiration in hours. Default: 1 hour",
+                        "default": 1
+                    }
+                }
+            },
+            "BootstrapGetResponse": {
+                "title": "BootstrapGetResponse",
+                "type": "object",
+                "properties": {
+                    "bootstrap": {
+                        "title": "Bootstrap",
+                        "type": "boolean"
+                    },
+                    "message": {
+                        "title": "Message",
+                        "type": "string"
+                    }
+                },
+                "example": {
+                    "bootstrap": false,
+                    "message": "System available for bootstrap."
+                }
+            },
             "BootstrapPayload": {
                 "title": "BootstrapPayload",
                 "required": [
@@ -85,11 +387,7 @@
                 "type": "object",
                 "properties": {
                     "settings": {
-                        "title": "Settings",
-                        "type": "object",
-                        "additionalProperties": {
-                            "$ref": "#/components/schemas/Settings"
-                        }
+                        "$ref": "#/components/schemas/Settings"
                     },
                     "metadata": {
                         "title": "Metadata",
@@ -101,142 +399,223 @@
                 },
                 "example": {
                     "settings": {
-                        "root": {
-                            "expiration": 356,
-                            "num_of_keys": 2,
-                            "threshold": 1,
-                            "keys": {},
-                            "offline_keys": true
+                        "service": {
+                            "targets_base_url": "http://www.example.com/repository/"
                         },
-                        "targets": {
-                            "expiration": 365,
-                            "num_of_keys": 2,
-                            "threshold": 1,
-                            "keys": {},
-                            "offline_keys": true,
-                            "paths": [
-                                "*",
-                                "*/*"
-                            ]
-                        },
-                        "snapshot": {
-                            "expiration": 1,
-                            "num_of_keys": 1,
-                            "threshold": 1,
-                            "keys": {
-                                "snapshot_1": {
-                                    "filename": "snapshot1.key",
-                                    "password": "strongPass",
-                                    "key": {
-                                        "keytype": "ed25519",
-                                        "scheme": "ed25519",
-                                        "keyid": "139c406ac6150598fb9f7cafd1463bc07e03183541bd55208559c4c08633554e",
-                                        "keyid_hash_algorithms": [
-                                            "sha256",
-                                            "sha512"
-                                        ],
-                                        "keyval": {
-                                            "public": "04b07d3935f9756e1739f33fe38d36ab9ce00492bc80b3482a6d5322f488f5e0",
-                                            "private": "9eafbd1c3cf5a0cb34614029df51f58393ad27c4c5813f1971fc0448d1815271"
+                        "roles": {
+                            "root": {
+                                "expiration": 356,
+                                "num_of_keys": 2,
+                                "threshold": 1,
+                                "keys": {},
+                                "offline_keys": true
+                            },
+                            "targets": {
+                                "expiration": 365,
+                                "num_of_keys": 2,
+                                "threshold": 1,
+                                "keys": {},
+                                "offline_keys": true,
+                                "paths": [
+                                    "*",
+                                    "*/*"
+                                ]
+                            },
+                            "snapshot": {
+                                "expiration": 1,
+                                "num_of_keys": 1,
+                                "threshold": 1,
+                                "keys": {
+                                    "snapshot_1": {
+                                        "filename": "snapshot1.key",
+                                        "password": "strongPass",
+                                        "key": {
+                                            "keytype": "ed25519",
+                                            "scheme": "ed25519",
+                                            "keyid": "282b4be91d94eb633740a7536772e8dd3228980252c978319acb6857764a645c",
+                                            "keyid_hash_algorithms": [
+                                                "sha256",
+                                                "sha512"
+                                            ],
+                                            "keyval": {
+                                                "public": "8112c6b8b350e155db925ee0fad8931635039f82e1fb1a75d42cb546426e4681",
+                                                "private": "637bb52eba4c4c3ba1e6860665a477a3d640b71ad794b886f77705ee25e8e17e"
+                                            }
                                         }
                                     }
-                                }
+                                },
+                                "offline_keys": false
                             },
-                            "offline_keys": false
-                        },
-                        "timestamp": {
-                            "expiration": 1,
-                            "num_of_keys": 1,
-                            "threshold": 1,
-                            "keys": {
-                                "timestamp_1": {
-                                    "filename": "timestamp1.key",
-                                    "password": "strongPass",
-                                    "key": {
-                                        "keytype": "ed25519",
-                                        "scheme": "ed25519",
-                                        "keyid": "19f5992640ab71f49fb64d5b5d198ee0115c3e7879861fb7114819a41a3b2c9b",
-                                        "keyid_hash_algorithms": [
-                                            "sha256",
-                                            "sha512"
-                                        ],
-                                        "keyval": {
-                                            "public": "5c7074da53333957bfbb78a35944fcac61b0e63f0d3398370510d9cc5e0b3e59",
-                                            "private": "d93b48b3ca04be28ebcc9fa7fc682683c08c1e428c2faf8bcb5f386ced63982d"
+                            "timestamp": {
+                                "expiration": 1,
+                                "num_of_keys": 1,
+                                "threshold": 1,
+                                "keys": {
+                                    "timestamp_1": {
+                                        "filename": "timestamp1.key",
+                                        "password": "strongPass",
+                                        "key": {
+                                            "keytype": "ed25519",
+                                            "scheme": "ed25519",
+                                            "keyid": "6e3bea1c56cca6cf2154443e31ff8d8181ab19a394633017bb9eb4aea3903258",
+                                            "keyid_hash_algorithms": [
+                                                "sha256",
+                                                "sha512"
+                                            ],
+                                            "keyval": {
+                                                "public": "2480d2e348d5df371ea569be9ef7365864f6f713b8f906f47f1f514025784fb6",
+                                                "private": "802ebe69b0e0ed1f18466c0c95aa900fb95f0afbff02547f344e913e9b980e54"
+                                            }
                                         }
                                     }
-                                }
+                                },
+                                "offline_keys": false
                             },
-                            "offline_keys": false
-                        },
-                        "bin": {
-                            "expiration": 365,
-                            "num_of_keys": 1,
-                            "threshold": 1,
-                            "keys": {},
-                            "offline_keys": true
-                        },
-                        "bins": {
-                            "expiration": 1,
-                            "num_of_keys": 1,
-                            "threshold": 1,
-                            "keys": {
-                                "bins_1": {
-                                    "filename": "bins1.key",
-                                    "password": "strongPass",
-                                    "key": {
-                                        "keytype": "ed25519",
-                                        "scheme": "ed25519",
-                                        "keyid": "9b2a880bd470e8373e24efb0dc54df3909e180e44582785b0f48d6a196ddc055",
-                                        "keyid_hash_algorithms": [
-                                            "sha256",
-                                            "sha512"
-                                        ],
-                                        "keyval": {
-                                            "public": "bd119f5d9bff4c935e57c971b45abd207cdbb95fb28a67aed6bf9d31964032c2",
-                                            "private": "6abb44dd78118fcfcb44aa75ef7a8d61f66cfb7656b281711c940d7a09f5b539"
+                            "bin": {
+                                "expiration": 365,
+                                "num_of_keys": 1,
+                                "threshold": 1,
+                                "keys": {},
+                                "offline_keys": true
+                            },
+                            "bins": {
+                                "expiration": 1,
+                                "num_of_keys": 1,
+                                "threshold": 1,
+                                "keys": {
+                                    "bins_1": {
+                                        "filename": "bins1.key",
+                                        "password": "strongPass",
+                                        "key": {
+                                            "keytype": "ed25519",
+                                            "scheme": "ed25519",
+                                            "keyid": "3c9e9cebf5fa18b7cd58d2d5427f041cf08ce889a68654efde28ea38641f5b5d",
+                                            "keyid_hash_algorithms": [
+                                                "sha256",
+                                                "sha512"
+                                            ],
+                                            "keyval": {
+                                                "public": "9ed73acff98d521b0852dffcb8e78f01173ca7c7d839e5468be64e7c4c0f97f3",
+                                                "private": "1af3820446daf377298cf050edd5732f55e39af031d64e1013a01b26ec3b89b5"
+                                            }
                                         }
                                     }
-                                }
-                            },
-                            "offline_keys": false,
-                            "number_hash_prefixes": 8
+                                },
+                                "offline_keys": false,
+                                "number_hash_prefixes": 4
+                            }
                         }
                     },
                     "metadata": {
-                        "targets": {
+                        "1.targets": {
                             "signatures": [
                                 {
-                                    "keyid": "208fc4139cf7482abbe84f837091f304c8a948aafee911470e2b5dcbf989874a",
-                                    "sig": "f917d811afe02c411c391e46e7cfa588c7185b6df927673ce647871ce1f13aefdeb484b4aab437cdab30c15c68d31ed94be845d68989a2be7421549693fe7905"
+                                    "keyid": "2ae0c9035e5e89f61e95dd922a0f6ee8d92a2629cef649886e278f8a757d7610",
+                                    "sig": "db96c06ac92ba0c70df3a6b7be3ae1b1d3a40060fc85c88cd0ccaca4dac8cff4a81a9c3bf6bc0a1d30d992d684651d552e8afa2ebedd037b42d862a758ea1b0e"
                                 },
                                 {
-                                    "keyid": "c2e9ee4a292e5d08bc0d3adaad5dce0235321cde04e9ff4e5f232d494b4bb4af",
-                                    "sig": "5799e6718631e92e07782ad18d63e2fb04aa6a455f0c8d44d59391c39323395d5fafa557af49a0202b38ce62693597347f8755677999428d8a605fbb3bca6d09"
+                                    "keyid": "777a9b799d80eeb4985abe79faf39ebe67620d59c20ef5a79fc1232ccd911661",
+                                    "sig": "1c5533089445f118ebe22673520c4aa4a5a4868e15c0f28d5c4dd67f3b8237d72b7a16aa1af5be551b2b2026395d2d7a65e40214e7a00fa824f12b15f181c10d"
                                 }
                             ],
                             "signed": {
                                 "_type": "targets",
-                                "version": 1,
-                                "spec_version": "1.0.29",
-                                "expires": "2023-06-29T11:39:45Z",
-                                "targets": {}
+                                "version": 2,
+                                "spec_version": "1.0.30",
+                                "expires": "2023-08-15T17:14:37Z",
+                                "targets": {},
+                                "delegations": {
+                                    "keys": {
+                                        "c224661b5259d6bf30b03fa1f32fc92769eea0f410a7be59028d4bc1cb0712cf": {
+                                            "keytype": "ed25519",
+                                            "scheme": "ed25519",
+                                            "keyval": {
+                                                "public": "47257613c31f1bc49ac27be3d588d886c263d2c78efea4c4cea4ef923dcb2b19"
+                                            }
+                                        }
+                                    },
+                                    "roles": [
+                                        {
+                                            "name": "bin",
+                                            "terminating": false,
+                                            "keyids": [
+                                                "c224661b5259d6bf30b03fa1f32fc92769eea0f410a7be59028d4bc1cb0712cf"
+                                            ],
+                                            "threshold": 1,
+                                            "paths": [
+                                                "*/*",
+                                                "*/*/*/*"
+                                            ]
+                                        }
+                                    ]
+                                }
                             }
                         },
-                        "snapshot": {
+                        "1.snapshot": {
                             "signatures": [
                                 {
-                                    "keyid": "139c406ac6150598fb9f7cafd1463bc07e03183541bd55208559c4c08633554e",
-                                    "sig": "f38624074aadadc7b8edbc958ed6d45d14bc795f22d65527857876a8ae7be262fda97a03926b01ceceb27ef6ac910c7b83518eb0bb1603a4142139f4332f8301"
+                                    "keyid": "282b4be91d94eb633740a7536772e8dd3228980252c978319acb6857764a645c",
+                                    "sig": "e8fc13cb7a6170e90827cc614fd74f830ca3e6713534ba709eb15d1d90cf625576595d00e7c7031e32536144e43018f30aed72c7ad2394bcd47c27f341944b0d"
                                 }
                             ],
                             "signed": {
                                 "_type": "snapshot",
-                                "version": 1,
-                                "spec_version": "1.0.29",
-                                "expires": "2022-06-30T11:39:45Z",
+                                "version": 2,
+                                "spec_version": "1.0.30",
+                                "expires": "2022-08-16T17:14:54Z",
                                 "meta": {
                                     "targets.json": {
+                                        "version": 2
+                                    },
+                                    "bins-0.json": {
+                                        "version": 1
+                                    },
+                                    "bins-1.json": {
+                                        "version": 1
+                                    },
+                                    "bins-2.json": {
+                                        "version": 1
+                                    },
+                                    "bins-3.json": {
+                                        "version": 1
+                                    },
+                                    "bins-4.json": {
+                                        "version": 1
+                                    },
+                                    "bins-5.json": {
+                                        "version": 1
+                                    },
+                                    "bins-6.json": {
+                                        "version": 1
+                                    },
+                                    "bins-7.json": {
+                                        "version": 1
+                                    },
+                                    "bins-8.json": {
+                                        "version": 1
+                                    },
+                                    "bins-9.json": {
+                                        "version": 1
+                                    },
+                                    "bins-a.json": {
+                                        "version": 1
+                                    },
+                                    "bins-b.json": {
+                                        "version": 1
+                                    },
+                                    "bins-c.json": {
+                                        "version": 1
+                                    },
+                                    "bins-d.json": {
+                                        "version": 1
+                                    },
+                                    "bins-e.json": {
+                                        "version": 1
+                                    },
+                                    "bins-f.json": {
+                                        "version": 1
+                                    },
+                                    "bin.json": {
                                         "version": 1
                                     }
                                 }
@@ -245,107 +624,107 @@
                         "timestamp": {
                             "signatures": [
                                 {
-                                    "keyid": "19f5992640ab71f49fb64d5b5d198ee0115c3e7879861fb7114819a41a3b2c9b",
-                                    "sig": "54c0ada10e970740d2f52f7ae472ef593d08309a8fc3dd52a7c9ada12b2dd951e6299f20069178022249012fbe16d90e51f5e0ec1b99bbffab4b69f1d0f03903"
+                                    "keyid": "6e3bea1c56cca6cf2154443e31ff8d8181ab19a394633017bb9eb4aea3903258",
+                                    "sig": "964de9be0d382f9fad443846dc85bd397bc220e5f275c6e76fe3a79652f56e0e3a805c03b542317cfdaafdbac55e79927e1913a220a21bbc57ec5ec55bcda10b"
                                 }
                             ],
                             "signed": {
                                 "_type": "timestamp",
-                                "version": 1,
-                                "spec_version": "1.0.29",
-                                "expires": "2022-06-30T11:39:45Z",
+                                "version": 2,
+                                "spec_version": "1.0.30",
+                                "expires": "2022-08-16T17:14:54Z",
                                 "meta": {
                                     "snapshot.json": {
-                                        "version": 1
+                                        "version": 2
                                     }
                                 }
                             }
                         },
-                        "root": {
+                        "1.root": {
                             "signatures": [
                                 {
-                                    "keyid": "800dfb5a1982b82b7893e58035e19f414f553fc08cbb1130cfbae302a7b7fee5",
-                                    "sig": "2f83afd1d0a43d076cbd904e9eccfe4cf59f47ac38ceb896516a862440904c1ee41f0e450fc6b681b4f9a9a58b4619aebde3a5e241f836a31a598e5a383d3f0b"
+                                    "keyid": "b4ef64e350c358eceeffa380427fa29632bb2565db2d5c3ffbdb2b83eecb3163",
+                                    "sig": "08f1f4ecaa06fa3fa621447da13c1f0f510f82916015638cb4bfc81a402016c5414f8bf230a7d76e6e7d8f65bbacaf56cd72bd43126c35f3936e9c14cdde1c02"
                                 },
                                 {
-                                    "keyid": "1cebe343e35f0213f6136758e6c3a8f8e1f9eeb7e47a07d5cb336462ed31dcb7",
-                                    "sig": "260bf798137d9b2fd26a6b22fd78e70be03d4edb06d68a521cf5127f004885f65cae700b64e6d1292021980f461e240fd63a321d8656fd43774b6690ca22d90f"
+                                    "keyid": "4b476f153f6bfd5d454688048f5e699556eba2b9dd42bdfebc9f01d772eea967",
+                                    "sig": "199d313c2f239803ba415ef31d30c388215afa14077aff0ba3260156d0af6c4c1e3c6c0d1fd625ceddac127d5cd6b4c742d13a59f80f7498a486d2f0d067f807"
                                 }
                             ],
                             "signed": {
                                 "_type": "root",
                                 "version": 1,
-                                "spec_version": "1.0.29",
-                                "expires": "2023-06-20T11:39:45Z",
+                                "spec_version": "1.0.30",
+                                "expires": "2023-08-06T17:14:37Z",
                                 "consistent_snapshot": true,
                                 "keys": {
-                                    "139c406ac6150598fb9f7cafd1463bc07e03183541bd55208559c4c08633554e": {
+                                    "6e3bea1c56cca6cf2154443e31ff8d8181ab19a394633017bb9eb4aea3903258": {
                                         "keytype": "ed25519",
                                         "scheme": "ed25519",
                                         "keyval": {
-                                            "public": "04b07d3935f9756e1739f33fe38d36ab9ce00492bc80b3482a6d5322f488f5e0"
+                                            "public": "2480d2e348d5df371ea569be9ef7365864f6f713b8f906f47f1f514025784fb6"
                                         }
                                     },
-                                    "208fc4139cf7482abbe84f837091f304c8a948aafee911470e2b5dcbf989874a": {
+                                    "2ae0c9035e5e89f61e95dd922a0f6ee8d92a2629cef649886e278f8a757d7610": {
                                         "keytype": "ed25519",
                                         "scheme": "ed25519",
                                         "keyval": {
-                                            "public": "e853b701555842fcf599fef677e0516e3b45ee6ffd3a5b6b23b5113e66a81f59"
+                                            "public": "d6c86a414e3e94d9cf4080bf44bf3d1b5894c219cf315c607ca8a95b8cd3f94a"
                                         }
                                     },
-                                    "c2e9ee4a292e5d08bc0d3adaad5dce0235321cde04e9ff4e5f232d494b4bb4af": {
+                                    "777a9b799d80eeb4985abe79faf39ebe67620d59c20ef5a79fc1232ccd911661": {
                                         "keytype": "ed25519",
                                         "scheme": "ed25519",
                                         "keyval": {
-                                            "public": "609d88b5348c24327872f1913b4423221e60070420a53d1a6f44de7037190301"
+                                            "public": "84db0aaaea9532ed6e9f6b64d1be111ca720636b71bed685ebd5f6314d089218"
                                         }
                                     },
-                                    "800dfb5a1982b82b7893e58035e19f414f553fc08cbb1130cfbae302a7b7fee5": {
+                                    "b4ef64e350c358eceeffa380427fa29632bb2565db2d5c3ffbdb2b83eecb3163": {
                                         "keytype": "ed25519",
                                         "scheme": "ed25519",
                                         "keyval": {
-                                            "public": "7098f769f6ab8502b50f3b58686b8a042d5d3bb75d8b3a48a2fcbc15a0223501"
+                                            "public": "4450892c1732be8820e5e969ccc9a90be0d186107e2a95725ee2e43e02558fcd"
                                         }
                                     },
-                                    "1cebe343e35f0213f6136758e6c3a8f8e1f9eeb7e47a07d5cb336462ed31dcb7": {
+                                    "4b476f153f6bfd5d454688048f5e699556eba2b9dd42bdfebc9f01d772eea967": {
                                         "keytype": "ed25519",
                                         "scheme": "ed25519",
                                         "keyval": {
-                                            "public": "ad1709b3cb419b99c5cd7427d6411522e5a93aec6767453e91af921a73d22a3c"
+                                            "public": "5922e84d7a9c88b379647957307fd3613a3901d7425837b9da27c3fb6308c75e"
                                         }
                                     },
-                                    "19f5992640ab71f49fb64d5b5d198ee0115c3e7879861fb7114819a41a3b2c9b": {
+                                    "282b4be91d94eb633740a7536772e8dd3228980252c978319acb6857764a645c": {
                                         "keytype": "ed25519",
                                         "scheme": "ed25519",
                                         "keyval": {
-                                            "public": "5c7074da53333957bfbb78a35944fcac61b0e63f0d3398370510d9cc5e0b3e59"
+                                            "public": "8112c6b8b350e155db925ee0fad8931635039f82e1fb1a75d42cb546426e4681"
                                         }
                                     }
                                 },
                                 "roles": {
-                                    "snapshot": {
+                                    "timestamp": {
                                         "keyids": [
-                                            "139c406ac6150598fb9f7cafd1463bc07e03183541bd55208559c4c08633554e"
+                                            "6e3bea1c56cca6cf2154443e31ff8d8181ab19a394633017bb9eb4aea3903258"
                                         ],
                                         "threshold": 1
                                     },
                                     "targets": {
                                         "keyids": [
-                                            "208fc4139cf7482abbe84f837091f304c8a948aafee911470e2b5dcbf989874a",
-                                            "c2e9ee4a292e5d08bc0d3adaad5dce0235321cde04e9ff4e5f232d494b4bb4af"
+                                            "2ae0c9035e5e89f61e95dd922a0f6ee8d92a2629cef649886e278f8a757d7610",
+                                            "777a9b799d80eeb4985abe79faf39ebe67620d59c20ef5a79fc1232ccd911661"
                                         ],
                                         "threshold": 1
                                     },
                                     "root": {
                                         "keyids": [
-                                            "800dfb5a1982b82b7893e58035e19f414f553fc08cbb1130cfbae302a7b7fee5",
-                                            "1cebe343e35f0213f6136758e6c3a8f8e1f9eeb7e47a07d5cb336462ed31dcb7"
+                                            "b4ef64e350c358eceeffa380427fa29632bb2565db2d5c3ffbdb2b83eecb3163",
+                                            "4b476f153f6bfd5d454688048f5e699556eba2b9dd42bdfebc9f01d772eea967"
                                         ],
                                         "threshold": 1
                                     },
-                                    "timestamp": {
+                                    "snapshot": {
                                         "keyids": [
-                                            "19f5992640ab71f49fb64d5b5d198ee0115c3e7879861fb7114819a41a3b2c9b"
+                                            "282b4be91d94eb633740a7536772e8dd3228980252c978319acb6857764a645c"
                                         ],
                                         "threshold": 1
                                     }
@@ -355,27 +734,27 @@
                         "2.targets": {
                             "signatures": [
                                 {
-                                    "keyid": "208fc4139cf7482abbe84f837091f304c8a948aafee911470e2b5dcbf989874a",
-                                    "sig": "f14f643355ec8955749611d33cbb7b2360b253f74e8199c8c57877ba11f5f6951c5f83b140722ae0c5f0dcf037e35668f9af518ab5eb712420c65aee644caf0c"
+                                    "keyid": "2ae0c9035e5e89f61e95dd922a0f6ee8d92a2629cef649886e278f8a757d7610",
+                                    "sig": "db96c06ac92ba0c70df3a6b7be3ae1b1d3a40060fc85c88cd0ccaca4dac8cff4a81a9c3bf6bc0a1d30d992d684651d552e8afa2ebedd037b42d862a758ea1b0e"
                                 },
                                 {
-                                    "keyid": "c2e9ee4a292e5d08bc0d3adaad5dce0235321cde04e9ff4e5f232d494b4bb4af",
-                                    "sig": "584a3e219d31890c7e0238c0ab6ef41c77427379e4dd5a532bfbcc8fe8fd63bf079f25b13048f01d54eb08a3a40fcb78a0a325a61bdc2c600660c65aa48efb03"
+                                    "keyid": "777a9b799d80eeb4985abe79faf39ebe67620d59c20ef5a79fc1232ccd911661",
+                                    "sig": "1c5533089445f118ebe22673520c4aa4a5a4868e15c0f28d5c4dd67f3b8237d72b7a16aa1af5be551b2b2026395d2d7a65e40214e7a00fa824f12b15f181c10d"
                                 }
                             ],
                             "signed": {
                                 "_type": "targets",
                                 "version": 2,
-                                "spec_version": "1.0.29",
-                                "expires": "2023-06-29T11:39:45Z",
+                                "spec_version": "1.0.30",
+                                "expires": "2023-08-15T17:14:37Z",
                                 "targets": {},
                                 "delegations": {
                                     "keys": {
-                                        "be95ae808ff4f17e248470c941700247d8c7f34f101633a696ee523024790907": {
+                                        "c224661b5259d6bf30b03fa1f32fc92769eea0f410a7be59028d4bc1cb0712cf": {
                                             "keytype": "ed25519",
                                             "scheme": "ed25519",
                                             "keyval": {
-                                                "public": "441e6d545efc8bd67da3643148a107a924a533caff4e39d960482c755c453dfe"
+                                                "public": "47257613c31f1bc49ac27be3d588d886c263d2c78efea4c4cea4ef923dcb2b19"
                                             }
                                         }
                                     },
@@ -384,358 +763,372 @@
                                             "name": "bin",
                                             "terminating": false,
                                             "keyids": [
-                                                "be95ae808ff4f17e248470c941700247d8c7f34f101633a696ee523024790907"
+                                                "c224661b5259d6bf30b03fa1f32fc92769eea0f410a7be59028d4bc1cb0712cf"
                                             ],
                                             "threshold": 1,
                                             "paths": [
-                                                "*",
-                                                "*/*"
+                                                "*/*",
+                                                "*/*/*/*"
                                             ]
                                         }
                                     ]
+                                }
+                            }
+                        },
+                        "1.bins-0": {
+                            "signatures": [
+                                {
+                                    "keyid": "3c9e9cebf5fa18b7cd58d2d5427f041cf08ce889a68654efde28ea38641f5b5d",
+                                    "sig": "0be5f3dccd25e36ed19852a25eb7d32e66a33722a4c8ac66d96e5842da392515013475be942c3c12fa7a113bbbe0d288a65978a723909b83c7b1b036ef923202"
+                                }
+                            ],
+                            "signed": {
+                                "_type": "targets",
+                                "version": 1,
+                                "spec_version": "1.0.30",
+                                "expires": "2022-08-16T17:14:37Z",
+                                "targets": {}
+                            }
+                        },
+                        "1.bins-1": {
+                            "signatures": [
+                                {
+                                    "keyid": "3c9e9cebf5fa18b7cd58d2d5427f041cf08ce889a68654efde28ea38641f5b5d",
+                                    "sig": "0be5f3dccd25e36ed19852a25eb7d32e66a33722a4c8ac66d96e5842da392515013475be942c3c12fa7a113bbbe0d288a65978a723909b83c7b1b036ef923202"
+                                }
+                            ],
+                            "signed": {
+                                "_type": "targets",
+                                "version": 1,
+                                "spec_version": "1.0.30",
+                                "expires": "2022-08-16T17:14:37Z",
+                                "targets": {}
+                            }
+                        },
+                        "1.bins-2": {
+                            "signatures": [
+                                {
+                                    "keyid": "3c9e9cebf5fa18b7cd58d2d5427f041cf08ce889a68654efde28ea38641f5b5d",
+                                    "sig": "0be5f3dccd25e36ed19852a25eb7d32e66a33722a4c8ac66d96e5842da392515013475be942c3c12fa7a113bbbe0d288a65978a723909b83c7b1b036ef923202"
+                                }
+                            ],
+                            "signed": {
+                                "_type": "targets",
+                                "version": 1,
+                                "spec_version": "1.0.30",
+                                "expires": "2022-08-16T17:14:37Z",
+                                "targets": {}
+                            }
+                        },
+                        "1.bins-3": {
+                            "signatures": [
+                                {
+                                    "keyid": "3c9e9cebf5fa18b7cd58d2d5427f041cf08ce889a68654efde28ea38641f5b5d",
+                                    "sig": "0be5f3dccd25e36ed19852a25eb7d32e66a33722a4c8ac66d96e5842da392515013475be942c3c12fa7a113bbbe0d288a65978a723909b83c7b1b036ef923202"
+                                }
+                            ],
+                            "signed": {
+                                "_type": "targets",
+                                "version": 1,
+                                "spec_version": "1.0.30",
+                                "expires": "2022-08-16T17:14:37Z",
+                                "targets": {}
+                            }
+                        },
+                        "1.bins-4": {
+                            "signatures": [
+                                {
+                                    "keyid": "3c9e9cebf5fa18b7cd58d2d5427f041cf08ce889a68654efde28ea38641f5b5d",
+                                    "sig": "0be5f3dccd25e36ed19852a25eb7d32e66a33722a4c8ac66d96e5842da392515013475be942c3c12fa7a113bbbe0d288a65978a723909b83c7b1b036ef923202"
+                                }
+                            ],
+                            "signed": {
+                                "_type": "targets",
+                                "version": 1,
+                                "spec_version": "1.0.30",
+                                "expires": "2022-08-16T17:14:37Z",
+                                "targets": {}
+                            }
+                        },
+                        "1.bins-5": {
+                            "signatures": [
+                                {
+                                    "keyid": "3c9e9cebf5fa18b7cd58d2d5427f041cf08ce889a68654efde28ea38641f5b5d",
+                                    "sig": "0be5f3dccd25e36ed19852a25eb7d32e66a33722a4c8ac66d96e5842da392515013475be942c3c12fa7a113bbbe0d288a65978a723909b83c7b1b036ef923202"
+                                }
+                            ],
+                            "signed": {
+                                "_type": "targets",
+                                "version": 1,
+                                "spec_version": "1.0.30",
+                                "expires": "2022-08-16T17:14:37Z",
+                                "targets": {}
+                            }
+                        },
+                        "1.bins-6": {
+                            "signatures": [
+                                {
+                                    "keyid": "3c9e9cebf5fa18b7cd58d2d5427f041cf08ce889a68654efde28ea38641f5b5d",
+                                    "sig": "0be5f3dccd25e36ed19852a25eb7d32e66a33722a4c8ac66d96e5842da392515013475be942c3c12fa7a113bbbe0d288a65978a723909b83c7b1b036ef923202"
+                                }
+                            ],
+                            "signed": {
+                                "_type": "targets",
+                                "version": 1,
+                                "spec_version": "1.0.30",
+                                "expires": "2022-08-16T17:14:37Z",
+                                "targets": {}
+                            }
+                        },
+                        "1.bins-7": {
+                            "signatures": [
+                                {
+                                    "keyid": "3c9e9cebf5fa18b7cd58d2d5427f041cf08ce889a68654efde28ea38641f5b5d",
+                                    "sig": "0be5f3dccd25e36ed19852a25eb7d32e66a33722a4c8ac66d96e5842da392515013475be942c3c12fa7a113bbbe0d288a65978a723909b83c7b1b036ef923202"
+                                }
+                            ],
+                            "signed": {
+                                "_type": "targets",
+                                "version": 1,
+                                "spec_version": "1.0.30",
+                                "expires": "2022-08-16T17:14:37Z",
+                                "targets": {}
+                            }
+                        },
+                        "1.bins-8": {
+                            "signatures": [
+                                {
+                                    "keyid": "3c9e9cebf5fa18b7cd58d2d5427f041cf08ce889a68654efde28ea38641f5b5d",
+                                    "sig": "0be5f3dccd25e36ed19852a25eb7d32e66a33722a4c8ac66d96e5842da392515013475be942c3c12fa7a113bbbe0d288a65978a723909b83c7b1b036ef923202"
+                                }
+                            ],
+                            "signed": {
+                                "_type": "targets",
+                                "version": 1,
+                                "spec_version": "1.0.30",
+                                "expires": "2022-08-16T17:14:37Z",
+                                "targets": {}
+                            }
+                        },
+                        "1.bins-9": {
+                            "signatures": [
+                                {
+                                    "keyid": "3c9e9cebf5fa18b7cd58d2d5427f041cf08ce889a68654efde28ea38641f5b5d",
+                                    "sig": "0be5f3dccd25e36ed19852a25eb7d32e66a33722a4c8ac66d96e5842da392515013475be942c3c12fa7a113bbbe0d288a65978a723909b83c7b1b036ef923202"
+                                }
+                            ],
+                            "signed": {
+                                "_type": "targets",
+                                "version": 1,
+                                "spec_version": "1.0.30",
+                                "expires": "2022-08-16T17:14:37Z",
+                                "targets": {}
+                            }
+                        },
+                        "1.bins-a": {
+                            "signatures": [
+                                {
+                                    "keyid": "3c9e9cebf5fa18b7cd58d2d5427f041cf08ce889a68654efde28ea38641f5b5d",
+                                    "sig": "0be5f3dccd25e36ed19852a25eb7d32e66a33722a4c8ac66d96e5842da392515013475be942c3c12fa7a113bbbe0d288a65978a723909b83c7b1b036ef923202"
+                                }
+                            ],
+                            "signed": {
+                                "_type": "targets",
+                                "version": 1,
+                                "spec_version": "1.0.30",
+                                "expires": "2022-08-16T17:14:37Z",
+                                "targets": {}
+                            }
+                        },
+                        "1.bins-b": {
+                            "signatures": [
+                                {
+                                    "keyid": "3c9e9cebf5fa18b7cd58d2d5427f041cf08ce889a68654efde28ea38641f5b5d",
+                                    "sig": "0be5f3dccd25e36ed19852a25eb7d32e66a33722a4c8ac66d96e5842da392515013475be942c3c12fa7a113bbbe0d288a65978a723909b83c7b1b036ef923202"
+                                }
+                            ],
+                            "signed": {
+                                "_type": "targets",
+                                "version": 1,
+                                "spec_version": "1.0.30",
+                                "expires": "2022-08-16T17:14:37Z",
+                                "targets": {}
+                            }
+                        },
+                        "1.bins-c": {
+                            "signatures": [
+                                {
+                                    "keyid": "3c9e9cebf5fa18b7cd58d2d5427f041cf08ce889a68654efde28ea38641f5b5d",
+                                    "sig": "0be5f3dccd25e36ed19852a25eb7d32e66a33722a4c8ac66d96e5842da392515013475be942c3c12fa7a113bbbe0d288a65978a723909b83c7b1b036ef923202"
+                                }
+                            ],
+                            "signed": {
+                                "_type": "targets",
+                                "version": 1,
+                                "spec_version": "1.0.30",
+                                "expires": "2022-08-16T17:14:37Z",
+                                "targets": {}
+                            }
+                        },
+                        "1.bins-d": {
+                            "signatures": [
+                                {
+                                    "keyid": "3c9e9cebf5fa18b7cd58d2d5427f041cf08ce889a68654efde28ea38641f5b5d",
+                                    "sig": "0be5f3dccd25e36ed19852a25eb7d32e66a33722a4c8ac66d96e5842da392515013475be942c3c12fa7a113bbbe0d288a65978a723909b83c7b1b036ef923202"
+                                }
+                            ],
+                            "signed": {
+                                "_type": "targets",
+                                "version": 1,
+                                "spec_version": "1.0.30",
+                                "expires": "2022-08-16T17:14:37Z",
+                                "targets": {}
+                            }
+                        },
+                        "1.bins-e": {
+                            "signatures": [
+                                {
+                                    "keyid": "3c9e9cebf5fa18b7cd58d2d5427f041cf08ce889a68654efde28ea38641f5b5d",
+                                    "sig": "0be5f3dccd25e36ed19852a25eb7d32e66a33722a4c8ac66d96e5842da392515013475be942c3c12fa7a113bbbe0d288a65978a723909b83c7b1b036ef923202"
+                                }
+                            ],
+                            "signed": {
+                                "_type": "targets",
+                                "version": 1,
+                                "spec_version": "1.0.30",
+                                "expires": "2022-08-16T17:14:37Z",
+                                "targets": {}
+                            }
+                        },
+                        "1.bins-f": {
+                            "signatures": [
+                                {
+                                    "keyid": "3c9e9cebf5fa18b7cd58d2d5427f041cf08ce889a68654efde28ea38641f5b5d",
+                                    "sig": "0be5f3dccd25e36ed19852a25eb7d32e66a33722a4c8ac66d96e5842da392515013475be942c3c12fa7a113bbbe0d288a65978a723909b83c7b1b036ef923202"
+                                }
+                            ],
+                            "signed": {
+                                "_type": "targets",
+                                "version": 1,
+                                "spec_version": "1.0.30",
+                                "expires": "2022-08-16T17:14:37Z",
+                                "targets": {}
+                            }
+                        },
+                        "1.bin": {
+                            "signatures": [
+                                {
+                                    "keyid": "c224661b5259d6bf30b03fa1f32fc92769eea0f410a7be59028d4bc1cb0712cf",
+                                    "sig": "35ab9552e35628332bcde5778a62cdf267b60b2ea077c1080df4967b74fa025cba4374dfcf6a3407a60e6e6c8cd5646706f3c25af725a430f171cf594f59d104"
+                                }
+                            ],
+                            "signed": {
+                                "_type": "targets",
+                                "version": 1,
+                                "spec_version": "1.0.30",
+                                "expires": "2023-08-15T17:14:37Z",
+                                "targets": {},
+                                "delegations": {
+                                    "keys": {
+                                        "3c9e9cebf5fa18b7cd58d2d5427f041cf08ce889a68654efde28ea38641f5b5d": {
+                                            "keytype": "ed25519",
+                                            "scheme": "ed25519",
+                                            "keyval": {
+                                                "public": "9ed73acff98d521b0852dffcb8e78f01173ca7c7d839e5468be64e7c4c0f97f3"
+                                            }
+                                        }
+                                    },
+                                    "succinct_roles": {
+                                        "bit_length": 4,
+                                        "name_prefix": "bins",
+                                        "keyids": [
+                                            "3c9e9cebf5fa18b7cd58d2d5427f041cf08ce889a68654efde28ea38641f5b5d"
+                                        ],
+                                        "threshold": 1
+                                    }
                                 }
                             }
                         },
                         "2.snapshot": {
                             "signatures": [
                                 {
-                                    "keyid": "139c406ac6150598fb9f7cafd1463bc07e03183541bd55208559c4c08633554e",
-                                    "sig": "5778be134e7e6a9c6cf66c8973fdbe9d1c76aec28aa922251288efaaaf153bef325efebecc1796cf9255eb91cd8667dcc1901d06a605df939d617f91b60d2003"
+                                    "keyid": "282b4be91d94eb633740a7536772e8dd3228980252c978319acb6857764a645c",
+                                    "sig": "e8fc13cb7a6170e90827cc614fd74f830ca3e6713534ba709eb15d1d90cf625576595d00e7c7031e32536144e43018f30aed72c7ad2394bcd47c27f341944b0d"
                                 }
                             ],
                             "signed": {
                                 "_type": "snapshot",
                                 "version": 2,
-                                "spec_version": "1.0.29",
-                                "expires": "2022-06-30T11:39:45Z",
+                                "spec_version": "1.0.30",
+                                "expires": "2022-08-16T17:14:54Z",
                                 "meta": {
                                     "targets.json": {
                                         "version": 2
+                                    },
+                                    "bins-0.json": {
+                                        "version": 1
+                                    },
+                                    "bins-1.json": {
+                                        "version": 1
+                                    },
+                                    "bins-2.json": {
+                                        "version": 1
+                                    },
+                                    "bins-3.json": {
+                                        "version": 1
+                                    },
+                                    "bins-4.json": {
+                                        "version": 1
+                                    },
+                                    "bins-5.json": {
+                                        "version": 1
+                                    },
+                                    "bins-6.json": {
+                                        "version": 1
+                                    },
+                                    "bins-7.json": {
+                                        "version": 1
+                                    },
+                                    "bins-8.json": {
+                                        "version": 1
+                                    },
+                                    "bins-9.json": {
+                                        "version": 1
+                                    },
+                                    "bins-a.json": {
+                                        "version": 1
+                                    },
+                                    "bins-b.json": {
+                                        "version": 1
+                                    },
+                                    "bins-c.json": {
+                                        "version": 1
+                                    },
+                                    "bins-d.json": {
+                                        "version": 1
+                                    },
+                                    "bins-e.json": {
+                                        "version": 1
+                                    },
+                                    "bins-f.json": {
+                                        "version": 1
                                     },
                                     "bin.json": {
                                         "version": 1
                                     }
                                 }
-                            }
-                        },
-                        "bin": {
-                            "signatures": [
-                                {
-                                    "keyid": "be95ae808ff4f17e248470c941700247d8c7f34f101633a696ee523024790907",
-                                    "sig": "47f40f91b6d6e5f32cf8aed6167e18a71e205c1e70eb7a17969f73992bb3ccb0382bc5b738f3c6387fcefb037e5a99f72c3426377406405f449ea04f42ebcf09"
-                                }
-                            ],
-                            "signed": {
-                                "_type": "targets",
-                                "version": 1,
-                                "spec_version": "1.0.29",
-                                "expires": "2023-06-29T11:39:45Z",
-                                "targets": {}
-                            }
-                        },
-                        "2.bin": {
-                            "signatures": [
-                                {
-                                    "keyid": "be95ae808ff4f17e248470c941700247d8c7f34f101633a696ee523024790907",
-                                    "sig": "ea401c765b13088c16ed6a10bb739ba24d67ea698f20b9b30a87e1d40b9df15b5f33d96ce1c6d5f3e7c0d8baa33c39b2a6fd2fba40d52c5ca804a8ddd1275907"
-                                }
-                            ],
-                            "signed": {
-                                "_type": "targets",
-                                "version": 2,
-                                "spec_version": "1.0.29",
-                                "expires": "2023-06-29T11:39:45Z",
-                                "targets": {},
-                                "delegations": {
-                                    "keys": {
-                                        "9b2a880bd470e8373e24efb0dc54df3909e180e44582785b0f48d6a196ddc055": {
-                                            "keytype": "ed25519",
-                                            "scheme": "ed25519",
-                                            "keyval": {
-                                                "public": "bd119f5d9bff4c935e57c971b45abd207cdbb95fb28a67aed6bf9d31964032c2"
-                                            }
-                                        }
-                                    },
-                                    "roles": [
-                                        {
-                                            "name": "0-1",
-                                            "terminating": false,
-                                            "keyids": [
-                                                "9b2a880bd470e8373e24efb0dc54df3909e180e44582785b0f48d6a196ddc055"
-                                            ],
-                                            "threshold": 1,
-                                            "path_hash_prefixes": [
-                                                "0",
-                                                "1"
-                                            ]
-                                        },
-                                        {
-                                            "name": "2-3",
-                                            "terminating": false,
-                                            "keyids": [
-                                                "9b2a880bd470e8373e24efb0dc54df3909e180e44582785b0f48d6a196ddc055"
-                                            ],
-                                            "threshold": 1,
-                                            "path_hash_prefixes": [
-                                                "2",
-                                                "3"
-                                            ]
-                                        },
-                                        {
-                                            "name": "4-5",
-                                            "terminating": false,
-                                            "keyids": [
-                                                "9b2a880bd470e8373e24efb0dc54df3909e180e44582785b0f48d6a196ddc055"
-                                            ],
-                                            "threshold": 1,
-                                            "path_hash_prefixes": [
-                                                "4",
-                                                "5"
-                                            ]
-                                        },
-                                        {
-                                            "name": "6-7",
-                                            "terminating": false,
-                                            "keyids": [
-                                                "9b2a880bd470e8373e24efb0dc54df3909e180e44582785b0f48d6a196ddc055"
-                                            ],
-                                            "threshold": 1,
-                                            "path_hash_prefixes": [
-                                                "6",
-                                                "7"
-                                            ]
-                                        },
-                                        {
-                                            "name": "8-9",
-                                            "terminating": false,
-                                            "keyids": [
-                                                "9b2a880bd470e8373e24efb0dc54df3909e180e44582785b0f48d6a196ddc055"
-                                            ],
-                                            "threshold": 1,
-                                            "path_hash_prefixes": [
-                                                "8",
-                                                "9"
-                                            ]
-                                        },
-                                        {
-                                            "name": "a-b",
-                                            "terminating": false,
-                                            "keyids": [
-                                                "9b2a880bd470e8373e24efb0dc54df3909e180e44582785b0f48d6a196ddc055"
-                                            ],
-                                            "threshold": 1,
-                                            "path_hash_prefixes": [
-                                                "a",
-                                                "b"
-                                            ]
-                                        },
-                                        {
-                                            "name": "c-d",
-                                            "terminating": false,
-                                            "keyids": [
-                                                "9b2a880bd470e8373e24efb0dc54df3909e180e44582785b0f48d6a196ddc055"
-                                            ],
-                                            "threshold": 1,
-                                            "path_hash_prefixes": [
-                                                "c",
-                                                "d"
-                                            ]
-                                        },
-                                        {
-                                            "name": "e-f",
-                                            "terminating": false,
-                                            "keyids": [
-                                                "9b2a880bd470e8373e24efb0dc54df3909e180e44582785b0f48d6a196ddc055"
-                                            ],
-                                            "threshold": 1,
-                                            "path_hash_prefixes": [
-                                                "e",
-                                                "f"
-                                            ]
-                                        }
-                                    ]
-                                }
-                            }
-                        },
-                        "3.snapshot": {
-                            "signatures": [
-                                {
-                                    "keyid": "139c406ac6150598fb9f7cafd1463bc07e03183541bd55208559c4c08633554e",
-                                    "sig": "fd9e69d275ec1d3fc8f09443d39701a7d72c5b75b7e68b87a57db73823160a1e736e4b7f0860ae70ac723c4a5d83de83b5571fa4205bb0c72980baab37f96206"
-                                }
-                            ],
-                            "signed": {
-                                "_type": "snapshot",
-                                "version": 3,
-                                "spec_version": "1.0.29",
-                                "expires": "2022-06-30T11:39:45Z",
-                                "meta": {
-                                    "targets.json": {
-                                        "version": 2
-                                    },
-                                    "bin.json": {
-                                        "version": 2
-                                    },
-                                    "0-1.json": {
-                                        "version": 1
-                                    },
-                                    "2-3.json": {
-                                        "version": 1
-                                    },
-                                    "4-5.json": {
-                                        "version": 1
-                                    },
-                                    "6-7.json": {
-                                        "version": 1
-                                    },
-                                    "8-9.json": {
-                                        "version": 1
-                                    },
-                                    "a-b.json": {
-                                        "version": 1
-                                    },
-                                    "c-d.json": {
-                                        "version": 1
-                                    },
-                                    "e-f.json": {
-                                        "version": 1
-                                    }
-                                }
-                            }
-                        },
-                        "0-1": {
-                            "signatures": [
-                                {
-                                    "keyid": "9b2a880bd470e8373e24efb0dc54df3909e180e44582785b0f48d6a196ddc055",
-                                    "sig": "ea6a4bef04136a069fedf5c4b7aa24e98012d67fe8674c62154da689f662e2268b7857df6526951cf98ae30f6a2fa6e041834b99aebc7719da37b9d0fe8cf50d"
-                                }
-                            ],
-                            "signed": {
-                                "_type": "targets",
-                                "version": 1,
-                                "spec_version": "1.0.29",
-                                "expires": "2023-06-29T11:39:45Z",
-                                "targets": {}
-                            }
-                        },
-                        "2-3": {
-                            "signatures": [
-                                {
-                                    "keyid": "9b2a880bd470e8373e24efb0dc54df3909e180e44582785b0f48d6a196ddc055",
-                                    "sig": "ea6a4bef04136a069fedf5c4b7aa24e98012d67fe8674c62154da689f662e2268b7857df6526951cf98ae30f6a2fa6e041834b99aebc7719da37b9d0fe8cf50d"
-                                }
-                            ],
-                            "signed": {
-                                "_type": "targets",
-                                "version": 1,
-                                "spec_version": "1.0.29",
-                                "expires": "2023-06-29T11:39:45Z",
-                                "targets": {}
-                            }
-                        },
-                        "4-5": {
-                            "signatures": [
-                                {
-                                    "keyid": "9b2a880bd470e8373e24efb0dc54df3909e180e44582785b0f48d6a196ddc055",
-                                    "sig": "ea6a4bef04136a069fedf5c4b7aa24e98012d67fe8674c62154da689f662e2268b7857df6526951cf98ae30f6a2fa6e041834b99aebc7719da37b9d0fe8cf50d"
-                                }
-                            ],
-                            "signed": {
-                                "_type": "targets",
-                                "version": 1,
-                                "spec_version": "1.0.29",
-                                "expires": "2023-06-29T11:39:45Z",
-                                "targets": {}
-                            }
-                        },
-                        "6-7": {
-                            "signatures": [
-                                {
-                                    "keyid": "9b2a880bd470e8373e24efb0dc54df3909e180e44582785b0f48d6a196ddc055",
-                                    "sig": "ea6a4bef04136a069fedf5c4b7aa24e98012d67fe8674c62154da689f662e2268b7857df6526951cf98ae30f6a2fa6e041834b99aebc7719da37b9d0fe8cf50d"
-                                }
-                            ],
-                            "signed": {
-                                "_type": "targets",
-                                "version": 1,
-                                "spec_version": "1.0.29",
-                                "expires": "2023-06-29T11:39:45Z",
-                                "targets": {}
-                            }
-                        },
-                        "8-9": {
-                            "signatures": [
-                                {
-                                    "keyid": "9b2a880bd470e8373e24efb0dc54df3909e180e44582785b0f48d6a196ddc055",
-                                    "sig": "ea6a4bef04136a069fedf5c4b7aa24e98012d67fe8674c62154da689f662e2268b7857df6526951cf98ae30f6a2fa6e041834b99aebc7719da37b9d0fe8cf50d"
-                                }
-                            ],
-                            "signed": {
-                                "_type": "targets",
-                                "version": 1,
-                                "spec_version": "1.0.29",
-                                "expires": "2023-06-29T11:39:45Z",
-                                "targets": {}
-                            }
-                        },
-                        "a-b": {
-                            "signatures": [
-                                {
-                                    "keyid": "9b2a880bd470e8373e24efb0dc54df3909e180e44582785b0f48d6a196ddc055",
-                                    "sig": "ea6a4bef04136a069fedf5c4b7aa24e98012d67fe8674c62154da689f662e2268b7857df6526951cf98ae30f6a2fa6e041834b99aebc7719da37b9d0fe8cf50d"
-                                }
-                            ],
-                            "signed": {
-                                "_type": "targets",
-                                "version": 1,
-                                "spec_version": "1.0.29",
-                                "expires": "2023-06-29T11:39:45Z",
-                                "targets": {}
-                            }
-                        },
-                        "c-d": {
-                            "signatures": [
-                                {
-                                    "keyid": "9b2a880bd470e8373e24efb0dc54df3909e180e44582785b0f48d6a196ddc055",
-                                    "sig": "ea6a4bef04136a069fedf5c4b7aa24e98012d67fe8674c62154da689f662e2268b7857df6526951cf98ae30f6a2fa6e041834b99aebc7719da37b9d0fe8cf50d"
-                                }
-                            ],
-                            "signed": {
-                                "_type": "targets",
-                                "version": 1,
-                                "spec_version": "1.0.29",
-                                "expires": "2023-06-29T11:39:45Z",
-                                "targets": {}
-                            }
-                        },
-                        "e-f": {
-                            "signatures": [
-                                {
-                                    "keyid": "9b2a880bd470e8373e24efb0dc54df3909e180e44582785b0f48d6a196ddc055",
-                                    "sig": "ea6a4bef04136a069fedf5c4b7aa24e98012d67fe8674c62154da689f662e2268b7857df6526951cf98ae30f6a2fa6e041834b99aebc7719da37b9d0fe8cf50d"
-                                }
-                            ],
-                            "signed": {
-                                "_type": "targets",
-                                "version": 1,
-                                "spec_version": "1.0.29",
-                                "expires": "2023-06-29T11:39:45Z",
-                                "targets": {}
                             }
                         }
                     }
                 }
             },
-            "BootstrapResponse": {
-                "title": "BootstrapResponse",
+            "BootstrapPostResponse": {
+                "title": "BootstrapPostResponse",
                 "type": "object",
                 "properties": {
-                    "data": {
-                        "$ref": "#/components/schemas/TUFMetadata"
-                    },
-                    "bootstrap": {
-                        "title": "Bootstrap",
-                        "type": "boolean"
+                    "task_id": {
+                        "title": "Task Id",
+                        "type": "string"
                     },
                     "message": {
                         "title": "Message",
@@ -743,524 +1136,41 @@
                     }
                 },
                 "example": {
-                    "1.bin": {
-                        "signatures": [
-                            {
-                                "keyid": "be95ae808ff4f17e248470c941700247d8c7f34f101633a696ee523024790907",
-                                "sig": "47f40f91b6d6e5f32cf8aed6167e18a71e205c1e70eb7a17969f73992bb3ccb0382bc5b738f3c6387fcefb037e5a99f72c3426377406405f449ea04f42ebcf09"
-                            }
-                        ],
-                        "signed": {
-                            "_type": "targets",
-                            "expires": "2023-06-29T11:39:45Z",
-                            "spec_version": "1.0.29",
-                            "targets": {},
-                            "version": 1
-                        }
+                    "task_id": "7a634b556f784ae88785d36425f9a218",
+                    "message": "Bootstrap accepted."
+                }
+            },
+            "GetTokenResponse": {
+                "title": "GetTokenResponse",
+                "required": [
+                    "data",
+                    "message"
+                ],
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "$ref": "#/components/schemas/TokenPublicData"
                     },
-                    "2.snapshot": {
-                        "signatures": [
-                            {
-                                "keyid": "139c406ac6150598fb9f7cafd1463bc07e03183541bd55208559c4c08633554e",
-                                "sig": "5778be134e7e6a9c6cf66c8973fdbe9d1c76aec28aa922251288efaaaf153bef325efebecc1796cf9255eb91cd8667dcc1901d06a605df939d617f91b60d2003"
-                            }
-                        ],
-                        "signed": {
-                            "_type": "snapshot",
-                            "expires": "2022-06-30T11:39:45Z",
-                            "meta": {
-                                "bin.json": {
-                                    "version": 1
-                                },
-                                "targets.json": {
-                                    "version": 2
-                                }
-                            },
-                            "spec_version": "1.0.29",
-                            "version": 2
-                        }
-                    },
-                    "1.targets": {
-                        "signatures": [
-                            {
-                                "keyid": "208fc4139cf7482abbe84f837091f304c8a948aafee911470e2b5dcbf989874a",
-                                "sig": "f917d811afe02c411c391e46e7cfa588c7185b6df927673ce647871ce1f13aefdeb484b4aab437cdab30c15c68d31ed94be845d68989a2be7421549693fe7905"
-                            },
-                            {
-                                "keyid": "c2e9ee4a292e5d08bc0d3adaad5dce0235321cde04e9ff4e5f232d494b4bb4af",
-                                "sig": "5799e6718631e92e07782ad18d63e2fb04aa6a455f0c8d44d59391c39323395d5fafa557af49a0202b38ce62693597347f8755677999428d8a605fbb3bca6d09"
-                            }
-                        ],
-                        "signed": {
-                            "_type": "targets",
-                            "expires": "2023-06-29T11:39:45Z",
-                            "spec_version": "1.0.29",
-                            "targets": {},
-                            "version": 1
-                        }
-                    },
-                    "1.root": {
-                        "signatures": [
-                            {
-                                "keyid": "800dfb5a1982b82b7893e58035e19f414f553fc08cbb1130cfbae302a7b7fee5",
-                                "sig": "2f83afd1d0a43d076cbd904e9eccfe4cf59f47ac38ceb896516a862440904c1ee41f0e450fc6b681b4f9a9a58b4619aebde3a5e241f836a31a598e5a383d3f0b"
-                            },
-                            {
-                                "keyid": "1cebe343e35f0213f6136758e6c3a8f8e1f9eeb7e47a07d5cb336462ed31dcb7",
-                                "sig": "260bf798137d9b2fd26a6b22fd78e70be03d4edb06d68a521cf5127f004885f65cae700b64e6d1292021980f461e240fd63a321d8656fd43774b6690ca22d90f"
-                            }
-                        ],
-                        "signed": {
-                            "_type": "root",
-                            "expires": "2023-06-20T11:39:45Z",
-                            "keys": {
-                                "139c406ac6150598fb9f7cafd1463bc07e03183541bd55208559c4c08633554e": {
-                                    "keytype": "ed25519",
-                                    "keyval": {
-                                        "public": "04b07d3935f9756e1739f33fe38d36ab9ce00492bc80b3482a6d5322f488f5e0"
-                                    },
-                                    "scheme": "ed25519"
-                                },
-                                "19f5992640ab71f49fb64d5b5d198ee0115c3e7879861fb7114819a41a3b2c9b": {
-                                    "keytype": "ed25519",
-                                    "keyval": {
-                                        "public": "5c7074da53333957bfbb78a35944fcac61b0e63f0d3398370510d9cc5e0b3e59"
-                                    },
-                                    "scheme": "ed25519"
-                                },
-                                "1cebe343e35f0213f6136758e6c3a8f8e1f9eeb7e47a07d5cb336462ed31dcb7": {
-                                    "keytype": "ed25519",
-                                    "keyval": {
-                                        "public": "ad1709b3cb419b99c5cd7427d6411522e5a93aec6767453e91af921a73d22a3c"
-                                    },
-                                    "scheme": "ed25519"
-                                },
-                                "208fc4139cf7482abbe84f837091f304c8a948aafee911470e2b5dcbf989874a": {
-                                    "keytype": "ed25519",
-                                    "keyval": {
-                                        "public": "e853b701555842fcf599fef677e0516e3b45ee6ffd3a5b6b23b5113e66a81f59"
-                                    },
-                                    "scheme": "ed25519"
-                                },
-                                "800dfb5a1982b82b7893e58035e19f414f553fc08cbb1130cfbae302a7b7fee5": {
-                                    "keytype": "ed25519",
-                                    "keyval": {
-                                        "public": "7098f769f6ab8502b50f3b58686b8a042d5d3bb75d8b3a48a2fcbc15a0223501"
-                                    },
-                                    "scheme": "ed25519"
-                                },
-                                "c2e9ee4a292e5d08bc0d3adaad5dce0235321cde04e9ff4e5f232d494b4bb4af": {
-                                    "keytype": "ed25519",
-                                    "keyval": {
-                                        "public": "609d88b5348c24327872f1913b4423221e60070420a53d1a6f44de7037190301"
-                                    },
-                                    "scheme": "ed25519"
-                                }
-                            },
-                            "roles": {
-                                "root": {
-                                    "keyids": [
-                                        "800dfb5a1982b82b7893e58035e19f414f553fc08cbb1130cfbae302a7b7fee5",
-                                        "1cebe343e35f0213f6136758e6c3a8f8e1f9eeb7e47a07d5cb336462ed31dcb7"
-                                    ],
-                                    "threshold": 1
-                                },
-                                "snapshot": {
-                                    "keyids": [
-                                        "139c406ac6150598fb9f7cafd1463bc07e03183541bd55208559c4c08633554e"
-                                    ],
-                                    "threshold": 1
-                                },
-                                "targets": {
-                                    "keyids": [
-                                        "208fc4139cf7482abbe84f837091f304c8a948aafee911470e2b5dcbf989874a",
-                                        "c2e9ee4a292e5d08bc0d3adaad5dce0235321cde04e9ff4e5f232d494b4bb4af"
-                                    ],
-                                    "threshold": 1
-                                },
-                                "timestamp": {
-                                    "keyids": [
-                                        "19f5992640ab71f49fb64d5b5d198ee0115c3e7879861fb7114819a41a3b2c9b"
-                                    ],
-                                    "threshold": 1
-                                }
-                            },
-                            "spec_version": "1.0.29",
-                            "version": 1
-                        }
-                    },
-                    "1.snapshot": {
-                        "signatures": [
-                            {
-                                "keyid": "139c406ac6150598fb9f7cafd1463bc07e03183541bd55208559c4c08633554e",
-                                "sig": "f38624074aadadc7b8edbc958ed6d45d14bc795f22d65527857876a8ae7be262fda97a03926b01ceceb27ef6ac910c7b83518eb0bb1603a4142139f4332f8301"
-                            }
-                        ],
-                        "signed": {
-                            "_type": "snapshot",
-                            "expires": "2022-06-30T11:39:45Z",
-                            "meta": {
-                                "targets.json": {
-                                    "version": 1
-                                }
-                            },
-                            "spec_version": "1.0.29",
-                            "version": 1
-                        }
-                    },
-                    "1.e-f": {
-                        "signatures": [
-                            {
-                                "keyid": "9b2a880bd470e8373e24efb0dc54df3909e180e44582785b0f48d6a196ddc055",
-                                "sig": "ea6a4bef04136a069fedf5c4b7aa24e98012d67fe8674c62154da689f662e2268b7857df6526951cf98ae30f6a2fa6e041834b99aebc7719da37b9d0fe8cf50d"
-                            }
-                        ],
-                        "signed": {
-                            "_type": "targets",
-                            "expires": "2023-06-29T11:39:45Z",
-                            "spec_version": "1.0.29",
-                            "targets": {},
-                            "version": 1
-                        }
-                    },
-                    "1.8-9": {
-                        "signatures": [
-                            {
-                                "keyid": "9b2a880bd470e8373e24efb0dc54df3909e180e44582785b0f48d6a196ddc055",
-                                "sig": "ea6a4bef04136a069fedf5c4b7aa24e98012d67fe8674c62154da689f662e2268b7857df6526951cf98ae30f6a2fa6e041834b99aebc7719da37b9d0fe8cf50d"
-                            }
-                        ],
-                        "signed": {
-                            "_type": "targets",
-                            "expires": "2023-06-29T11:39:45Z",
-                            "spec_version": "1.0.29",
-                            "targets": {},
-                            "version": 1
-                        }
-                    },
-                    "1.2-3": {
-                        "signatures": [
-                            {
-                                "keyid": "9b2a880bd470e8373e24efb0dc54df3909e180e44582785b0f48d6a196ddc055",
-                                "sig": "ea6a4bef04136a069fedf5c4b7aa24e98012d67fe8674c62154da689f662e2268b7857df6526951cf98ae30f6a2fa6e041834b99aebc7719da37b9d0fe8cf50d"
-                            }
-                        ],
-                        "signed": {
-                            "_type": "targets",
-                            "expires": "2023-06-29T11:39:45Z",
-                            "spec_version": "1.0.29",
-                            "targets": {},
-                            "version": 1
-                        }
-                    },
-                    "1.4-5": {
-                        "signatures": [
-                            {
-                                "keyid": "9b2a880bd470e8373e24efb0dc54df3909e180e44582785b0f48d6a196ddc055",
-                                "sig": "ea6a4bef04136a069fedf5c4b7aa24e98012d67fe8674c62154da689f662e2268b7857df6526951cf98ae30f6a2fa6e041834b99aebc7719da37b9d0fe8cf50d"
-                            }
-                        ],
-                        "signed": {
-                            "_type": "targets",
-                            "expires": "2023-06-29T11:39:45Z",
-                            "spec_version": "1.0.29",
-                            "targets": {},
-                            "version": 1
-                        }
-                    },
-                    "1.6-7": {
-                        "signatures": [
-                            {
-                                "keyid": "9b2a880bd470e8373e24efb0dc54df3909e180e44582785b0f48d6a196ddc055",
-                                "sig": "ea6a4bef04136a069fedf5c4b7aa24e98012d67fe8674c62154da689f662e2268b7857df6526951cf98ae30f6a2fa6e041834b99aebc7719da37b9d0fe8cf50d"
-                            }
-                        ],
-                        "signed": {
-                            "_type": "targets",
-                            "expires": "2023-06-29T11:39:45Z",
-                            "spec_version": "1.0.29",
-                            "targets": {},
-                            "version": 1
-                        }
-                    },
-                    "1.0-1": {
-                        "signatures": [
-                            {
-                                "keyid": "9b2a880bd470e8373e24efb0dc54df3909e180e44582785b0f48d6a196ddc055",
-                                "sig": "ea6a4bef04136a069fedf5c4b7aa24e98012d67fe8674c62154da689f662e2268b7857df6526951cf98ae30f6a2fa6e041834b99aebc7719da37b9d0fe8cf50d"
-                            }
-                        ],
-                        "signed": {
-                            "_type": "targets",
-                            "expires": "2023-06-29T11:39:45Z",
-                            "spec_version": "1.0.29",
-                            "targets": {},
-                            "version": 1
-                        }
-                    },
-                    "1.a-b": {
-                        "signatures": [
-                            {
-                                "keyid": "9b2a880bd470e8373e24efb0dc54df3909e180e44582785b0f48d6a196ddc055",
-                                "sig": "ea6a4bef04136a069fedf5c4b7aa24e98012d67fe8674c62154da689f662e2268b7857df6526951cf98ae30f6a2fa6e041834b99aebc7719da37b9d0fe8cf50d"
-                            }
-                        ],
-                        "signed": {
-                            "_type": "targets",
-                            "expires": "2023-06-29T11:39:45Z",
-                            "spec_version": "1.0.29",
-                            "targets": {},
-                            "version": 1
-                        }
-                    },
-                    "1.timestamp": {
-                        "signatures": [
-                            {
-                                "keyid": "19f5992640ab71f49fb64d5b5d198ee0115c3e7879861fb7114819a41a3b2c9b",
-                                "sig": "54c0ada10e970740d2f52f7ae472ef593d08309a8fc3dd52a7c9ada12b2dd951e6299f20069178022249012fbe16d90e51f5e0ec1b99bbffab4b69f1d0f03903"
-                            }
-                        ],
-                        "signed": {
-                            "_type": "timestamp",
-                            "expires": "2022-06-30T11:39:45Z",
-                            "meta": {
-                                "snapshot.json": {
-                                    "version": 1
-                                }
-                            },
-                            "spec_version": "1.0.29",
-                            "version": 1
-                        }
-                    },
-                    "2.bin": {
-                        "signatures": [
-                            {
-                                "keyid": "be95ae808ff4f17e248470c941700247d8c7f34f101633a696ee523024790907",
-                                "sig": "ea401c765b13088c16ed6a10bb739ba24d67ea698f20b9b30a87e1d40b9df15b5f33d96ce1c6d5f3e7c0d8baa33c39b2a6fd2fba40d52c5ca804a8ddd1275907"
-                            }
-                        ],
-                        "signed": {
-                            "_type": "targets",
-                            "delegations": {
-                                "keys": {
-                                    "9b2a880bd470e8373e24efb0dc54df3909e180e44582785b0f48d6a196ddc055": {
-                                        "keytype": "ed25519",
-                                        "keyval": {
-                                            "public": "bd119f5d9bff4c935e57c971b45abd207cdbb95fb28a67aed6bf9d31964032c2"
-                                        },
-                                        "scheme": "ed25519"
-                                    }
-                                },
-                                "roles": [
-                                    {
-                                        "keyids": [
-                                            "9b2a880bd470e8373e24efb0dc54df3909e180e44582785b0f48d6a196ddc055"
-                                        ],
-                                        "name": "0-1",
-                                        "path_hash_prefixes": [
-                                            "0",
-                                            "1"
-                                        ],
-                                        "terminating": false,
-                                        "threshold": 1
-                                    },
-                                    {
-                                        "keyids": [
-                                            "9b2a880bd470e8373e24efb0dc54df3909e180e44582785b0f48d6a196ddc055"
-                                        ],
-                                        "name": "2-3",
-                                        "path_hash_prefixes": [
-                                            "2",
-                                            "3"
-                                        ],
-                                        "terminating": false,
-                                        "threshold": 1
-                                    },
-                                    {
-                                        "keyids": [
-                                            "9b2a880bd470e8373e24efb0dc54df3909e180e44582785b0f48d6a196ddc055"
-                                        ],
-                                        "name": "4-5",
-                                        "path_hash_prefixes": [
-                                            "4",
-                                            "5"
-                                        ],
-                                        "terminating": false,
-                                        "threshold": 1
-                                    },
-                                    {
-                                        "keyids": [
-                                            "9b2a880bd470e8373e24efb0dc54df3909e180e44582785b0f48d6a196ddc055"
-                                        ],
-                                        "name": "6-7",
-                                        "path_hash_prefixes": [
-                                            "6",
-                                            "7"
-                                        ],
-                                        "terminating": false,
-                                        "threshold": 1
-                                    },
-                                    {
-                                        "keyids": [
-                                            "9b2a880bd470e8373e24efb0dc54df3909e180e44582785b0f48d6a196ddc055"
-                                        ],
-                                        "name": "8-9",
-                                        "path_hash_prefixes": [
-                                            "8",
-                                            "9"
-                                        ],
-                                        "terminating": false,
-                                        "threshold": 1
-                                    },
-                                    {
-                                        "keyids": [
-                                            "9b2a880bd470e8373e24efb0dc54df3909e180e44582785b0f48d6a196ddc055"
-                                        ],
-                                        "name": "a-b",
-                                        "path_hash_prefixes": [
-                                            "a",
-                                            "b"
-                                        ],
-                                        "terminating": false,
-                                        "threshold": 1
-                                    },
-                                    {
-                                        "keyids": [
-                                            "9b2a880bd470e8373e24efb0dc54df3909e180e44582785b0f48d6a196ddc055"
-                                        ],
-                                        "name": "c-d",
-                                        "path_hash_prefixes": [
-                                            "c",
-                                            "d"
-                                        ],
-                                        "terminating": false,
-                                        "threshold": 1
-                                    },
-                                    {
-                                        "keyids": [
-                                            "9b2a880bd470e8373e24efb0dc54df3909e180e44582785b0f48d6a196ddc055"
-                                        ],
-                                        "name": "e-f",
-                                        "path_hash_prefixes": [
-                                            "e",
-                                            "f"
-                                        ],
-                                        "terminating": false,
-                                        "threshold": 1
-                                    }
-                                ]
-                            },
-                            "expires": "2023-06-29T11:39:45Z",
-                            "spec_version": "1.0.29",
-                            "targets": {},
-                            "version": 2
-                        }
-                    },
-                    "1.c-d": {
-                        "signatures": [
-                            {
-                                "keyid": "9b2a880bd470e8373e24efb0dc54df3909e180e44582785b0f48d6a196ddc055",
-                                "sig": "ea6a4bef04136a069fedf5c4b7aa24e98012d67fe8674c62154da689f662e2268b7857df6526951cf98ae30f6a2fa6e041834b99aebc7719da37b9d0fe8cf50d"
-                            }
-                        ],
-                        "signed": {
-                            "_type": "targets",
-                            "expires": "2023-06-29T11:39:45Z",
-                            "spec_version": "1.0.29",
-                            "targets": {},
-                            "version": 1
-                        }
-                    },
-                    "3.snapshot": {
-                        "signatures": [
-                            {
-                                "keyid": "139c406ac6150598fb9f7cafd1463bc07e03183541bd55208559c4c08633554e",
-                                "sig": "fd9e69d275ec1d3fc8f09443d39701a7d72c5b75b7e68b87a57db73823160a1e736e4b7f0860ae70ac723c4a5d83de83b5571fa4205bb0c72980baab37f96206"
-                            }
-                        ],
-                        "signed": {
-                            "_type": "snapshot",
-                            "expires": "2022-06-30T11:39:45Z",
-                            "meta": {
-                                "0-1.json": {
-                                    "version": 1
-                                },
-                                "2-3.json": {
-                                    "version": 1
-                                },
-                                "4-5.json": {
-                                    "version": 1
-                                },
-                                "6-7.json": {
-                                    "version": 1
-                                },
-                                "8-9.json": {
-                                    "version": 1
-                                },
-                                "a-b.json": {
-                                    "version": 1
-                                },
-                                "bin.json": {
-                                    "version": 2
-                                },
-                                "c-d.json": {
-                                    "version": 1
-                                },
-                                "e-f.json": {
-                                    "version": 1
-                                },
-                                "targets.json": {
-                                    "version": 2
-                                }
-                            },
-                            "spec_version": "1.0.29",
-                            "version": 3
-                        }
-                    },
-                    "2.targets": {
-                        "signatures": [
-                            {
-                                "keyid": "208fc4139cf7482abbe84f837091f304c8a948aafee911470e2b5dcbf989874a",
-                                "sig": "f14f643355ec8955749611d33cbb7b2360b253f74e8199c8c57877ba11f5f6951c5f83b140722ae0c5f0dcf037e35668f9af518ab5eb712420c65aee644caf0c"
-                            },
-                            {
-                                "keyid": "c2e9ee4a292e5d08bc0d3adaad5dce0235321cde04e9ff4e5f232d494b4bb4af",
-                                "sig": "584a3e219d31890c7e0238c0ab6ef41c77427379e4dd5a532bfbcc8fe8fd63bf079f25b13048f01d54eb08a3a40fcb78a0a325a61bdc2c600660c65aa48efb03"
-                            }
-                        ],
-                        "signed": {
-                            "_type": "targets",
-                            "delegations": {
-                                "keys": {
-                                    "be95ae808ff4f17e248470c941700247d8c7f34f101633a696ee523024790907": {
-                                        "keytype": "ed25519",
-                                        "keyval": {
-                                            "public": "441e6d545efc8bd67da3643148a107a924a533caff4e39d960482c755c453dfe"
-                                        },
-                                        "scheme": "ed25519"
-                                    }
-                                },
-                                "roles": [
-                                    {
-                                        "keyids": [
-                                            "be95ae808ff4f17e248470c941700247d8c7f34f101633a696ee523024790907"
-                                        ],
-                                        "name": "bin",
-                                        "paths": [
-                                            "*",
-                                            "*/*"
-                                        ],
-                                        "terminating": false,
-                                        "threshold": 1
-                                    }
-                                ]
-                            },
-                            "expires": "2023-06-29T11:39:45Z",
-                            "spec_version": "1.0.29",
-                            "targets": {},
-                            "version": 2
-                        }
+                    "message": {
+                        "title": "Message",
+                        "type": "string"
                     }
+                },
+                "example": {
+                    "data": {
+                        "scopes": [
+                            "read:bootstrap",
+                            "read:settings",
+                            "read:targets",
+                            "read:token",
+                            "write:bootstrap",
+                            "write:targets",
+                            "write:token"
+                        ],
+                        "expired": false,
+                        "expiration": "2022-08-19T17:29:39"
+                    },
+                    "message": "Token information"
                 }
             },
             "HTTPValidationError": {
@@ -1276,8 +1186,102 @@
                     }
                 }
             },
-            "Settings": {
-                "title": "Settings",
+            "Payload": {
+                "title": "Payload",
+                "required": [
+                    "targets"
+                ],
+                "type": "object",
+                "properties": {
+                    "targets": {
+                        "title": "Targets",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Targets"
+                        }
+                    }
+                },
+                "example": {
+                    "targets": [
+                        {
+                            "info": {
+                                "length": 11342,
+                                "hashes": {
+                                    "blake2b-256": "716f6e863f744b9ac22c97ec7b76ea5f5908bc5b2f67c61510bfc4751384ea7a"
+                                },
+                                "custom": {
+                                    "key": "value"
+                                }
+                            },
+                            "path": "file1.tar.gz"
+                        },
+                        {
+                            "info": {
+                                "length": 630,
+                                "hashes": {
+                                    "blake2b-256": "69217a3079908094e11121d042354a7c1f55b6482ca1a51e1b250dfd1ed0eef9"
+                                },
+                                "custom": {
+                                    "key": "value"
+                                }
+                            },
+                            "path": "file2.tar.gz"
+                        }
+                    ]
+                }
+            },
+            "PayloadTargetsHashes": {
+                "title": "PayloadTargetsHashes",
+                "required": [
+                    "blake2b-256"
+                ],
+                "type": "object",
+                "properties": {
+                    "blake2b-256": {
+                        "title": "Blake2B-256",
+                        "type": "string"
+                    }
+                }
+            },
+            "PostTokenResponse": {
+                "title": "PostTokenResponse",
+                "required": [
+                    "access_token"
+                ],
+                "type": "object",
+                "properties": {
+                    "access_token": {
+                        "title": "Access Token",
+                        "type": "string"
+                    }
+                },
+                "example": {
+                    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJz...fhpp0"
+                }
+            },
+            "ResponseData": {
+                "title": "ResponseData",
+                "required": [
+                    "targets",
+                    "task_id"
+                ],
+                "type": "object",
+                "properties": {
+                    "targets": {
+                        "title": "Targets",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "task_id": {
+                        "title": "Task Id",
+                        "type": "string"
+                    }
+                }
+            },
+            "RoleSettings": {
+                "title": "RoleSettings",
                 "required": [
                     "expiration",
                     "num_of_keys",
@@ -1319,6 +1323,39 @@
                     "number_hash_prefixes": {
                         "title": "Number Hash Prefixes",
                         "type": "integer"
+                    }
+                }
+            },
+            "ServiceSettings": {
+                "title": "ServiceSettings",
+                "required": [
+                    "targets_base_url"
+                ],
+                "type": "object",
+                "properties": {
+                    "targets_base_url": {
+                        "title": "Targets Base Url",
+                        "type": "string"
+                    }
+                }
+            },
+            "Settings": {
+                "title": "Settings",
+                "required": [
+                    "roles",
+                    "service"
+                ],
+                "type": "object",
+                "properties": {
+                    "roles": {
+                        "title": "Roles",
+                        "type": "object",
+                        "additionalProperties": {
+                            "$ref": "#/components/schemas/RoleSettings"
+                        }
+                    },
+                    "service": {
+                        "$ref": "#/components/schemas/ServiceSettings"
                     }
                 }
             },
@@ -1509,8 +1546,7 @@
             "TUFSignedDelegations": {
                 "title": "TUFSignedDelegations",
                 "required": [
-                    "keys",
-                    "roles"
+                    "keys"
                 ],
                 "type": "object",
                 "properties": {
@@ -1527,6 +1563,9 @@
                         "items": {
                             "$ref": "#/components/schemas/TUFSignedDelegationsRoles"
                         }
+                    },
+                    "succinct_roles": {
+                        "$ref": "#/components/schemas/TUFSignedDelegationsSuccinctRoles"
                     }
                 }
             },
@@ -1575,6 +1614,39 @@
                     }
                 }
             },
+            "TUFSignedDelegationsSuccinctRoles": {
+                "title": "TUFSignedDelegationsSuccinctRoles",
+                "required": [
+                    "bit_length",
+                    "name_prefix",
+                    "keyids",
+                    "threshold"
+                ],
+                "type": "object",
+                "properties": {
+                    "bit_length": {
+                        "title": "Bit Length",
+                        "exclusiveMaximum": 33.0,
+                        "exclusiveMinimum": 0.0,
+                        "type": "integer"
+                    },
+                    "name_prefix": {
+                        "title": "Name Prefix",
+                        "type": "string"
+                    },
+                    "keyids": {
+                        "title": "Keyids",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "threshold": {
+                        "title": "Threshold",
+                        "type": "integer"
+                    }
+                }
+            },
             "TUFSignedMetaFile": {
                 "title": "TUFSignedMetaFile",
                 "required": [
@@ -1609,6 +1681,105 @@
                     }
                 }
             },
+            "Targets": {
+                "title": "Targets",
+                "required": [
+                    "info",
+                    "path"
+                ],
+                "type": "object",
+                "properties": {
+                    "info": {
+                        "$ref": "#/components/schemas/TargetsInfo"
+                    },
+                    "path": {
+                        "title": "Path",
+                        "type": "string"
+                    }
+                }
+            },
+            "TargetsInfo": {
+                "title": "TargetsInfo",
+                "required": [
+                    "length",
+                    "hashes"
+                ],
+                "type": "object",
+                "properties": {
+                    "length": {
+                        "title": "Length",
+                        "type": "integer"
+                    },
+                    "hashes": {
+                        "$ref": "#/components/schemas/PayloadTargetsHashes"
+                    },
+                    "custom": {
+                        "title": "Custom",
+                        "type": "object"
+                    }
+                }
+            },
+            "TokenPublicData": {
+                "title": "TokenPublicData",
+                "required": [
+                    "expired"
+                ],
+                "type": "object",
+                "properties": {
+                    "scopes": {
+                        "title": "Scopes",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "expired": {
+                        "title": "Expired",
+                        "type": "boolean"
+                    },
+                    "expiration": {
+                        "title": "Expiration",
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                }
+            },
+            "TokenRequestPayload": {
+                "title": "TokenRequestPayload",
+                "required": [
+                    "scopes",
+                    "expires"
+                ],
+                "type": "object",
+                "properties": {
+                    "scopes": {
+                        "title": "Scopes",
+                        "type": "array",
+                        "items": {
+                            "enum": [
+                                "read:bootstrap",
+                                "read:settings",
+                                "read:targets",
+                                "read:token",
+                                "write:targets"
+                            ],
+                            "type": "string"
+                        }
+                    },
+                    "expires": {
+                        "title": "Expires",
+                        "type": "integer",
+                        "description": "In hour(s)"
+                    }
+                },
+                "example": {
+                    "scopes": [
+                        "read:token",
+                        "read:settings"
+                    ],
+                    "expires": 24
+                }
+            },
             "ValidationError": {
                 "title": "ValidationError",
                 "required": [
@@ -1622,7 +1793,14 @@
                         "title": "Location",
                         "type": "array",
                         "items": {
-                            "type": "string"
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "integer"
+                                }
+                            ]
                         }
                     },
                     "msg": {
@@ -1632,6 +1810,96 @@
                     "type": {
                         "title": "Error Type",
                         "type": "string"
+                    }
+                }
+            },
+            "kaprien_api__config__Response": {
+                "title": "Response",
+                "required": [
+                    "data",
+                    "message"
+                ],
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "title": "Data",
+                        "type": "object"
+                    },
+                    "message": {
+                        "title": "Message",
+                        "type": "string"
+                    }
+                },
+                "example": {
+                    "data": {
+                        "targets_base_url": "http://www.example.com/repository/",
+                        "bootstrap": "893eb4aec8af499a9f5cc90984ddf3a3",
+                        "bins_number_prefixes": "4",
+                        "bins_num_keys": "1",
+                        "bins_threshold": "1",
+                        "bins_expiration": "1",
+                        "bin_num_keys": "1",
+                        "bin_threshold": "1",
+                        "bin_expiration": "365",
+                        "timestamp_num_keys": "1",
+                        "timestamp_threshold": "1",
+                        "timestamp_expiration": "1",
+                        "snapshot_num_keys": "1",
+                        "snapshot_threshold": "1",
+                        "snapshot_expiration": "1",
+                        "targets_paths": [
+                            "*",
+                            "*/*"
+                        ],
+                        "targets_num_keys": "2",
+                        "targets_threshold": "1",
+                        "targets_expiration": "365",
+                        "root_num_keys": "2",
+                        "root_threshold": "1",
+                        "root_expiration": "356"
+                    },
+                    "message": "Current Settings"
+                }
+            },
+            "kaprien_api__targets__Response": {
+                "title": "Response",
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "$ref": "#/components/schemas/ResponseData"
+                    },
+                    "message": {
+                        "title": "Message",
+                        "type": "string"
+                    }
+                },
+                "example": {
+                    "data": {
+                        "targets": [
+                            "file1.tar.gz",
+                            "file2.tar.gz"
+                        ],
+                        "task_id": "06ee6db3cbab4b26be505352c2f2e2c3"
+                    },
+                    "message": "Target(s) successfully submitted."
+                }
+            }
+        },
+        "securitySchemes": {
+            "OAuth2PasswordBearer": {
+                "type": "oauth2",
+                "flows": {
+                    "password": {
+                        "scopes": {
+                            "read:targets": "Read (GET) targets",
+                            "read:bootstrap": "Read (GET) bootstrap",
+                            "read:settings": "Read (GET) settings",
+                            "read:token": "Read (GET) tokens",
+                            "write:targets": "Write (POST) targets",
+                            "write:token": "Write (POST) token",
+                            "write:bootstrap": "Write (POST) bootstrap"
+                        },
+                        "tokenUrl": "/api/v1/token"
                     }
                 }
             }
