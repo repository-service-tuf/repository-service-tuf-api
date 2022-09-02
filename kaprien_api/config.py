@@ -4,9 +4,9 @@ from typing import Any, Dict
 from dynaconf import Dynaconf, loaders
 from dynaconf.base import DynaBox
 from fastapi import HTTPException, status
+from pydantic import BaseModel
 
 from kaprien_api import settings_repository
-from kaprien_api.utils import BaseModel
 
 
 class Response(BaseModel):

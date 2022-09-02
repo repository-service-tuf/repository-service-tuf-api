@@ -1,9 +1,10 @@
 import json
 from typing import Any, Dict, List, Optional
 
+from pydantic import BaseModel
+
 from kaprien_api import settings_repository
 from kaprien_api.metadata import get_task_id, repository_metadata
-from kaprien_api.utils import BaseModel
 
 
 class ResponseData(BaseModel):

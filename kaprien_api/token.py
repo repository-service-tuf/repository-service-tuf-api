@@ -6,11 +6,10 @@ from fastapi import Depends, HTTPException, Query, status
 from fastapi.param_functions import Form
 from fastapi.security import OAuth2PasswordBearer, SecurityScopes
 from jose import JWTError, jwt
-from pydantic import Field, ValidationError
+from pydantic import BaseModel, Field, ValidationError
 
 from kaprien_api import SCOPES, SCOPES_NAMES, SECRET_KEY, db
 from kaprien_api.users.crud import bcrypt, get_user_by_username
-from kaprien_api.utils import BaseModel
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/token", scopes=SCOPES)
 
