@@ -111,9 +111,3 @@ celery.conf.result_persistent = True
 celery.conf.task_acks_late = True
 celery.conf.broker_pool_limit = None
 # celery.conf.broker_use_ssl = True
-
-
-@celery.task(name="app.kaprien_repo_worker")
-def repository_metadata(action, settings, payload):
-    logging.debug(f"New tasks action submitted {action}")
-    return True

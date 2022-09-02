@@ -4,15 +4,10 @@ from typing import Dict, List, Literal, Optional
 
 from fastapi import HTTPException, status
 
-from kaprien_api import repository_metadata, settings_repository
+from kaprien_api import settings_repository
 from kaprien_api.config import is_bootstrap_done, save_settings
-from kaprien_api.utils import (
-    BaseErrorResponse,
-    BaseModel,
-    Roles,
-    TUFMetadata,
-    get_task_id,
-)
+from kaprien_api.metadata import get_task_id, repository_metadata
+from kaprien_api.utils import BaseErrorResponse, BaseModel, Roles, TUFMetadata
 
 
 class SettingsKeyBody(BaseModel):

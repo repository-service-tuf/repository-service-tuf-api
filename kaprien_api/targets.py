@@ -1,8 +1,9 @@
 import json
 from typing import Any, Dict, List, Optional
 
-from kaprien_api import repository_metadata, settings_repository
-from kaprien_api.utils import BaseModel, get_task_id
+from kaprien_api import settings_repository
+from kaprien_api.metadata import get_task_id, repository_metadata
+from kaprien_api.utils import BaseModel
 
 
 class ResponseData(BaseModel):

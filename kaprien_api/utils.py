@@ -1,6 +1,5 @@
 from enum import Enum
 from typing import Dict, List, Literal, Optional
-from uuid import uuid4
 
 from pydantic import BaseModel, Field
 
@@ -92,7 +91,3 @@ class TUFSignatures(BaseModel):
 class TUFMetadata(BaseModel):
     signatures: List[TUFSignatures]
     signed: TUFSigned
-
-
-def get_task_id():
-    return uuid4().hex
