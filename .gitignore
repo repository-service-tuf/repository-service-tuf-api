@@ -4,7 +4,7 @@ settings.ini
 metadata/**
 database/*.sqlite
 data_test/
-./data
+data/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
