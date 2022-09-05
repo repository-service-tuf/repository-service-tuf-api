@@ -12,7 +12,8 @@
                     "v1",
                     "v1"
                 ],
-                "summary": "Get",
+                "summary": "Check the bootstrap status. Scope: read:bootstrap",
+                "description": "Check if the boostrap of the system is done or not.",
                 "operationId": "get_api_v1_bootstrap__get",
                 "responses": {
                     "200": {
@@ -42,7 +43,8 @@
                     "v1",
                     "v1"
                 ],
-                "summary": "Post",
+                "summary": "Bootstrap the system with initial signed Metadata. Scope: write:bootstrap",
+                "description": "Initialize the Kaprien with initial signed Metadata and Settings.",
                 "operationId": "post_api_v1_bootstrap__post",
                 "requestBody": {
                     "content": {
@@ -94,8 +96,8 @@
                     "v1",
                     "v1"
                 ],
-                "summary": "Get",
-                "description": "Returns the config settings",
+                "summary": "List settings. Scope: read:settings",
+                "description": "Returns the configuration settings",
                 "operationId": "get_api_v1_config__get",
                 "responses": {
                     "200": {
@@ -127,8 +129,8 @@
                     "v1",
                     "v1"
                 ],
-                "summary": "Post",
-                "description": "Add targets files to Metadata",
+                "summary": "Add targets files to Metadata. Scope: write:bootstrap",
+                "description": "Add targets files to Metadata.",
                 "operationId": "post_api_v1_targets__post",
                 "requestBody": {
                     "content": {
@@ -180,7 +182,8 @@
                     "v1",
                     "v1"
                 ],
-                "summary": "Get",
+                "summary": "Get token details. Scope: read:token",
+                "description": "Return the token details. It requires an authenticated token with scope authorization.",
                 "operationId": "get_api_v1_token__get",
                 "security": [
                     {
@@ -234,8 +237,8 @@
                     "v1",
                     "v1"
                 ],
-                "summary": "Post",
-                "description": "Issue token user/password authentication",
+                "summary": "Issue token user/password authentication",
+                "description": "Issue a token with scopes for all granted user scope.",
                 "operationId": "post_api_v1_token__post",
                 "requestBody": {
                     "required": true,
@@ -280,8 +283,8 @@
                     "v1",
                     "v1"
                 ],
-                "summary": "Issue token from token.",
-                "description": "Issue token by an authenticated token.Requires scope 'read:token'",
+                "summary": "Issue token from authenticated token. Scope: write:token",
+                "description": "Issue token from a valid and existent token.",
                 "operationId": "post_token_api_v1_token_new__post",
                 "requestBody": {
                     "content": {

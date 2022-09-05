@@ -12,7 +12,8 @@ router = APIRouter(
 
 @router.get(
     "/",
-    description="Returns the config settings",
+    summary=("List settings. " f"Scope: {SCOPES_NAMES.read_settings.value}"),
+    description="Returns the configuration settings",
     response_model=config.Response,
     response_model_exclude_none=True,
 )

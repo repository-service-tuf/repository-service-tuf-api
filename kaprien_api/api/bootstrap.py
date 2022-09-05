@@ -12,6 +12,11 @@ router = APIRouter(
 
 @router.get(
     "/",
+    summary=(
+        "Check the bootstrap status. "
+        f"Scope: {SCOPES_NAMES.read_bootstrap.value}"
+    ),
+    description=("Check if the boostrap of the system is done or not."),
     response_model=bootstrap.BootstrapGetResponse,
     response_model_exclude_none=True,
 )
@@ -23,6 +28,13 @@ def get(
 
 @router.post(
     "/",
+    summary=(
+        "Bootstrap the system with initial signed Metadata. "
+        f"Scope: {SCOPES_NAMES.write_bootstrap.value}"
+    ),
+    description=(
+        "Initialize the Kaprien with initial signed Metadata and Settings."
+    ),
     response_model=bootstrap.BootstrapPostResponse,
     response_model_exclude_none=True,
     status_code=status.HTTP_202_ACCEPTED,
