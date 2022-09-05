@@ -12,7 +12,11 @@ router = APIRouter(
 
 @router.post(
     "/",
-    description="Add targets files to Metadata",
+    summary=(
+        "Add targets files to Metadata. "
+        f"Scope: {SCOPES_NAMES.write_bootstrap.value}"
+    ),
+    description="Add targets files to Metadata.",
     response_model=targets.Response,
     response_model_exclude_none=True,
     status_code=status.HTTP_202_ACCEPTED,

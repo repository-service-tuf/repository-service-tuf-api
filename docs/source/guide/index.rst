@@ -3,14 +3,10 @@ Kaprien REST API
 ################
 
 
-Kaprien REST API Documentation
-==============================
+.. toctree::
+   :maxdepth: 1
 
-The REST API Swagger Documentation is available after the Deploy
-(http://ip-address/)
+   Docker Image <Docker_README>
+   api
 
-
-Below, a simple overview of the Rest API endpoints
-
-.. openapi:: api/swagger.json
 

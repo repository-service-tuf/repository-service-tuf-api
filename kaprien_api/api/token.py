@@ -11,6 +11,11 @@ router = APIRouter(
 
 @router.get(
     "/",
+    summary=("Get token details. " f"Scope: {SCOPES_NAMES.read_token.value}"),
+    description=(
+        "Return the token details. It requires an authenticated token with "
+        "scope authorization."
+    ),
     response_model=token.GetTokenResponse,
     response_model_exclude_none=True,
 )
@@ -25,7 +30,8 @@ def get(
 
 @router.post(
     "/",
-    description="Issue token user/password authentication",
+    summary="Issue token user/password authentication",
+    description="Issue a token with scopes for all granted user scope.",
     response_model=token.PostTokenResponse,
 )
 def post(
@@ -36,13 +42,13 @@ def post(
 
 @router.post(
     "/new/",
-    summary="Issue token from token.",
-    status_code=200,
-    description=(
-        "Issue token by an authenticated token."
-        f"Requires scope '{SCOPES_NAMES.read_token.value}'"
+    summary=(
+        "Issue token from authenticated token. "
+        f"Scope: {SCOPES_NAMES.write_token.value}"
     ),
+    description="Issue token from a valid and existent token.",
     response_model=token.PostTokenResponse,
+    status_code=200,
 )
 def post_token(
     payload: token.TokenRequestPayload,

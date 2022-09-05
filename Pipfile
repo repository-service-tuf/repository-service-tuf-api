@@ -38,6 +38,7 @@ sphinxcontrib-serializinghtml = "*"
 sphinxcontrib-plantuml = "*"
 sphinxcontrib-openapi = "*"
 mistune = "==0.8.4"
+myst-parser = "*"
 
 [requires]
 python_version = "3.9"
