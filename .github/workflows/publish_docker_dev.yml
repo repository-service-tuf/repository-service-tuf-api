@@ -42,6 +42,6 @@ jobs:
     - name: Docker Hub Description
       uses: peter-evans/dockerhub-description@v3
       with:
-        username: ${{ github.repository_owner }}
+        username: ${{ secrets.GPR_OWNER }}
         password: ${{ secrets.GPR_TOKEN }}
         readme-filepath: ./docs/source/guide/Docker_README.md
