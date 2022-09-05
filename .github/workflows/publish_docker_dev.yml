@@ -38,10 +38,3 @@ jobs:
             ghcr.io/kaprien/kaprien-rest-api:dev
         build-args: |
           RELEASE_VERSION=dev
-
-    - name: Docker Hub Description
-      uses: peter-evans/dockerhub-description@v3
-      with:
-        username: ${{ secrets.GPR_OWNER }}
-        password: ${{ secrets.GPR_TOKEN }}
-        readme-filepath: ./docs/source/guide/Docker_README.md
