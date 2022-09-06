@@ -26,7 +26,7 @@ Some required services:
 ### Container Parameters
 
 ```shell
-docker run --env="KAPRIEN_RABBITMQ_SERVER=guest:guest@rabbitmq:5672" \
+docker run --env="KAPRIEN_BROKER_SERVER=amqp://guest:guest@rabbitmq:5672" \
     --env="KAPRIEN_REDIS_SERVER=redis://redis" \
     --env="SECRETS_KAPRIEN_TOKEN_KEY=secret" \
     --env="SECRETS_KAPRIEN_ADMIN_PASSWORD=password" \
@@ -37,26 +37,32 @@ docker run --env="KAPRIEN_RABBITMQ_SERVER=guest:guest@rabbitmq:5672" \
 
 ### Environment Variables
 
-#### `KAPRIEN_RABBITMQ_SERVER`
+#### (Required) `KAPRIEN_BROKER_SERVER`
 
-Broker server address. This is required.
+Broker server address.
 
-Example: `guest:guest@rabbitmq:5672`
+The broker must to be compatible with Celery. See [Celery Broker Instructions](https://docs.celeryq.dev/en/stable/getting-started/backends-and-brokers/index.html#broker-instructions)
 
-#### `KAPRIEN_REDIS_SERVER`
+Example: `amqp://guest:guest@rabbitmq:5672`
 
-Description: Redis server address.. This is required.
+#### (Required) `KAPRIEN_REDIS_SERVER`
+
+Description: Redis server address.
 
 Example: `redis://redis`
 
-#### `SECRETS_KAPRIEN_TOKEN_KEY`
+#### (Required) `SECRETS_KAPRIEN_TOKEN_KEY`
 
-Secret Token to hash the Tokens. . This is required.
+Secret Token to hash the Tokens.
 
 
-#### `SECRETS_KAPRIEN_ADMIN_PASSWORD`
+#### (Required) `SECRETS_KAPRIEN_ADMIN_PASSWORD`
 
 Secret admin password. This is required.
+
+#### (Optional) `DATA_DIR`
+
+Data Directory. Default: `/data/`.
 
 ### Volumes
 
