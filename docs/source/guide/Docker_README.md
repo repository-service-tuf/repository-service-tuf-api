@@ -16,9 +16,9 @@ In order to run this container you'll need docker installed.
 Some required services:
 
 * kaprien-repo-worker
-* Compatible Borker Service with [Celery](http://docs.celeryq.dev/),
-  recommended [RabbitMQ](https://www.rabbitmq.com) or
-  [Redis](https://redis.com)
+* Compatible Borker and Result Backend Service with
+  [Celery](https://docs.celeryq.dev/en/stable/getting-started/backends-and-brokers/index.html).
+  Recomended: [RabbitMQ](https://www.rabbitmq.com) or [Redis](https://redis.com)
 
 
 ## Usage
@@ -27,7 +27,7 @@ Some required services:
 
 ```shell
 docker run --env="KAPRIEN_BROKER_SERVER=amqp://guest:guest@rabbitmq:5672" \
-    --env="KAPRIEN_REDIS_SERVER=redis://redis" \
+    --env="KAPRIEN_RESULT_BACKEND_SERVER=redis://redis" \
     --env="SECRETS_KAPRIEN_TOKEN_KEY=secret" \
     --env="SECRETS_KAPRIEN_ADMIN_PASSWORD=password" \
     ghcr.io/kaprien/kaprien-repo-worker:latest \
@@ -45,20 +45,22 @@ The broker must to be compatible with Celery. See [Celery Broker Instructions](h
 
 Example: `amqp://guest:guest@rabbitmq:5672`
 
-#### (Required) `KAPRIEN_REDIS_SERVER`
+#### (Required) `KAPRIEN_RESULT_BACKEND_SERVER`
 
-Description: Redis server address.
+Redis server address.
+
+The result backend must to be compatible with Celery. See
+[Celery Task result backend settings](https://docs.celeryq.dev/en/stable/userguide/configuration.html#task-result-backend-settings)
 
 Example: `redis://redis`
 
 #### (Required) `SECRETS_KAPRIEN_TOKEN_KEY`
 
-Secret Token to hash the Tokens.
-
+Secret Token for hash the Tokens.
 
 #### (Required) `SECRETS_KAPRIEN_ADMIN_PASSWORD`
 
-Secret admin password. This is required.
+Secret admin password.
 
 #### (Optional) `DATA_DIR`
 
