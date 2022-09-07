@@ -101,7 +101,7 @@ if not user:
 
 celery = Celery(__name__)
 celery.conf.broker_url = settings.BROKER_SERVER
-celery.conf.result_backend = settings.REDIS_SERVER
+celery.conf.result_backend = settings.RESULT_BACKEND_SERVER
 celery.conf.accept_content = ["json", "application/json"]
 celery.conf.task_serializer = "json"
 celery.conf.result_serializer = "json"
