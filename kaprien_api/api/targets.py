@@ -14,7 +14,7 @@ router = APIRouter(
     "/",
     summary=(
         "Add targets files to Metadata. "
-        f"Scope: {SCOPES_NAMES.write_bootstrap.value}"
+        f"Scope: {SCOPES_NAMES.write_targets.value}"
     ),
     description="Add targets files to Metadata.",
     response_model=targets.Response,
