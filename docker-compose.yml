@@ -68,7 +68,7 @@ services:
       - 80:8000
     environment:
       - DATA_DIR=./data
-      - KAPRIEN_RABBITMQ_SERVER="guest:guest@rabbitmq:5672"
+      - KAPRIEN_BROKER_SERVER="amqp://guest:guest@rabbitmq:5672"
       - KAPRIEN_REDIS_SERVER="redis://redis"
       - SECRETS_KAPRIEN_TOKEN_KEY="secret"
       - SECRETS_KAPRIEN_ADMIN_PASSWORD="secret"

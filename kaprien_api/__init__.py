@@ -100,8 +100,8 @@ if not user:
     crud.user_add_scopes(db, user, [scope for scope in crud.get_scopes(db)])
 
 celery = Celery(__name__)
-celery.conf.broker_url = f"amqp://{settings.RABBITMQ_SERVER}"
-celery.conf.result_backend = "redis://redis"
+celery.conf.broker_url = settings.BROKER_SERVER
+celery.conf.result_backend = settings.REDIS_SERVER
 celery.conf.accept_content = ["json", "application/json"]
 celery.conf.task_serializer = "json"
 celery.conf.result_serializer = "json"
@@ -110,4 +110,5 @@ celery.conf.broker_heartbeat = 0
 celery.conf.result_persistent = True
 celery.conf.task_acks_late = True
 celery.conf.broker_pool_limit = None
-# celery.conf.broker_use_ssl = True
+# celery.conf.broker_use_ssl
+# https://github.com/kaprien/kaprien-rest-api/issues/91
