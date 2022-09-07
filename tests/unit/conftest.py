@@ -11,9 +11,7 @@ def test_client(monkeypatch):
     monkeypatch.setenv("SECRETS_KAPRIEN_TOKEN_KEY", "secret")
     monkeypatch.setenv("SECRETS_KAPRIEN_ADMIN_PASSWORD", "secret")
     monkeypatch.setenv("KAPRIEN_STORAGE_BACKEND", "LocalStorage")
-    monkeypatch.setenv(
-        "KAPRIEN_BROKER_SERVER", "guest:guest@kaprien-mq:5672"
-    )
+    monkeypatch.setenv("KAPRIEN_BROKER_SERVER", "guest:guest@kaprien-mq:5672")
 
     from app import kaprien_app
 
