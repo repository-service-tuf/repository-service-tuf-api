@@ -35,7 +35,8 @@ services:
     tty: true
 
   kaprien-repo-worker:
-    image: ghcr.io/kaprien/kaprien-repo-worker:dev
+    #image: ghcr.io/kaprien/kaprien-repo-worker:dev
+    image: kaprien-repo-worker:dev
     volumes:
       - kaprien-repo-worker-data:/data
     command: "celery -A app worker -B -l debug -Q metadata_repository -n kaprien@dev"
@@ -44,7 +45,7 @@ services:
       - KAPRIEN_KEYVAULT_BACKEND="LocalKeyVault"
       - KAPRIEN_LOCAL_STORAGE_BACKEND_PATH="/var/opt/kaprien/storage"
       - KAPRIEN_LOCAL_KEYVAULT_PATH="/var/opt/kaprien/keystorage"
-      - KAPRIEN_RABBITMQ_SERVER="guest:guest@rabbitmq:5672"
+      - KAPRIEN_BROKER_SERVER="amqp://guest:guest@rabbitmq:5672"
       - KAPRIEN_RESULT_BACKEND_SERVER="redis://redis"
       - KAPRIEN_WORKER_ID="dev"
     healthcheck:
