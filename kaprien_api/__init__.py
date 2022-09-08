@@ -15,6 +15,7 @@ class SCOPES_NAMES(Enum):
     read_bootstrap = "read:bootstrap"
     read_settings = "read:settings"
     read_targets = "read:targets"
+    read_tasks = "read:tasks"
     read_token = "read:token"
     write_bootstrap = "write:bootstrap"
     write_targets = "write:targets"
@@ -25,6 +26,7 @@ SCOPES = {
     SCOPES_NAMES.read_targets.value: "Read (GET) targets",
     SCOPES_NAMES.read_bootstrap.value: "Read (GET) bootstrap",
     SCOPES_NAMES.read_settings.value: "Read (GET) settings",
+    SCOPES_NAMES.read_tasks.value: "Read (GET) tasks",
     SCOPES_NAMES.read_token.value: "Read (GET) tokens",
     SCOPES_NAMES.write_targets.value: "Write (POST) targets",
     SCOPES_NAMES.write_token.value: "Write (POST) token",

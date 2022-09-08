@@ -45,6 +45,14 @@ kaprien\_api.targets module
    :undoc-members:
    :show-inheritance:
 
+kaprien\_api.tasks module
+-------------------------
+
+.. automodule:: kaprien_api.tasks
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 kaprien\_api.token module
 -------------------------
 
