@@ -35,8 +35,7 @@ services:
     tty: true
 
   kaprien-repo-worker:
-    #image: ghcr.io/kaprien/kaprien-repo-worker:dev
-    image: kaprien-repo-worker:dev
+    image: ghcr.io/kaprien/kaprien-repo-worker:dev
     volumes:
       - kaprien-repo-worker-data:/data
     command: "celery -A app worker -B -l debug -Q metadata_repository -n kaprien@dev"
