@@ -14,7 +14,8 @@ kaprien-rest-api Development
 This repository has the ``requirements.txt`` and the ``requirements-dev.txt``
 files to help build your virtual environment.
 
-We also recommend using [Pipenv](https://pipenv.pypa.io/en/latest/) to manage your virtual environment.
+We also recommend using `Pipenv <https://pipenv.pypa.io/en/latest/>`_ to manage your
+virtual environment.
 
 .. code:: shell
 

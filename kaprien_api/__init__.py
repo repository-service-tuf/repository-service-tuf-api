@@ -35,14 +35,15 @@ SCOPES = {
 
 DATA_DIR = os.getenv("DATA_DIR", "/data")
 os.makedirs(DATA_DIR, exist_ok=True)
-SETTINGS_FILE = os.path.join(DATA_DIR, "settings.ini")
-REPOSITORY_SETTINGS_FILE = os.path.join(DATA_DIR, "repository_settings.ini")
+SETTINGS_FILE = os.path.join(DATA_DIR, "settings.yaml")
+REPOSITORY_SETTINGS_FILE = os.path.join(DATA_DIR, "repository_settings.yaml")
 
 settings = Dynaconf(
     envvar_prefix="KAPRIEN",
     settings_files=[SETTINGS_FILE],
     environments=True,
 )
+
 settings_repository = Dynaconf(
     settings_files=[REPOSITORY_SETTINGS_FILE],
     environments=True,
