@@ -6,13 +6,7 @@ from fastapi.testclient import TestClient
 
 
 @pytest.fixture()
-def test_client(monkeypatch):
-    monkeypatch.setenv("DATA_DIR", "./data_test")
-    monkeypatch.setenv("SECRETS_KAPRIEN_TOKEN_KEY", "secret")
-    monkeypatch.setenv("SECRETS_KAPRIEN_ADMIN_PASSWORD", "secret")
-    monkeypatch.setenv("KAPRIEN_STORAGE_BACKEND", "LocalStorage")
-    monkeypatch.setenv("KAPRIEN_BROKER_SERVER", "guest:guest@kaprien-mq:5672")
-
+def test_client():
     from app import kaprien_app
 
     client = TestClient(kaprien_app)

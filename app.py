@@ -3,6 +3,7 @@ import logging
 
 from fastapi import APIRouter, FastAPI
 
+from kaprien_api import settings
 from kaprien_api.api.bootstrap import router as bootstrap_v1
 from kaprien_api.api.config import router as config_v1
 from kaprien_api.api.targets import router as targets_v1
@@ -32,8 +33,11 @@ api_v1 = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
+logging.info(settings.BOOTSTRAP_NODE)
 
-api_v1.include_router(bootstrap_v1)
+if settings.get("BOOTSTRAP_NODE", False) is True:
+    api_v1.include_router(bootstrap_v1)
+
 api_v1.include_router(config_v1)
 api_v1.include_router(targets_v1)
 api_v1.include_router(token_v1)
