@@ -33,9 +33,8 @@ api_v1 = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
-logging.info(settings.BOOTSTRAP_NODE)
-
 if settings.get("BOOTSTRAP_NODE", False) is True:
+    logging.info(settings.BOOTSTRAP_NODE)
     api_v1.include_router(bootstrap_v1)
 
 api_v1.include_router(config_v1)
