@@ -9,6 +9,6 @@ def get_task_id():
 
 
 @celery.task(name="app.kaprien_repo_worker")
-def repository_metadata(action, settings, payload):
+def repository_metadata(action, payload):
     logging.debug(f"New tasks action submitted {action}")
     return True

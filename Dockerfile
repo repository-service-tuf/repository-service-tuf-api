@@ -31,3 +31,4 @@ RUN mkdir /data
 COPY app.py /opt/kaprien-rest-api
 COPY kaprien_api /opt/kaprien-rest-api/kaprien_api
 COPY tests /opt/kaprien-rest-api/tests
+ENTRYPOINT ["uvicorn", "app:kaprien_app", "--host", "0.0.0.0", "--port", "80"]

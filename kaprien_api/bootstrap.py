@@ -6,7 +6,7 @@ from typing import Dict, List, Literal, Optional
 from fastapi import HTTPException, status
 from pydantic import BaseModel, Field
 
-from kaprien_api import settings_repository
+from kaprien_api import settings_repository, sync_redis
 from kaprien_api.config import is_bootstrap_done, save_settings
 from kaprien_api.metadata import get_task_id, repository_metadata
 
@@ -240,11 +240,11 @@ def post_bootstrap(payload):
     save_settings("BOOTSTRAP", task_id, settings_repository)
     logging.debug(f"Bootstrap locked with id {task_id}")
 
+    sync_redis()
     logging.debug(f"Bootstrap task {task_id} sent")
     repository_metadata.apply_async(
         kwargs={
             "action": "add_initial_metadata",
-            "settings": settings_repository.to_dict(),
             "payload": payload.dict(by_alias=True, exclude_none=True),
         },
         task_id=task_id,

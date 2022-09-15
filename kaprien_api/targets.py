@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel
 
-from kaprien_api import settings_repository
+from kaprien_api import sync_redis
 from kaprien_api.metadata import get_task_id, repository_metadata
 
 
@@ -13,6 +13,10 @@ class ResponseData(BaseModel):
 
 
 class Response(BaseModel):
+    """
+    Targets Response
+    """
+
     data: Optional[ResponseData]
     message: Optional[str]
 
@@ -46,6 +50,10 @@ class Targets(BaseModel):
 
 
 class Payload(BaseModel):
+    """
+    Targets payload for method POST
+    """
+
     targets: List[Targets]
 
     class Config:
@@ -55,12 +63,19 @@ class Payload(BaseModel):
         schema_extra = {"example": payload}
 
 
-def post(payload):
+def post(payload: Payload) -> Response:
+    """
+    Post new targets.
+    It will send a new task with the validated payload to the
+    ``metadata_repository`` broker queue.
+    It generates a new task id, syncs with the Redis server, and posts the new
+    task.
+    """
     task_id = get_task_id()
+    sync_redis()
     repository_metadata.apply_async(
         kwargs={
             "action": "add_targets",
-            "settings": settings_repository.to_dict(),
             "payload": payload.dict(by_alias=True),
         },
         task_id=task_id,
