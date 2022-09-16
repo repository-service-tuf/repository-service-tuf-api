@@ -29,6 +29,7 @@ FROM pre-final
 WORKDIR /opt/kaprien-rest-api
 RUN mkdir /data
 COPY app.py /opt/kaprien-rest-api
+COPY entrypoint.sh /opt/kaprien-rest-api
 COPY kaprien_api /opt/kaprien-rest-api/kaprien_api
 COPY tests /opt/kaprien-rest-api/tests
 ENTRYPOINT ["bash", "entrypoint.sh"]
