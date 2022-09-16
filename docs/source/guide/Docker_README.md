@@ -27,12 +27,12 @@ Some required services:
 
 ```shell
 
-docker run --env="KAPRIEN_BROKER_SERVER=amqp://guest:guest@rabbitmq:5672" \
+docker run -p 80:80 \
+    --env="KAPRIEN_BROKER_SERVER=amqp://guest:guest@rabbitmq:5672" \
     --env="KAPRIEN_REDIS_SERVER=redis://redis" \
     --env="SECRETS_KAPRIEN_TOKEN_KEY=secret" \
     --env="SECRETS_KAPRIEN_ADMIN_PASSWORD=password" \
-    --port 80:80
-    ghcr.io/kaprien/kaprien-repo-worker:latest \
+    ghcr.io/kaprien/kaprien-rest-api:latest
 ```
 
 
