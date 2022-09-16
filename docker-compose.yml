@@ -10,7 +10,6 @@ volumes:
 services:
   rabbitmq:
     image: rabbitmq:3-management-alpine
-    container_name: kaprien-mq
     ports:
       - 5672:5672
       - 15672:15672
@@ -36,16 +35,21 @@ services:
 
   kaprien-repo-worker:
     image: ghcr.io/kaprien/kaprien-repo-worker:dev
+    # Developers: For local build kaprien-repo-worker, uncomment the line below
+    #   On kaprien-repo-worker, run make build-dev
+    #
+    # image: kaprien-repo-worker:dev
     volumes:
       - kaprien-repo-worker-data:/data
-    command: "celery -A app worker -B -l debug -Q metadata_repository -n kaprien@dev"
+      - kaprien-storage:/var/opt/kaprien/storage
+      - kaprien-keystorage:/var/opt/kaprien/keystorage
     environment:
       - KAPRIEN_STORAGE_BACKEND="LocalStorage"
       - KAPRIEN_KEYVAULT_BACKEND="LocalKeyVault"
       - KAPRIEN_LOCAL_STORAGE_BACKEND_PATH="/var/opt/kaprien/storage"
       - KAPRIEN_LOCAL_KEYVAULT_PATH="/var/opt/kaprien/keystorage"
       - KAPRIEN_BROKER_SERVER="amqp://guest:guest@rabbitmq:5672"
-      - KAPRIEN_RESULT_BACKEND_SERVER="redis://redis"
+      - KAPRIEN_REDIS_SERVER="redis://redis"
       - KAPRIEN_WORKER_ID="dev"
     healthcheck:
       test: "exit 0"
@@ -63,14 +67,14 @@ services:
   kaprien-rest-api:
     build:
       context: .
-    command: uvicorn app:kaprien_app --host 0.0.0.0 --port 8000 --reload
+    entrypoint: uvicorn app:kaprien_app --host 0.0.0.0 --port 80 --reload
     ports:
-      - 80:8000
+      - 80:80
     environment:
       - DATA_DIR=./data
       - KAPRIEN_BOOTSTRAP_NODE=true
       - KAPRIEN_BROKER_SERVER="amqp://guest:guest@rabbitmq:5672"
-      - KAPRIEN_RESULT_BACKEND_SERVER="redis://redis"
+      - KAPRIEN_REDIS_SERVER="redis://redis"
       - SECRETS_KAPRIEN_TOKEN_KEY="secret"
       - SECRETS_KAPRIEN_ADMIN_PASSWORD="secret"
     volumes:

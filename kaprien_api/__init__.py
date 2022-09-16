@@ -4,6 +4,7 @@ from enum import Enum
 
 from celery import Celery
 from dynaconf import Dynaconf
+from dynaconf.loaders import redis_loader
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -41,17 +42,42 @@ REPOSITORY_SETTINGS_FILE = os.path.join(DATA_DIR, "repository_settings.yaml")
 settings = Dynaconf(
     envvar_prefix="KAPRIEN",
     settings_files=[SETTINGS_FILE],
-    environments=True,
 )
 
 settings_repository = Dynaconf(
     settings_files=[REPOSITORY_SETTINGS_FILE],
-    environments=True,
+    redis_enabled=True,
+    redis={
+        "host": settings.REDIS_SERVER.split("redis://")[1],
+        "port": settings.get("KAPRIEN_REDIS_SERVER_PORT", 6379),
+        "db": settings.get("KAPRIEN_REDIS_SERVER_DB_REPO_SETTINGS", 1),
+        "decode_responses": True,
+    },
 )
 secrets_settings = Dynaconf(
     envvar_prefix="SECRETS_KAPRIEN",
     environments=True,
 )
+
+
+def sync_redis():
+    """
+    If there is a local configuration with bootstrap in the local file settings
+    and it is not available in the Redis Server, restore it.
+
+    Note: The Redis Server should have its persistent data setup and recovery
+    mechanism. It is not a requirement from Rest API.
+    """
+    bootstrap_id = settings_repository.get("BOOTSTRAP")
+    redis_dynaconf = redis_loader.StrictRedis(
+        **settings_repository.get("REDIS_FOR_DYNACONF")
+    )
+
+    redis_dynaconf_data = redis_dynaconf.hgetall("DYNACONF_MAIN")
+    if redis_dynaconf_data == {} and bootstrap_id:
+        logging.warn("No data found in redis, synchronizing")
+        redis_loader.write(settings_repository, settings_repository.to_dict())
+
 
 # Tokens
 if secrets_settings.TOKEN_KEY.startswith("/run/secrets/"):
@@ -104,7 +130,7 @@ if not user:
 
 celery = Celery(__name__)
 celery.conf.broker_url = settings.BROKER_SERVER
-celery.conf.result_backend = settings.RESULT_BACKEND_SERVER
+celery.conf.result_backend = settings.REDIS_SERVER
 celery.conf.accept_content = ["json", "application/json"]
 celery.conf.task_serializer = "json"
 celery.conf.result_serializer = "json"

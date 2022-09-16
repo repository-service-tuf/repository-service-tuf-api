@@ -6,7 +6,9 @@ from fastapi.testclient import TestClient
 
 
 @pytest.fixture()
-def test_client():
+def test_client(monkeypatch):
+    monkeypatch.setattr("kaprien_api.sync_redis", lambda: None)
+
     from app import kaprien_app
 
     client = TestClient(kaprien_app)
