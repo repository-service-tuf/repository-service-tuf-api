@@ -31,8 +31,8 @@ docker run --env="KAPRIEN_BROKER_SERVER=amqp://guest:guest@rabbitmq:5672" \
     --env="KAPRIEN_REDIS_SERVER=redis://redis" \
     --env="SECRETS_KAPRIEN_TOKEN_KEY=secret" \
     --env="SECRETS_KAPRIEN_ADMIN_PASSWORD=password" \
+    --port 80:80
     ghcr.io/kaprien/kaprien-repo-worker:latest \
-    uvicorn app:kaprien_app --host 0.0.0.0 --port 8000 --reload
 ```
 
 
@@ -87,6 +87,16 @@ Secret Token for hash the Tokens.
 
 Secret admin password.
 
+
+#### (Optional) `SECRETS_KAPRIEN_SSL_CERT`
+
+SSL Certificate file. Example ``/path/to/api.crt``
+
+Conainer running port will be 443
+
+Requires a another environment variable ``SECRETS_KAPRIEN_SSL_KEY`` with the
+certificate key file. Example ``/path/to/api.key``
+
 #### (Optional) `DATA_DIR`
 
 Data Directory. Default: `/data/`.
@@ -94,3 +104,10 @@ Data Directory. Default: `/data/`.
 ### Volumes
 
 * `/data` - File location
+
+
+### Ports
+
+Default port 80
+
+If using ``SECRETS_KAPRIEN_SSL_CERT``, port 443
