@@ -1,10 +1,14 @@
 import json
 from typing import Any, Dict, List, Optional
 
+from fastapi import HTTPException, status
 from pydantic import BaseModel
 
-from kaprien_api import sync_redis
-from kaprien_api.metadata import get_task_id, repository_metadata
+from kaprien_api.metadata import (
+    get_task_id,
+    is_bootstrap_done,
+    repository_metadata,
+)
 
 
 class ResponseData(BaseModel):
@@ -71,8 +75,13 @@ def post(payload: Payload) -> Response:
     It generates a new task id, syncs with the Redis server, and posts the new
     task.
     """
+    if is_bootstrap_done() is False:
+        raise HTTPException(
+            status.HTTP_200_OK,
+            detail={"error": "System has not a Repository Metadata"},
+        )
+
     task_id = get_task_id()
-    sync_redis()
     repository_metadata.apply_async(
         kwargs={
             "action": "add_targets",
