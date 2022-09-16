@@ -6,9 +6,13 @@ from typing import Dict, List, Literal, Optional
 from fastapi import HTTPException, status
 from pydantic import BaseModel, Field
 
-from kaprien_api import settings_repository, sync_redis
-from kaprien_api.config import is_bootstrap_done, save_settings
-from kaprien_api.metadata import get_task_id, repository_metadata
+from kaprien_api import settings_repository
+from kaprien_api.config import save_settings
+from kaprien_api.metadata import (
+    get_task_id,
+    is_bootstrap_done,
+    repository_metadata,
+)
 
 
 class Roles(Enum):
@@ -240,7 +244,6 @@ def post_bootstrap(payload):
     save_settings("BOOTSTRAP", task_id, settings_repository)
     logging.debug(f"Bootstrap locked with id {task_id}")
 
-    sync_redis()
     logging.debug(f"Bootstrap task {task_id} sent")
     repository_metadata.apply_async(
         kwargs={

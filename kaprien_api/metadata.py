@@ -1,7 +1,19 @@
 import logging
 from uuid import uuid4
 
-from kaprien_api import celery
+from kaprien_api import celery, settings_repository, sync_redis
+
+
+def is_bootstrap_done():
+    """
+    Check if the boot is done.
+    """
+
+    sync_redis()
+    if settings_repository.get_fresh("BOOTSTRAP"):
+        return True
+    else:
+        return False
 
 
 def get_task_id():

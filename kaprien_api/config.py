@@ -8,6 +8,7 @@ from fastapi import HTTPException, status
 from pydantic import BaseModel
 
 from kaprien_api import settings_repository
+from kaprien_api.metadata import is_bootstrap_done
 
 
 class Response(BaseModel):
@@ -35,13 +36,6 @@ def save_settings(key: str, value: Any, settings: Dynaconf):
         settings.SETTINGS_FILE_FOR_DYNACONF[0],
         DynaBox(settings_data).to_dict(),
     )
-
-
-def is_bootstrap_done():
-    if settings_repository.get("BOOTSTRAP"):
-        return True
-    else:
-        return False
 
 
 def get():
