@@ -54,3 +54,10 @@ def user_add_scopes(
     db.commit()
     db.refresh(user)
     return user
+
+
+def user_append_scope(db: Session, user: schemas.User, scope: str):
+    user.scopes.append(get_scope_by_name(db, scope))
+    db.commit()
+    db.refresh(user)
+    return user

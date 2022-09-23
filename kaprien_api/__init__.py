@@ -11,6 +11,17 @@ from sqlalchemy.orm import sessionmaker
 from kaprien_api.users import crud, schemas
 from kaprien_api.users.models import Base
 
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s %(levelname)s %(message)s",
+    datefmt="%H:%M:%S",
+)
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(message)s",
+    datefmt="%H:%M:%S",
+)
+
 
 class SCOPES_NAMES(Enum):
     read_bootstrap = "read:bootstrap"
@@ -21,6 +32,7 @@ class SCOPES_NAMES(Enum):
     write_bootstrap = "write:bootstrap"
     write_targets = "write:targets"
     write_token = "write:token"
+    delete_targets = "delete:targets"
 
 
 SCOPES = {
@@ -32,6 +44,7 @@ SCOPES = {
     SCOPES_NAMES.write_targets.value: "Write (POST) targets",
     SCOPES_NAMES.write_token.value: "Write (POST) token",
     SCOPES_NAMES.write_bootstrap.value: "Write (POST) bootstrap",
+    SCOPES_NAMES.delete_targets.value: "Delete (DELETE) targets",
 }
 
 DATA_DIR = os.getenv("DATA_DIR", "/data")
@@ -100,7 +113,7 @@ if secrets_settings.ADMIN_PASSWORD.startswith("/run/secrets/"):
 else:
     ADMIN_PASSWORD = secrets_settings.ADMIN_PASSWORD
 
-# User database
+# User database setup
 DATABASE_URL = settings.get(
     "DATABASE_URL", f"sqlite:///{os.path.join(DATA_DIR, 'users.sqlite')}"
 )
@@ -119,7 +132,6 @@ for scope in SCOPES:
         crud.create_user_scope(db, add_scope)
 
 user = crud.get_user_by_username(db, username="admin")
-
 if not user:
     user_in = schemas.UserCreate(
         username="admin",
@@ -128,6 +140,14 @@ if not user:
     user = crud.create_user(db, user_in)
     crud.user_add_scopes(db, user, [scope for scope in crud.get_scopes(db)])
 
+else:
+    user_scopes = [user_scope.name for user_scope in user.scopes]
+    for scope in SCOPES:
+        if scope not in user_scopes:
+            crud.user_append_scope(db, user, scope)
+            logging.info(f"Scope '{scope}' added to admin.")
+
+# Celery setup
 celery = Celery(__name__)
 celery.conf.broker_url = settings.BROKER_SERVER
 celery.conf.result_backend = settings.REDIS_SERVER
