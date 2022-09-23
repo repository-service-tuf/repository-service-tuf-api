@@ -30,6 +30,7 @@ def token_headers(test_client):
             "read:settings "
             "read:token "
             "read:tasks "
+            "delete:targets "
         ),
     }
     token = test_client.post(token_url, data=token_payload)
