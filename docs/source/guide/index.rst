@@ -1,7 +1,6 @@
-################
-Kaprien REST API
-################
-
+================================
+TUF Respository Service REST API
+================================
 
 .. toctree::
    :maxdepth: 1

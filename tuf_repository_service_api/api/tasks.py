@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, Security
 
-from kaprien_api import SCOPES_NAMES, tasks
-from kaprien_api.token import validate_token
+from tuf_repository_service_api import SCOPES_NAMES, tasks
+from tuf_repository_service_api.token import validate_token
 
 router = APIRouter(
     prefix="/task",
@@ -18,7 +18,7 @@ router = APIRouter(
         "The status is according with Celery tasks: "
         "`PENDING` the task still not processed or unknown/inexistent task. "
         "`RECEIVED` task is reveived by the broker server. "
-        "`PRE_RUN` the task will start by kaprien-repo-worker. "
+        "`PRE_RUN` the task will start by tuf-repository-service-worker. "
         "`RUNNING` the task is in execution. "
         "`FAILURE` the task failed to executed. "
         "`SUCCESS` the task execution is finished. "

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Security
 
-from kaprien_api import SCOPES_NAMES, config
-from kaprien_api.token import validate_token
+from tuf_repository_service_api import SCOPES_NAMES, config
+from tuf_repository_service_api.token import validate_token
 
 router = APIRouter(
     prefix="/config",

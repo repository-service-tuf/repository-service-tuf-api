@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Security
 
-from kaprien_api import SCOPES_NAMES, token
+from tuf_repository_service_api import SCOPES_NAMES, token
 
 router = APIRouter(
     prefix="/token",

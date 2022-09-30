@@ -1,4 +1,4 @@
-# kaprien-rest-api specifics
+# tuf-repository-service-api specifics
 .secrets.ini
 settings.ini
 metadata/**

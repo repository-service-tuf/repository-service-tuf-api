@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Optional
 from fastapi import HTTPException, status
 from pydantic import BaseModel
 
-from kaprien_api.metadata import (
+from tuf_repository_service_api.metadata import (
     get_task_id,
     is_bootstrap_done,
     repository_metadata,

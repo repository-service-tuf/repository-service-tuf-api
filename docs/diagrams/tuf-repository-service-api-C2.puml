@@ -32,22 +32,22 @@ AddContainerTag("metadata_web", $sprite="web_services", $legendText="Web exposed
 AddContainerTag("download_target", $sprite="download", $legendText="Download file/target/package", $bgColor=Gray)
 AddContainerTag("terminal", $sprite="terminal,scale=0.5,color=#000000", $legendText="CLI")
 
-AddRelTag("terminal", $textColor="$ARROW_COLOR", $lineColor="$ARROW_COLOR", $sprite="terminal,scale=0.75,color=#000000", $legendText="Kaprien CLI")
+AddRelTag("terminal", $textColor="$ARROW_COLOR", $lineColor="$ARROW_COLOR", $sprite="terminal,scale=0.75,color=#000000", $legendText="TUF Respository Service CLI")
 AddRelTag("bowser", $textColor="$ARROW_COLOR", $lineColor="$ARROW_COLOR", $sprite="management_console,scale=0.5", $legendText="Browser")
 AddRelTag("download", $textColor="Green", $lineColor="$ARROW_COLOR")
 AddRelTag("share", $textColor="orange", $lineColor="grey", $lineStyle = DashedLine())
 
 Person(administration_user, "Admin", $tags="admin") #Grey
 
-Container(kaprien_rest_api, "KAPRIEN-REST-API", $tags="rest_api")
+Container(trs_rest_api, "TUF-REPOSITORY-SERVICE-API", $tags="rest_api")
 ContainerDb(data_dir, "/$DATA_DIR", "File System", "Service settings\nRepository settings\nUsers db", $tags="storage_service")
 Container_Ext(broker, "Broker/Backend", "RabbitMQ, Redis, etc", $tags="queue") #Grey
 Container_Ext(ci_cd, "Third Part Software", "Jenkis, Github, Gitlab, etc", $tags="ci_cd") #Grey
 
-Rel(administration_user, kaprien_rest_api, "KAPRIEN-CLI", $tags="terminal")
-Rel_R(ci_cd, kaprien_rest_api, "HTTPS + Tokens")
-Rel_D(kaprien_rest_api, broker, "Publisher/Consumer", "Tasks")
-Rel_R(kaprien_rest_api, data_dir, "Write/Read data")
+Rel(administration_user, trs_rest_api, "TUF-REPOSITORY-SERVICE-CLI", $tags="terminal")
+Rel_R(ci_cd, trs_rest_api, "HTTPS + Tokens")
+Rel_D(trs_rest_api, broker, "Publisher/Consumer", "Tasks")
+Rel_R(trs_rest_api, data_dir, "Write/Read data")
 
 
 HIDE_STEREOTYPE()

@@ -16,15 +16,17 @@ class TestPostTargets:
             apply_async=pretend.call_recorder(lambda *a, **kw: None)
         )
         monkeypatch.setattr(
-            "kaprien_api.targets.is_bootstrap_done", lambda: True
+            "tuf_repository_service_api.targets.is_bootstrap_done",
+            lambda: True,
         )
         monkeypatch.setattr(
-            "kaprien_api.targets.repository_metadata",
+            "tuf_repository_service_api.targets.repository_metadata",
             mocked_repository_metadata,
         )
         fake_task_id = uuid4().hex
         monkeypatch.setattr(
-            "kaprien_api.targets.get_task_id", lambda: fake_task_id
+            "tuf_repository_service_api.targets.get_task_id",
+            lambda: fake_task_id,
         )
 
         response = test_client.post(url, json=payload, headers=token_headers)
@@ -57,7 +59,8 @@ class TestPostTargets:
 
         payload = json.loads(f_data)
         monkeypatch.setattr(
-            "kaprien_api.targets.is_bootstrap_done", lambda: False
+            "tuf_repository_service_api.targets.is_bootstrap_done",
+            lambda: False,
         )
         response = test_client.post(url, json=payload, headers=token_headers)
         assert response.status_code == status.HTTP_200_OK
@@ -130,18 +133,20 @@ class TestDeleteTargets:
         }
 
         monkeypatch.setattr(
-            "kaprien_api.targets.is_bootstrap_done", lambda: True
+            "tuf_repository_service_api.targets.is_bootstrap_done",
+            lambda: True,
         )
         mocked_repository_metadata = pretend.stub(
             apply_async=pretend.call_recorder(lambda *a, **kw: None)
         )
         monkeypatch.setattr(
-            "kaprien_api.targets.repository_metadata",
+            "tuf_repository_service_api.targets.repository_metadata",
             mocked_repository_metadata,
         )
         fake_task_id = uuid4().hex
         monkeypatch.setattr(
-            "kaprien_api.targets.get_task_id", lambda: fake_task_id
+            "tuf_repository_service_api.targets.get_task_id",
+            lambda: fake_task_id,
         )
 
         response = test_client.delete(url, json=payload, headers=token_headers)
@@ -174,7 +179,8 @@ class TestDeleteTargets:
             "targets": ["file-v1.0.0_i683.tar.gz", "v0.4.1/file.tar.gz"]
         }
         monkeypatch.setattr(
-            "kaprien_api.targets.is_bootstrap_done", lambda: False
+            "tuf_repository_service_api.targets.is_bootstrap_done",
+            lambda: False,
         )
         response = test_client.delete(url, json=payload, headers=token_headers)
         assert response.status_code == status.HTTP_200_OK

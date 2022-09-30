@@ -3,7 +3,7 @@ from typing import Any, Optional
 from fastapi import Query
 from pydantic import BaseModel, Field
 
-from kaprien_api.metadata import repository_metadata
+from tuf_repository_service_api.metadata import repository_metadata
 
 
 class GetParameters:
@@ -49,7 +49,8 @@ def get(task_id: str) -> Response:
     Get the task details from Result Backend Server.
 
     Uses the Celery implementation in
-    ``kaprien_api.metadata.metadata_repository.AsyncResult`` to fetch from
+    ``tuf_repository_service_api.metadata.metadata_repository.AsyncResult`` to
+    fetch from
     Result Backend the task status.
 
     Args:

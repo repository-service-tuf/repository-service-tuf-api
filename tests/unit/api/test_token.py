@@ -48,7 +48,7 @@ class TestGetToken:
         )
 
         monkeypatch.setattr(
-            "kaprien_api.token.datetime",
+            "tuf_repository_service_api.token.datetime",
             mocked_datetime,
         )
         url = f"/api/v1/token/?token={test_token}"
@@ -66,7 +66,9 @@ class TestPostToken:
                 lambda: datetime(2019, 6, 16, 7, 5, 00, 355186)
             )
         )
-        monkeypatch.setattr("kaprien_api.token.datetime", mocked_datetime)
+        monkeypatch.setattr(
+            "tuf_repository_service_api.token.datetime", mocked_datetime
+        )
         url = "/api/v1/token/?expires=2"
         token_data = {
             "username": "admin",
@@ -83,7 +85,9 @@ class TestPostToken:
                 lambda: datetime(2019, 6, 16, 9, 5, 00, 355186)
             )
         )
-        monkeypatch.setattr("kaprien_api.token.datetime", mocked_datetime)
+        monkeypatch.setattr(
+            "tuf_repository_service_api.token.datetime", mocked_datetime
+        )
         url = "/api/v1/token/"
         token_data = {
             "username": "admin",
@@ -141,13 +145,16 @@ class TestPostToken:
             )
         )
         monkeypatch.setattr(
-            "kaprien_api.token.get_user_by_username", fake_user_db
+            "tuf_repository_service_api.token.get_user_by_username",
+            fake_user_db,
         )
 
         mocked_bcrypt = pretend.stub(
             checkpw=pretend.call_recorder(lambda *a: True)
         )
-        monkeypatch.setattr("kaprien_api.token.bcrypt", mocked_bcrypt)
+        monkeypatch.setattr(
+            "tuf_repository_service_api.token.bcrypt", mocked_bcrypt
+        )
 
         token_url = "/api/v1/token/?expires=1"
         token_payload = {

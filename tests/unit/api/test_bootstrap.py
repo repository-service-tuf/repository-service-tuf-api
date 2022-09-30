@@ -12,7 +12,8 @@ class TestGetBoostrap:
         url = "/api/v1/bootstrap/"
         mocked_check_metadata = pretend.call_recorder(lambda: False)
         monkeypatch.setattr(
-            "kaprien_api.bootstrap.is_bootstrap_done", mocked_check_metadata
+            "tuf_repository_service_api.bootstrap.is_bootstrap_done",
+            mocked_check_metadata,
         )
 
         response = test_client.get(url, headers=token_headers)
@@ -32,7 +33,8 @@ class TestGetBoostrap:
 
         mocked_check_metadata = pretend.call_recorder(lambda: True)
         monkeypatch.setattr(
-            "kaprien_api.bootstrap.is_bootstrap_done", mocked_check_metadata
+            "tuf_repository_service_api.bootstrap.is_bootstrap_done",
+            mocked_check_metadata,
         )
 
         response = test_client.get(url, headers=token_headers)
@@ -49,7 +51,8 @@ class TestGetBoostrap:
         url = "/api/v1/bootstrap/"
         mocked_check_metadata = pretend.call_recorder(lambda: False)
         monkeypatch.setattr(
-            "kaprien_api.bootstrap.is_bootstrap_done", mocked_check_metadata
+            "tuf_repository_service_api.bootstrap.is_bootstrap_done",
+            mocked_check_metadata,
         )
         token_headers = {"Authorization": "Bearer h4ck3r"}
         response = test_client.get(url, headers=token_headers)
@@ -74,7 +77,8 @@ class TestGetBoostrap:
         url = "/api/v1/bootstrap/"
         mocked_check_metadata = pretend.call_recorder(lambda: False)
         monkeypatch.setattr(
-            "kaprien_api.bootstrap.is_bootstrap_done", mocked_check_metadata
+            "tuf_repository_service_api.bootstrap.is_bootstrap_done",
+            mocked_check_metadata,
         )
 
         response = test_client.get(url, headers=token_headers)
@@ -91,12 +95,14 @@ class TestPostBootstrap:
 
         mocked_save_settings = pretend.call_recorder(lambda *a: None)
         monkeypatch.setattr(
-            "kaprien_api.bootstrap.save_settings", mocked_save_settings
+            "tuf_repository_service_api.bootstrap.save_settings",
+            mocked_save_settings,
         )
 
         mocked_check_metadata = pretend.call_recorder(lambda: False)
         monkeypatch.setattr(
-            "kaprien_api.bootstrap.is_bootstrap_done", mocked_check_metadata
+            "tuf_repository_service_api.bootstrap.is_bootstrap_done",
+            mocked_check_metadata,
         )
 
         mocked_async_result = pretend.stub(state="SUCCESS")
@@ -105,10 +111,12 @@ class TestPostBootstrap:
             AsyncResult=pretend.call_recorder(lambda *a: mocked_async_result),
         )
         monkeypatch.setattr(
-            "kaprien_api.bootstrap.repository_metadata",
+            "tuf_repository_service_api.bootstrap.repository_metadata",
             mocked_repository_metadata,
         )
-        monkeypatch.setattr("kaprien_api.bootstrap.get_task_id", lambda: "123")
+        monkeypatch.setattr(
+            "tuf_repository_service_api.bootstrap.get_task_id", lambda: "123"
+        )
 
         with open("tests/data_examples/bootstrap/payload.json") as f:
             f_data = f.read()
@@ -130,7 +138,8 @@ class TestPostBootstrap:
 
         mocked_check_metadata = pretend.call_recorder(lambda: True)
         monkeypatch.setattr(
-            "kaprien_api.bootstrap.is_bootstrap_done", mocked_check_metadata
+            "tuf_repository_service_api.bootstrap.is_bootstrap_done",
+            mocked_check_metadata,
         )
 
         with open("tests/data_examples/bootstrap/payload.json") as f:
@@ -173,22 +182,26 @@ class TestPostBootstrap:
         token_headers = {"Authorization": "Bearer h4ck3r"}
         mocked_save_settings = pretend.call_recorder(lambda *a: None)
         monkeypatch.setattr(
-            "kaprien_api.bootstrap.save_settings", mocked_save_settings
+            "tuf_repository_service_api.bootstrap.save_settings",
+            mocked_save_settings,
         )
 
         mocked_check_metadata = pretend.call_recorder(lambda: False)
         monkeypatch.setattr(
-            "kaprien_api.bootstrap.is_bootstrap_done", mocked_check_metadata
+            "tuf_repository_service_api.bootstrap.is_bootstrap_done",
+            mocked_check_metadata,
         )
 
         mocked_repository_metadata = pretend.stub(
             apply_async=pretend.call_recorder(lambda *a, **kw: None)
         )
         monkeypatch.setattr(
-            "kaprien_api.bootstrap.repository_metadata",
+            "tuf_repository_service_api.bootstrap.repository_metadata",
             mocked_repository_metadata,
         )
-        monkeypatch.setattr("kaprien_api.bootstrap.get_task_id", lambda: "123")
+        monkeypatch.setattr(
+            "tuf_repository_service_api.bootstrap.get_task_id", lambda: "123"
+        )
 
         with open("tests/data_examples/bootstrap/payload.json") as f:
             f_data = f.read()
@@ -219,22 +232,26 @@ class TestPostBootstrap:
 
         mocked_save_settings = pretend.call_recorder(lambda *a: None)
         monkeypatch.setattr(
-            "kaprien_api.bootstrap.save_settings", mocked_save_settings
+            "tuf_repository_service_api.bootstrap.save_settings",
+            mocked_save_settings,
         )
 
         mocked_check_metadata = pretend.call_recorder(lambda: False)
         monkeypatch.setattr(
-            "kaprien_api.bootstrap.is_bootstrap_done", mocked_check_metadata
+            "tuf_repository_service_api.bootstrap.is_bootstrap_done",
+            mocked_check_metadata,
         )
 
         mocked_repository_metadata = pretend.stub(
             apply_async=pretend.call_recorder(lambda *a, **kw: None)
         )
         monkeypatch.setattr(
-            "kaprien_api.bootstrap.repository_metadata",
+            "tuf_repository_service_api.bootstrap.repository_metadata",
             mocked_repository_metadata,
         )
-        monkeypatch.setattr("kaprien_api.bootstrap.get_task_id", lambda: "123")
+        monkeypatch.setattr(
+            "tuf_repository_service_api.bootstrap.get_task_id", lambda: "123"
+        )
 
         with open("tests/data_examples/bootstrap/payload.json") as f:
             f_data = f.read()

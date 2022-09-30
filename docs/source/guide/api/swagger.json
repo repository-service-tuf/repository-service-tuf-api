@@ -1,8 +1,8 @@
 {
     "openapi": "3.0.2",
     "info": {
-        "title": "Kaprien Rest API",
-        "description": "Kaprien Rest API service for Kaprien Server",
+        "title": "TUF Respository Service Rest API",
+        "description": "TUF Respository Service Rest API for TUF Repository Server",
         "version": "0.1.0"
     },
     "paths": {
@@ -44,7 +44,7 @@
                     "v1"
                 ],
                 "summary": "Bootstrap the system with initial signed Metadata. Scope: write:bootstrap",
-                "description": "Initialize the Kaprien with initial signed Metadata and Settings.",
+                "description": "Initialize the TUF Respository with initial signed Metadata and Settings.",
                 "operationId": "post_api_v1_bootstrap__post",
                 "requestBody": {
                     "content": {
@@ -105,7 +105,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/kaprien_api__config__Response"
+                                    "$ref": "#/components/schemas/tuf_repository_service_api__config__Response"
                                 }
                             }
                         }
@@ -148,7 +148,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/kaprien_api__targets__Response"
+                                    "$ref": "#/components/schemas/tuf_repository_service_api__targets__Response"
                                 }
                             }
                         }
@@ -199,7 +199,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/kaprien_api__targets__Response"
+                                    "$ref": "#/components/schemas/tuf_repository_service_api__targets__Response"
                                 }
                             }
                         }
@@ -388,7 +388,7 @@
                     "v1"
                 ],
                 "summary": "Get task status. Scope: read:tasks",
-                "description": "Get Repository Metadata task status. The status is according with Celery tasks: `PENDING` the task still not processed or unknown/inexistent task. `RECEIVED` task is reveived by the broker server. `PRE_RUN` the task will start by kaprien-repo-worker. `RUNNING` the task is in execution. `FAILURE` the task failed to executed. `SUCCESS` the task execution is finished.",
+                "description": "Get Repository Metadata task status. The status is according with Celery tasks: `PENDING` the task still not processed or unknown/inexistent task. `RECEIVED` task is reveived by the broker server. `PRE_RUN` the task will start by tuf-repository-service-worker. `RUNNING` the task is in execution. `FAILURE` the task failed to executed. `SUCCESS` the task execution is finished.",
                 "operationId": "get_api_v1_task__get",
                 "security": [
                     {
@@ -417,7 +417,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/kaprien_api__tasks__Response"
+                                    "$ref": "#/components/schemas/tuf_repository_service_api__tasks__Response"
                                 }
                             }
                         }
@@ -1975,7 +1975,7 @@
                     }
                 }
             },
-            "kaprien_api__config__Response": {
+            "tuf_repository_service_api__config__Response": {
                 "title": "Response",
                 "required": [
                     "data",
@@ -2023,7 +2023,7 @@
                     "message": "Current Settings"
                 }
             },
-            "kaprien_api__targets__Response": {
+            "tuf_repository_service_api__targets__Response": {
                 "title": "Response",
                 "type": "object",
                 "properties": {
@@ -2047,7 +2047,7 @@
                     "message": "New Target(s) successfully submitted."
                 }
             },
-            "kaprien_api__tasks__Response": {
+            "tuf_repository_service_api__tasks__Response": {
                 "title": "Response",
                 "required": [
                     "data"
