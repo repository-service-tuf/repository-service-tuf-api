@@ -1,11 +1,11 @@
 version: "3.9"
 
 volumes:
-  kaprien-repo-worker-data:
-  kaprien-mq-data:
-  kaprien-storage:
-  kaprien-keystorage:
-  kaprien-redis-data:
+  tuf-repository-service-worker-data:
+  tuf-repository-service-mq-data:
+  tuf-repository-service-storage:
+  tuf-repository-service-keystorage:
+  tuf-repository-service-redis-data:
 
 services:
   rabbitmq:
@@ -14,9 +14,9 @@ services:
       - 5672:5672
       - 15672:15672
     volumes:
-     - "kaprien-mq-data:/var/lib/rabbitmq"
-     - "kaprien-storage:/var/opt/kaprien/storage"
-     - "kaprien-keystorage:/var/opt/kaprien/keystorage"
+     - "tuf-repository-service-mq-data:/var/lib/rabbitmq"
+     - "tuf-repository-service-storage:/var/opt/tuf-repository-service/storage"
+     - "tuf-repository-service-keystorage:/var/opt/tuf-repository-service/keystorage"
     healthcheck:
       test: "exit 0"
     restart: always
@@ -25,7 +25,7 @@ services:
   redis:
     image: redis:4.0
     volumes:
-      - kaprien-redis-data:/data
+      - tuf-repository-service-redis-data:/data
     ports:
       - "6379:6379"
     healthcheck:
@@ -33,24 +33,24 @@ services:
     restart: always
     tty: true
 
-  kaprien-repo-worker:
-    image: ghcr.io/kaprien/kaprien-repo-worker:dev
-    # Developers: For local build kaprien-repo-worker, uncomment the line below
-    #   On kaprien-repo-worker, run make build-dev
+  tuf-repository-service-worker:
+    image: ghcr.io/kaprien/tuf-repository-service-worker:dev
+    # Developers: For local build tuf-repository-service-worker, uncomment the line below
+    #   On tuf-repository-service-worker, run make build-dev
     #
-    # image: kaprien-repo-worker:dev
+    # image: tuf-repository-service-worker:dev
     volumes:
-      - kaprien-repo-worker-data:/data
-      - kaprien-storage:/var/opt/kaprien/storage
-      - kaprien-keystorage:/var/opt/kaprien/keystorage
+      - tuf-repository-service-worker-data:/data
+      - tuf-repository-service-storage:/var/opt/tuf-repository-service/storage
+      - tuf-repository-service-keystorage:/var/opt/tuf-repository-service/keystorage
     environment:
-      - KAPRIEN_STORAGE_BACKEND="LocalStorage"
-      - KAPRIEN_KEYVAULT_BACKEND="LocalKeyVault"
-      - KAPRIEN_LOCAL_STORAGE_BACKEND_PATH="/var/opt/kaprien/storage"
-      - KAPRIEN_LOCAL_KEYVAULT_PATH="/var/opt/kaprien/keystorage"
-      - KAPRIEN_BROKER_SERVER="amqp://guest:guest@rabbitmq:5672"
-      - KAPRIEN_REDIS_SERVER="redis://redis"
-      - KAPRIEN_WORKER_ID="dev"
+      - TRS_STORAGE_BACKEND="LocalStorage"
+      - TRS_KEYVAULT_BACKEND="LocalKeyVault"
+      - TRS_LOCAL_STORAGE_BACKEND_PATH="/var/opt/tuf-repository-service/storage"
+      - TRS_LOCAL_KEYVAULT_PATH="/var/opt/tuf-repository-service/keystorage"
+      - TRS_BROKER_SERVER="amqp://guest:guest@rabbitmq:5672"
+      - TRS_REDIS_SERVER="redis://redis"
+      - TRS_WORKER_ID="dev"
     healthcheck:
       test: "exit 0"
     restart: always
@@ -58,31 +58,31 @@ services:
 
   web:
     image: python:3.10-slim-buster
-    command: python -m http.server -d /var/opt/kaprien/storage 8080
+    command: python -m http.server -d /var/opt/tuf-repository-service/storage 8080
     volumes:
-      - kaprien-storage:/var/opt/kaprien/storage
+      - tuf-repository-service-storage:/var/opt/tuf-repository-service/storage
     ports:
       - "8080:8080"
 
-  kaprien-rest-api:
+  tuf-repository-service-api:
     build:
       context: .
-    entrypoint: uvicorn app:kaprien_app --host 0.0.0.0 --port 80 --reload
+    entrypoint: uvicorn app:trs_app --host 0.0.0.0 --port 80 --reload
     ports:
       - 80:80
     environment:
       - DATA_DIR=./data
-      - KAPRIEN_BOOTSTRAP_NODE=true
-      - KAPRIEN_BROKER_SERVER="amqp://guest:guest@rabbitmq:5672"
-      - KAPRIEN_REDIS_SERVER="redis://redis"
-      - SECRETS_KAPRIEN_TOKEN_KEY="secret"
-      - SECRETS_KAPRIEN_ADMIN_PASSWORD="secret"
+      - TRS_BOOTSTRAP_NODE=true
+      - TRS_BROKER_SERVER="amqp://guest:guest@rabbitmq:5672"
+      - TRS_REDIS_SERVER="redis://redis"
+      - SECRETS_TRS_TOKEN_KEY="secret"
+      - SECRETS_TRS_ADMIN_PASSWORD="secret"
     volumes:
-      - ./:/opt/kaprien-rest-api:z
+      - ./:/opt/tuf-repository-service-api:z
     depends_on:
       rabbitmq:
         condition: service_healthy
       redis:
         condition: service_healthy
-      kaprien-repo-worker:
+      tuf-repository-service-worker:
         condition: service_healthy

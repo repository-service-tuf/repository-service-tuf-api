@@ -1,6 +1,8 @@
-################
-Kaprien REST API
-################
+############################
+TUF Respository Service API
+############################
+
+TUF Respository Service REST API is part of TUF Repository Service (tuf-repository-service-api).
 
 .. note::
 
@@ -10,7 +12,6 @@ Kaprien REST API
 Development
 ###########
 
-
 Development tools
 =================
 
@@ -18,6 +19,30 @@ Development tools
 - pip
 - Pipenv
 - Docker
+
+Getting source code
+===================
+
+`Fork <https://docs.github.com/en/get-started/quickstart/fork-a-repo>`_ the
+repository on `GitHub <https://github.com/kaprien/tuf-repository-service-api>`_
+and `clone <https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository>`_
+it to your local machine:
+
+.. code-block:: console
+
+    git clone git@github.com:YOUR-USERNAME/tuf-repository-service-api.git
+
+Add a `remote
+<https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/configuring-a-remote-for-a-fork>`_
+and regularly `sync <https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/syncing-a-fork>`_
+to make sure you stay up-to-date with our repository:
+
+.. code-block:: console
+
+    git remote add upstream https://github.com/kaprien/tuf-repository-service-api
+    git checkout main
+    git fetch upstream
+    git merge upstream/main
 
 
 Intalling project requirements
@@ -43,13 +68,13 @@ Install development requirements
   $ pipenv install -d
 
 
-Running kaprien-rest-api development
-====================================
+Running TUF Repository Service API development
+==============================================
 
 Github Account Token
 
 For the development environment, you will require a Github Account Token to
-download Kaprien REST API container
+download TUF Respository Service REST API container
 
 Access the Github page > Settings > Develop Settings > Personal Access tokens >
 Generate new token
@@ -61,9 +86,10 @@ Save the token hash
 
 .. note::
 
-    You can also build locally the
-    `kaprien-repo-worker <https://github.com/kaprien/kaprien-repo-worker>`_
-    image and change the `docker-compose.yml` to use the local image.
+    You can also run locally the
+    `tuf-repository-service-worker
+    <https://github.com/kaprien/tuf-repository-service-worker>`_ image and
+    change the `docker-compose.yml` to use the local image.
 
 
 Runing the API locally
@@ -79,8 +105,8 @@ Changes in the code will automatically update the service.
 
 See Makefile for more options
 
-kaprien-rest-api Tests
-======================
+Tests
+=====
 
 We use `Tox <ttps://tox.wiki/en/latest/>`_ to manage running the tests.
 
@@ -91,8 +117,8 @@ Running tests
   $ tox
 
 
-Managing kaprien-rest-api requirements
-======================================
+Managing requirements
+=====================
 
 Installing new requirements
 ............................

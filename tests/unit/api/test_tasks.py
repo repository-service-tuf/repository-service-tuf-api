@@ -11,7 +11,7 @@ class TestGetTask:
             AsyncResult=pretend.call_recorder(lambda t: mocked_task_result)
         )
         monkeypatch.setattr(
-            "kaprien_api.tasks.repository_metadata",
+            "tuf_repository_service_api.tasks.repository_metadata",
             mocked_repository_metadata,
         )
 
@@ -43,7 +43,7 @@ class TestGetTask:
             AsyncResult=pretend.call_recorder(lambda t: mocked_task_result)
         )
         monkeypatch.setattr(
-            "kaprien_api.tasks.repository_metadata",
+            "tuf_repository_service_api.tasks.repository_metadata",
             mocked_repository_metadata,
         )
 

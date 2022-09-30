@@ -1,19 +1,19 @@
-############################
-kaprien-rest-api Development
-############################
+===========
+Development
+===========
 
 
 .. include:: design.rst
 
 
-kaprien-rest-api component level
---------------------------------
+Component level
+---------------
 
-.. uml:: ../../diagrams/kaprien-rest-api-C3.puml
+.. uml:: ../../diagrams/tuf-repository-service-api-C3.puml
 .. toctree::
    :maxdepth: 4
 
-   kaprien_api
-   kaprien_api.api
-   kaprien_api.users
+   tuf_repository_service_api
+   tuf_repository_service_api.api
+   tuf_repository_service_api.users
    modules

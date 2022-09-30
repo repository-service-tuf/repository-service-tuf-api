@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Security, status
 
-from kaprien_api import SCOPES_NAMES, bootstrap
-from kaprien_api.token import validate_token
+from tuf_repository_service_api import SCOPES_NAMES, bootstrap
+from tuf_repository_service_api.token import validate_token
 
 router = APIRouter(
     prefix="/bootstrap",
@@ -33,7 +33,8 @@ def get(
         f"Scope: {SCOPES_NAMES.write_bootstrap.value}"
     ),
     description=(
-        "Initialize the Kaprien with initial signed Metadata and Settings."
+        "Initialize the TUF Respository with initial signed Metadata and "
+        "Settings."
     ),
     response_model=bootstrap.BootstrapPostResponse,
     response_model_exclude_none=True,

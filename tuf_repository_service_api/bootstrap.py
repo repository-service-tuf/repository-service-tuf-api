@@ -6,9 +6,9 @@ from typing import Dict, List, Literal, Optional
 from fastapi import HTTPException, status
 from pydantic import BaseModel, Field
 
-from kaprien_api import settings_repository
-from kaprien_api.config import save_settings
-from kaprien_api.metadata import (
+from tuf_repository_service_api import settings_repository
+from tuf_repository_service_api.config import save_settings
+from tuf_repository_service_api.metadata import (
     get_task_id,
     is_bootstrap_done,
     repository_metadata,
@@ -119,7 +119,7 @@ class SettingsKeys(BaseModel):
 
 
 class RoleSettings(BaseModel):
-    # This is the from kaprien-cli RolesKeysInput
+    # This is the from tuf-repository-service-cli RolesKeysInput
     expiration: int
     num_of_keys: int
     threshold: int

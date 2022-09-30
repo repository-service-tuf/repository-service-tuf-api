@@ -1,10 +1,9 @@
-##############################
-Kaprien REST API Documentation
-##############################
-
+==============================================
+TUF Respository Service REST API Documentation
+==============================================
 
 API Authentication and Authorization
-####################################
+====================================
 
 The ``admin`` user can request a token using the Authentication endpoint
 ``api/v1/token/``. The API will give the token with expiration (in hours).
@@ -43,14 +42,14 @@ Rest API endpoint ``api/v1/token/new``.
 
 .. note::
 
-    Please check the Kaprien CLI
+    Please check the TUF Respository Service CLI
 
     .. code:: shell
 
-        $ kaprien admin token
+        $ tuf-repository-service admin token
 
 API Endpoints
-#############
+=============
 
 The REST API Swagger Documentation is available after the Deploy
 (http://ip-address/)

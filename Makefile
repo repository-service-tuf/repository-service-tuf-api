@@ -17,12 +17,12 @@ coverage:
 	coverage html -i
 
 build-dev:
-	docker build -t kaprien-rest-api:dev .
+	docker build -t tuf-repository-service-api:dev .
 
 run-dev:
 	$(MAKE) build-dev
 	docker login ghcr.io
-	docker pull ghcr.io/kaprien/kaprien-repo-worker:dev
+	docker pull ghcr.io/kaprien/tuf-repository-service-worker:dev
 	docker-compose up --remove-orphans
 
 stop:
@@ -39,7 +39,7 @@ clean:
 
 purge:
 	$(MAKE) clean
-	docker rmi kaprien-rest-api_kaprien-rest-api --force
+	docker rmi tuf-repository-service-api_tuf-repository-service-rest-api --force
 
 
 docs:

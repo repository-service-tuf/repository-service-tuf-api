@@ -8,8 +8,8 @@ from dynaconf.loaders import redis_loader
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from kaprien_api.users import crud, schemas
-from kaprien_api.users.models import Base
+from tuf_repository_service_api.users import crud, schemas
+from tuf_repository_service_api.users.models import Base
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -53,7 +53,7 @@ SETTINGS_FILE = os.path.join(DATA_DIR, "settings.yaml")
 REPOSITORY_SETTINGS_FILE = os.path.join(DATA_DIR, "repository_settings.yaml")
 
 settings = Dynaconf(
-    envvar_prefix="KAPRIEN",
+    envvar_prefix="TRS",
     settings_files=[SETTINGS_FILE],
 )
 
@@ -62,13 +62,13 @@ settings_repository = Dynaconf(
     redis_enabled=True,
     redis={
         "host": settings.REDIS_SERVER.split("redis://")[1],
-        "port": settings.get("KAPRIEN_REDIS_SERVER_PORT", 6379),
-        "db": settings.get("KAPRIEN_REDIS_SERVER_DB_REPO_SETTINGS", 1),
+        "port": settings.get("TRS_REDIS_SERVER_PORT", 6379),
+        "db": settings.get("TRS_REDIS_SERVER_DB_REPO_SETTINGS", 1),
         "decode_responses": True,
     },
 )
 secrets_settings = Dynaconf(
-    envvar_prefix="SECRETS_KAPRIEN",
+    envvar_prefix="SECRETS_TRS",
     environments=True,
 )
 
@@ -160,4 +160,4 @@ celery.conf.result_persistent = True
 celery.conf.task_acks_late = True
 celery.conf.broker_pool_limit = None
 # celery.conf.broker_use_ssl
-# https://github.com/kaprien/kaprien-rest-api/issues/91
+# https://github.com/kaprien/tuf-repository-service-api/issues/91
