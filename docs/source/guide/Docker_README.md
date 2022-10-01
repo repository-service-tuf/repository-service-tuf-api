@@ -1,8 +1,8 @@
 # tuf-repository-service-api
 
-tuf-repository-service-api Rest API Service
+tuf-repository-service-api API Service
 
-tuf-repository-service-api is part of TUF Repository Service (TUF-RS)
+tuf-repository-service-api is part of TUF Repository Service (TRS)
 
 ## Getting Started
 

@@ -11,7 +11,7 @@ from tuf_repository_service_api.api.tasks import router as tasks_v1
 from tuf_repository_service_api.api.token import router as token_v1
 
 trs_app = FastAPI(
-    title="TUF Respository Service Rest API",
+    title="TUF Respository Service API",
     description="TUF Respository Service Rest API for TUF Repository Server",
     docs_url="/",
 )
