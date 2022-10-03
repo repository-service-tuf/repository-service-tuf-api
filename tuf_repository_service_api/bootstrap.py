@@ -159,40 +159,52 @@ class BootstrapPayload(BaseModel):
         schema_extra = {"example": example}
 
 
-class BootstrapPostResponse(BaseModel):
+class PostData(BaseModel):
     task_id: Optional[str]
-    message: Optional[str]
+
+
+class BootstrapPostResponse(BaseModel):
+    data: Optional[PostData]
+    message: str
 
     class Config:
         example = {
-            "task_id": "7a634b556f784ae88785d36425f9a218",
+            "data": {
+                "task_id": "7a634b556f784ae88785d36425f9a218",
+            },
             "message": "Bootstrap accepted.",
         }
+
         schema_extra = {"example": example}
 
 
+class GetData(BaseModel):
+    bootstrap: bool
+
+
 class BootstrapGetResponse(BaseModel):
-    bootstrap: Optional[bool]
-    message: Optional[str]
+    data: Optional[GetData]
+    message: str
 
     class Config:
         example = {
-            "bootstrap": False,
+            "data": {"bootstrap": False},
             "message": "System available for bootstrap.",
         }
+
         schema_extra = {"example": example}
 
 
 def get_bootstrap():
-    response = BootstrapGetResponse()
-
     if is_bootstrap_done() is True:
-        response.bootstrap = True
-        response.message = "System LOCKED for bootstrap."
+        response = BootstrapGetResponse(
+            data={"bootstrap": True}, message="System LOCKED for bootstrap."
+        )
     else:
-        response.bootstrap = False
-        response.message = "System available for bootstrap."
-
+        response = BootstrapGetResponse(
+            data={"bootstrap": False},
+            message="System available for bootstrap.",
+        )
     return response
 
 
@@ -256,5 +268,5 @@ def post_bootstrap(payload):
     )
 
     return BootstrapPostResponse(
-        task_id=task_id, message="Bootstrap accepted."
+        data={"task_id": task_id}, message="Bootstrap accepted."
     )

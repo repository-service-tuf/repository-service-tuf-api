@@ -10,7 +10,7 @@ def is_bootstrap_done():
     """
 
     sync_redis()
-    if settings_repository.get_fresh("BOOTSTRAP"):
+    if settings_repository.get_fresh("BOOTSTRAP", False):
         return True
     else:
         return False

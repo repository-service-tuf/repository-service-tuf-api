@@ -12,10 +12,10 @@ router = APIRouter(
 
 @router.get(
     "/",
-    summary=("Get task status. " f"Scope: {SCOPES_NAMES.read_tasks.value}"),
+    summary=("Get task state. " f"Scope: {SCOPES_NAMES.read_tasks.value}"),
     description=(
-        "Get Repository Metadata task status. "
-        "The status is according with Celery tasks: "
+        "Get Repository Metadata task state. "
+        "The state is according with Celery tasks: "
         "`PENDING` the task still not processed or unknown/inexistent task. "
         "`RECEIVED` task is reveived by the broker server. "
         "`PRE_RUN` the task will start by tuf-repository-service-worker. "
