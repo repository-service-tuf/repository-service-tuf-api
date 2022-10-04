@@ -16,8 +16,8 @@ class GetParameters:
 
 class TasksData(BaseModel):
     task_id: str = Field(description="Task ID")
-    status: str = Field(
-        description="Status according with Celery Tasks",
+    state: str = Field(
+        description="State according with Celery Tasks",
     )
     result: Optional[Any] = Field(
         description="Details about the task execution.",
@@ -31,16 +31,16 @@ class Response(BaseModel):
     class Config:
         data_example = {
             "data": {
-                "tasks": [
-                    {
-                        "task_id": "91353735ef7d48099df86d8bfa30316e",
-                        "status": "SUCCESS",
-                        "result": True,
-                    }
-                ],
-                "message": "Task details. ",
-            }
+                "task_id": "91353735ef7d48099df86d8bfa30316e",
+                "state": "SUCCESS",
+                "result": {
+                    "status": "Task finished.",
+                    "details": {"key": "value"},
+                },
+            },
+            "message": "Task state.",
         }
+
         schema_extra = {"example": data_example}
 
 
@@ -50,8 +50,7 @@ def get(task_id: str) -> Response:
 
     Uses the Celery implementation in
     ``tuf_repository_service_api.metadata.metadata_repository.AsyncResult`` to
-    fetch from
-    Result Backend the task status.
+    fetch from Result Backend the task state.
 
     Args:
         task_id: Task ID
@@ -66,8 +65,6 @@ def get(task_id: str) -> Response:
         task_result = task.result
 
     return Response(
-        data=TasksData(
-            task_id=task_id, status=task.status, result=task_result
-        ),
-        message="Task status.",
+        data=TasksData(task_id=task_id, state=task.state, result=task_result),
+        message="Task state.",
     )

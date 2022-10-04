@@ -20,7 +20,7 @@ class TestGetBoostrap:
         assert response.status_code == status.HTTP_200_OK
         assert response.url == test_client.base_url + url
         assert response.json() == {
-            "bootstrap": False,
+            "data": {"bootstrap": False},
             "message": "System available for bootstrap.",
         }
         assert mocked_check_metadata.calls == [pretend.call()]
@@ -41,7 +41,7 @@ class TestGetBoostrap:
         assert response.status_code == status.HTTP_200_OK
         assert response.url == test_client.base_url + url
         assert response.json() == {
-            "bootstrap": True,
+            "data": {"bootstrap": True},
             "message": "System LOCKED for bootstrap.",
         }
         assert mocked_check_metadata.calls == [pretend.call()]
@@ -128,7 +128,7 @@ class TestPostBootstrap:
         assert response.url == test_client.base_url + url
         assert response.json() == {
             "message": "Bootstrap accepted.",
-            "task_id": "123",
+            "data": {"task_id": "123"},
         }
 
     def test_post_bootstrap_already_bootstrap(

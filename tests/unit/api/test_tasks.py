@@ -6,7 +6,9 @@ class TestGetTask:
     def test_get(self, test_client, token_headers, monkeypatch):
         url = "/api/v1/task/"
 
-        mocked_task_result = pretend.stub(status="SUCCESS", result=True)
+        mocked_task_result = pretend.stub(
+            state="SUCCESS", result={"status": "Task finished."}
+        )
         mocked_repository_metadata = pretend.stub(
             AsyncResult=pretend.call_recorder(lambda t: mocked_task_result)
         )
@@ -22,10 +24,10 @@ class TestGetTask:
         assert test_response.json() == {
             "data": {
                 "task_id": "test_id",
-                "status": "SUCCESS",
-                "result": True,
+                "state": "SUCCESS",
+                "result": {"status": "Task finished."},
             },
-            "message": "Task status.",
+            "message": "Task state.",
         }
         assert mocked_repository_metadata.AsyncResult.calls == [
             pretend.call("test_id")
@@ -37,7 +39,7 @@ class TestGetTask:
         url = "/api/v1/task/"
 
         mocked_task_result = pretend.stub(
-            status="SUCCESS", result=ValueError("Failed to load")
+            state="SUCCESS", result=ValueError("Failed to load")
         )
         mocked_repository_metadata = pretend.stub(
             AsyncResult=pretend.call_recorder(lambda t: mocked_task_result)
@@ -54,10 +56,10 @@ class TestGetTask:
         assert test_response.json() == {
             "data": {
                 "task_id": "test_id",
-                "status": "SUCCESS",
+                "state": "SUCCESS",
                 "result": "Failed to load",
             },
-            "message": "Task status.",
+            "message": "Task state.",
         }
         assert mocked_repository_metadata.AsyncResult.calls == [
             pretend.call("test_id")
