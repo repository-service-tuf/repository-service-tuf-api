@@ -37,7 +37,7 @@ jobs:
           outputs: type=docker,dest=/tmp/tuf-repository-service-api.${{ github.ref_name }}.tar
 
       - id: gh-release
-        name: Publish GitHub release candiate
+        name: Publish GitHub release candidate
         uses: softprops/action-gh-release@1e07f4398721186383de40550babbdf2b84acfc5
         with:
           name: ${{ github.ref_name }}-rc
