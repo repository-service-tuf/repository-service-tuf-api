@@ -8,8 +8,8 @@ from dynaconf.loaders import redis_loader
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from tuf_repository_service_api.users import crud, schemas
-from tuf_repository_service_api.users.models import Base
+from repository_service_tuf_api.users import crud, schemas
+from repository_service_tuf_api.users.models import Base
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -53,7 +53,7 @@ SETTINGS_FILE = os.path.join(DATA_DIR, "settings.yaml")
 REPOSITORY_SETTINGS_FILE = os.path.join(DATA_DIR, "repository_settings.yaml")
 
 settings = Dynaconf(
-    envvar_prefix="TRS",
+    envvar_prefix="RSTUF",
     settings_files=[SETTINGS_FILE],
 )
 
@@ -62,13 +62,13 @@ settings_repository = Dynaconf(
     redis_enabled=True,
     redis={
         "host": settings.REDIS_SERVER.split("redis://")[1],
-        "port": settings.get("TRS_REDIS_SERVER_PORT", 6379),
-        "db": settings.get("TRS_REDIS_SERVER_DB_REPO_SETTINGS", 1),
+        "port": settings.get("RSTUF_REDIS_SERVER_PORT", 6379),
+        "db": settings.get("RSTUF_REDIS_SERVER_DB_REPO_SETTINGS", 1),
         "decode_responses": True,
     },
 )
 secrets_settings = Dynaconf(
-    envvar_prefix="SECRETS_TRS",
+    envvar_prefix="SECRETS_RSTUF",
     environments=True,
 )
 
@@ -160,4 +160,4 @@ celery.conf.result_persistent = True
 celery.conf.task_acks_late = True
 celery.conf.broker_pool_limit = None
 # celery.conf.broker_use_ssl
-# https://github.com/kaprien/tuf-repository-service-api/issues/91
+# https://github.com/kaprien/repository-service-tuf-api/issues/91

@@ -33,8 +33,8 @@ jobs:
         with:
           context: .
           push: false
-          tags: ghcr.io/kaprien/tuf-repository-service-api:${{ github.ref_name }}
-          outputs: type=docker,dest=/tmp/tuf-repository-service-api.${{ github.ref_name }}.tar
+          tags: ghcr.io/kaprien/repository-service-tuf-api:${{ github.ref_name }}
+          outputs: type=docker,dest=/tmp/repository-service-tuf-api.${{ github.ref_name }}.tar
 
       - id: gh-release
         name: Publish GitHub release candidate
@@ -43,13 +43,13 @@ jobs:
           name: ${{ github.ref_name }}-rc
           tag_name: ${{ github.ref }}
           body: "Release waiting for review..."
-          files: /tmp/tuf-repository-service-api.${{ github.ref_name }}.tar
+          files: /tmp/repository-service-tuf-api.${{ github.ref_name }}.tar
 
       - name: Store build artifacts
         uses: actions/upload-artifact@3cea5372237819ed00197afe530f5a7ea3e805c8
         with:
           name: build-artifacts
-          path: /tmp/tuf-repository-service-api.${{ github.ref_name }}.tar
+          path: /tmp/repository-service-tuf-api.${{ github.ref_name }}.tar
 
   release:
     name: Release
@@ -72,10 +72,10 @@ jobs:
 
       - name: Publish Docker Image on GitHub Registry
         run: |
-          docker load -i /tmp/tuf-repository-service-api.${{ github.ref_name }}.tar
-          docker push ghcr.io/kaprien/tuf-repository-service-api:${{ github.ref_name }}
-          docker tag ghcr.io/kaprien/tuf-repository-service-api:${{ github.ref_name }} ghcr.io/kaprien/tuf-repository-service-api:latest
-          docker push ghcr.io/kaprien/tuf-repository-service-api:latest
+          docker load -i /tmp/repository-service-tuf-api.${{ github.ref_name }}.tar
+          docker push ghcr.io/kaprien/repository-service-tuf-api:${{ github.ref_name }}
+          docker tag ghcr.io/kaprien/repository-service-tuf-api:${{ github.ref_name }} ghcr.io/kaprien/repository-service-tuf-api:latest
+          docker push ghcr.io/kaprien/repository-service-tuf-api:latest
 
       - name: Finalize GitHub release
         uses: actions/github-script@c713e510dbd7d213d92d41b7a7805a986f4c5c66
@@ -86,5 +86,5 @@ jobs:
               repo: context.repo.repo,
               release_id: '${{ needs.build.outputs.release_id }}',
               name: '${{ github.ref_name }}',
-              body: 'Docker Image available on [GitHub Packages](https://github.com/orgs/kaprien/packages/container/package/tuf-repository-service-api)'
+              body: 'Docker Image available on [GitHub Packages](https://github.com/orgs/kaprien/packages/container/package/repository-service-tuf-api)'
             })

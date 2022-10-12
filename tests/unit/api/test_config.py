@@ -8,7 +8,7 @@ class TestGetSettings:
 
         mocked_check_metadata = pretend.call_recorder(lambda: True)
         monkeypatch.setattr(
-            "tuf_repository_service_api.config.is_bootstrap_done",
+            "repository_service_tuf_api.config.is_bootstrap_done",
             mocked_check_metadata,
         )
 
@@ -17,7 +17,7 @@ class TestGetSettings:
                 lambda: {"k": "v", "j": ["v1", "v2"]}
             )
         )
-        monkeypatch.setattr("tuf_repository_service_api.config", fake_settings)
+        monkeypatch.setattr("repository_service_tuf_api.config", fake_settings)
 
         test_response = test_client.get(url, headers=token_headers)
         assert test_response.status_code == status.HTTP_200_OK
@@ -29,7 +29,7 @@ class TestGetSettings:
 
         mocked_check_metadata = pretend.call_recorder(lambda: False)
         monkeypatch.setattr(
-            "tuf_repository_service_api.config.is_bootstrap_done",
+            "repository_service_tuf_api.config.is_bootstrap_done",
             mocked_check_metadata,
         )
 
@@ -45,7 +45,7 @@ class TestGetSettings:
 
         mocked_check_metadata = pretend.call_recorder(lambda: True)
         monkeypatch.setattr(
-            "tuf_repository_service_api.config.is_bootstrap_done",
+            "repository_service_tuf_api.config.is_bootstrap_done",
             mocked_check_metadata,
         )
 
@@ -71,7 +71,7 @@ class TestGetSettings:
             get=pretend.call_recorder(fake_get),
         )
         monkeypatch.setattr(
-            "tuf_repository_service_api.config.settings_repository",
+            "repository_service_tuf_api.config.settings_repository",
             fake_settings,
         )
         token_headers = {"Authorization": "Bearer h4ck3r"}

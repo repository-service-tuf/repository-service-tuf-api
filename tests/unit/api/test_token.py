@@ -48,7 +48,7 @@ class TestGetToken:
         )
 
         monkeypatch.setattr(
-            "tuf_repository_service_api.token.datetime",
+            "repository_service_tuf_api.token.datetime",
             mocked_datetime,
         )
         url = f"/api/v1/token/?token={test_token}"
@@ -67,7 +67,7 @@ class TestPostToken:
             )
         )
         monkeypatch.setattr(
-            "tuf_repository_service_api.token.datetime", mocked_datetime
+            "repository_service_tuf_api.token.datetime", mocked_datetime
         )
         url = "/api/v1/token/?expires=2"
         token_data = {
@@ -86,7 +86,7 @@ class TestPostToken:
             )
         )
         monkeypatch.setattr(
-            "tuf_repository_service_api.token.datetime", mocked_datetime
+            "repository_service_tuf_api.token.datetime", mocked_datetime
         )
         url = "/api/v1/token/"
         token_data = {
@@ -145,7 +145,7 @@ class TestPostToken:
             )
         )
         monkeypatch.setattr(
-            "tuf_repository_service_api.token.get_user_by_username",
+            "repository_service_tuf_api.token.get_user_by_username",
             fake_user_db,
         )
 
@@ -153,7 +153,7 @@ class TestPostToken:
             checkpw=pretend.call_recorder(lambda *a: True)
         )
         monkeypatch.setattr(
-            "tuf_repository_service_api.token.bcrypt", mocked_bcrypt
+            "repository_service_tuf_api.token.bcrypt", mocked_bcrypt
         )
 
         token_url = "/api/v1/token/?expires=1"

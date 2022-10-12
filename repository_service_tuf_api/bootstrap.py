@@ -6,9 +6,9 @@ from typing import Dict, List, Literal, Optional
 from fastapi import HTTPException, status
 from pydantic import BaseModel, Field
 
-from tuf_repository_service_api import settings_repository
-from tuf_repository_service_api.config import save_settings
-from tuf_repository_service_api.metadata import (
+from repository_service_tuf_api import settings_repository
+from repository_service_tuf_api.config import save_settings
+from repository_service_tuf_api.metadata import (
     get_task_id,
     is_bootstrap_done,
     repository_metadata,
@@ -119,7 +119,7 @@ class SettingsKeys(BaseModel):
 
 
 class RoleSettings(BaseModel):
-    # This is the from tuf-repository-service-cli RolesKeysInput
+    # This is the from repository-service-tuf-cli RolesKeysInput
     expiration: int
     num_of_keys: int
     threshold: int

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Security
 
-from tuf_repository_service_api import SCOPES_NAMES, config
-from tuf_repository_service_api.token import validate_token
+from repository_service_tuf_api import SCOPES_NAMES, config
+from repository_service_tuf_api.token import validate_token
 
 router = APIRouter(
     prefix="/config",

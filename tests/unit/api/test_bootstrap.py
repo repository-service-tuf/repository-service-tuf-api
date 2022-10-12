@@ -12,7 +12,7 @@ class TestGetBoostrap:
         url = "/api/v1/bootstrap/"
         mocked_check_metadata = pretend.call_recorder(lambda: False)
         monkeypatch.setattr(
-            "tuf_repository_service_api.bootstrap.is_bootstrap_done",
+            "repository_service_tuf_api.bootstrap.is_bootstrap_done",
             mocked_check_metadata,
         )
 
@@ -33,7 +33,7 @@ class TestGetBoostrap:
 
         mocked_check_metadata = pretend.call_recorder(lambda: True)
         monkeypatch.setattr(
-            "tuf_repository_service_api.bootstrap.is_bootstrap_done",
+            "repository_service_tuf_api.bootstrap.is_bootstrap_done",
             mocked_check_metadata,
         )
 
@@ -51,7 +51,7 @@ class TestGetBoostrap:
         url = "/api/v1/bootstrap/"
         mocked_check_metadata = pretend.call_recorder(lambda: False)
         monkeypatch.setattr(
-            "tuf_repository_service_api.bootstrap.is_bootstrap_done",
+            "repository_service_tuf_api.bootstrap.is_bootstrap_done",
             mocked_check_metadata,
         )
         token_headers = {"Authorization": "Bearer h4ck3r"}
@@ -77,7 +77,7 @@ class TestGetBoostrap:
         url = "/api/v1/bootstrap/"
         mocked_check_metadata = pretend.call_recorder(lambda: False)
         monkeypatch.setattr(
-            "tuf_repository_service_api.bootstrap.is_bootstrap_done",
+            "repository_service_tuf_api.bootstrap.is_bootstrap_done",
             mocked_check_metadata,
         )
 
@@ -95,13 +95,13 @@ class TestPostBootstrap:
 
         mocked_save_settings = pretend.call_recorder(lambda *a: None)
         monkeypatch.setattr(
-            "tuf_repository_service_api.bootstrap.save_settings",
+            "repository_service_tuf_api.bootstrap.save_settings",
             mocked_save_settings,
         )
 
         mocked_check_metadata = pretend.call_recorder(lambda: False)
         monkeypatch.setattr(
-            "tuf_repository_service_api.bootstrap.is_bootstrap_done",
+            "repository_service_tuf_api.bootstrap.is_bootstrap_done",
             mocked_check_metadata,
         )
 
@@ -111,11 +111,11 @@ class TestPostBootstrap:
             AsyncResult=pretend.call_recorder(lambda *a: mocked_async_result),
         )
         monkeypatch.setattr(
-            "tuf_repository_service_api.bootstrap.repository_metadata",
+            "repository_service_tuf_api.bootstrap.repository_metadata",
             mocked_repository_metadata,
         )
         monkeypatch.setattr(
-            "tuf_repository_service_api.bootstrap.get_task_id", lambda: "123"
+            "repository_service_tuf_api.bootstrap.get_task_id", lambda: "123"
         )
 
         with open("tests/data_examples/bootstrap/payload.json") as f:
@@ -138,7 +138,7 @@ class TestPostBootstrap:
 
         mocked_check_metadata = pretend.call_recorder(lambda: True)
         monkeypatch.setattr(
-            "tuf_repository_service_api.bootstrap.is_bootstrap_done",
+            "repository_service_tuf_api.bootstrap.is_bootstrap_done",
             mocked_check_metadata,
         )
 
@@ -182,13 +182,13 @@ class TestPostBootstrap:
         token_headers = {"Authorization": "Bearer h4ck3r"}
         mocked_save_settings = pretend.call_recorder(lambda *a: None)
         monkeypatch.setattr(
-            "tuf_repository_service_api.bootstrap.save_settings",
+            "repository_service_tuf_api.bootstrap.save_settings",
             mocked_save_settings,
         )
 
         mocked_check_metadata = pretend.call_recorder(lambda: False)
         monkeypatch.setattr(
-            "tuf_repository_service_api.bootstrap.is_bootstrap_done",
+            "repository_service_tuf_api.bootstrap.is_bootstrap_done",
             mocked_check_metadata,
         )
 
@@ -196,11 +196,11 @@ class TestPostBootstrap:
             apply_async=pretend.call_recorder(lambda *a, **kw: None)
         )
         monkeypatch.setattr(
-            "tuf_repository_service_api.bootstrap.repository_metadata",
+            "repository_service_tuf_api.bootstrap.repository_metadata",
             mocked_repository_metadata,
         )
         monkeypatch.setattr(
-            "tuf_repository_service_api.bootstrap.get_task_id", lambda: "123"
+            "repository_service_tuf_api.bootstrap.get_task_id", lambda: "123"
         )
 
         with open("tests/data_examples/bootstrap/payload.json") as f:
@@ -232,13 +232,13 @@ class TestPostBootstrap:
 
         mocked_save_settings = pretend.call_recorder(lambda *a: None)
         monkeypatch.setattr(
-            "tuf_repository_service_api.bootstrap.save_settings",
+            "repository_service_tuf_api.bootstrap.save_settings",
             mocked_save_settings,
         )
 
         mocked_check_metadata = pretend.call_recorder(lambda: False)
         monkeypatch.setattr(
-            "tuf_repository_service_api.bootstrap.is_bootstrap_done",
+            "repository_service_tuf_api.bootstrap.is_bootstrap_done",
             mocked_check_metadata,
         )
 
@@ -246,11 +246,11 @@ class TestPostBootstrap:
             apply_async=pretend.call_recorder(lambda *a, **kw: None)
         )
         monkeypatch.setattr(
-            "tuf_repository_service_api.bootstrap.repository_metadata",
+            "repository_service_tuf_api.bootstrap.repository_metadata",
             mocked_repository_metadata,
         )
         monkeypatch.setattr(
-            "tuf_repository_service_api.bootstrap.get_task_id", lambda: "123"
+            "repository_service_tuf_api.bootstrap.get_task_id", lambda: "123"
         )
 
         with open("tests/data_examples/bootstrap/payload.json") as f:

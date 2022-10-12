@@ -5,12 +5,12 @@
 from setuptools import find_packages, setup
 
 setup(
-    name="tuf-repository-service-api",
+    name="repository-service-tuf-api",
     version="0.0.1",
-    url="https://github.com/kaprien/tuf-repository-service-api",
+    url="https://github.com/kaprien/repository-service-tuf-api",
     author="Kairo de Araujo",
     author_email="kairo@dearaujo.nl",
-    description="TUF Respository Service REST API",
+    description="Repository Service for TUF REST API",
     packages=find_packages(),
     install_requires=["fastapi"],
 )

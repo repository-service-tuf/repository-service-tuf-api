@@ -1,4 +1,4 @@
-# tuf-repository-service-api specifics
+# repository-service-tuf-api specifics
 .secrets.ini
 settings.ini
 metadata/**
