@@ -16,16 +16,16 @@ class TestPostTargets:
             apply_async=pretend.call_recorder(lambda *a, **kw: None)
         )
         monkeypatch.setattr(
-            "tuf_repository_service_api.targets.is_bootstrap_done",
+            "repository_service_tuf_api.targets.is_bootstrap_done",
             lambda: True,
         )
         monkeypatch.setattr(
-            "tuf_repository_service_api.targets.repository_metadata",
+            "repository_service_tuf_api.targets.repository_metadata",
             mocked_repository_metadata,
         )
         fake_task_id = uuid4().hex
         monkeypatch.setattr(
-            "tuf_repository_service_api.targets.get_task_id",
+            "repository_service_tuf_api.targets.get_task_id",
             lambda: fake_task_id,
         )
 
@@ -59,7 +59,7 @@ class TestPostTargets:
 
         payload = json.loads(f_data)
         monkeypatch.setattr(
-            "tuf_repository_service_api.targets.is_bootstrap_done",
+            "repository_service_tuf_api.targets.is_bootstrap_done",
             lambda: False,
         )
         response = test_client.post(url, json=payload, headers=token_headers)
@@ -133,19 +133,19 @@ class TestDeleteTargets:
         }
 
         monkeypatch.setattr(
-            "tuf_repository_service_api.targets.is_bootstrap_done",
+            "repository_service_tuf_api.targets.is_bootstrap_done",
             lambda: True,
         )
         mocked_repository_metadata = pretend.stub(
             apply_async=pretend.call_recorder(lambda *a, **kw: None)
         )
         monkeypatch.setattr(
-            "tuf_repository_service_api.targets.repository_metadata",
+            "repository_service_tuf_api.targets.repository_metadata",
             mocked_repository_metadata,
         )
         fake_task_id = uuid4().hex
         monkeypatch.setattr(
-            "tuf_repository_service_api.targets.get_task_id",
+            "repository_service_tuf_api.targets.get_task_id",
             lambda: fake_task_id,
         )
 
@@ -179,7 +179,7 @@ class TestDeleteTargets:
             "targets": ["file-v1.0.0_i683.tar.gz", "v0.4.1/file.tar.gz"]
         }
         monkeypatch.setattr(
-            "tuf_repository_service_api.targets.is_bootstrap_done",
+            "repository_service_tuf_api.targets.is_bootstrap_done",
             lambda: False,
         )
         response = test_client.delete(url, json=payload, headers=token_headers)

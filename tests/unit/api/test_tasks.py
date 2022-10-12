@@ -13,7 +13,7 @@ class TestGetTask:
             AsyncResult=pretend.call_recorder(lambda t: mocked_task_result)
         )
         monkeypatch.setattr(
-            "tuf_repository_service_api.tasks.repository_metadata",
+            "repository_service_tuf_api.tasks.repository_metadata",
             mocked_repository_metadata,
         )
 
@@ -45,7 +45,7 @@ class TestGetTask:
             AsyncResult=pretend.call_recorder(lambda t: mocked_task_result)
         )
         monkeypatch.setattr(
-            "tuf_repository_service_api.tasks.repository_metadata",
+            "repository_service_tuf_api.tasks.repository_metadata",
             mocked_repository_metadata,
         )
 

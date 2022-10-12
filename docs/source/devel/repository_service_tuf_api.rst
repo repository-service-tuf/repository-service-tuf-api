@@ -1,4 +1,4 @@
-tuf\_repository\_service\_api package
+repository\_service\_tuf\_api package
 =====================================
 
 Subpackages
@@ -7,56 +7,56 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
-   tuf_repository_service_api.api
-   tuf_repository_service_api.users
+   repository_service_tuf_api.api
+   repository_service_tuf_api.users
 
 Submodules
 ----------
 
-tuf\_repository\_service\_api.bootstrap module
+repository\_service\_tuf\_api.bootstrap module
 ----------------------------------------------
 
-.. automodule:: tuf_repository_service_api.bootstrap
+.. automodule:: repository_service_tuf_api.bootstrap
    :members:
    :undoc-members:
    :show-inheritance:
 
-tuf\_repository\_service\_api.config module
+repository\_service\_tuf\_api.config module
 -------------------------------------------
 
-.. automodule:: tuf_repository_service_api.config
+.. automodule:: repository_service_tuf_api.config
    :members:
    :undoc-members:
    :show-inheritance:
 
-tuf\_repository\_service\_api.metadata module
+repository\_service\_tuf\_api.metadata module
 ---------------------------------------------
 
-.. automodule:: tuf_repository_service_api.metadata
+.. automodule:: repository_service_tuf_api.metadata
    :members:
    :undoc-members:
    :show-inheritance:
 
-tuf\_repository\_service\_api.targets module
+repository\_service\_tuf\_api.targets module
 --------------------------------------------
 
-.. automodule:: tuf_repository_service_api.targets
+.. automodule:: repository_service_tuf_api.targets
    :members:
    :undoc-members:
    :show-inheritance:
 
-tuf\_repository\_service\_api.tasks module
+repository\_service\_tuf\_api.tasks module
 ------------------------------------------
 
-.. automodule:: tuf_repository_service_api.tasks
+.. automodule:: repository_service_tuf_api.tasks
    :members:
    :undoc-members:
    :show-inheritance:
 
-tuf\_repository\_service\_api.token module
+repository\_service\_tuf\_api.token module
 ------------------------------------------
 
-.. automodule:: tuf_repository_service_api.token
+.. automodule:: repository_service_tuf_api.token
    :members:
    :undoc-members:
    :show-inheritance:
@@ -64,7 +64,7 @@ tuf\_repository\_service\_api.token module
 Module contents
 ---------------
 
-.. automodule:: tuf_repository_service_api
+.. automodule:: repository_service_tuf_api
    :members:
    :undoc-members:
    :show-inheritance:

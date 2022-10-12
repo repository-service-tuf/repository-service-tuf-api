@@ -1,13 +1,12 @@
-############################
-TUF Respository Service API
-############################
+##############################
+Repository Service for TUF API
+##############################
 
-TUF Respository Service REST API is part of TUF Repository Service (tuf-repository-service-api).
+Repository Service for TUF REST API is part of Repository Service for TUF.
 
 .. note::
 
-  This project is not functional. Please wait for the first functional release
-  (0.0.1)
+  This service is in Experimental stage.
 
 Development
 ###########
@@ -24,13 +23,13 @@ Getting source code
 ===================
 
 `Fork <https://docs.github.com/en/get-started/quickstart/fork-a-repo>`_ the
-repository on `GitHub <https://github.com/kaprien/tuf-repository-service-api>`_
+repository on `GitHub <https://github.com/kaprien/repository-service-tuf-api>`_
 and `clone <https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository>`_
 it to your local machine:
 
 .. code-block:: console
 
-    git clone git@github.com:YOUR-USERNAME/tuf-repository-service-api.git
+    git clone git@github.com:YOUR-USERNAME/repository-service-tuf-api.git
 
 Add a `remote
 <https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/configuring-a-remote-for-a-fork>`_
@@ -39,7 +38,7 @@ to make sure you stay up-to-date with our repository:
 
 .. code-block:: console
 
-    git remote add upstream https://github.com/kaprien/tuf-repository-service-api
+    git remote add upstream https://github.com/kaprien/repository-service-tuf-api
     git checkout main
     git fetch upstream
     git merge upstream/main
@@ -68,13 +67,13 @@ Install development requirements
   $ pipenv install -d
 
 
-Running TUF Repository Service API development
-==============================================
+Running API development
+=======================
 
 Github Account Token
 
 For the development environment, you will require a Github Account Token to
-download TUF Respository Service REST API container
+download Repository Service for TUF REST API container
 
 Access the Github page > Settings > Develop Settings > Personal Access tokens >
 Generate new token
@@ -87,8 +86,8 @@ Save the token hash
 .. note::
 
     You can also run locally the
-    `tuf-repository-service-worker
-    <https://github.com/kaprien/tuf-repository-service-worker>`_ image and
+    `repository-service-tuf-worker
+    <https://github.com/kaprien/repository-service-tuf-worker>`_ image and
     change the `docker-compose.yml` to use the local image.
 
 

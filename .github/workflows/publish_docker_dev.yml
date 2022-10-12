@@ -35,6 +35,6 @@ jobs:
         context: .
         push: true
         tags: |
-            ghcr.io/kaprien/tuf-repository-service-api:dev
+            ghcr.io/kaprien/repository-service-tuf-api:dev
         build-args: |
           RELEASE_VERSION=dev

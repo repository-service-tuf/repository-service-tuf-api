@@ -6,7 +6,7 @@ def test_root(test_client):
 
     assert response.url == test_client.base_url + "/"
     assert response.status_code == status.HTTP_200_OK
-    assert "TUF Respository Service Rest API" in response.text
+    assert "Repository Service for TUF API" in response.text
 
 
 def test_default_notfound(test_client):

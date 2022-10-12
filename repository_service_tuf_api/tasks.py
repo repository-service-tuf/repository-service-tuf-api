@@ -3,7 +3,7 @@ from typing import Any, Optional
 from fastapi import Query
 from pydantic import BaseModel, Field
 
-from tuf_repository_service_api.metadata import repository_metadata
+from repository_service_tuf_api.metadata import repository_metadata
 
 
 class GetParameters:
@@ -49,7 +49,7 @@ def get(task_id: str) -> Response:
     Get the task details from Result Backend Server.
 
     Uses the Celery implementation in
-    ``tuf_repository_service_api.metadata.metadata_repository.AsyncResult`` to
+    ``repository_service_tuf_api.metadata.metadata_repository.AsyncResult`` to
     fetch from Result Backend the task state.
 
     Args:

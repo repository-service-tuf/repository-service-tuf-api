@@ -3,7 +3,7 @@ from typing import List
 import bcrypt
 from sqlalchemy.orm import Session
 
-from tuf_repository_service_api.users import models, schemas
+from repository_service_tuf_api.users import models, schemas
 
 
 def get_user(db: Session, user_id: int):

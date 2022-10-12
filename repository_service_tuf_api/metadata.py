@@ -1,7 +1,7 @@
 import logging
 from uuid import uuid4
 
-from tuf_repository_service_api import celery, settings_repository, sync_redis
+from repository_service_tuf_api import celery, settings_repository, sync_redis
 
 
 def is_bootstrap_done():
@@ -20,7 +20,7 @@ def get_task_id():
     return uuid4().hex
 
 
-@celery.task(name="app.tuf_repository_service_worker")
+@celery.task(name="app.repository_service_tuf_worker")
 def repository_metadata(action, payload):
     logging.debug(f"New tasks action submitted {action}")
     return True

@@ -1,5 +1,5 @@
 
-.PHONY: all docs
+.PHONY: all docs tests
 
 reformat:
 	black -l 79 .
@@ -17,12 +17,12 @@ coverage:
 	coverage html -i
 
 build-dev:
-	docker build -t tuf-repository-service-api:dev .
+	docker build -t repository-service-tuf-api:dev .
 
 run-dev:
 	$(MAKE) build-dev
 	docker login ghcr.io
-	docker pull ghcr.io/kaprien/tuf-repository-service-worker:dev
+	docker pull ghcr.io/kaprien/repository-service-tuf-worker:dev
 	docker-compose up --remove-orphans
 
 stop:
@@ -39,7 +39,7 @@ clean:
 
 purge:
 	$(MAKE) clean
-	docker rmi tuf-repository-service-api_tuf-repository-service-rest-api --force
+	docker rmi repository-service-tuf-api_repository-service-tuf-rest-api --force
 
 
 docs:

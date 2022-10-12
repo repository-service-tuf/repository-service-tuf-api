@@ -7,8 +7,8 @@ from dynaconf.loaders import redis_loader
 from fastapi import HTTPException, status
 from pydantic import BaseModel
 
-from tuf_repository_service_api import settings_repository
-from tuf_repository_service_api.metadata import is_bootstrap_done
+from repository_service_tuf_api import settings_repository
+from repository_service_tuf_api.metadata import is_bootstrap_done
 
 
 class Response(BaseModel):
