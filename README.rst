@@ -2,6 +2,16 @@
 Repository Service for TUF API
 ##############################
 
+|Test Docker Image build| |Tests and Lint| |Coverage|
+
+.. |Test Docker Image build| image:: https://github.com/vmware/repository-service-tuf-api/actions/workflows/test_docker_build.yml/badge.svg
+  :target: https://github.com/vmware/repository-service-tuf-api/actions/workflows/test_docker_build.yml
+.. |Tests and Lint| image:: https://github.com/vmware/repository-service-tuf-api/actions/workflows/ci.yml/badge.svg
+  :target: https://github.com/vmware/repository-service-tuf-api/actions/workflows/ci.yml
+.. |Coverage| image:: https://codecov.io/gh/vmware/repository-service-tuf-api/branch/main/graph/badge.svg
+  :target: https://codecov.io/gh/vmware/repository-service-tuf-api
+
+
 Repository Service for TUF API is part of `Repository Service for TUF
 <https://github.com/vmware/repository-service-tuf>`_.
 
