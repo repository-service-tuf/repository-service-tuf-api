@@ -12,8 +12,8 @@ jobs:
         python-versions: [ "3.9", "3.10", ]
 
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-python@v2
+    - uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b
+    - uses: actions/setup-python@13ae5bb136fac2878aff31522b9efb785519f984
       with:
         python-version: ${{ matrix.python-versions }}
 
@@ -22,3 +22,10 @@ jobs:
 
     - name: Run Python tests
       run: tox
+
+    - name: Codecov
+      uses: codecov/codecov-action@d9f34f8cd5cb3b3eb79b3e4b5dae3a16df499a70
+      with:
+        files: coverage.xml
+        fail_ci_if_error: false
+        verbose: true
