@@ -33,7 +33,7 @@ jobs:
         with:
           context: .
           push: false
-          tags: ghcr.io/kaprien/repository-service-tuf-api:${{ github.ref_name }}
+          tags: ghcr.io/vmware/repository-service-tuf-api:${{ github.ref_name }}
           outputs: type=docker,dest=/tmp/repository-service-tuf-api.${{ github.ref_name }}.tar
 
       - id: gh-release
@@ -68,14 +68,14 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
-          password: ${{ secrets.GPR_TOKEN }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish Docker Image on GitHub Registry
         run: |
           docker load -i /tmp/repository-service-tuf-api.${{ github.ref_name }}.tar
-          docker push ghcr.io/kaprien/repository-service-tuf-api:${{ github.ref_name }}
-          docker tag ghcr.io/kaprien/repository-service-tuf-api:${{ github.ref_name }} ghcr.io/kaprien/repository-service-tuf-api:latest
-          docker push ghcr.io/kaprien/repository-service-tuf-api:latest
+          docker push ghcr.io/vmware/repository-service-tuf-api:${{ github.ref_name }}
+          docker tag ghcr.io/vmware/repository-service-tuf-api:${{ github.ref_name }} ghcr.io/vmware/repository-service-tuf-api:latest
+          docker push ghcr.io/vmware/repository-service-tuf-api:latest
 
       - name: Finalize GitHub release
         uses: actions/github-script@c713e510dbd7d213d92d41b7a7805a986f4c5c66
@@ -86,5 +86,5 @@ jobs:
               repo: context.repo.repo,
               release_id: '${{ needs.build.outputs.release_id }}',
               name: '${{ github.ref_name }}',
-              body: 'Docker Image available on [GitHub Packages](https://github.com/orgs/kaprien/packages/container/package/repository-service-tuf-api)'
+              body: 'Docker Image available on [GitHub Packages](https://github.com/orgs/vmware/packages/container/package/repository-service-tuf-api)'
             })
