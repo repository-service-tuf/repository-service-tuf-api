@@ -34,7 +34,7 @@ services:
     tty: true
 
   repository-service-tuf-worker:
-    image: ghcr.io/kaprien/repository-service-tuf-worker:dev
+    image: ghcr.io/vmware/repository-service-tuf-worker:dev
     # Developers: For local build repository-service-tuf-worker, uncomment the line below
     #   On repository-service-tuf-worker, run make build-dev
     #

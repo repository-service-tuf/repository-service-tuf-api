@@ -22,7 +22,7 @@ build-dev:
 run-dev:
 	$(MAKE) build-dev
 	docker login ghcr.io
-	docker pull ghcr.io/kaprien/repository-service-tuf-worker:dev
+	docker pull ghcr.io/vmware/repository-service-tuf-worker:dev
 	docker-compose up --remove-orphans
 
 stop:

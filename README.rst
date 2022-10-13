@@ -2,14 +2,12 @@
 Repository Service for TUF API
 ##############################
 
-Repository Service for TUF REST API is part of Repository Service for TUF.
+Repository Service for TUF API is part of `Repository Service for TUF
+<https://github.com/vmware/repository-service-tuf>`_.
 
 .. note::
 
   This service is in Experimental stage.
-
-Development
-###########
 
 Development tools
 =================
@@ -23,7 +21,7 @@ Getting source code
 ===================
 
 `Fork <https://docs.github.com/en/get-started/quickstart/fork-a-repo>`_ the
-repository on `GitHub <https://github.com/kaprien/repository-service-tuf-api>`_
+repository on `GitHub <https://github.com/vmware/repository-service-tuf-api>`_
 and `clone <https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository>`_
 it to your local machine:
 
@@ -38,7 +36,7 @@ to make sure you stay up-to-date with our repository:
 
 .. code-block:: console
 
-    git remote add upstream https://github.com/kaprien/repository-service-tuf-api
+    git remote add upstream https://github.com/vmware/repository-service-tuf-api
     git checkout main
     git fetch upstream
     git merge upstream/main
@@ -87,7 +85,7 @@ Save the token hash
 
     You can also run locally the
     `repository-service-tuf-worker
-    <https://github.com/kaprien/repository-service-tuf-worker>`_ image and
+    <https://github.com/vmware/repository-service-tuf-worker>`_ image and
     change the `docker-compose.yml` to use the local image.
 
 

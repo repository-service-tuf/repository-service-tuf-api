@@ -27,7 +27,7 @@ jobs:
       with:
         registry: ghcr.io
         username: ${{ github.repository_owner }}
-        password: ${{ secrets.GPR_TOKEN }}
+        password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Build and push
       uses: docker/build-push-action@v2
@@ -35,6 +35,6 @@ jobs:
         context: .
         push: true
         tags: |
-            ghcr.io/kaprien/repository-service-tuf-api:dev
+            ghcr.io/vmware/repository-service-tuf-api:dev
         build-args: |
           RELEASE_VERSION=dev
