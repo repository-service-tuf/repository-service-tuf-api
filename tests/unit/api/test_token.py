@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2022 VMware Inc
+#
+# SPDX-License-Identifier: MIT
+
 from dataclasses import dataclass
 from datetime import datetime
 from typing import List

@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2022 VMware Inc
+#
+# SPDX-License-Identifier: MIT
+
 import json
 from uuid import uuid4
 

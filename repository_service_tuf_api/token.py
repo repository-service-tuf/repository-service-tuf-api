@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2022 VMware Inc
+#
+# SPDX-License-Identifier: MIT
+
 from datetime import datetime, timedelta
 from typing import List, Literal, Optional
 from uuid import uuid4

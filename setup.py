@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+
+# SPDX-FileCopyrightText: 2022 VMware Inc
 #
-# Copyright (c) 2022 Kairo de Araujo. All Rights Reserved.
+# SPDX-License-Identifier: MIT
+
 from setuptools import find_packages, setup
 
 setup(

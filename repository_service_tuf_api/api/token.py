@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2022 VMware Inc
+#
+# SPDX-License-Identifier: MIT
+
 from fastapi import APIRouter, Depends, Security
 
 from repository_service_tuf_api import SCOPES_NAMES, token
