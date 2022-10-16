@@ -8,7 +8,7 @@ The ``repository-service-tuf-api``, in the context perspective, is an HTTP Rest
 API for the TUF Metadata Repository that works asynchronously with the Metadata
 Repository, sending the requests to a Broker.
 
-.. uml:: ../../diagrams/repository-service-tuf-api-C1.puml
+.. image:: /_static/repository-service-tuf-api-C1.png
 
 
 Container level
@@ -54,4 +54,4 @@ a task, and ``repository-service-tuf-worker`` will consume it. The
 and ``repository-service-tuf-api`` can consume it.
 
 
-.. uml:: ../../diagrams/repository-service-tuf-api-C2.puml
+.. image:: /_static/repository-service-tuf-api-C2.png

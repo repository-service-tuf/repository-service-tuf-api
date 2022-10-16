@@ -9,7 +9,8 @@ Development
 Component level
 ---------------
 
-.. uml:: ../../diagrams/repository-service-tuf-api-C3.puml
+.. image:: /_static/repository-service-tuf-api-C3.png
+
 .. toctree::
    :maxdepth: 4
 
