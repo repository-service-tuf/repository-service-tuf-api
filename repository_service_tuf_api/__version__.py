@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+
+# SPDX-FileCopyrightText: 2022 VMware Inc
 #
-# Copyright (c) 2022 Kairo de Araujo. All Rights Reserved.
+# SPDX-License-Identifier: MIT
+
 version = "0.0.1-dev"
-copyright = "Copyright (c) 2022 Kairo de Araujo."
+copyright = "Copyright (c) 2022 VMware Inc"
 author = "Kairo de Araujo"
