@@ -263,7 +263,7 @@ def post_bootstrap(payload):
     logging.debug(f"Bootstrap task {task_id} sent")
     repository_metadata.apply_async(
         kwargs={
-            "action": "add_initial_metadata",
+            "action": "bootstrap",
             "payload": payload.dict(by_alias=True, exclude_none=True),
         },
         task_id=task_id,
