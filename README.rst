@@ -2,6 +2,11 @@
 Repository Service for TUF API
 ##############################
 
+.. note::
+
+  This service is in Experimental stage.
+
+
 |Test Docker Image build| |Tests and Lint| |Coverage|
 
 .. |Test Docker Image build| image:: https://github.com/vmware/repository-service-tuf-api/actions/workflows/test_docker_build.yml/badge.svg
@@ -15,9 +20,12 @@ Repository Service for TUF API
 Repository Service for TUF API is part of `Repository Service for TUF
 <https://github.com/vmware/repository-service-tuf>`_.
 
-.. note::
 
-  This service is in Experimental stage.
+Usage
+=====
+
+`Repository Service for TUF Repository API Docker Image documentation
+<https://repository-service-tuf.readthedocs.io/projects/rstuf-api/en/latest/guide/Docker_README.html>`_
 
 Development tools
 =================
@@ -77,27 +85,6 @@ Install development requirements
 
 Running API development
 =======================
-
-Github Account Token
-
-For the development environment, you will require a Github Account Token to
-download Repository Service for TUF REST API container
-
-Access the Github page > Settings > Develop Settings > Personal Access tokens >
-Generate new token
-
-This token requires only
-``read:packages Download packages from GitHub Package Registry``
-
-Save the token hash
-
-.. note::
-
-    You can also run locally the
-    `repository-service-tuf-worker
-    <https://github.com/vmware/repository-service-tuf-worker>`_ image and
-    change the `docker-compose.yml` to use the local image.
-
 
 Runing the API locally
 
