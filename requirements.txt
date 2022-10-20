@@ -33,7 +33,7 @@ passlib[bcrypt]==1.7.4
 prompt-toolkit==3.0.31 ; python_full_version >= '3.6.2'
 pyasn1==0.4.8
 pycparser==2.21
-pydantic==1.10.1 ; python_version >= '3.7'
+pydantic==1.10.2 ; python_version >= '3.7'
 pyjwt[crypto]==2.4.0 ; python_version >= '3.6'
 pyparsing==3.0.9 ; python_full_version >= '3.6.8'
 python-jose==3.3.0
