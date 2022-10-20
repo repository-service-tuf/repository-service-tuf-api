@@ -67,7 +67,7 @@ virtualenv==20.16.4 ; python_version >= '3.6'
 voluptuous==0.13.1
 zipp==3.8.1 ; python_version >= '3.7'
 amqp==5.1.1 ; python_version >= '3.6'
-anyio==3.6.1 ; python_full_version >= '3.6.2'
+anyio==3.6.2 ; python_full_version >= '3.6.2'
 async-timeout==4.0.2 ; python_version >= '3.6'
 bcrypt==4.0.0
 billiard==3.6.4.0
