@@ -16,7 +16,7 @@ jobs:
       with:
         ref: ${{ github.event.workflow_run.head_branch }}
 
-    - uses: actions/setup-python@v1
+    - uses: actions/setup-python@v4
       with:
         python-version: '3.10'
 
