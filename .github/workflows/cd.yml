@@ -33,7 +33,19 @@ jobs:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Build and push
+    # Cannot use output type docker local and push. Build and export and caches
+    - name: Build and export
+      uses: docker/build-push-action@c56af957549030174b10d6867f20e78cfd7debc5
+      with:
+        context: .
+        tags: |
+            ghcr.io/vmware/repository-service-tuf-api:latest
+            ghcr.io/vmware/repository-service-tuf-api:${{ github.ref_name }}
+        outputs: type=docker,dest=/tmp/repository-service-tuf-api_${{ github.ref_name }}.tar
+        cache-to: type=local,dest=/tmp/rstuf_api_cache
+
+    # Build and push using the local cache from above step
+    - name:  Build and push (using cache)
       uses: docker/build-push-action@c56af957549030174b10d6867f20e78cfd7debc5
       with:
         context: .
@@ -41,3 +53,12 @@ jobs:
         tags: |
             ghcr.io/vmware/repository-service-tuf-api:latest
             ghcr.io/vmware/repository-service-tuf-api:${{ github.ref_name }}
+        cache-from: type=local,src=/tmp/rstuf_api_cache
+
+    - name: Publish GitHub Release
+      uses: softprops/action-gh-release@1e07f4398721186383de40550babbdf2b84acfc5
+      with:
+        name: ${{ github.ref_name }}
+        tag_name: ${{ github.ref }}
+        body: "docker pull [ghcr.io/vmware/repository-service-tuf-api:${{ github.ref_name }}](https://github.com/vmware/repository-service-tuf-api/pkgs/container/repository-service-tuf-api)"
+        files: /tmp/repository-service-tuf-api_${{ github.ref_name }}.tar
