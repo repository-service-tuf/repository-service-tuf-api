@@ -1,11 +1,11 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "b0cc5fb9bf134b06397185496cfdb6a9806da373acacc108bbd25384b49d5bdc"
+            "sha256": "6e42176c857d5acf13e7fb0c61cad771c4bb4b9ab9f41a91a2f4af537c0f9b8a"
         },
         "pipfile-spec": 6,
         "requires": {
-            "python_version": "3.9"
+            "python_version": "3.10"
         },
         "sources": [
             {
@@ -659,7 +659,7 @@
                 "sha256:1511434bb92bf8dd198c12b1cc812e800d4181cfcb867674e0f8279cc93087aa",
                 "sha256:16fa4864408f655d35ec496218b85f79b3437c829e93320c7c9215ccfd92489e"
             ],
-            "markers": "python_version < '3.10'",
+            "markers": "python_version >= '3.7'",
             "version": "==4.4.0"
         },
         "urllib3": {
@@ -1010,6 +1010,14 @@
             "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4'",
             "version": "==0.17.1"
         },
+        "exceptiongroup": {
+            "hashes": [
+                "sha256:2e3c3fc1538a094aab74fad52d6c33fc94de3dfee3ee01f187c0e0c72aec5337",
+                "sha256:9086a4a21ef9b31c72181c77c040a074ba0889ee56a7b289ff0afb0d97655f96"
+            ],
+            "markers": "python_version < '3.11'",
+            "version": "==1.0.0rc9"
+        },
         "filelock": {
             "hashes": [
                 "sha256:55447caa666f2198c5b6b13a26d2084d26fa5b115c00d065664b2124680c4edc",
@@ -1304,11 +1312,11 @@
         },
         "pytest": {
             "hashes": [
-                "sha256:1377bda3466d70b55e3f5cecfa55bb7cfcf219c7964629b967c37cf0bda818b7",
-                "sha256:4f365fec2dff9c1162f834d9f18af1ba13062db0c708bf7b946f8a5c76180c39"
+                "sha256:892f933d339f068883b6fd5a459f03d85bfcb355e4981e146d2c7616c21fef71",
+                "sha256:c4014eb40e10f11f355ad4e3c2fb2c6c6d1919c73f3b5a433de4708202cade59"
             ],
             "index": "pypi",
-            "version": "==7.1.3"
+            "version": "==7.2.0"
         },
         "pytz": {
             "hashes": [
@@ -1493,7 +1501,7 @@
                 "sha256:1511434bb92bf8dd198c12b1cc812e800d4181cfcb867674e0f8279cc93087aa",
                 "sha256:16fa4864408f655d35ec496218b85f79b3437c829e93320c7c9215ccfd92489e"
             ],
-            "markers": "python_version < '3.10'",
+            "markers": "python_version >= '3.7'",
             "version": "==4.4.0"
         },
         "urllib3": {
