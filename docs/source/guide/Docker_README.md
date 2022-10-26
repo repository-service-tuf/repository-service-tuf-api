@@ -43,9 +43,9 @@ docker run -p 80:80 \
 The value type is boolean (true/false [case sensitive](https://www.dynaconf.com/configuration/#available-options)).
 Default: true
 
-Disble the container as a token node.
+Disable the container as a token node.
 
-The container is enabled to be a token node by default, the endpoint `/api/v1/token` is visible and accept connections using token authentication and scope `write:token`
+The container is enabled to be a token node by default, the endpoint `/api/v1/token` is visible and accept connections using token authentication and scopes.
 
 #### (Optional) `RSTUF_BOOTSTRAP_NODE`
 
