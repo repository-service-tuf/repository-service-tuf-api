@@ -138,3 +138,6 @@ dmypy.json
 
 # Ignore dynaconf secret files
 .secrets.*
+
+# VScode settings folder
+.vscode

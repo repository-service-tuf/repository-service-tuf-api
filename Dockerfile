@@ -16,7 +16,7 @@ RUN apt-get remove gcc --purge -y \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean autoclean \
     && apt-get autoremove --yes
-RUN pip install --user -r requirements.txt
+RUN pip install --upgrade pip && pip install --user -r requirements.txt
 
 # Final image
 FROM base_os as pre-final
