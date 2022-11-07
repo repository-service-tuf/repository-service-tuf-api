@@ -60,7 +60,7 @@ to make sure you stay up-to-date with our repository:
     git merge upstream/main
 
 
-Intalling project requirements
+Installing project requirements
 ==============================
 
 This repository has the ``requirements.txt`` and the ``requirements-dev.txt``
@@ -83,10 +83,25 @@ Install development requirements
   $ pipenv install -d
 
 
+Running checks with pre-commit:
+
+The pre-commit tool is installed as part of the development requirements.
+
+To automatically run checks before you commit your changes you should run:
+
+.. code:: shell
+
+    $ make precommit
+
+This will install the git hook scripts for the first time, it will update to the
+latest versions of the hooks and run the pre-commit tool.
+Now ``pre-commit`` will run automatically on ``git commit``.
+
+
 Running API development
 =======================
 
-Runing the API locally
+Running the API locally
 
 .. code:: shell
 
@@ -102,7 +117,7 @@ See Makefile for more options
 Tests
 =====
 
-We use `Tox <ttps://tox.wiki/en/latest/>`_ to manage running the tests.
+We use `Tox <https://tox.wiki/en/latest/>`_ to manage running the tests.
 
 Running tests
 

@@ -39,6 +39,7 @@ sphinxcontrib-plantuml = "*"
 sphinxcontrib-openapi = "*"
 mistune = "==0.8.4"
 myst-parser = "*"
+pre-commit = "*"
 
 [requires]
 python_version = "3.10"
