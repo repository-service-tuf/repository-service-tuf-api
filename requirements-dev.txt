@@ -1,115 +1,115 @@
 -i https://pypi.org/simple
 alabaster==0.7.12
-attrs==22.1.0; python_version >= '3.5'
-babel==2.11.0; python_version >= '3.6'
+attrs==22.1.0 ; python_version >= '3.5'
+babel==2.11.0 ; python_version >= '3.6'
 black==22.10.0
-certifi==2022.9.24; python_version >= '3.6'
+certifi==2022.9.24 ; python_version >= '3.6'
 cffi==1.15.1
-cfgv==3.3.1; python_full_version >= '3.6.1'
-charset-normalizer==2.1.1; python_version >= '3.6'
-click==8.1.3; python_version >= '3.7'
+cfgv==3.3.1 ; python_full_version >= '3.6.1'
+charset-normalizer==2.1.1 ; python_full_version >= '3.6.0'
+click==8.1.3 ; python_version >= '3.7'
 coverage==6.5.0
 cryptography==38.0.3
 distlib==0.3.6
-docutils==0.17.1; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4'
-exceptiongroup==1.0.0; python_version < '3.11'
-filelock==3.8.0; python_version >= '3.7'
+docutils==0.17.1 ; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4'
+exceptiongroup==1.0.1 ; python_version < '3.11'
+filelock==3.8.0 ; python_version >= '3.7'
 flake8==5.0.4
-identify==2.5.8; python_version >= '3.7'
-idna==3.4; python_version >= '3.5'
-imagesize==1.4.1; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'
-importlib-metadata==5.0.0; python_version < '3.10'
+identify==2.5.8 ; python_version >= '3.7'
+idna==3.4 ; python_version >= '3.5'
+imagesize==1.4.1 ; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'
+importlib-metadata==5.0.0 ; python_version < '3.10'
 iniconfig==1.1.1
 isort==5.10.1
-jinja2==3.1.2; python_version >= '3.7'
-jsonschema==4.17.0; python_version >= '3.7'
+jinja2==3.1.2 ; python_version >= '3.7'
+jsonschema==4.17.0 ; python_version >= '3.7'
 m2r==0.2.1
-markdown-it-py==2.1.0; python_version >= '3.7'
-markupsafe==2.1.1; python_version >= '3.7'
-mccabe==0.7.0; python_version >= '3.6'
-mdit-py-plugins==0.3.1; python_version >= '3.7'
-mdurl==0.1.2; python_version >= '3.7'
+markdown-it-py==2.1.0 ; python_version >= '3.7'
+markupsafe==2.1.1 ; python_version >= '3.7'
+mccabe==0.7.0 ; python_version >= '3.6'
+mdit-py-plugins==0.3.1 ; python_version >= '3.7'
+mdurl==0.1.2 ; python_version >= '3.7'
 mistune==0.8.4
 mypy-extensions==0.4.3
 myst-parser==0.18.1
-nodeenv==1.7.0; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4, 3.5, 3.6'
-packaging==21.3; python_version >= '3.6'
-pathspec==0.10.1; python_version >= '3.7'
-platformdirs==2.5.2; python_version >= '3.7'
-pluggy==1.0.0; python_version >= '3.6'
+nodeenv==1.7.0 ; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4, 3.5, 3.6'
+packaging==21.3 ; python_version >= '3.6'
+pathspec==0.10.1 ; python_version >= '3.7'
+platformdirs==2.5.3 ; python_version >= '3.7'
+pluggy==1.0.0 ; python_version >= '3.6'
 pre-commit==2.20.0
 pretend==1.0.9
-py==1.11.0; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4'
-pycodestyle==2.9.1; python_version >= '3.6'
+py==1.11.0 ; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4'
+pycodestyle==2.9.1 ; python_version >= '3.6'
 pycparser==2.21
-pyflakes==2.5.0; python_version >= '3.6'
-pygments==2.13.0; python_version >= '3.6'
-pyparsing==3.0.9; python_full_version >= '3.6.8'
-pyrsistent==0.19.2; python_version >= '3.7'
+pyflakes==2.5.0 ; python_version >= '3.6'
+pygments==2.13.0 ; python_version >= '3.6'
+pyparsing==3.0.9 ; python_full_version >= '3.6.8'
+pyrsistent==0.19.2 ; python_version >= '3.7'
 pytest==7.2.0
 pytz==2022.6
-pyyaml==6.0; python_version >= '3.6'
-requests==2.28.1; python_version >= '3.7' and python_version < '4'
-setuptools==65.5.0; python_version >= '3.7'
-six==1.16.0; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2'
+pyyaml==6.0 ; python_version >= '3.6'
+requests==2.28.1 ; python_version >= '3.7' and python_version < '4'
+setuptools==65.5.1 ; python_version >= '3.7'
+six==1.16.0 ; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'
 snowballstemmer==2.2.0
 sphinx==5.3.0
-sphinx-rtd-theme==1.1.0
+sphinx-rtd-theme==1.1.1
 sphinxcontrib-applehelp==1.0.2
 sphinxcontrib-devhelp==1.0.2
 sphinxcontrib-htmlhelp==2.0.0
-sphinxcontrib-httpdomain==1.8.0; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4'
+sphinxcontrib-httpdomain==1.8.0 ; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4'
 sphinxcontrib-jsmath==1.0.1
 sphinxcontrib-openapi==0.7.0
 sphinxcontrib-plantuml==0.24
 sphinxcontrib-qthelp==1.0.3
 sphinxcontrib-serializinghtml==1.1.5
-toml==0.10.2; python_version >= '2.6' and python_version not in '3.0, 3.1, 3.2'
-tomli==2.0.1; python_version < '3.11'
+toml==0.10.2 ; python_version >= '2.6' and python_version not in '3.0, 3.1, 3.2, 3.3'
+tomli==2.0.1 ; python_full_version < '3.11.0a7'
 tox==3.27.0
-typing-extensions==4.4.0; python_version < '3.10'
-urllib3==1.26.12; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4, 3.5' and python_version < '4'
-virtualenv==20.16.6; python_version >= '3.6'
+typing-extensions==4.4.0 ; python_version >= '3.7'
+urllib3==1.26.12 ; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4, 3.5' and python_version < '4'
+virtualenv==20.16.6 ; python_version >= '3.6'
 voluptuous==0.13.1
-zipp==3.10.0; python_version >= '3.7'
-amqp==5.1.1; python_version >= '3.6'
-anyio==3.6.2; python_full_version >= '3.6.2'
-async-timeout==4.0.2; python_version >= '3.6'
+zipp==3.10.0 ; python_version >= '3.7'
+amqp==5.1.1 ; python_version >= '3.6'
+anyio==3.6.2 ; python_full_version >= '3.6.2'
+async-timeout==4.0.2 ; python_version >= '3.6'
 bcrypt==4.0.1
 billiard==3.6.4.0
 celery==5.2.7
-click-didyoumean==0.3.0; python_full_version >= '3.6.2' and python_version < '4'
+click-didyoumean==0.3.0 ; python_full_version >= '3.6.2' and python_full_version < '4.0.0'
 click-plugins==1.1.1
 click-repl==0.2.0
 configobj==5.0.6
-deprecated==1.2.13; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'
-dnspython==2.2.1; python_version >= '3.6' and python_version < '4'
+deprecated==1.2.13 ; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'
+dnspython==2.2.1 ; python_version >= '3.6' and python_version < '4.0'
 dynaconf==3.1.11
-ecdsa==0.18.0; python_version >= '2.6' and python_version not in '3.0, 3.1, 3.2'
-email-validator==1.3.0; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4'
+ecdsa==0.18.0 ; python_version >= '2.6' and python_version not in '3.0, 3.1, 3.2, 3.3'
+email-validator==1.3.0 ; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4'
 fastapi==0.86.0
-fastapi-users[sqlalchemy]==10.2.0
+fastapi-users[sqlalchemy]==10.2.1
 fastapi-users-db-sqlalchemy==4.0.3
-greenlet==2.0.0.post0; python_version >= '3' and (platform_machine == 'aarch64' or (platform_machine == 'ppc64le' or (platform_machine == 'x86_64' or (platform_machine == 'amd64' or (platform_machine == 'AMD64' or (platform_machine == 'win32' or platform_machine == 'WIN32'))))))
-h11==0.14.0; python_version >= '3.7'
+greenlet==2.0.1 ; python_version >= '3' and platform_machine == 'aarch64' or (platform_machine == 'ppc64le' or (platform_machine == 'x86_64' or (platform_machine == 'amd64' or (platform_machine == 'AMD64' or (platform_machine == 'win32' or platform_machine == 'WIN32')))))
+h11==0.14.0 ; python_version >= '3.7'
 hvac==1.0.2
-kombu==5.2.4; python_version >= '3.7'
+kombu==5.2.4 ; python_version >= '3.7'
 makefun==1.15.0
 passlib[bcrypt]==1.7.4
-prompt-toolkit==3.0.32; python_full_version >= '3.6.2'
+prompt-toolkit==3.0.32 ; python_full_version >= '3.6.2'
 pyasn1==0.4.8
-pydantic==1.10.2; python_version >= '3.7'
+pydantic==1.10.2 ; python_version >= '3.7'
 pyhcl==0.4.4
-pyjwt[crypto]==2.5.0; python_version >= '3.7'
+pyjwt[crypto]==2.6.0 ; python_version >= '3.7'
 python-jose==3.3.0
 python-multipart==0.0.5
 redis==4.3.4
-rsa==4.9; python_version >= '3.6' and python_version < '4'
-sniffio==1.3.0; python_version >= '3.7'
-sqlalchemy==1.4.42
-starlette==0.20.4; python_version >= '3.7'
+rsa==4.9 ; python_version >= '3.6' and python_version < '4'
+sniffio==1.3.0 ; python_version >= '3.7'
+sqlalchemy==1.4.43
+starlette==0.20.4 ; python_version >= '3.7'
 types-cryptography==3.3.23.1
 uvicorn==0.19.0
-vine==5.0.0; python_version >= '3.6'
+vine==5.0.0 ; python_version >= '3.6'
 wcwidth==0.2.5
-wrapt==1.14.1; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4'
+wrapt==1.14.1 ; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4'
