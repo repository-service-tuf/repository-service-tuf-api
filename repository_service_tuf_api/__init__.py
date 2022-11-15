@@ -30,7 +30,6 @@ logging.basicConfig(
 class SCOPES_NAMES(Enum):
     read_bootstrap = "read:bootstrap"
     read_settings = "read:settings"
-    read_targets = "read:targets"
     read_tasks = "read:tasks"
     read_token = "read:token"
     write_bootstrap = "write:bootstrap"
@@ -40,7 +39,6 @@ class SCOPES_NAMES(Enum):
 
 
 SCOPES = {
-    SCOPES_NAMES.read_targets.value: "Read (GET) targets",
     SCOPES_NAMES.read_bootstrap.value: "Read (GET) bootstrap",
     SCOPES_NAMES.read_settings.value: "Read (GET) settings",
     SCOPES_NAMES.read_tasks.value: "Read (GET) tasks",
