@@ -75,7 +75,7 @@ class TestGetTask:
         token_payload = {
             "username": "admin",
             "password": "secret",
-            "scope": "",
+            "scope": "read:settings",
         }
         token = test_client.post(token_url, data=token_payload)
         headers = {

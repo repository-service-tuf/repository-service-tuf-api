@@ -145,7 +145,7 @@ class TestPostToken:
                 id=1213,
                 username="read_user",
                 password="test",
-                scopes=[],
+                scopes=[Scope("read:settings")],
             )
         )
         monkeypatch.setattr(
