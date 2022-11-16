@@ -21,6 +21,7 @@ jobs:
         run: |
           pipenv update -d
           make requirements
+          git diff requirements*.txt
       - name: Run tests
         run: |
           make tests

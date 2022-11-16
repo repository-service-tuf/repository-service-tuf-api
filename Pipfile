@@ -16,6 +16,7 @@ fastapi-users = {extras = ["sqlalchemy"], version = "*"}
 sqlalchemy = "*"
 redis = "*"
 bcrypt = "*"
+starlette = "==0.20.4"
 
 [dev-packages]
 black = "*"
