@@ -174,15 +174,7 @@ class TestPostToken:
         }
         assert mocked_bcrypt.checkpw.calls == [pretend.call(b"test", "test")]
 
-    def test_post_with_empty_scope(self, monkeypatch, test_client):
-        mocked_datetime = pretend.stub(
-            utcnow=pretend.call_recorder(
-                lambda: datetime(2019, 6, 16, 9, 5, 00, 355186)
-            )
-        )
-        monkeypatch.setattr(
-            "repository_service_tuf_api.token.datetime", mocked_datetime
-        )
+    def test_post_with_empty_scope(self, test_client):
         url = "/api/v1/token/"
         token_data = {
             "username": "admin",
@@ -193,15 +185,7 @@ class TestPostToken:
         assert response.status_code == status.HTTP_403_FORBIDDEN
         assert response.json()["detail"]["error"] == "scope '''' forbidden"
 
-    def test_post_with_missing_scope(self, monkeypatch, test_client):
-        mocked_datetime = pretend.stub(
-            utcnow=pretend.call_recorder(
-                lambda: datetime(2019, 6, 16, 9, 5, 00, 355186)
-            )
-        )
-        monkeypatch.setattr(
-            "repository_service_tuf_api.token.datetime", mocked_datetime
-        )
+    def test_post_with_missing_scope(self, test_client):
         url = "/api/v1/token/"
         token_data = {
             "username": "admin",
