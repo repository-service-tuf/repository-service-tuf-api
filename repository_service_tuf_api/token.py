@@ -10,7 +10,7 @@ from fastapi import Depends, HTTPException, Query, status
 from fastapi.param_functions import Form
 from fastapi.security import OAuth2PasswordBearer, SecurityScopes
 from jose import JWTError, jwt
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import BaseModel, Field, SecretStr, ValidationError
 
 from repository_service_tuf_api import SCOPES, SCOPES_NAMES, SECRET_KEY, db
 from repository_service_tuf_api.users.crud import bcrypt, get_user_by_username
@@ -22,14 +22,12 @@ class TokenRequestForm:
     def __init__(
         self,
         username: str = Form(),
-        password: str = Form(),
-        scope: Optional[str] = Form(
-            default="",
+        password: SecretStr = Form(),
+        scope: str = Form(
             description=(
                 "Add scopes separeted by space. "
-                "Default user scopes. Users might not have all scopes. "
                 "Available scopes: "
-                f"{' '.join([scope.value for scope in SCOPES_NAMES])}"
+                f"{', '.join([f'`{scope.value}`' for scope in SCOPES_NAMES])}"
             ),
         ),
         expires: Optional[int] = Form(
@@ -37,7 +35,7 @@ class TokenRequestForm:
         ),
     ):
         self.username = username
-        self.password = password
+        self.password = password.get_secret_value()
         self.scope = scope.split()
         self.expires = expires
 

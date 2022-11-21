@@ -490,7 +490,8 @@
                 "title": "Body_post_api_v1_token__post",
                 "required": [
                     "username",
-                    "password"
+                    "password",
+                    "scope"
                 ],
                 "type": "object",
                 "properties": {
@@ -500,13 +501,14 @@
                     },
                     "password": {
                         "title": "Password",
-                        "type": "string"
+                        "type": "string",
+                        "format": "password",
+                        "writeOnly": true
                     },
                     "scope": {
                         "title": "Scope",
                         "type": "string",
-                        "description": "Add scopes separeted by space. Default user scopes. Users might not have all scopes. Available scopes: read:bootstrap read:settings read:targets read:tasks read:token write:bootstrap write:targets write:token delete:targets",
-                        "default": ""
+                        "description": "Add scopes separeted by space. Available scopes: `read:bootstrap`, `read:settings`, `read:targets`, `read:tasks`, `read:token`, `write:bootstrap`, `write:targets`, `write:token`, `delete:targets`"
                     },
                     "expires": {
                         "title": "Expires",

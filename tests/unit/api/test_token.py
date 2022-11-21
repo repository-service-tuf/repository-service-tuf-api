@@ -173,3 +173,24 @@ class TestPostToken:
             "detail": {"error": "scope 'write:targets' forbidden"}
         }
         assert mocked_bcrypt.checkpw.calls == [pretend.call(b"test", "test")]
+
+    def test_post_with_empty_scope(self, test_client):
+        url = "/api/v1/token/"
+        token_data = {
+            "username": "admin",
+            "password": "secret",
+            "scope": "''",
+        }
+        response = test_client.post(url, data=token_data)
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.json()["detail"]["error"] == "scope '''' forbidden"
+
+    def test_post_with_missing_scope(self, test_client):
+        url = "/api/v1/token/"
+        token_data = {
+            "username": "admin",
+            "password": "secret",
+            "scope": None,
+        }
+        response = test_client.post(url, data=token_data)
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
