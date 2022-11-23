@@ -508,7 +508,7 @@
                     "scope": {
                         "title": "Scope",
                         "type": "string",
-                        "description": "Add scopes separeted by space. Available scopes: `read:bootstrap`, `read:settings`, `read:targets`, `read:tasks`, `read:token`, `write:bootstrap`, `write:targets`, `write:token`, `delete:targets`"
+                        "description": "Add scopes separeted by space. Available scopes: `read:bootstrap`, `read:settings`, `read:tasks`, `read:token`, `write:bootstrap`, `write:targets`, `write:token`, `delete:targets`"
                     },
                     "expires": {
                         "title": "Expires",
@@ -1364,7 +1364,6 @@
                         "scopes": [
                             "read:bootstrap",
                             "read:settings",
-                            "read:targets",
                             "read:tasks",
                             "read:token",
                             "write:bootstrap",
@@ -1954,7 +1953,6 @@
                             "enum": [
                                 "read:bootstrap",
                                 "read:settings",
-                                "read:targets",
                                 "read:token",
                                 "write:targets"
                             ],
@@ -2116,7 +2114,6 @@
                 "flows": {
                     "password": {
                         "scopes": {
-                            "read:targets": "Read (GET) targets",
                             "read:bootstrap": "Read (GET) bootstrap",
                             "read:settings": "Read (GET) settings",
                             "read:tasks": "Read (GET) tasks",

@@ -28,7 +28,6 @@ def token_headers(test_client):
         "password": "secret",
         "scope": (
             "write:targets "
-            "read:targets "
             "write:bootstrap "
             "read:bootstrap "
             "read:settings "

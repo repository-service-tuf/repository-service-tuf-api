@@ -85,7 +85,6 @@ class TokenRequestPayload(BaseModel):
         Literal[
             SCOPES_NAMES.read_bootstrap.value,
             SCOPES_NAMES.read_settings.value,
-            SCOPES_NAMES.read_targets.value,
             SCOPES_NAMES.read_token.value,
             SCOPES_NAMES.write_targets.value,
         ]

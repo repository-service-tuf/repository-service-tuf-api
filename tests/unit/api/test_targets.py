@@ -109,7 +109,7 @@ class TestPostTargets:
         token_payload = {
             "username": "admin",
             "password": "secret",
-            "scope": "read:targets",
+            "scope": "read:settings",
         }
         token = test_client.post(token_url, data=token_payload)
         headers = {
