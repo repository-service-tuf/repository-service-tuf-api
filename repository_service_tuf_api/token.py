@@ -31,7 +31,9 @@ class TokenRequestForm:
             ),
         ),
         expires: Optional[int] = Form(
-            default=1, description="Expiration in hours. Default: 1 hour"
+            default=1,
+            description="Expiration in hours. Default: 1 hour",
+            ge=1,
         ),
     ):
         self.username = username
@@ -89,7 +91,7 @@ class TokenRequestPayload(BaseModel):
             SCOPES_NAMES.write_targets.value,
         ]
     ]
-    expires: int = Field(description="In hour(s)")
+    expires: int = Field(description="In hour(s)", ge=1)
 
     class Config:
         example = {
