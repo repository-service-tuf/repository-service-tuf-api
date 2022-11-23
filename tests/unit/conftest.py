@@ -33,6 +33,7 @@ def token_headers(test_client):
             "read:settings "
             "read:token "
             "read:tasks "
+            "write:token "
             "delete:targets "
         ),
     }

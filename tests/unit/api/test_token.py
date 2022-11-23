@@ -194,3 +194,78 @@ class TestPostToken:
         }
         response = test_client.post(url, data=token_data)
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+    def test_post_with_expires_0(self, test_client):
+        url = "/api/v1/token/"
+        token_data = {
+            "username": "admin",
+            "password": "secret",
+            "scope": ["write:targets"],
+            "expires": 0,
+        }
+        response = test_client.post(url, data=token_data)
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert (
+            response.json()["detail"][0]["msg"]
+            == "ensure this value is greater than or equal to 1"
+        )
+
+    def test_post_with_expires_negative(self, test_client):
+        url = "/api/v1/token/"
+        token_data = {
+            "username": "admin",
+            "password": "secret",
+            "scope": ["write:targets"],
+            "expires": -25,
+        }
+        response = test_client.post(url, data=token_data)
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert (
+            response.json()["detail"][0]["msg"]
+            == "ensure this value is greater than or equal to 1"
+        )
+
+    def test_post_new_with_expires_0(self, test_client, token_headers):
+        url = "/api/v1/token/new/"
+        payload = {
+            "scopes": ["write:targets"],
+            "expires": 0,
+        }
+        response = test_client.post(url, headers=token_headers, json=payload)
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert (
+            response.json()["detail"][0]["msg"]
+            == "ensure this value is greater than or equal to 1"
+        )
+
+    def test_post_new_with_expires_negative(self, test_client, token_headers):
+        url = "/api/v1/token/new/"
+        payload = {
+            "scopes": ["write:targets"],
+            "expires": -31,
+        }
+        response = test_client.post(url, headers=token_headers, json=payload)
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert (
+            response.json()["detail"][0]["msg"]
+            == "ensure this value is greater than or equal to 1"
+        )
+
+    def test_post_new_with_expires_missing(self, test_client, token_headers):
+        url = "/api/v1/token/new/"
+        payload = {
+            "scopes": ["write:targets"],
+        }
+        response = test_client.post(url, headers=token_headers, json=payload)
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.json()["detail"][0]["msg"] == "field required"
+
+    def test_post_new_with_expires_none(self, test_client, token_headers):
+        url = "/api/v1/token/new/"
+        payload = {"scopes": ["write:targets"], "expires": None}
+        response = test_client.post(url, headers=token_headers, json=payload)
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert (
+            response.json()["detail"][0]["msg"]
+            == "none is not an allowed value"
+        )

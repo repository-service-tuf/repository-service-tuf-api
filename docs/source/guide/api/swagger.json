@@ -512,6 +512,7 @@
                     },
                     "expires": {
                         "title": "Expires",
+                        "minimum": 1.0,
                         "type": "integer",
                         "description": "Expiration in hours. Default: 1 hour",
                         "default": 1
@@ -1961,6 +1962,7 @@
                     },
                     "expires": {
                         "title": "Expires",
+                        "minimum": 1.0,
                         "type": "integer",
                         "description": "In hour(s)"
                     }
