@@ -92,7 +92,7 @@ class TokenRequestPayload(BaseModel):
             SCOPES_NAMES.write_targets.value,
             SCOPES_NAMES.delete_targets.value,
         ]
-    ]
+    ] = Field(min_items=1)
     expires: int = Field(description="In hour(s)", ge=1)
 
     class Config:
