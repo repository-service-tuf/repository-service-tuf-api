@@ -260,6 +260,32 @@ class TestPostToken:
             == "ensure this value has at least 1 items"
         )
 
+    def test_post_new_with_scopes_with_empty_string(
+        self, test_client, token_headers
+    ):
+        url = "/api/v1/token/new/"
+        payload = {
+            "scopes": [""],
+            "expires": 1,
+        }
+
+        response = test_client.post(url, headers=token_headers, json=payload)
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert "unexpected value" in response.json()["detail"][0]["msg"]
+
+    def test_post_new_with_scopes_with_invalid_scope(
+        self, test_client, token_headers
+    ):
+        url = "/api/v1/token/new/"
+        payload = {
+            "scopes": ["invalid"],
+            "expires": 1,
+        }
+
+        response = test_client.post(url, headers=token_headers, json=payload)
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert "unexpected value" in response.json()["detail"][0]["msg"]
+
     def test_post_new_with_expires_0(self, test_client, token_headers):
         url = "/api/v1/token/new/"
         payload = {
