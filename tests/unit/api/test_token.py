@@ -86,38 +86,6 @@ class TestPostToken:
         assert response.status_code == status.HTTP_200_OK
         assert "access_token" in response.json()
 
-    def test_post_new(self, test_client, token_headers):
-        url = "/api/v1/token/new/"
-        payload = {
-            "scopes": [
-                "read:bootstrap",
-                "read:settings",
-                "read:tasks",
-                "read:token",
-                "write:targets",
-                "delete:targets",
-            ],
-            "expires": 1,
-        }
-
-        response = test_client.post(url, headers=token_headers, json=payload)
-        assert response.status_code == status.HTTP_200_OK
-        assert "access_token" in response.json()
-
-    def test_post_new_with_empty_scope(self, test_client, token_headers):
-        url = "/api/v1/token/new/"
-        payload = {
-            "scopes": [],
-            "expires": 1,
-        }
-
-        response = test_client.post(url, headers=token_headers, json=payload)
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
-        assert (
-            response.json()["detail"][0]["msg"]
-            == "ensure this value has at least 1 items"
-        )
-
     def test_post_without_expires(self, monkeypatch, test_client):
         mocked_datetime = pretend.stub(
             utcnow=pretend.call_recorder(
@@ -258,6 +226,38 @@ class TestPostToken:
         assert (
             response.json()["detail"][0]["msg"]
             == "ensure this value is greater than or equal to 1"
+        )
+
+    def test_post_new(self, test_client, token_headers):
+        url = "/api/v1/token/new/"
+        payload = {
+            "scopes": [
+                "read:bootstrap",
+                "read:settings",
+                "read:tasks",
+                "read:token",
+                "write:targets",
+                "delete:targets",
+            ],
+            "expires": 1,
+        }
+
+        response = test_client.post(url, headers=token_headers, json=payload)
+        assert response.status_code == status.HTTP_200_OK
+        assert "access_token" in response.json()
+
+    def test_post_new_with_empty_scope(self, test_client, token_headers):
+        url = "/api/v1/token/new/"
+        payload = {
+            "scopes": [],
+            "expires": 1,
+        }
+
+        response = test_client.post(url, headers=token_headers, json=payload)
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert (
+            response.json()["detail"][0]["msg"]
+            == "ensure this value has at least 1 items"
         )
 
     def test_post_new_with_expires_0(self, test_client, token_headers):
