@@ -77,9 +77,30 @@ class TestPostToken:
         token_data = {
             "username": "admin",
             "password": "secret",
-            "scope": "write:targets",
+            "scope": (
+                "read:bootstrap read:settings read:tasks read:token "
+                "write:targets delete:targets"
+            ),
         }
         response = test_client.post(url, data=token_data)
+        assert response.status_code == status.HTTP_200_OK
+        assert "access_token" in response.json()
+
+    def test_post_new(self, test_client, token_headers):
+        url = "/api/v1/token/new/"
+        payload = {
+            "scopes": [
+                "read:bootstrap",
+                "read:settings",
+                "read:tasks",
+                "read:token",
+                "write:targets",
+                "delete:targets",
+            ],
+            "expires": 1,
+        }
+
+        response = test_client.post(url, headers=token_headers, json=payload)
         assert response.status_code == status.HTTP_200_OK
         assert "access_token" in response.json()
 
