@@ -1949,13 +1949,16 @@
                 "properties": {
                     "scopes": {
                         "title": "Scopes",
+                        "minItems": 1,
                         "type": "array",
                         "items": {
                             "enum": [
                                 "read:bootstrap",
                                 "read:settings",
+                                "read:tasks",
                                 "read:token",
-                                "write:targets"
+                                "write:targets",
+                                "delete:targets"
                             ],
                             "type": "string"
                         }

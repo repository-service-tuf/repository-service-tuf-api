@@ -87,10 +87,12 @@ class TokenRequestPayload(BaseModel):
         Literal[
             SCOPES_NAMES.read_bootstrap.value,
             SCOPES_NAMES.read_settings.value,
+            SCOPES_NAMES.read_tasks.value,
             SCOPES_NAMES.read_token.value,
             SCOPES_NAMES.write_targets.value,
+            SCOPES_NAMES.delete_targets.value,
         ]
-    ]
+    ] = Field(min_items=1)
     expires: int = Field(description="In hour(s)", ge=1)
 
     class Config:
