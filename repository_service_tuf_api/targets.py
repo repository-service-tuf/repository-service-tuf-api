@@ -35,7 +35,7 @@ class Response(BaseModel):
             "data": {
                 "targets": ["file1.tar.gz", "file2.tar.gz"],
                 "task_id": "06ee6db3cbab4b26be505352c2f2e2c3",
-                "last_update": datetime.now(),
+                "last_update": "2022-12-01T12:10:00.578086",
             },
             "message": "New Target(s) successfully submitted.",
         }
