@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: MIT
 
 import json
+from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 from fastapi import HTTPException, status
@@ -18,6 +19,7 @@ from repository_service_tuf_api.metadata import (
 class ResponseData(BaseModel):
     targets: List[str]
     task_id: str
+    last_update: datetime
 
 
 class Response(BaseModel):
@@ -33,6 +35,7 @@ class Response(BaseModel):
             "data": {
                 "targets": ["file1.tar.gz", "file2.tar.gz"],
                 "task_id": "06ee6db3cbab4b26be505352c2f2e2c3",
+                "last_update": datetime.now(),
             },
             "message": "New Target(s) successfully submitted.",
         }
@@ -116,6 +119,7 @@ def post(payload: AddPayload) -> Response:
     data = {
         "targets": [target.path for target in payload.targets],
         "task_id": task_id,
+        "last_update": datetime.now(),
     }
     return Response(data=data, message="Target(s) successfully submitted.")
 
@@ -147,6 +151,7 @@ def delete(payload: DeletePayload) -> Response:
     data = {
         "targets": payload.targets,
         "task_id": task_id,
+        "last_update": datetime.now(),
     }
     return Response(
         data=data, message="Remove Target(s) successfully submitted."

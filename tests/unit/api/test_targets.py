@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2022 VMware Inc
 #
 # SPDX-License-Identifier: MIT
-
+import datetime
 import json
 from uuid import uuid4
 
@@ -32,13 +32,20 @@ class TestPostTargets:
             "repository_service_tuf_api.targets.get_task_id",
             lambda: fake_task_id,
         )
-
+        fake_time = datetime.datetime(2019, 6, 16, 9, 5, 1)
+        fake_datetime = pretend.stub(
+            now=pretend.call_recorder(lambda: fake_time)
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.targets.datetime", fake_datetime
+        )
         response = test_client.post(url, json=payload, headers=token_headers)
         assert response.status_code == status.HTTP_202_ACCEPTED
         assert response.json() == {
             "data": {
                 "targets": ["file1.tar.gz", "file2.tar.gz"],
                 "task_id": fake_task_id,
+                "last_update": "2019-06-16T09:05:01",
             },
             "message": "Target(s) successfully submitted.",
         }
@@ -152,6 +159,13 @@ class TestDeleteTargets:
             "repository_service_tuf_api.targets.get_task_id",
             lambda: fake_task_id,
         )
+        fake_time = datetime.datetime(2019, 6, 16, 9, 5, 1)
+        fake_datetime = pretend.stub(
+            now=pretend.call_recorder(lambda: fake_time)
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.targets.datetime", fake_datetime
+        )
 
         response = test_client.delete(url, json=payload, headers=token_headers)
         assert response.status_code == status.HTTP_202_ACCEPTED
@@ -159,6 +173,7 @@ class TestDeleteTargets:
             "data": {
                 "targets": ["file-v1.0.0_i683.tar.gz", "v0.4.1/file.tar.gz"],
                 "task_id": fake_task_id,
+                "last_update": "2019-06-16T09:05:01",
             },
             "message": "Remove Target(s) successfully submitted.",
         }
