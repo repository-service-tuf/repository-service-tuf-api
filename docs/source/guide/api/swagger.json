@@ -1434,7 +1434,8 @@
                 "title": "ResponseData",
                 "required": [
                     "targets",
-                    "task_id"
+                    "task_id",
+                    "last_update"
                 ],
                 "type": "object",
                 "properties": {
@@ -1448,6 +1449,11 @@
                     "task_id": {
                         "title": "Task Id",
                         "type": "string"
+                    },
+                    "last_update": {
+                        "title": "Last Update",
+                        "type": "string",
+                        "format": "date-time"
                     }
                 }
             },
@@ -2075,7 +2081,8 @@
                             "file1.tar.gz",
                             "file2.tar.gz"
                         ],
-                        "task_id": "06ee6db3cbab4b26be505352c2f2e2c3"
+                        "task_id": "06ee6db3cbab4b26be505352c2f2e2c3",
+                        "last_update": "2022-12-01T10:28:35.305616"
                     },
                     "message": "New Target(s) successfully submitted."
                 }
