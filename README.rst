@@ -61,7 +61,7 @@ to make sure you stay up-to-date with our repository:
 
 
 Installing project requirements
-==============================
+===============================
 
 This repository has the ``requirements.txt`` and the ``requirements-dev.txt``
 files to help build your virtual environment.
