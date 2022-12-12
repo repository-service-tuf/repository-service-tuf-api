@@ -77,6 +77,7 @@ class TUFSigned(BaseModel):
     spec_version: str
     expires: str
     keys: Optional[Dict[str, TUFKeys]]
+    consistent_snapshot: Optional[bool]
     roles: Optional[
         Dict[
             Literal[
