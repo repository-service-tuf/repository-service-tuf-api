@@ -1706,6 +1706,10 @@
                             "$ref": "#/components/schemas/TUFKeys"
                         }
                     },
+                    "consistent_snapshot": {
+                        "title": "Consistent Snapshot",
+                        "type": "boolean"
+                    },
                     "roles": {
                         "title": "Roles",
                         "type": "object",
