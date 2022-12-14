@@ -115,10 +115,6 @@ def _decode_token(token):
     return user_token
 
 
-def _decrypt_password(password):
-    return bcrypt.checkpw(password.encode("utf-8"))
-
-
 def create_access_token(data: dict, expires_delta: int = 1):
 
     to_encode = data.copy()
@@ -170,9 +166,6 @@ def post(token_data):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
         )
-
-    if len(token_data.scope) == 0:
-        token_data.scope = [scope.name for scope in user.scopes]
 
     for scope in token_data.scope:
         if scope not in [scope.name for scope in user.scopes]:
