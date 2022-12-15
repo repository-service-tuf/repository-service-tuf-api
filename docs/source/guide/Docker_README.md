@@ -67,16 +67,16 @@ Example: `amqp://guest:guest@rabbitmq:5672`
 #### (Required) `RSTUF_REDIS_SERVER`
 
 Redis server address.
-A specific database can be chosen in the URL. Default: 0
-
-Example: `redis://redis/1`
-
-Important: The workers have to use the same db id for the db result.
 
 #### (Optional) `RSTUF_REDIS_SERVER_PORT`
 
 Redis Server port number. Default: 6379
 
+#### (Optional) `RSTUF_REDIS_SERVER_DB_RESULT`
+
+Redis Server DB number for Result Backend (tasks). Default: 0
+
+Important: It should use the same db id as used by RSTUF Workers.
 
 #### (Optional) `RSTUF_REDIS_SERVER_DB_SETTINGS`
 
@@ -84,6 +84,8 @@ Redis Server DB number for repository settings. Default: 1
 
 This settings are shared to Repository Workers
 (``repository-service-tuf-worker``) to have dynamic configuration.
+
+Important: It should use the same db id as used by RSTUF Workers.
 
 #### (Required) `SECRETS_RSTUF_TOKEN_KEY`
 
