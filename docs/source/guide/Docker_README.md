@@ -67,25 +67,22 @@ Example: `amqp://guest:guest@rabbitmq:5672`
 #### (Required) `RSTUF_REDIS_SERVER`
 
 Redis server address.
+A specific database can be chosen in the URL. Default: 0
 
-The result backend must to be compatible with Celery. See
-[Celery Task result backend settings](https://docs.celeryq.dev/en/stable/userguide/configuration.html#task-result-backend-settings)
+Example: `redis://redis/1`
 
-Example: `redis://redis`
+Important: The workers have to use the same port for the db result.
 
 #### (Optional) `RSTUF_REDIS_SERVER_PORT`
 
 Redis Server port number. Default: 6379
 
-#### (Optional) `RSTUF_REDIS_SERVER_DB_RESULT`
 
-Redis Server DB number for Result Backend (tasks). Default: 0
-
-#### (Optional) `RSTUF_REDIS_SERVER_DB_REPO_SETTINGS`
+#### (Optional) `RSTUF_REDIS_SERVER_DB_SETTINGS`
 
 Redis Server DB number for repository settings. Default: 1
 
-This settings are shared accress the Repository Workers
+This settings are shared to Repository Workers
 (``repository-service-tuf-worker``) to have dynamic configuration.
 
 #### (Required) `SECRETS_RSTUF_TOKEN_KEY`

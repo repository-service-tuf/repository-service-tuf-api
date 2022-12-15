@@ -64,8 +64,8 @@ settings_repository = Dynaconf(
     redis_enabled=True,
     redis={
         "host": settings.REDIS_SERVER.split("redis://")[1],
-        "port": settings.get("RSTUF_REDIS_SERVER_PORT", 6379),
-        "db": settings.get("RSTUF_REDIS_SERVER_DB_REPO_SETTINGS", 1),
+        "port": settings.get("REDIS_SERVER_PORT", 6379),
+        "db": settings.get("REDIS_SERVER_DB_SETTINGS", 1),
         "decode_responses": True,
     },
 )
