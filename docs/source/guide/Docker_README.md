@@ -71,7 +71,7 @@ A specific database can be chosen in the URL. Default: 0
 
 Example: `redis://redis/1`
 
-Important: The workers have to use the same port for the db result.
+Important: The workers have to use the same db id for the db result.
 
 #### (Optional) `RSTUF_REDIS_SERVER_PORT`
 
