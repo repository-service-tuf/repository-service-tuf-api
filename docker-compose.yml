@@ -6,6 +6,7 @@ volumes:
   repository-service-tuf-storage:
   repository-service-tuf-keystorage:
   repository-service-tuf-redis-data:
+  repository-service-tuf-pgsql-data:
 
 services:
   rabbitmq:
@@ -33,6 +34,19 @@ services:
     restart: always
     tty: true
 
+  postgres:
+    image: postgres:15.1
+    ports:
+      # 5432 may already in use by another PostgreSQL on host
+      - "5433:5432"
+    environment:
+      - POSTGRES_PASSWORD=secret
+    volumes:
+      - "repository-service-tuf-pgsql-data:/var/lib/postgresql/data"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres", "-d", "postgres"]
+      interval: 1s
+
   repository-service-tuf-worker:
     image: ghcr.io/vmware/repository-service-tuf-worker:dev
     # Developers: For local build repository-service-tuf-worker, uncomment the line below
@@ -44,17 +58,21 @@ services:
       - repository-service-tuf-storage:/var/opt/repository-service-tuf/storage
       - repository-service-tuf-keystorage:/var/opt/repository-service-tuf/keystorage
     environment:
-      - RSTUF_STORAGE_BACKEND="LocalStorage"
-      - RSTUF_KEYVAULT_BACKEND="LocalKeyVault"
-      - RSTUF_LOCAL_STORAGE_BACKEND_PATH="/var/opt/repository-service-tuf/storage"
-      - RSTUF_LOCAL_KEYVAULT_PATH="/var/opt/repository-service-tuf/keystorage"
-      - RSTUF_BROKER_SERVER="amqp://guest:guest@rabbitmq:5672"
-      - RSTUF_REDIS_SERVER="redis://redis"
-      - RSTUF_WORKER_ID="dev"
+      - RSTUF_STORAGE_BACKEND=LocalStorage
+      - RSTUF_KEYVAULT_BACKEND=LocalKeyVault
+      - RSTUF_LOCAL_STORAGE_BACKEND_PATH=/var/opt/repository-service-tuf/storage
+      - RSTUF_LOCAL_KEYVAULT_PATH=/var/opt/repository-service-tuf/keystorage
+      - RSTUF_BROKER_SERVER=amqp://guest:guest@rabbitmq:5672
+      - RSTUF_REDIS_SERVER=redis://redis
+      - RSTUF_SQL_SERVER=postgresql://postgres:secret@postgres:5432
+      - RSTUF_WORKER_ID=dev
     healthcheck:
       test: "exit 0"
     restart: always
     tty: true
+    depends_on:
+      postgres:
+        condition: service_healthy
 
   web:
     image: python:3.10-slim-buster
