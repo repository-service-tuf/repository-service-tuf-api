@@ -78,7 +78,7 @@ Redis Server DB number for Result Backend (tasks). Default: 0
 
 Important: It should use the same db id as used by RSTUF Workers.
 
-#### (Optional) `RSTUF_REDIS_SERVER_DB_SETTINGS`
+#### (Optional) `RSTUF_REDIS_SERVER_DB_REPO_SETTINGS`
 
 Redis Server DB number for repository settings. Default: 1
 
