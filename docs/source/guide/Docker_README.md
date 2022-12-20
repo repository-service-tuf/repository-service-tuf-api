@@ -82,7 +82,7 @@ Important: It should use the same db id as used by RSTUF Workers.
 
 Redis Server DB number for repository settings. Default: 1
 
-This settings are shared to Repository Workers
+These settings are shared with the repository workers
 (``repository-service-tuf-worker``) to have dynamic configuration.
 
 Important: It should use the same db id as used by RSTUF Workers.
