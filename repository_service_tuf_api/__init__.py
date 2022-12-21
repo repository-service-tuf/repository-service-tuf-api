@@ -64,8 +64,8 @@ settings_repository = Dynaconf(
     redis_enabled=True,
     redis={
         "host": settings.REDIS_SERVER.split("redis://")[1],
-        "port": settings.get("RSTUF_REDIS_SERVER_PORT", 6379),
-        "db": settings.get("RSTUF_REDIS_SERVER_DB_REPO_SETTINGS", 1),
+        "port": settings.get("REDIS_SERVER_PORT", 6379),
+        "db": settings.get("REDIS_SERVER_DB_REPO_SETTINGS", 1),
         "decode_responses": True,
     },
 )
@@ -152,7 +152,11 @@ else:
 # Celery setup
 celery = Celery(__name__)
 celery.conf.broker_url = settings.BROKER_SERVER
-celery.conf.result_backend = settings.REDIS_SERVER
+celery.conf.result_backend = (
+    f"{settings.REDIS_SERVER}"
+    f":{settings.get('REDIS_SERVER_PORT', 6379)}"
+    f"/{settings.get('REDIS_SERVER_DB_REPO_SETTINGS', 0)}"
+)
 celery.conf.accept_content = ["json", "application/json"]
 celery.conf.task_serializer = "json"
 celery.conf.result_serializer = "json"
