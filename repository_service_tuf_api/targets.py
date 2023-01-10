@@ -66,6 +66,7 @@ class AddPayload(BaseModel):
     """
 
     targets: List[Targets]
+    add_task_id_to_custom: bool
 
     class Config:
         with open("tests/data_examples/targets/payload.json") as f:
@@ -107,6 +108,21 @@ def post(payload: AddPayload) -> Response:
         )
 
     task_id = get_task_id()
+    if payload.add_task_id_to_custom:
+        new_targets: List[Targets] = []
+        for target in payload.targets:
+            if target.info.custom is None:
+                target.info.custom = {}
+
+            # Add task_id info in custom while keeping the old custom
+            target.info.custom = {
+                "added_by_task_id": task_id,
+                **target.info.custom,
+            }
+            new_targets.append(target)
+
+        payload.targets = new_targets
+
     repository_metadata.apply_async(
         kwargs={
             "action": "add_targets",

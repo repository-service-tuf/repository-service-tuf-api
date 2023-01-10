@@ -20,5 +20,6 @@
             },
             "path": "file2.tar.gz"
         }
-    ]
+    ],
+    "add_task_id_to_custom": true
 }
