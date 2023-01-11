@@ -444,7 +444,8 @@
             "AddPayload": {
                 "title": "AddPayload",
                 "required": [
-                    "targets"
+                    "targets",
+                    "add_task_id_to_custom"
                 ],
                 "type": "object",
                 "properties": {
@@ -454,6 +455,10 @@
                         "items": {
                             "$ref": "#/components/schemas/Targets"
                         }
+                    },
+                    "add_task_id_to_custom": {
+                        "title": "Add Task Id To Custom",
+                        "type": "boolean"
                     }
                 },
                 "description": "POST method required Payload.",
@@ -483,7 +488,8 @@
                             },
                             "path": "file2.tar.gz"
                         }
-                    ]
+                    ],
+                    "add_task_id_to_custom": true
                 }
             },
             "Body_post_api_v1_token__post": {
