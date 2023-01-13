@@ -1,15 +1,60 @@
 {
  "signatures": [
   {
-   "keyid": "bac2d43cff47049dd74c21e3cfbb68af971be37c9213b2af670114a246950f85",
-   "sig": "ee1d9137d11bc600bdba72a7a4d873f1d1cdea7e16384d2e45a2dfcfcd9c6a8e0d753be76f6f78988d22a1bea05b0dd8f67b1ecace13b344b52edb8cf7342901"
+   "keyid": "821b49a685c6290254a5d06ec8e3bac4dfe9c32abc177a6f6be58681712c9763",
+   "sig": "072328aa02a1d03af022e461fe9d99a21be930d9c88ecfcf857a72f429a93fae5d2760f2bc6634058d3e0975273d552846723f14cd7ddd22062a1627d9d59702"
   }
  ],
  "signed": {
   "_type": "snapshot",
-  "expires": "2022-08-10T20:10:40Z",
+  "expires": "2023-01-14T20:23:45Z",
   "meta": {
-   "bin.json": {
+   "bins-0.json": {
+    "version": 1
+   },
+   "bins-1.json": {
+    "version": 1
+   },
+   "bins-2.json": {
+    "version": 1
+   },
+   "bins-3.json": {
+    "version": 1
+   },
+   "bins-4.json": {
+    "version": 1
+   },
+   "bins-5.json": {
+    "version": 1
+   },
+   "bins-6.json": {
+    "version": 1
+   },
+   "bins-7.json": {
+    "version": 1
+   },
+   "bins-8.json": {
+    "version": 1
+   },
+   "bins-9.json": {
+    "version": 1
+   },
+   "bins-a.json": {
+    "version": 1
+   },
+   "bins-b.json": {
+    "version": 1
+   },
+   "bins-c.json": {
+    "version": 1
+   },
+   "bins-d.json": {
+    "version": 1
+   },
+   "bins-e.json": {
+    "version": 1
+   },
+   "bins-f.json": {
     "version": 1
    },
    "targets.json": {
