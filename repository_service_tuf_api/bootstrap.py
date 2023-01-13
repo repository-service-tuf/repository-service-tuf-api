@@ -24,7 +24,6 @@ class Roles(Enum):
     TARGETS = "targets"
     SNAPSHOT = "snapshot"
     TIMESTAMP = "timestamp"
-    BIN = "bin"
     BINS = "bins"
 
 
@@ -85,7 +84,6 @@ class TUFSigned(BaseModel):
                 Roles.TARGETS.value,
                 Roles.SNAPSHOT.value,
                 Roles.TIMESTAMP.value,
-                Roles.BIN.value,
                 Roles.BINS.value,
             ],
             TUFSignedRoles,
@@ -145,7 +143,6 @@ class Settings(BaseModel):
             Roles.TARGETS.value,
             Roles.SNAPSHOT.value,
             Roles.TIMESTAMP.value,
-            Roles.BIN.value,
             Roles.BINS.value,
         ],
         RoleSettings,
