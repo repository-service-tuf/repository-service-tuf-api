@@ -51,7 +51,7 @@ pytest==7.2.1
 pytz==2022.7.1
 pyyaml==6.0 ; python_version >= '3.6'
 requests==2.28.2 ; python_version >= '3.7' and python_version < '4'
-setuptools==66.0.0 ; python_version >= '3.7'
+setuptools==66.1.1 ; python_version >= '3.7'
 six==1.16.0 ; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'
 snowballstemmer==2.2.0
 sphinx==5.3.0
@@ -66,7 +66,7 @@ sphinxcontrib-plantuml==0.24.1
 sphinxcontrib-qthelp==1.0.3
 sphinxcontrib-serializinghtml==1.1.5
 tomli==2.0.1 ; python_full_version < '3.11.0a7'
-tox==4.3.4
+tox==4.3.5
 typing-extensions==4.4.0 ; python_version >= '3.7'
 urllib3==1.26.14 ; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4, 3.5'
 virtualenv==20.17.1 ; python_version >= '3.6'
@@ -80,7 +80,7 @@ celery==5.2.7
 click-didyoumean==0.3.0 ; python_full_version >= '3.6.2' and python_full_version < '4.0.0'
 click-plugins==1.1.1
 click-repl==0.2.0
-configobj==5.0.7
+configobj==5.0.8
 dnspython==2.3.0 ; python_version >= '3.7' and python_version < '4.0'
 dynaconf==3.1.11
 ecdsa==0.18.0 ; python_version >= '2.6' and python_version not in '3.0, 3.1, 3.2, 3.3'
