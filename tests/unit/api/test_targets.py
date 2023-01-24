@@ -16,8 +16,6 @@ class TestPostTargets:
             f_data = f.read()
 
         payload = json.loads(f_data)
-        # Remove one"custom" in one of the targets to test this case
-        del payload["targets"][0]["info"]["custom"]
 
         mocked_repository_metadata = pretend.stub(
             apply_async=pretend.call_recorder(lambda *a, **kw: None)
@@ -120,11 +118,14 @@ class TestPostTargets:
             "message": "Target(s) successfully submitted.",
         }
 
+        # Add "custom" to the target where it's missing as it's loaded.
+        expected_payload = payload
+        expected_payload["targets"][1]["info"]["custom"] = None
         assert mocked_repository_metadata.apply_async.calls == [
             pretend.call(
                 kwargs={
                     "action": "add_targets",
-                    "payload": payload,
+                    "payload": expected_payload,
                 },
                 task_id=fake_task_id,
                 queue="metadata_repository",
