@@ -31,10 +31,10 @@ class SCOPES_NAMES(Enum):
     read_bootstrap = "read:bootstrap"
     read_settings = "read:settings"
     read_tasks = "read:tasks"
-    read_token = "read:token"
+    read_token = "read:token"  # nosec
     write_bootstrap = "write:bootstrap"
     write_targets = "write:targets"
-    write_token = "write:token"
+    write_token = "write:token"  # nosec
     delete_targets = "delete:targets"
 
 
