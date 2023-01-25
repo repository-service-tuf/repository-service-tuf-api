@@ -16,6 +16,7 @@ class TestPostTargets:
             f_data = f.read()
 
         payload = json.loads(f_data)
+
         mocked_repository_metadata = pretend.stub(
             apply_async=pretend.call_recorder(lambda *a, **kw: None)
         )
@@ -49,11 +50,82 @@ class TestPostTargets:
             },
             "message": "Target(s) successfully submitted.",
         }
+        # Add task_id info into custom as it will be done in the post function
+        expected_payload = {"targets": [], "add_task_id_to_custom": True}
+        for target in payload["targets"]:
+            if target["info"].get("custom") is None:
+                target["info"]["custom"] = {}
+
+            # Add task_id info in custom while keeping the old custom
+            target["info"]["custom"] = {
+                "added_by_task_id": fake_task_id,
+                **target["info"]["custom"],
+            }
+            expected_payload["targets"].append(target)
+
         assert mocked_repository_metadata.apply_async.calls == [
             pretend.call(
                 kwargs={
                     "action": "add_targets",
-                    "payload": payload,
+                    "payload": expected_payload,
+                },
+                task_id=fake_task_id,
+                queue="metadata_repository",
+                acks_late=True,
+            )
+        ]
+
+    def test_post_without_add_task_id_to_custom(
+        self, monkeypatch, test_client, token_headers
+    ):
+        url = "/api/v1/targets/"
+        with open("tests/data_examples/targets/payload.json") as f:
+            f_data = f.read()
+
+        payload = json.loads(f_data)
+        payload["add_task_id_to_custom"] = False
+        mocked_repository_metadata = pretend.stub(
+            apply_async=pretend.call_recorder(lambda *a, **kw: None)
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.targets.is_bootstrap_done",
+            lambda: True,
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.targets.repository_metadata",
+            mocked_repository_metadata,
+        )
+        fake_task_id = uuid4().hex
+        monkeypatch.setattr(
+            "repository_service_tuf_api.targets.get_task_id",
+            lambda: fake_task_id,
+        )
+        fake_time = datetime.datetime(2019, 6, 16, 9, 5, 1)
+        fake_datetime = pretend.stub(
+            now=pretend.call_recorder(lambda: fake_time)
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.targets.datetime", fake_datetime
+        )
+        response = test_client.post(url, json=payload, headers=token_headers)
+        assert response.status_code == status.HTTP_202_ACCEPTED
+        assert response.json() == {
+            "data": {
+                "targets": ["file1.tar.gz", "file2.tar.gz"],
+                "task_id": fake_task_id,
+                "last_update": "2019-06-16T09:05:01",
+            },
+            "message": "Target(s) successfully submitted.",
+        }
+
+        # Add "custom" to the target where it's missing as it's loaded.
+        expected_payload = payload
+        expected_payload["targets"][1]["info"]["custom"] = None
+        assert mocked_repository_metadata.apply_async.calls == [
+            pretend.call(
+                kwargs={
+                    "action": "add_targets",
+                    "payload": expected_payload,
                 },
                 task_id=fake_task_id,
                 queue="metadata_repository",
