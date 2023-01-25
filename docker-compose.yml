@@ -76,18 +76,18 @@ services:
 
   web:
     image: python:3.10-slim-buster
-    command: python -m http.server -d /var/opt/repository-service-tuf/storage 8080
+    command: python -m http.server -d /var/opt/repository-service-tuf/storage 8000
     volumes:
       - repository-service-tuf-storage:/var/opt/repository-service-tuf/storage
     ports:
-      - "8080:8080"
+      - "8000:8000"
 
   repository-service-tuf-api:
     build:
       context: .
-    entrypoint: uvicorn app:rstuf_app --host 0.0.0.0 --port 80 --reload
+    entrypoint: uvicorn app:rstuf_app --host 0.0.0.0 --port 1500 --reload
     ports:
-      - 80:80
+      - 1500:1500
     environment:
       - DATA_DIR=./data
       - RSTUF_BOOTSTRAP_NODE=true
