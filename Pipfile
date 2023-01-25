@@ -41,6 +41,7 @@ sphinxcontrib-openapi = "*"
 mistune = "==0.8.4"
 myst-parser = "*"
 pre-commit = "*"
+bandit = "*"
 
 [requires]
 python_version = "3.10"
