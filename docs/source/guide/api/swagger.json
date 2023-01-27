@@ -444,8 +444,7 @@
             "AddPayload": {
                 "title": "AddPayload",
                 "required": [
-                    "targets",
-                    "add_task_id_to_custom"
+                    "targets"
                 ],
                 "type": "object",
                 "properties": {
@@ -485,8 +484,7 @@
                             },
                             "path": "file2.tar.gz"
                         }
-                    ],
-                    "add_task_id_to_custom": true
+                    ]
                 }
             },
             "Body_post_api_v1_token__post": {
