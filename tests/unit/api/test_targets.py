@@ -50,24 +50,11 @@ class TestPostTargets:
             },
             "message": "Target(s) successfully submitted.",
         }
-        # Add task_id info into custom as it will be done in the post function
-        expected_payload = {"targets": [], "add_task_id_to_custom": True}
-        for target in payload["targets"]:
-            if target["info"].get("custom") is None:
-                target["info"]["custom"] = {}
-
-            # Add task_id info in custom while keeping the old custom
-            target["info"]["custom"] = {
-                "added_by_task_id": fake_task_id,
-                **target["info"]["custom"],
-            }
-            expected_payload["targets"].append(target)
-
         assert mocked_repository_metadata.apply_async.calls == [
             pretend.call(
                 kwargs={
                     "action": "add_targets",
-                    "payload": expected_payload,
+                    "payload": payload,
                 },
                 task_id=fake_task_id,
                 queue="metadata_repository",
@@ -75,7 +62,7 @@ class TestPostTargets:
             )
         ]
 
-    def test_post_without_add_task_id_to_custom(
+    def test_post_with_add_task_id_to_custom(
         self, monkeypatch, test_client, token_headers
     ):
         url = "/api/v1/targets/"
@@ -83,7 +70,7 @@ class TestPostTargets:
             f_data = f.read()
 
         payload = json.loads(f_data)
-        payload["add_task_id_to_custom"] = False
+
         mocked_repository_metadata = pretend.stub(
             apply_async=pretend.call_recorder(lambda *a, **kw: None)
         )
@@ -107,6 +94,10 @@ class TestPostTargets:
         monkeypatch.setattr(
             "repository_service_tuf_api.targets.datetime", fake_datetime
         )
+
+        # enable to add task id to custom metadata field
+        payload["add_task_id_to_custom"] = True
+
         response = test_client.post(url, json=payload, headers=token_headers)
         assert response.status_code == status.HTTP_202_ACCEPTED
         assert response.json() == {
@@ -118,14 +109,22 @@ class TestPostTargets:
             "message": "Target(s) successfully submitted.",
         }
 
-        # Add "custom" to the target where it's missing as it's loaded.
-        expected_payload = payload
-        expected_payload["targets"][1]["info"]["custom"] = None
+        # Add task_id info into custom as it will be done in the post function
+        for target in payload["targets"]:
+            if target["info"].get("custom") is None:
+                target["info"]["custom"] = {}
+
+            # Add task_id info in custom while keeping the old custom
+            target["info"]["custom"] = {
+                "added_by_task_id": fake_task_id,
+                **target["info"]["custom"],
+            }
+
         assert mocked_repository_metadata.apply_async.calls == [
             pretend.call(
                 kwargs={
                     "action": "add_targets",
-                    "payload": expected_payload,
+                    "payload": payload,
                 },
                 task_id=fake_task_id,
                 queue="metadata_repository",
