@@ -17,7 +17,7 @@ from repository_service_tuf_api.metadata import (
 
 
 class ResponseData(BaseModel):
-    targets: List[str]
+    targets: Optional[List[str]]
     task_id: str
     last_update: datetime
 
@@ -171,4 +171,27 @@ def delete(payload: DeletePayload) -> Response:
     }
     return Response(
         data=data, message="Remove Target(s) successfully submitted."
+    )
+
+
+def post_publish_targets() -> Response:
+    task_id = get_task_id()
+    repository_metadata.apply_async(
+        kwargs={
+            "action": "publish_targets",
+            "payload": None,
+        },
+        task_id=task_id,
+        queue="rstuf_internals",
+        acks_late=True,
+    )
+
+    data = {
+        "targets": None,
+        "task_id": task_id,
+        "last_update": datetime.now(),
+    }
+
+    return Response(
+        data=data, message="Publish targets successfully submitted."
     )
