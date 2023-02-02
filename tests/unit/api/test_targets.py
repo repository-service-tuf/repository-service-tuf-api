@@ -18,7 +18,7 @@ class TestPostTargets:
         payload = json.loads(f_data)
 
         mocked_repository_metadata = pretend.stub(
-            apply_async=pretend.call_recorder(lambda *a, **kw: None)
+            apply_async=pretend.call_recorder(lambda **kw: None)
         )
         monkeypatch.setattr(
             "repository_service_tuf_api.targets.is_bootstrap_done",
@@ -72,7 +72,7 @@ class TestPostTargets:
         payload = json.loads(f_data)
 
         mocked_repository_metadata = pretend.stub(
-            apply_async=pretend.call_recorder(lambda *a, **kw: None)
+            apply_async=pretend.call_recorder(lambda **kw: None)
         )
         monkeypatch.setattr(
             "repository_service_tuf_api.targets.is_bootstrap_done",
@@ -219,7 +219,7 @@ class TestDeleteTargets:
             lambda: True,
         )
         mocked_repository_metadata = pretend.stub(
-            apply_async=pretend.call_recorder(lambda *a, **kw: None)
+            apply_async=pretend.call_recorder(lambda **kw: None)
         )
         monkeypatch.setattr(
             "repository_service_tuf_api.targets.repository_metadata",
@@ -331,7 +331,7 @@ class TestPostTargetsPublish:
         url = "/api/v1/targets/publish/"
 
         mocked_repository_metadata = pretend.stub(
-            apply_async=pretend.call_recorder(lambda *a, **kw: None)
+            apply_async=pretend.call_recorder(lambda **kw: None)
         )
         monkeypatch.setattr(
             "repository_service_tuf_api.targets.repository_metadata",
