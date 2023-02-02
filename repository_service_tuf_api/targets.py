@@ -17,7 +17,7 @@ from repository_service_tuf_api.metadata import (
 
 
 class ResponseData(BaseModel):
-    targets: Optional[List[str]]
+    targets: List[str]
     task_id: str
     last_update: datetime
 
@@ -187,7 +187,7 @@ def post_publish_targets() -> Response:
     )
 
     data = {
-        "targets": None,
+        "targets": [],
         "task_id": task_id,
         "last_update": datetime.now(),
     }

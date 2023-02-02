@@ -353,6 +353,7 @@ class TestPostTargetsPublish:
         assert response.status_code == status.HTTP_202_ACCEPTED
         assert response.json() == {
             "data": {
+                "targets": [],
                 "task_id": fake_task_id,
                 "last_update": "2019-06-16T09:05:01",
             },
