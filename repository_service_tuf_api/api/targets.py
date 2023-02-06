@@ -48,3 +48,23 @@ def delete(
     _user=Security(validate_token, scopes=[SCOPES_NAMES.delete_targets.value]),
 ):
     return targets.delete(payload)
+
+
+@router.post(
+    "/publish/",
+    summary=(
+        "Submit a task to publish targets."
+        f"Scope: {SCOPES_NAMES.write_targets.value}"
+    ),
+    description=(
+        "Trigger a task to publish targets not yet published from the "
+        "RSTUF Database"
+    ),
+    response_model=targets.Response,
+    response_model_exclude_none=True,
+    status_code=status.HTTP_202_ACCEPTED,
+)
+def post_publish_targets(
+    _user=Security(validate_token, scopes=[SCOPES_NAMES.write_targets.value]),
+):
+    return targets.post_publish_targets()

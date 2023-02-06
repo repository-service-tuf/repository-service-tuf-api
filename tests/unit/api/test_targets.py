@@ -18,7 +18,7 @@ class TestPostTargets:
         payload = json.loads(f_data)
 
         mocked_repository_metadata = pretend.stub(
-            apply_async=pretend.call_recorder(lambda *a, **kw: None)
+            apply_async=pretend.call_recorder(lambda **kw: None)
         )
         monkeypatch.setattr(
             "repository_service_tuf_api.targets.is_bootstrap_done",
@@ -72,7 +72,7 @@ class TestPostTargets:
         payload = json.loads(f_data)
 
         mocked_repository_metadata = pretend.stub(
-            apply_async=pretend.call_recorder(lambda *a, **kw: None)
+            apply_async=pretend.call_recorder(lambda **kw: None)
         )
         monkeypatch.setattr(
             "repository_service_tuf_api.targets.is_bootstrap_done",
@@ -219,7 +219,7 @@ class TestDeleteTargets:
             lambda: True,
         )
         mocked_repository_metadata = pretend.stub(
-            apply_async=pretend.call_recorder(lambda *a, **kw: None)
+            apply_async=pretend.call_recorder(lambda **kw: None)
         )
         monkeypatch.setattr(
             "repository_service_tuf_api.targets.repository_metadata",
@@ -324,3 +324,49 @@ class TestDeleteTargets:
         assert response.json() == {
             "detail": {"error": "scope 'delete:targets' not allowed"}
         }
+
+
+class TestPostTargetsPublish:
+    def test_post_publish(self, monkeypatch, test_client, token_headers):
+        url = "/api/v1/targets/publish/"
+
+        mocked_repository_metadata = pretend.stub(
+            apply_async=pretend.call_recorder(lambda **kw: None)
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.targets.repository_metadata",
+            mocked_repository_metadata,
+        )
+        fake_task_id = uuid4().hex
+        monkeypatch.setattr(
+            "repository_service_tuf_api.targets.get_task_id",
+            lambda: fake_task_id,
+        )
+        fake_time = datetime.datetime(2019, 6, 16, 9, 5, 1)
+        fake_datetime = pretend.stub(
+            now=pretend.call_recorder(lambda: fake_time)
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.targets.datetime", fake_datetime
+        )
+        response = test_client.post(url, headers=token_headers)
+        assert response.status_code == status.HTTP_202_ACCEPTED
+        assert response.json() == {
+            "data": {
+                "targets": [],
+                "task_id": fake_task_id,
+                "last_update": "2019-06-16T09:05:01",
+            },
+            "message": "Publish targets successfully submitted.",
+        }
+        assert mocked_repository_metadata.apply_async.calls == [
+            pretend.call(
+                kwargs={
+                    "action": "publish_targets",
+                    "payload": None,
+                },
+                task_id=fake_task_id,
+                queue="rstuf_internals",
+                acks_late=True,
+            )
+        ]
