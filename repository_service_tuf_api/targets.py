@@ -7,7 +7,7 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 from fastapi import HTTPException, status
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from repository_service_tuf_api.metadata import (
     get_task_id,
@@ -67,6 +67,9 @@ class AddPayload(BaseModel):
 
     targets: List[Targets]
     add_task_id_to_custom: Optional[bool]
+    publish_targets: Optional[bool] = Field(
+        default=True, description="Whether to publish the targets"
+    )
 
     class Config:
         with open("tests/data_examples/targets/payload.json") as f:
@@ -81,6 +84,9 @@ class DeletePayload(BaseModel):
     """
 
     targets: List[str]
+    publish_targets: Optional[bool] = Field(
+        default=True, description="Whether to publish the targets changes"
+    )
 
     class Config:
         payload = {
@@ -132,12 +138,17 @@ def post(payload: AddPayload) -> Response:
         queue="metadata_repository",
         acks_late=True,
     )
+
+    message = "Target(s) successfully submitted."
+    if payload.publish_targets is False:
+        message += " Publishing will be skipped."
+
     data = {
         "targets": [target.path for target in payload.targets],
         "task_id": task_id,
         "last_update": datetime.now(),
     }
-    return Response(data=data, message="Target(s) successfully submitted.")
+    return Response(data=data, message=message)
 
 
 def delete(payload: DeletePayload) -> Response:
@@ -158,7 +169,7 @@ def delete(payload: DeletePayload) -> Response:
     repository_metadata.apply_async(
         kwargs={
             "action": "remove_targets",
-            "payload": payload.dict(by_alias=True),
+            "payload": payload.dict(by_alias=True, exclude_none=True),
         },
         task_id=task_id,
         queue="metadata_repository",
@@ -169,9 +180,11 @@ def delete(payload: DeletePayload) -> Response:
         "task_id": task_id,
         "last_update": datetime.now(),
     }
-    return Response(
-        data=data, message="Remove Target(s) successfully submitted."
-    )
+
+    message = "Remove Target(s) successfully submitted."
+    if payload.publish_targets is False:
+        message += " Publishing will be skipped."
+    return Response(data=data, message=message)
 
 
 def post_publish_targets() -> Response:

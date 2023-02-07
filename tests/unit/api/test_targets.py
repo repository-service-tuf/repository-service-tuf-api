@@ -132,6 +132,64 @@ class TestPostTargets:
             )
         ]
 
+    def test_post_publish_targets_false(
+        self, monkeypatch, test_client, token_headers
+    ):
+        url = "/api/v1/targets/"
+        with open("tests/data_examples/targets/payload.json") as f:
+            f_data = f.read()
+
+        payload = json.loads(f_data)
+
+        # Disable publish_targets
+        payload["publish_targets"] = False
+
+        monkeypatch.setattr(
+            "repository_service_tuf_api.targets.is_bootstrap_done",
+            lambda: True,
+        )
+        fake_task_id = uuid4().hex
+        monkeypatch.setattr(
+            "repository_service_tuf_api.targets.get_task_id",
+            lambda: fake_task_id,
+        )
+        fake_time = datetime.datetime(2019, 6, 16, 9, 5, 1)
+        fake_datetime = pretend.stub(
+            now=pretend.call_recorder(lambda: fake_time)
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.targets.datetime", fake_datetime
+        )
+        mocked_repository_metadata = pretend.stub(
+            apply_async=pretend.call_recorder(lambda **kw: None)
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.targets.repository_metadata",
+            mocked_repository_metadata,
+        )
+        response = test_client.post(url, json=payload, headers=token_headers)
+        assert response.status_code == status.HTTP_202_ACCEPTED
+        msg = "Target(s) successfully submitted. Publishing will be skipped."
+        assert response.json() == {
+            "data": {
+                "targets": ["file1.tar.gz", "file2.tar.gz"],
+                "task_id": fake_task_id,
+                "last_update": "2019-06-16T09:05:01",
+            },
+            "message": msg,
+        }
+        assert mocked_repository_metadata.apply_async.calls == [
+            pretend.call(
+                kwargs={
+                    "action": "add_targets",
+                    "payload": payload,
+                },
+                task_id=fake_task_id,
+                queue="metadata_repository",
+                acks_late=True,
+            )
+        ]
+
     def test_post_without_bootstrap(
         self, monkeypatch, test_client, token_headers
     ):
@@ -247,6 +305,66 @@ class TestDeleteTargets:
                 "last_update": "2019-06-16T09:05:01",
             },
             "message": "Remove Target(s) successfully submitted.",
+        }
+        assert mocked_repository_metadata.apply_async.calls == [
+            pretend.call(
+                kwargs={
+                    "action": "remove_targets",
+                    "payload": payload,
+                },
+                task_id=fake_task_id,
+                queue="metadata_repository",
+                acks_late=True,
+            )
+        ]
+
+    def test_delete_publish_targets_false(
+        self, monkeypatch, test_client, token_headers
+    ):
+        url = "/api/v1/targets/"
+
+        payload = {
+            "targets": ["file-v1.0.0_i683.tar.gz", "v0.4.1/file.tar.gz"],
+            "publish_targets": False,
+        }
+
+        monkeypatch.setattr(
+            "repository_service_tuf_api.targets.is_bootstrap_done",
+            lambda: True,
+        )
+        mocked_repository_metadata = pretend.stub(
+            apply_async=pretend.call_recorder(lambda **kw: None)
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.targets.repository_metadata",
+            mocked_repository_metadata,
+        )
+        fake_task_id = uuid4().hex
+        monkeypatch.setattr(
+            "repository_service_tuf_api.targets.get_task_id",
+            lambda: fake_task_id,
+        )
+        fake_time = datetime.datetime(2019, 6, 16, 9, 5, 1)
+        fake_datetime = pretend.stub(
+            now=pretend.call_recorder(lambda: fake_time)
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.targets.datetime", fake_datetime
+        )
+
+        response = test_client.delete(url, json=payload, headers=token_headers)
+        assert response.status_code == status.HTTP_202_ACCEPTED
+        msg = (
+            "Remove Target(s) successfully submitted. "
+            + "Publishing will be skipped."
+        )
+        assert response.json() == {
+            "data": {
+                "targets": ["file-v1.0.0_i683.tar.gz", "v0.4.1/file.tar.gz"],
+                "task_id": fake_task_id,
+                "last_update": "2019-06-16T09:05:01",
+            },
+            "message": msg,
         }
         assert mocked_repository_metadata.apply_async.calls == [
             pretend.call(
