@@ -54,7 +54,11 @@ class TestPostTargets:
             pretend.call(
                 kwargs={
                     "action": "add_targets",
-                    "payload": payload,
+                    "payload": {
+                        **payload,
+                        "publish_targets": True,
+                        "add_task_id_to_custom": False,
+                    },
                 },
                 task_id=fake_task_id,
                 queue="metadata_repository",
@@ -124,7 +128,10 @@ class TestPostTargets:
             pretend.call(
                 kwargs={
                     "action": "add_targets",
-                    "payload": payload,
+                    "payload": {
+                        **payload,
+                        "publish_targets": True,
+                    },
                 },
                 task_id=fake_task_id,
                 queue="metadata_repository",
@@ -182,7 +189,7 @@ class TestPostTargets:
             pretend.call(
                 kwargs={
                     "action": "add_targets",
-                    "payload": payload,
+                    "payload": {**payload, "add_task_id_to_custom": False},
                 },
                 task_id=fake_task_id,
                 queue="metadata_repository",
@@ -269,7 +276,7 @@ class TestDeleteTargets:
         url = "/api/v1/targets/"
 
         payload = {
-            "targets": ["file-v1.0.0_i683.tar.gz", "v0.4.1/file.tar.gz"]
+            "targets": ["file-v1.0.0_i683.tar.gz", "v0.4.1/file.tar.gz"],
         }
 
         monkeypatch.setattr(
@@ -310,7 +317,7 @@ class TestDeleteTargets:
             pretend.call(
                 kwargs={
                     "action": "remove_targets",
-                    "payload": payload,
+                    "payload": {**payload, "publish_targets": True},
                 },
                 task_id=fake_task_id,
                 queue="metadata_repository",
