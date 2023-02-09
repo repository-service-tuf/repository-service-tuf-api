@@ -168,7 +168,7 @@ def post(token_data):
         )
 
     for scope in token_data.scope:
-        if scope not in [scope.name for scope in user.scopes]:
+        if scope not in [sc.name for sc in user.scopes]:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail={"error": f"scope '{scope}' forbidden"},
