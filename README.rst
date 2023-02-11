@@ -108,11 +108,11 @@ Running the API locally
   $ make run-dev
 
 
-Open http://localhost:8000/ in your browser.
+Open http://localhost:80/ in your browser.
 
 Changes in the code will automatically update the service.
 
-See Makefile for more options
+See the `Makefile` for more options.
 
 Tests
 =====
