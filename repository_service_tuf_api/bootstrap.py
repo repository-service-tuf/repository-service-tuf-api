@@ -130,7 +130,6 @@ class RoleSettings(BaseModel):
     threshold: int
     keys: Optional[Dict[str, SettingsKeys]]
     offline_keys: bool
-    paths: Optional[List[str]] = None
     number_hash_prefixes: Optional[int] = None
 
 
