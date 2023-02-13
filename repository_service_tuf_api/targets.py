@@ -66,11 +66,11 @@ class AddPayload(BaseModel):
     """
 
     targets: List[Targets]
-    add_task_id_to_custom: Optional[bool] = Field(
+    add_task_id_to_custom: bool = Field(
         default=False,
         description="Whether to add the id of the task in custom",
     )
-    publish_targets: Optional[bool] = Field(
+    publish_targets: bool = Field(
         default=True, description="Whether to publish the targets"
     )
 
@@ -87,7 +87,7 @@ class DeletePayload(BaseModel):
     """
 
     targets: List[str]
-    publish_targets: Optional[bool] = Field(
+    publish_targets: bool = Field(
         default=True, description="Whether to publish the targets changes"
     )
 
