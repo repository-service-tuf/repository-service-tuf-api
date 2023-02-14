@@ -13,7 +13,7 @@
                     "v1"
                 ],
                 "summary": "Check the bootstrap status. Scope: read:bootstrap",
-                "description": "Check if the boostrap of the system is done or not.",
+                "description": "Check if the bootstrap of the system is done or not.",
                 "operationId": "get_api_v1_bootstrap__get",
                 "responses": {
                     "200": {
@@ -44,7 +44,7 @@
                     "v1"
                 ],
                 "summary": "Bootstrap the system with initial signed Metadata. Scope: write:bootstrap",
-                "description": "Initialize the TUF Respository with initial signed Metadata and Settings.",
+                "description": "Initialize the TUF Repository with initial signed Metadata and Settings.",
                 "operationId": "post_api_v1_bootstrap__post",
                 "requestBody": {
                     "content": {
@@ -1445,35 +1445,13 @@
             "RoleSettings": {
                 "title": "RoleSettings",
                 "required": [
-                    "expiration",
-                    "num_of_keys",
-                    "threshold",
-                    "offline_keys"
+                    "expiration"
                 ],
                 "type": "object",
                 "properties": {
                     "expiration": {
                         "title": "Expiration",
                         "type": "integer"
-                    },
-                    "num_of_keys": {
-                        "title": "Num Of Keys",
-                        "type": "integer"
-                    },
-                    "threshold": {
-                        "title": "Threshold",
-                        "type": "integer"
-                    },
-                    "keys": {
-                        "title": "Keys",
-                        "type": "object",
-                        "additionalProperties": {
-                            "$ref": "#/components/schemas/SettingsKeys"
-                        }
-                    },
-                    "offline_keys": {
-                        "title": "Offline Keys",
-                        "type": "boolean"
                     },
                     "paths": {
                         "title": "Paths",
@@ -1518,67 +1496,6 @@
                     },
                     "service": {
                         "$ref": "#/components/schemas/ServiceSettings"
-                    }
-                }
-            },
-            "SettingsKeyBody": {
-                "title": "SettingsKeyBody",
-                "required": [
-                    "keytype",
-                    "scheme",
-                    "keyid",
-                    "keyid_hash_algorithms",
-                    "keyval"
-                ],
-                "type": "object",
-                "properties": {
-                    "keytype": {
-                        "title": "Keytype",
-                        "type": "string"
-                    },
-                    "scheme": {
-                        "title": "Scheme",
-                        "type": "string"
-                    },
-                    "keyid": {
-                        "title": "Keyid",
-                        "type": "string"
-                    },
-                    "keyid_hash_algorithms": {
-                        "title": "Keyid Hash Algorithms",
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        }
-                    },
-                    "keyval": {
-                        "title": "Keyval",
-                        "type": "object",
-                        "additionalProperties": {
-                            "type": "string"
-                        }
-                    }
-                }
-            },
-            "SettingsKeys": {
-                "title": "SettingsKeys",
-                "required": [
-                    "filename",
-                    "password",
-                    "key"
-                ],
-                "type": "object",
-                "properties": {
-                    "filename": {
-                        "title": "Filename",
-                        "type": "string"
-                    },
-                    "password": {
-                        "title": "Password",
-                        "type": "string"
-                    },
-                    "key": {
-                        "$ref": "#/components/schemas/SettingsKeyBody"
                     }
                 }
             },
