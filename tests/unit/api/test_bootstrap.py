@@ -8,8 +8,8 @@ import pretend
 from fastapi import status
 
 
-class TestGetBoostrap:
-    def test_get_boostrap_available(
+class TestGetBootstrap:
+    def test_get_bootstrap_available(
         self, test_client, token_headers, monkeypatch
     ):
         url = "/api/v1/bootstrap/"
@@ -28,7 +28,7 @@ class TestGetBoostrap:
         }
         assert mocked_check_metadata.calls == [pretend.call()]
 
-    def test_get_boostrap_not_available(
+    def test_get_bootstrap_not_available(
         self, test_client, monkeypatch, token_headers
     ):
         url = "/api/v1/bootstrap/"
@@ -48,7 +48,8 @@ class TestGetBoostrap:
         }
         assert mocked_check_metadata.calls == [pretend.call()]
 
-    def test_get_boostrap_invalid_token(self, test_client, monkeypatch):
+    def test_get_bootstrap_invalid_token(self, test_client, monkeypatch):
+
         url = "/api/v1/bootstrap/"
         mocked_check_metadata = pretend.call_recorder(lambda: False)
         monkeypatch.setattr(
@@ -62,7 +63,7 @@ class TestGetBoostrap:
             "detail": {"error": "Failed to validate token"}
         }
 
-    def test_get_boostrap_incorrect_scope_token(
+    def test_get_bootstrap_incorrect_scope_token(
         self, test_client, monkeypatch
     ):
         token_url = "/api/v1/token/?expires=1"
