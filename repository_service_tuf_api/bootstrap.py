@@ -107,27 +107,9 @@ class TUFMetadata(BaseModel):
     signed: TUFSigned
 
 
-class SettingsKeyBody(BaseModel):
-    keytype: str
-    scheme: str
-    keyid: str
-    keyid_hash_algorithms: List[str]
-    keyval: Dict[Literal["public", "private"], str]
-
-
-class SettingsKeys(BaseModel):
-    filename: str
-    password: str
-    key: SettingsKeyBody
-
-
 class RoleSettings(BaseModel):
     # This is the from repository-service-tuf-cli RolesKeysInput
     expiration: int
-    num_of_keys: int
-    threshold: int
-    keys: Optional[Dict[str, SettingsKeys]]
-    offline_keys: bool
     paths: Optional[List[str]] = None
     number_hash_prefixes: Optional[int] = None
 
@@ -226,16 +208,6 @@ def post_bootstrap(payload):
         save_settings(
             f"{rolename}_EXPIRATION",
             role_settings.expiration,
-            settings_repository,
-        )
-        save_settings(
-            f"{rolename}_THRESHOLD",
-            role_settings.threshold,
-            settings_repository,
-        )
-        save_settings(
-            f"{rolename}_NUM_KEYS",
-            role_settings.num_of_keys,
             settings_repository,
         )
         save_settings(
