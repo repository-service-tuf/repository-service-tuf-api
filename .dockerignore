@@ -1,0 +1,5 @@
+.tox/
+venv/
+.idea/
+.vscode/
+.env/
