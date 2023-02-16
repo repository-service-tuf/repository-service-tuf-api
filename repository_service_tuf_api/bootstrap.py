@@ -205,11 +205,21 @@ def post_bootstrap(payload: BootstrapPayload) -> BootstrapPostResponse:
     logging.debug("Saving settings")
     for rolename, role_settings in payload.settings.roles.items():
         rolename = rolename.upper()
+        threshold = 1
+        num_of_keys = 1
+        if rolename == Roles.ROOT.value.upper():
+            md = payload.metadata
+            root_file_name = [name for name in md if name.endswith("root")][0]
+            threshold = md[root_file_name].signed.roles["root"].threshold
+            num_of_keys = len(md[root_file_name].signatures)
+
         save_settings(
             f"{rolename}_EXPIRATION",
             role_settings.expiration,
             settings_repository,
         )
+        save_settings(f"{rolename}_THRESHOLD", threshold, settings_repository)
+        save_settings(f"{rolename}_NUM_KEYS", num_of_keys, settings_repository)
         save_settings(
             f"{rolename}_PATHS", role_settings.paths, settings_repository
         )
