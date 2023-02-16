@@ -192,7 +192,7 @@ def get_bootstrap():
     return response
 
 
-def post_bootstrap(payload):
+def post_bootstrap(payload: BootstrapPayload) -> BootstrapPostResponse:
     if is_bootstrap_done() is True:
         raise HTTPException(
             status_code=status.HTTP_200_OK,
