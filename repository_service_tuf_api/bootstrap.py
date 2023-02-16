@@ -209,6 +209,8 @@ def post_bootstrap(payload: BootstrapPayload) -> BootstrapPostResponse:
         num_of_keys = 1
         if rolename == Roles.ROOT.value.upper():
             md = payload.metadata
+            # The key to the root role is the name of the root file which uses
+            # consistent snapshot or in the format: <VERSION_NUMBER>.root.json
             root_file_name = [name for name in md if name.endswith("root")][0]
             threshold = md[root_file_name].signed.roles["root"].threshold
             num_of_keys = len(md[root_file_name].signatures)
