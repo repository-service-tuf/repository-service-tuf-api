@@ -77,18 +77,7 @@ class TUFSigned(BaseModel):
     expires: str
     keys: Optional[Dict[str, TUFKeys]]
     consistent_snapshot: Optional[bool]
-    roles: Optional[
-        Dict[
-            Literal[
-                Roles.ROOT.value,
-                Roles.TARGETS.value,
-                Roles.SNAPSHOT.value,
-                Roles.TIMESTAMP.value,
-                Roles.BINS.value,
-            ],
-            TUFSignedRoles,
-        ]
-    ]
+    roles: Optional[Dict[Roles, TUFSignedRoles]]
     meta: Optional[Dict[str, TUFSignedMetaFile]]
     targets: Optional[Dict[str, str]]
     delegations: Optional[TUFSignedDelegations]
@@ -119,16 +108,7 @@ class ServiceSettings(BaseModel):
 
 
 class Settings(BaseModel):
-    roles: Dict[
-        Literal[
-            Roles.ROOT.value,
-            Roles.TARGETS.value,
-            Roles.SNAPSHOT.value,
-            Roles.TIMESTAMP.value,
-            Roles.BINS.value,
-        ],
-        RoleSettings,
-    ]
+    roles: Dict[Roles, RoleSettings]
     service: ServiceSettings
 
 
