@@ -1,7 +1,6 @@
 # SPDX-FileCopyrightText: 2022-2023 VMware Inc
 #
 # SPDX-License-Identifier: MIT
-
 from fastapi import APIRouter, Depends, Security
 
 from repository_service_tuf_api import SCOPES_NAMES, token
@@ -56,8 +55,8 @@ def post(
 )
 def post_token(
     payload: token.TokenRequestPayload,
-    user=Security(
+    access_token=Security(
         token.validate_token, scopes=[SCOPES_NAMES.write_token.value]
     ),
 ):
-    return token.post_new(payload=payload, user=user)
+    return token.post_new(payload=payload, username=access_token['username'])
