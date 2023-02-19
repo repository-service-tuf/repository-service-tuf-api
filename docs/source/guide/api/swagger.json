@@ -44,7 +44,7 @@
                     "v1"
                 ],
                 "summary": "Bootstrap the system with initial signed Metadata. Scope: write:bootstrap",
-                "description": "Initialize the TUF Respository with initial signed Metadata and Settings.",
+                "description": "Initialize the TUF Repository with initial signed Metadata and Settings.",
                 "operationId": "post_api_v1_bootstrap__post",
                 "requestBody": {
                     "content": {
@@ -421,7 +421,7 @@
                     "v1"
                 ],
                 "summary": "Get task state. Scope: read:tasks",
-                "description": "Get Repository Metadata task state. The state is according with Celery tasks: `PENDING` the task still not processed or unknown/inexistent task. `RECEIVED` task is reveived by the broker server. `PRE_RUN` the task will start by repository-service-tuf-worker. `RUNNING` the task is in execution. `FAILURE` the task failed to executed. `SUCCESS` the task execution is finished.",
+                "description": "Get Repository Metadata task state. The state is according with Celery tasks: `PENDING` the task still not processed or unknown/inexistent task. `RECEIVED` task is received by the broker server. `PRE_RUN` the task will start by repository-service-tuf-worker. `RUNNING` the task is in execution. `FAILURE` the task failed to executed. `SUCCESS` the task execution is finished.",
                 "operationId": "get_api_v1_task__get",
                 "security": [
                     {
@@ -550,7 +550,7 @@
                     "scope": {
                         "title": "Scope",
                         "type": "string",
-                        "description": "Add scopes separeted by space. Available scopes: `read:bootstrap`, `read:settings`, `read:tasks`, `read:token`, `write:bootstrap`, `write:targets`, `write:token`, `delete:targets`"
+                        "description": "Add scopes separated by space. Available scopes: `read:bootstrap`, `read:settings`, `read:tasks`, `read:token`, `write:bootstrap`, `write:targets`, `write:token`, `delete:targets`"
                     },
                     "expires": {
                         "title": "Expires",
