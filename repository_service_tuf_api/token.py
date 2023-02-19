@@ -4,7 +4,6 @@
 
 from datetime import datetime, timedelta
 from typing import List, Literal, Optional
-from uuid import uuid4
 
 from fastapi import Depends, HTTPException, Query, status
 from fastapi.param_functions import Form
@@ -25,7 +24,7 @@ class TokenRequestForm:
         password: SecretStr = Form(),
         scope: str = Form(
             description=(
-                "Add scopes separeted by space. "
+                "Add scopes separated by space. "
                 "Available scopes: "
                 f"{', '.join([f'`{scope.value}`' for scope in SCOPES_NAMES])}"
             ),
@@ -175,12 +174,7 @@ def post(token_data):
             )
 
     # return data with requested scopes -- approved :D
-    data = {
-        "sub": f"user_{user.id}_{uuid4().hex}",
-        "username": user.username,
-        "password": str(user.password),
-        "scopes": token_data.scope,
-    }
+    data = {"scopes": token_data.scope}
     access_token = create_access_token(
         data=data,
         expires_delta=token_data.expires,
@@ -190,13 +184,7 @@ def post(token_data):
 
 
 def post_new(payload, user):
-    db_user = get_user_by_username(db, user["username"])
-    data = {
-        "sub": f"user_{db_user.id}_{uuid4().hex}",
-        "username": db_user.username,
-        "password": str(db_user.password),
-        "scopes": payload.scopes,
-    }
+    data = {"scopes": payload.scopes}
     token = create_access_token(data=data, expires_delta=payload.expires)
 
     return {"access_token": token}
