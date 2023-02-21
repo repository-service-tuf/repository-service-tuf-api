@@ -112,7 +112,10 @@ class TokenRequestPayload(BaseModel):
 
 def validate_token(
     security_scopes: SecurityScopes, token: str = Depends(oauth2_scheme)
-):
+) -> dict | None:
+    if not auth_service:
+        return None
+
     try:
         user_token = auth_service.validate_token(token, security_scopes.scopes)
     except auth_exceptions.InvalidTokenFormat:

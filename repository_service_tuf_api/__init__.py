@@ -71,11 +71,14 @@ def sync_redis():
 
 
 # Initiate authentication service
-# TODO: use an injector to be able to perform dependency injection
 # TODO: change the service based on a configuration (e.g., environment)
-auth_service = CustomAuthenticationService(
-    settings=settings, secrets_settings=secrets_settings, base_dir=DATA_DIR
-)
+if settings.get("BUILT_IN_AUTH", False) is False:
+    auth_service = None
+
+else:
+    auth_service = CustomAuthenticationService(
+        settings=settings, secrets_settings=secrets_settings, base_dir=DATA_DIR
+    )
 
 # TODO: remove this later. We didn't want to touch all the files that import it
 #   at the moment of the rstuf_auth change
