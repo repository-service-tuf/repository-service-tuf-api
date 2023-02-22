@@ -1,22 +1,63 @@
 name: CD
 
 on:
-  workflow_dispatch:
   push:
     tags:
-      - v*
+      - v*    
+  workflow_dispatch:      
+    inputs:
+      api_version:
+        description: "API Version"
+        default: "dev"
+        type: string
+        required: False
+      worker_version:
+        description: "Worker Version"
+        default: "latest"
+        type: string
+        required: False
+      cli_version:
+        description: "CLI Version"
+        default: "latest"
+        type: string
+        required: False
+
 
 jobs:
-  functional-latest:
+  set-component-versions:
+    runs-on: ubuntu-latest
+    outputs:
+      api_version: ${{ steps.api_version.outputs.VERSION }}
+      worker_version: ${{ steps.worker_version.outputs.VERSION }}
+      cli_version: ${{ steps.cli_version.outputs.VERSION }}
+
+    steps:
+      - id: api_version
+        name: dynamic input api version
+        run: |
+          if [[ "${{ inputs.api_version }}" == "" ]]; then echo "VERSION=dev" >> $GITHUB_OUTPUT; else echo "VERSION=${{ inputs.api_version }}" >> $GITHUB_OUTPUT;fi
+
+      - id: worker_version
+        name: dynamic input worker version
+        run: |
+          if [[ "${{ inputs.worker_version }}" == "" ]]; then echo "VERSION=latest" >> $GITHUB_OUTPUT; else echo "VERSION=${{ inputs.worker_version }}" >> $GITHUB_OUTPUT;fi
+
+      - id: cli_version
+        name: dynamic input cli version
+        run: |
+          if [[ "${{ inputs.cli_version }}" == "" ]]; then echo "VERSION=latest" >> $GITHUB_OUTPUT; else echo "VERSION=${{ inputs.cli_version }}" >> $GITHUB_OUTPUT;fi
+
+  functional-tests:
+    needs: set-component-versions
     uses: vmware/repository-service-tuf/.github/workflows/functional.yml@main
     with:
-      worker_version: latest
-      api_version: dev
-      cli_version: latest
+      api_version: ${{ needs.set-component-versions.outputs.api_version }}   
+      worker_version: ${{ needs.set-component-versions.outputs.worker_version }}   
+      cli_version: ${{ needs.set-component-versions.outputs.cli_version }}   
 
   release:
     runs-on: ubuntu-latest
-    needs: functional-latest
+    needs: functional-tests
     steps:
     - name: Checkout release tag
       uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c
