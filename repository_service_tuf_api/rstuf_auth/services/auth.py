@@ -42,6 +42,7 @@ class TokenDTO:
     expires_at: datetime
     scopes: list[ScopeName]
     username: str
+    sub: str
 
 
 class UserDB:
@@ -168,14 +169,13 @@ class CustomAuthenticationService:
             ):
                 raise exceptions.ScopeNotFoundInUserScopes(scope=scope)
 
-        data = {
+        to_encode = {
             "sub": f"user_{db_user.id}_{uuid4().hex}",
             "username": db_user.username,
             # "password": str(db_user.password),
             "scopes": scopes,
         }
 
-        to_encode = data.copy()
         expires = datetime.utcnow() + timedelta(hours=expires_delta)
 
         to_encode['exp'] = expires
@@ -185,12 +185,13 @@ class CustomAuthenticationService:
             username=username,
             access_token=encoded_jwt,
             expires_at=expires,
-            scopes=scopes
+            scopes=scopes,
+            sub=to_encode['sub'],
         )
 
     def validate_token(
         self, token: str, required_scopes: Optional[list[ScopeName]] = None
-    ):
+    ) -> TokenDTO:
         try:
             user_token = jwt.decode(
                 token, self.secret_key, algorithms=["HS256"]
@@ -199,6 +200,12 @@ class CustomAuthenticationService:
         except JWTError:
             raise exceptions.InvalidTokenFormat
 
+        # TODO: Change username to sub
+        db_user = self._user_repo.get_by_username(user_token['username'])
+
+        if not db_user:
+            raise exceptions.UserNotFound
+
         if any(
             required_scope
             for required_scope in required_scopes or []
@@ -206,4 +213,10 @@ class CustomAuthenticationService:
         ):
             raise exceptions.ScopeNotProvided
 
-        return user_token
+        return TokenDTO(
+            access_token=token,
+            username=user_token['username'],
+            sub=user_token['sub'],
+            scopes=user_token['scopes'],
+            expires_at=user_token['exp'],
+        )

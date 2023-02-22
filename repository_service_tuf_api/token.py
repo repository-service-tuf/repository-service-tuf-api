@@ -5,20 +5,13 @@
 from datetime import datetime
 from typing import List, Literal, Optional
 
-from fastapi import Depends, HTTPException, Query, status
+from fastapi import HTTPException, Query, status
 from fastapi.param_functions import Form
-from fastapi.security import OAuth2PasswordBearer, SecurityScopes
 from pydantic import BaseModel, Field, SecretStr
 
 from repository_service_tuf_api import auth_service
 from repository_service_tuf_api.rstuf_auth import exceptions as auth_exceptions
 from repository_service_tuf_api.rstuf_auth.enums import ScopeName
-from repository_service_tuf_api.rstuf_auth.services.auth import \
-    SCOPES_DESCRIPTION
-
-oauth2_scheme = OAuth2PasswordBearer(
-    tokenUrl="/api/v1/token", scopes=SCOPES_DESCRIPTION
-)
 
 
 class TokenRequestForm:
@@ -66,7 +59,7 @@ class GetTokenResponse(BaseModel):
     class Config:
         example = {
             "data": {
-                "scopes": [scope.value for scope in ScopeName],
+                "scopes": [scope for scope in ScopeName],
                 "expired": False,
                 "expiration": "2022-08-19T17:29:39",
             },
@@ -108,33 +101,6 @@ class TokenRequestPayload(BaseModel):
         }
 
         schema_extra = {"example": example}
-
-
-def validate_token(
-    security_scopes: SecurityScopes, token: str = Depends(oauth2_scheme)
-) -> dict | None:
-    if not auth_service:
-        return None
-
-    try:
-        user_token = auth_service.validate_token(token, security_scopes.scopes)
-    except auth_exceptions.InvalidTokenFormat:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail={"error": "Failed to validate token"},
-        )
-    except auth_exceptions.ScopeNotProvided:
-        # TODO: the error message should be scope not found/provided
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail={
-                "error": (
-                    f"scope '{', '.join(security_scopes.scopes)}' not allowed"
-                )
-            },
-        )
-
-    return user_token
 
 
 def post(token_data):
@@ -186,18 +152,20 @@ def post_new(payload, username):
     return {"access_token": token.access_token}
 
 
-def get(params):
+def get(token_to_validate):
+    """Gets a token, validates it and return its information"""
     try:
-        token = auth_service.validate_token(params.token)
-    except auth_exceptions.InvalidTokenFormat:
-        # TODO: must be 401?
+        token = auth_service.validate_token(token_to_validate)
+    except (
+        auth_exceptions.InvalidTokenFormat,
+        auth_exceptions.UserNotFound
+    ):
         raise HTTPException(
             status_code=status.HTTP_200_OK,
             detail={"error": "Failed to validate token"},
         )
 
-    # TODO: should we move this to the auth service?
-    expires = datetime.fromtimestamp(token.get("exp"))
+    expires = datetime.fromtimestamp(token.expires_at)
 
     if expires < datetime.now():
         expired = True
@@ -205,9 +173,9 @@ def get(params):
         expired = False
 
     data = TokenPublicData(
-        scopes=token.get("scopes"),
+        scopes=token.scopes,
         expired=expired,
-        expiration=datetime.fromtimestamp(token.get("exp")),
+        expiration=datetime.fromtimestamp(token.expires_at),
     )
 
     return GetTokenResponse(data=data, message="Token information")

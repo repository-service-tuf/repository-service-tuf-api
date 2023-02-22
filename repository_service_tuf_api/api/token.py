@@ -4,6 +4,7 @@
 from fastapi import APIRouter, Depends, Security
 
 from repository_service_tuf_api import SCOPES_NAMES, token
+from repository_service_tuf_api.api.utils import authorize_user
 
 router = APIRouter(
     prefix="/token",
@@ -14,7 +15,7 @@ router = APIRouter(
 
 @router.get(
     "/",
-    summary=("Get token details. " f"Scope: {SCOPES_NAMES.read_token.value}"),
+    summary=f"Get token details. Scope: {SCOPES_NAMES.read_token.value}",
     description=(
         "Return the token details. It requires an authenticated token with "
         "scope authorization."
@@ -25,15 +26,15 @@ router = APIRouter(
 def get(
     params: token.GetParameters = Depends(),
     _user=Security(
-        token.validate_token, scopes=[SCOPES_NAMES.read_token.value]
+        authorize_user, scopes=[SCOPES_NAMES.read_token.value]
     ),
 ):
-    return token.get(params)
+    return token.get(params.token)
 
 
 @router.post(
     "/",
-    summary="Issue token user/password authentication",
+    summary="Issue token with user/password authentication",
     description="Issue a token with scopes for all granted user scope.",
     response_model=token.PostTokenResponse,
 )
@@ -56,7 +57,7 @@ def post(
 def post_token(
     payload: token.TokenRequestPayload,
     access_token=Security(
-        token.validate_token, scopes=[SCOPES_NAMES.write_token.value]
+        authorize_user, scopes=[SCOPES_NAMES.write_token.value]
     ),
 ):
     return token.post_new(payload=payload, username=access_token['username'])

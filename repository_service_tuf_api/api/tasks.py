@@ -5,7 +5,7 @@
 from fastapi import APIRouter, Depends, Security
 
 from repository_service_tuf_api import SCOPES_NAMES, tasks
-from repository_service_tuf_api.token import validate_token
+from repository_service_tuf_api.api.utils import authorize_user
 
 router = APIRouter(
     prefix="/task",
@@ -32,6 +32,6 @@ router = APIRouter(
 )
 def get(
     params: tasks.GetParameters = Depends(),
-    _user=Security(validate_token, scopes=[SCOPES_NAMES.read_tasks.value]),
+    _user=Security(authorize_user, scopes=[SCOPES_NAMES.read_tasks.value]),
 ):
     return tasks.get(params.task_id)

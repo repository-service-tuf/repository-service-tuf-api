@@ -75,6 +75,8 @@ class TestGetBoostrap:
             "scope": "write:bootstrap",
         }
         token = test_client.post(token_url, data=token_payload)
+
+        assert token.status_code == 200
         token_headers = {
             "Authorization": f"Bearer {token.json()['access_token']}",
         }
