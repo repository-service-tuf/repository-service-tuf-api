@@ -20,9 +20,9 @@ on:
 
 jobs:
   publish-container-image:
-    uses: vmware/repository-service-tuf/.github/workflows/publish_container.yml@kairoaraujo-flexible-cd
+    uses: ./.github/workflows/publish_container.yml
     with:
-      image_version: ${{ github.ref_name }}
+      image_version: ${{ github.sha }}
 
   set-component-versions:
     needs: publish-container-image
@@ -47,7 +47,7 @@ jobs:
     needs: set-component-versions
     uses: vmware/repository-service-tuf/.github/workflows/functional.yml@main
     with:
-      api_version: ${{ github.ref_name }}
+      api_version: ${{ github.sha }}
       worker_version: ${{ needs.set-component-versions.outputs.worker_version }}
       cli_version: ${{ needs.set-component-versions.outputs.cli_version }}
 
@@ -64,8 +64,10 @@ jobs:
 
     - name: Add final tags
       run: |
-        docker pull ghcr.io/vmware/repository-service-tuf-api:${{ github.ref_name }}
-        docker tag ghcr.io/vmware/repository-service-tuf-api:${{ github.ref_name }} latest
+        docker pull ghcr.io/vmware/repository-service-tuf-api:${{ github.sha }}
+        docker tag ghcr.io/vmware/repository-service-tuf-api:${{ github.sha }} ghcr.io/vmware/repository-service-tuf-api:latest
+        docker tag ghcr.io/vmware/repository-service-tuf-api:${{ github.sha }} ghcr.io/vmware/repository-service-tuf-api:${{ github.ref_name }}
+        docker push ghcr.io/vmware/repository-service-tuf-api:${{ github.ref_name }}
         docker push ghcr.io/vmware/repository-service-tuf-api:latest
 
     - name: Publish GitHub Release
