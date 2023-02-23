@@ -1,7 +1,9 @@
 from typing import Optional
 
 from repository_service_tuf_api.rstuf_auth.ports.scope import (
-    ScopeDTO, ScopeRepository)
+    ScopeDTO,
+    ScopeRepository,
+)
 
 
 class FakeScopeRepository(ScopeRepository):

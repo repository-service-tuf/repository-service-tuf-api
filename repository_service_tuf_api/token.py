@@ -156,10 +156,7 @@ def get(token_to_validate):
     """Gets a token, validates it and return its information"""
     try:
         token = auth_service.validate_token(token_to_validate)
-    except (
-        auth_exceptions.InvalidTokenFormat,
-        auth_exceptions.UserNotFound
-    ):
+    except (auth_exceptions.InvalidTokenFormat, auth_exceptions.UserNotFound):
         raise HTTPException(
             status_code=status.HTTP_200_OK,
             detail={"error": "Failed to validate token"},

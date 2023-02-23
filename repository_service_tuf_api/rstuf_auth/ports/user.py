@@ -16,19 +16,18 @@ class UserDTO:
     created_at: datetime
 
     @classmethod
-    def from_db(cls, user: User) -> 'UserDTO':
+    def from_db(cls, user: User) -> "UserDTO":
         return UserDTO(
             id=user.id,
             username=user.username,
             password=user.password,
-            created_at=user.created_at
+            created_at=user.created_at,
         )
 
 
 class UserRepository(ABC):
-    """
+    """Abstract class for the User Repository"""
 
-    """
     @staticmethod
     def hash_password(password: str) -> bytes:
         hashed_password = bcrypt.hashpw(
@@ -42,9 +41,7 @@ class UserRepository(ABC):
         return bcrypt.checkpw(password.encode("utf-8"), hashed_password)
 
     @abstractmethod
-    def create(
-        self, username: str, password: str
-    ) -> UserDTO:
+    def create(self, username: str, password: str) -> UserDTO:
         pass
 
     def get_by_id(self, user_id: int) -> Optional[UserDTO]:
@@ -55,6 +52,7 @@ class UserRepository(ABC):
 
 
 class UserScopeRepository(ABC):
+    """Abstract Class for the UserScope Repository"""
 
     def add_scopes_to_user(self, user_id: int, scopes: list[int]) -> None:
         pass

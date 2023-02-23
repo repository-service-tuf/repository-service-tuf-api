@@ -7,9 +7,9 @@ from fastapi.security import OAuth2PasswordBearer, SecurityScopes
 
 from repository_service_tuf_api import auth_service
 from repository_service_tuf_api.rstuf_auth import exceptions as auth_exceptions
-from repository_service_tuf_api.rstuf_auth.services.auth import \
-    SCOPES_DESCRIPTION
-
+from repository_service_tuf_api.rstuf_auth.services.auth import (
+    SCOPES_DESCRIPTION,
+)
 
 oauth2_scheme = OAuth2PasswordBearer(
     tokenUrl="/api/v1/token", scopes=SCOPES_DESCRIPTION
@@ -19,7 +19,6 @@ oauth2_scheme = OAuth2PasswordBearer(
 def authorize_user(
     security_scopes: SecurityScopes, token: str = Depends(oauth2_scheme)
 ) -> dict | None:
-
     if auth_service is None:
         return None
 
@@ -45,4 +44,4 @@ def authorize_user(
             },
         )
 
-    return {'username': user_token.username, 'scopes': user_token.scopes}
+    return {"username": user_token.username, "scopes": user_token.scopes}

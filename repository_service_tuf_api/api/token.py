@@ -25,9 +25,7 @@ router = APIRouter(
 )
 def get(
     params: token.GetParameters = Depends(),
-    _user=Security(
-        authorize_user, scopes=[SCOPES_NAMES.read_token.value]
-    ),
+    _user=Security(authorize_user, scopes=[SCOPES_NAMES.read_token.value]),
 ):
     return token.get(params.token)
 
@@ -60,4 +58,4 @@ def post_token(
         authorize_user, scopes=[SCOPES_NAMES.write_token.value]
     ),
 ):
-    return token.post_new(payload=payload, username=access_token['username'])
+    return token.post_new(payload=payload, username=access_token["username"])

@@ -2,10 +2,12 @@ from collections import defaultdict
 from datetime import datetime
 from typing import Optional
 
-from repository_service_tuf_api.rstuf_auth.ports.scope import ScopeDTO, \
-    ScopeRepository
+from repository_service_tuf_api.rstuf_auth.ports.scope import ScopeRepository
 from repository_service_tuf_api.rstuf_auth.ports.user import (
-    UserDTO, UserRepository, UserScopeRepository)
+    UserDTO,
+    UserRepository,
+    UserScopeRepository,
+)
 
 
 class FakeUserRepository(UserRepository):
@@ -20,7 +22,7 @@ class FakeUserRepository(UserRepository):
             id=self.index,
             username=username,
             password=self.hash_password(password),
-            created_at=datetime.utcnow()
+            created_at=datetime.utcnow(),
         )
 
         self.users_id[self.index] = user

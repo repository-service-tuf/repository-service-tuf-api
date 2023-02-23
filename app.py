@@ -39,7 +39,7 @@ if is_tokens_node_enabled:
 
 logging.info(
     f"Tokens on this node are {'' if is_tokens_node_enabled else 'not '}"
-    f"enabled"
+    "enabled"
 )
 
 api_v1.include_router(config_v1)

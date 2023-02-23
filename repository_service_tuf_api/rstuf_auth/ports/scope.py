@@ -12,18 +12,15 @@ class ScopeDTO:
     description: Optional[str] = None
 
     @classmethod
-    def from_db(cls, scope: Scope) -> 'ScopeDTO':
+    def from_db(cls, scope: Scope) -> "ScopeDTO":
         return ScopeDTO(
-            id=scope.id,
-            name=scope.name,
-            description=scope.description
+            id=scope.id, name=scope.name, description=scope.description
         )
 
 
 class ScopeRepository(ABC):
-    """
+    """Abstract Class for the Scope Repository"""
 
-    """
     @abstractmethod
     def create(self, name: str, description: Optional[str] = None) -> ScopeDTO:
         pass

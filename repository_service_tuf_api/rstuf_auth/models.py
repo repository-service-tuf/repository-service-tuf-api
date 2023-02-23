@@ -44,12 +44,13 @@ class Scope(Base):
 
 
 class UserScope(Base):
-    __tablename__ = 'user_scope'
+    __tablename__ = "user_scope"
+
     user_id = Column(
-        Integer, ForeignKey('user.id'), nullable=False, primary_key=True
+        Integer, ForeignKey("user.id"), nullable=False, primary_key=True
     )
     scope_id = Column(
-        Integer, ForeignKey('scope.id'), nullable=False, primary_key=True
+        Integer, ForeignKey("scope.id"), nullable=False, primary_key=True
     )
 
     User = relationship("User", foreign_keys=[user_id])
