@@ -17,7 +17,7 @@ greenlet==2.0.2 ; platform_machine == 'aarch64' or (platform_machine == 'ppc64le
 h11==0.14.0 ; python_version >= '3.7'
 idna==3.4 ; python_version >= '3.5'
 kombu==5.2.4 ; python_version >= '3.7'
-prompt-toolkit==3.0.36 ; python_full_version >= '3.6.2'
+prompt-toolkit==3.0.37 ; python_full_version >= '3.7.0'
 pyasn1==0.4.8
 pydantic==1.10.5 ; python_version >= '3.7'
 python-jose==3.3.0
