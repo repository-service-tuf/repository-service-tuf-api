@@ -3,14 +3,9 @@ name: CD
 on:
   push:
     tags:
-      - v*    
-  workflow_dispatch:      
+      - v*
+  workflow_dispatch:
     inputs:
-      api_version:
-        description: "API Version"
-        default: "dev"
-        type: string
-        required: False
       worker_version:
         description: "Worker Version"
         default: "latest"
@@ -24,7 +19,13 @@ on:
 
 
 jobs:
+  publish-container-image:
+    uses: vmware/repository-service-tuf/.github/workflows/publish_container.yml@kairoaraujo-flexible-cd
+    with:
+      image_version: ${{ github.ref_name }}
+
   set-component-versions:
+    needs: publish-container-image
     runs-on: ubuntu-latest
     outputs:
       api_version: ${{ steps.api_version.outputs.VERSION }}
@@ -32,11 +33,6 @@ jobs:
       cli_version: ${{ steps.cli_version.outputs.VERSION }}
 
     steps:
-      - id: api_version
-        name: dynamic input api version
-        run: |
-          if [[ "${{ inputs.api_version }}" == "" ]]; then echo "VERSION=dev" >> $GITHUB_OUTPUT; else echo "VERSION=${{ inputs.api_version }}" >> $GITHUB_OUTPUT;fi
-
       - id: worker_version
         name: dynamic input worker version
         run: |
@@ -51,29 +47,14 @@ jobs:
     needs: set-component-versions
     uses: vmware/repository-service-tuf/.github/workflows/functional.yml@main
     with:
-      api_version: ${{ needs.set-component-versions.outputs.api_version }}   
-      worker_version: ${{ needs.set-component-versions.outputs.worker_version }}   
-      cli_version: ${{ needs.set-component-versions.outputs.cli_version }}   
+      api_version: ${{ github.ref_name }}
+      worker_version: ${{ needs.set-component-versions.outputs.worker_version }}
+      cli_version: ${{ needs.set-component-versions.outputs.cli_version }}
 
   release:
     runs-on: ubuntu-latest
     needs: functional-tests
     steps:
-    - name: Checkout release tag
-      uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c
-      with:
-        ref: ${{ github.event.workflow_run.head_branch }}
-
-    - uses: actions/setup-python@d27e3f3d7c64b4bbf8e4abfb9b63b83e846e0435
-      with:
-        python-version: '3.10'
-
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@e81a89b1732b9c48d79cd809d8d81d79c4647a18
-
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@f03ac48505955848960e80bbb68046aa35c7b9e7
-
     - name: Login to GitHub Container Registry
       uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
       with:
@@ -81,27 +62,11 @@ jobs:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
-    # Cannot use output type docker local and push. Build and export and caches
-    - name: Build and export
-      uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
-      with:
-        context: .
-        tags: |
-            ghcr.io/vmware/repository-service-tuf-api:latest
-            ghcr.io/vmware/repository-service-tuf-api:${{ github.ref_name }}
-        outputs: type=docker,dest=/tmp/repository-service-tuf-api_${{ github.ref_name }}.tar
-        cache-to: type=local,dest=/tmp/rstuf_api_cache
-
-    # Build and push using the local cache from above step
-    - name:  Build and push (using cache)
-      uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
-      with:
-        context: .
-        push: true
-        tags: |
-            ghcr.io/vmware/repository-service-tuf-api:latest
-            ghcr.io/vmware/repository-service-tuf-api:${{ github.ref_name }}
-        cache-from: type=local,src=/tmp/rstuf_api_cache
+    - name: Add final tags
+      run: |
+        docker pull ghcr.io/vmware/repository-service-tuf-api:${{ github.ref_name }}
+        docker tag ghcr.io/vmware/repository-service-tuf-api:${{ github.ref_name }} latest
+        docker push ghcr.io/vmware/repository-service-tuf-api:latest
 
     - name: Publish GitHub Release
       uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844
