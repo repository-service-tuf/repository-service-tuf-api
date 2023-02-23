@@ -1,6 +1,5 @@
 from typing import Optional
 
-import bcrypt
 from sqlalchemy.orm import Session
 
 from repository_service_tuf_api.rstuf_auth.models import Scope, User, UserScope
@@ -13,14 +12,11 @@ class UserSQLRepository(UserRepository):
         self.session = session
 
     def create(self, username: str, password: str) -> UserDTO:
-        hashed_password = bcrypt.hashpw(
-            password.encode("utf-8"), bcrypt.gensalt()
-        )
-
         db_user = User(
             username=username,
-            password=hashed_password
+            password=self.hash_password(password)
         )
+
         self.session.add(db_user)
         self.session.commit()
 
@@ -30,7 +26,6 @@ class UserSQLRepository(UserRepository):
         # TODO: handle sql exceptions and raise custom repo exception
         user = self.session.query(User).filter(User.id == user_id).first()
 
-        # TODO: raise custom exception
         if user is None:
             return None
 
@@ -42,7 +37,6 @@ class UserSQLRepository(UserRepository):
             User.username == username
         ).first()
 
-        # TODO: raise custom exception
         if user is None:
             return None
 

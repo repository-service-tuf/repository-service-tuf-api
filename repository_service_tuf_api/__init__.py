@@ -10,8 +10,9 @@ from dynaconf import Dynaconf
 from dynaconf.loaders import redis_loader
 
 from repository_service_tuf_api.rstuf_auth.enums import ScopeName
-from repository_service_tuf_api.rstuf_auth.services.auth import \
-    CustomAuthenticationService
+from repository_service_tuf_api.rstuf_auth.services.auth import (
+    CustomSQLAuthenticationService,
+)
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -76,7 +77,7 @@ if settings.get("BUILT_IN_AUTH", False) is False:
     auth_service = None
 
 else:
-    auth_service = CustomAuthenticationService(
+    auth_service = CustomSQLAuthenticationService(
         settings=settings, secrets_settings=secrets_settings, base_dir=DATA_DIR
     )
 

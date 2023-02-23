@@ -1,4 +1,4 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Optional
 
@@ -24,14 +24,18 @@ class ScopeRepository(ABC):
     """
 
     """
+    @abstractmethod
     def create(self, name: str, description: Optional[str] = None) -> ScopeDTO:
         pass
 
+    @abstractmethod
     def get_all(self) -> list[ScopeDTO]:
         pass
 
+    @abstractmethod
     def get_by_id(self, id_: int) -> Optional[ScopeDTO]:
         pass
 
+    @abstractmethod
     def get_by_name(self, name: str) -> Optional[ScopeDTO]:
         pass

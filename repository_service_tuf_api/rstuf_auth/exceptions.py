@@ -22,3 +22,7 @@ class InvalidTokenFormat(Exception):
 
 class SecretKeyNotFoundInSettings(Exception):
     pass
+
+
+class AdminPasswordNotFoundInSettings(Exception):
+    pass

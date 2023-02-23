@@ -1,11 +1,11 @@
 import logging
 import os
+from calendar import timegm
 from dataclasses import dataclass
 from datetime import datetime, timedelta
-from typing import Optional
+from typing import Optional, Type
 from uuid import uuid4
 
-import bcrypt
 from jose import JWTError, jwt
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -21,7 +21,7 @@ from repository_service_tuf_api.rstuf_auth.repositories.scope import \
 from repository_service_tuf_api.rstuf_auth.repositories.user import (
     UserScopeSQLRepository, UserSQLRepository)
 
-__all__ = ['CustomAuthenticationService', 'SCOPES_DESCRIPTION', 'UserDB']
+__all__ = ['CustomSQLAuthenticationService', 'SCOPES_DESCRIPTION']
 
 
 SCOPES_DESCRIPTION = {
@@ -39,7 +39,7 @@ SCOPES_DESCRIPTION = {
 @dataclass
 class TokenDTO:
     access_token: str
-    expires_at: datetime
+    expires_at: int
     scopes: list[ScopeName]
     username: str
     sub: str
@@ -66,21 +66,22 @@ class UserDB:
 
 
 def _admin_password_from_settings(secrets_settings) -> str:
-    if secrets_settings.ADMIN_PASSWORD.startswith("/run/secrets/"):
+    if secrets_settings.get('ADMIN_PASSWORD').startswith("/run/secrets/"):
         try:
             with open(secrets_settings.ADMIN_PASSWORD) as f:
                 admin_password = f.read().rstrip("\n")
         except OSError as err:
             logging.error(str(err))
+            raise exceptions.AdminPasswordNotFoundInSettings
 
     else:
-        admin_password = secrets_settings.ADMIN_PASSWORD
+        admin_password = secrets_settings.get('ADMIN_PASSWORD')
 
     return admin_password
 
 
 def _secret_key_from_settings(secrets_settings) -> str:
-    if secrets_settings.TOKEN_KEY.startswith("/run/secrets/"):
+    if secrets_settings.get('TOKEN_KEY').startswith("/run/secrets/"):
         try:
             with open(secrets_settings.TOKEN_KEY) as f:
                 secret_key = f.read().rstrip("\n")
@@ -89,7 +90,7 @@ def _secret_key_from_settings(secrets_settings) -> str:
             raise exceptions.SecretKeyNotFoundInSettings
 
     else:
-        secret_key = secrets_settings.TOKEN_KEY
+        secret_key = secrets_settings.get('TOKEN_KEY')
 
     return secret_key
 
@@ -98,21 +99,14 @@ class CustomAuthenticationService:
 
     def __init__(
         self,
-        settings,
         secrets_settings,
-        base_dir: str,
-        user_repo: Optional[UserRepository] = None,
-        scope_repo: Optional[ScopeRepository] = None,
-        user_scope_repo: Optional[UserScopeRepository] = None
+        user_repo: UserRepository,
+        scope_repo: ScopeRepository,
+        user_scope_repo: UserScopeRepository
     ):
-        self.user_db = UserDB(settings, base_dir)
-        session = self.user_db.session
-
-        self._user_repo = user_repo or UserSQLRepository(session)
-        self._scope_repo = scope_repo or ScopeSQLRepository(session)
-        self._user_scope_repo = (
-            user_scope_repo or UserScopeSQLRepository(session)
-        )
+        self._user_repo = user_repo
+        self._scope_repo = scope_repo
+        self._user_scope_repo = user_scope_repo
 
         for scope_name, scope_description in SCOPES_DESCRIPTION.items():
             scope = self._scope_repo.get_by_name(name=scope_name)
@@ -139,8 +133,10 @@ class CustomAuthenticationService:
             user = self.create_user('admin', password)
 
         user_scope_ids = self._user_scope_repo.get_scope_ids_of_user(user.id)
+        available_scopes = self._scope_repo.get_all()
+        print(available_scopes)
         available_scope_ids = [
-            scope.id for scope in self._scope_repo.get_all()
+            scope.id for scope in available_scopes
         ]
         user_missing_scopes = list(
             set(available_scope_ids) - set(user_scope_ids)
@@ -151,7 +147,7 @@ class CustomAuthenticationService:
         self,
         username: str,
         scopes: list[ScopeName],
-        expires_delta: int,
+        expires_delta: Optional[int] = 1,
         password: Optional[str] = None
     ):
         db_user = self._user_repo.get_by_username(username)
@@ -160,7 +156,7 @@ class CustomAuthenticationService:
             raise exceptions.UserNotFound
 
         if password:
-            if not bcrypt.checkpw(password.encode("utf-8"), db_user.password):
+            if not self._user_repo.verify_password(password, db_user.password):
                 raise exceptions.InvalidPassword
 
         for scope in scopes:
@@ -172,7 +168,6 @@ class CustomAuthenticationService:
         to_encode = {
             "sub": f"user_{db_user.id}_{uuid4().hex}",
             "username": db_user.username,
-            # "password": str(db_user.password),
             "scopes": scopes,
         }
 
@@ -184,14 +179,12 @@ class CustomAuthenticationService:
         return TokenDTO(
             username=username,
             access_token=encoded_jwt,
-            expires_at=expires,
+            expires_at=timegm(expires.utctimetuple()),
             scopes=scopes,
             sub=to_encode['sub'],
         )
 
-    def validate_token(
-        self, token: str, required_scopes: Optional[list[ScopeName]] = None
-    ) -> TokenDTO:
+    def _decode_token(self, token: str) -> dict:
         try:
             user_token = jwt.decode(
                 token, self.secret_key, algorithms=["HS256"]
@@ -199,6 +192,13 @@ class CustomAuthenticationService:
 
         except JWTError:
             raise exceptions.InvalidTokenFormat
+
+        return user_token
+
+    def validate_token(
+        self, token: str, required_scopes: Optional[list[ScopeName]] = None
+    ) -> TokenDTO:
+        user_token = self._decode_token(token)
 
         # TODO: Change username to sub
         db_user = self._user_repo.get_by_username(user_token['username'])
@@ -217,6 +217,31 @@ class CustomAuthenticationService:
             access_token=token,
             username=user_token['username'],
             sub=user_token['sub'],
-            scopes=user_token['scopes'],
+            scopes=[ScopeName(scope) for scope in user_token['scopes']],
             expires_at=user_token['exp'],
+        )
+
+
+class CustomSQLAuthenticationService(CustomAuthenticationService):
+    def __init__(
+        self,
+        settings,
+        secrets_settings,
+        base_dir: str,
+        user_db: Type[UserDB] = UserDB,
+        user_repo: Optional[UserRepository] = None,
+        scope_repo: Optional[ScopeRepository] = None,
+        user_scope_repo: Optional[UserScopeRepository] = None
+    ):
+        self.user_db = user_db(settings, base_dir)
+        self.session = self.user_db.session
+
+        user_repo = user_repo or UserSQLRepository(self.session)
+        scope_repo = scope_repo or ScopeSQLRepository(self.session)
+        user_scope_repo = (
+            user_scope_repo or UserScopeSQLRepository(self.session)
+        )
+
+        super().__init__(
+            secrets_settings, user_repo, scope_repo, user_scope_repo
         )
