@@ -26,6 +26,10 @@ class Roles(Enum):
     TIMESTAMP = "timestamp"
     BINS = "bins"
 
+    @classmethod
+    def values(cls) -> List[str]:
+        return Literal["root", "targets", "snapshot", "timestamp", "bins"]
+
 
 class BaseErrorResponse(BaseModel):
     error: str = Field(description="Error message")
@@ -77,7 +81,7 @@ class TUFSigned(BaseModel):
     expires: str
     keys: Optional[Dict[str, TUFKeys]]
     consistent_snapshot: Optional[bool]
-    roles: Optional[Dict[Roles, TUFSignedRoles]]
+    roles: Optional[Dict[Roles.values(), TUFSignedRoles]]
     meta: Optional[Dict[str, TUFSignedMetaFile]]
     targets: Optional[Dict[str, str]]
     delegations: Optional[TUFSignedDelegations]
@@ -103,7 +107,7 @@ class ServiceSettings(BaseModel):
 
 
 class Settings(BaseModel):
-    expiration: Dict[Roles, int]
+    expiration: Dict[Roles.values(), int]
     services: ServiceSettings
 
 
@@ -187,12 +191,12 @@ def post_bootstrap(payload: BootstrapPayload) -> BootstrapPostResponse:
             # The key to the root role is the name of the root file which uses
             # consistent snapshot or in the format: <VERSION_NUMBER>.root.json
             root_file_name = [name for name in md if name.endswith("root")][0]
-            threshold = md[root_file_name].signed.roles[Roles.ROOT].threshold
+            threshold = md[root_file_name].signed.roles[role.value].threshold
             num_of_keys = len(md[root_file_name].signatures)
 
         save_settings(
             f"{rolename}_EXPIRATION",
-            payload.settings.expiration[role],
+            payload.settings.expiration[role.value],
             settings_repository,
         )
         save_settings(f"{rolename}_THRESHOLD", threshold, settings_repository)
