@@ -12,7 +12,6 @@ class TestGetBoostrap:
     def test_get_boostrap_available(
         self, test_client, token_headers, monkeypatch
     ):
-
         url = "/api/v1/bootstrap/"
         mocked_check_metadata = pretend.call_recorder(lambda: False)
         monkeypatch.setattr(
@@ -22,7 +21,7 @@ class TestGetBoostrap:
 
         response = test_client.get(url, headers=token_headers)
         assert response.status_code == status.HTTP_200_OK
-        assert response.url == test_client.base_url + url
+        assert response.url == f"{test_client.base_url}{url}"
         assert response.json() == {
             "data": {"bootstrap": False},
             "message": "System available for bootstrap.",
@@ -32,7 +31,6 @@ class TestGetBoostrap:
     def test_get_boostrap_not_available(
         self, test_client, monkeypatch, token_headers
     ):
-
         url = "/api/v1/bootstrap/"
 
         mocked_check_metadata = pretend.call_recorder(lambda: True)
@@ -43,7 +41,7 @@ class TestGetBoostrap:
 
         response = test_client.get(url, headers=token_headers)
         assert response.status_code == status.HTTP_200_OK
-        assert response.url == test_client.base_url + url
+        assert response.url == f"{test_client.base_url}{url}"
         assert response.json() == {
             "data": {"bootstrap": True},
             "message": "System LOCKED for bootstrap.",
@@ -51,7 +49,6 @@ class TestGetBoostrap:
         assert mocked_check_metadata.calls == [pretend.call()]
 
     def test_get_boostrap_invalid_token(self, test_client, monkeypatch):
-
         url = "/api/v1/bootstrap/"
         mocked_check_metadata = pretend.call_recorder(lambda: False)
         monkeypatch.setattr(
@@ -129,7 +126,7 @@ class TestPostBootstrap:
         response = test_client.post(url, json=payload, headers=token_headers)
 
         assert response.status_code == status.HTTP_202_ACCEPTED
-        assert response.url == test_client.base_url + url
+        assert response.url == f"{test_client.base_url}{url}"
         assert response.json() == {
             "message": "Bootstrap accepted.",
             "data": {"task_id": "123"},
@@ -153,7 +150,7 @@ class TestPostBootstrap:
         response = test_client.post(url, json=payload, headers=token_headers)
 
         assert response.status_code == status.HTTP_200_OK
-        assert response.url == test_client.base_url + url
+        assert response.url == f"{test_client.base_url}{url}"
         assert response.json() == {
             "detail": {"error": "System already has a Metadata."}
         }
@@ -164,7 +161,7 @@ class TestPostBootstrap:
         response = test_client.post(url, json={}, headers=token_headers)
 
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
-        assert response.url == test_client.base_url + url
+        assert response.url == f"{test_client.base_url}{url}"
         assert response.json() == {
             "detail": [
                 {
