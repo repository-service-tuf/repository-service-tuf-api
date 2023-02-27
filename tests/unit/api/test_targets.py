@@ -303,7 +303,11 @@ class TestDeleteTargets:
             "repository_service_tuf_api.targets.datetime", fake_datetime
         )
 
-        response = test_client.delete(url, json=payload, headers=token_headers)
+        # https://github.com/tiangolo/fastapi/issues/5649
+        response = test_client.request(
+            "DELETE", url, json=payload, headers=token_headers
+        )
+
         assert response.status_code == status.HTTP_202_ACCEPTED
         assert response.json() == {
             "data": {
@@ -359,7 +363,11 @@ class TestDeleteTargets:
             "repository_service_tuf_api.targets.datetime", fake_datetime
         )
 
-        response = test_client.delete(url, json=payload, headers=token_headers)
+        # https://github.com/tiangolo/fastapi/issues/5649
+        response = test_client.request(
+            "DELETE", url, json=payload, headers=token_headers
+        )
+
         assert response.status_code == status.HTTP_202_ACCEPTED
         msg = (
             "Remove Target(s) successfully submitted. "
@@ -397,7 +405,11 @@ class TestDeleteTargets:
             "repository_service_tuf_api.targets.is_bootstrap_done",
             lambda: False,
         )
-        response = test_client.delete(url, json=payload, headers=token_headers)
+        # https://github.com/tiangolo/fastapi/issues/5649
+        response = test_client.request(
+            "DELETE", url, json=payload, headers=token_headers
+        )
+
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == {
             "detail": {"error": "System has not a Repository Metadata"}
@@ -408,7 +420,11 @@ class TestDeleteTargets:
 
         payload = {"paths": ["file-v1.0.0_i683.tar.gz", "v0.4.1/file.tar.gz"]}
 
-        response = test_client.delete(url, json=payload, headers=token_headers)
+        # https://github.com/tiangolo/fastapi/issues/5649
+        response = test_client.request(
+            "DELETE", url, json=payload, headers=token_headers
+        )
+
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
     def test_delete_unauthorized_invalid_token(self, test_client):
@@ -421,7 +437,11 @@ class TestDeleteTargets:
             "targets": ["file-v1.0.0_i683.tar.gz", "v0.4.1/file.tar.gz"]
         }
 
-        response = test_client.delete(url, json=payload, headers=headers)
+        # https://github.com/tiangolo/fastapi/issues/5649
+        response = test_client.request(
+            "DELETE", url, json=payload, headers=headers
+        )
+
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
         assert response.json() == {
             "detail": {"error": "Failed to validate token"}
@@ -444,7 +464,11 @@ class TestDeleteTargets:
             "targets": ["file-v1.0.0_i683.tar.gz", "v0.4.1/file.tar.gz"]
         }
 
-        response = test_client.delete(url, json=payload, headers=headers)
+        # https://github.com/tiangolo/fastapi/issues/5649
+        response = test_client.request(
+            "DELETE", url, json=payload, headers=headers
+        )
+
         assert response.status_code == status.HTTP_403_FORBIDDEN
         assert response.json() == {
             "detail": {"error": "scope 'delete:targets' not allowed"}
