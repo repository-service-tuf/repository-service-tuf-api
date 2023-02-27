@@ -1,7 +1,9 @@
 from typing import Optional
 
+from sqlalchemy import exc as sql_exc
 from sqlalchemy.orm import Session
 
+from repository_service_tuf_api.rstuf_auth import exceptions
 from repository_service_tuf_api.rstuf_auth.models import Scope, User, UserScope
 from repository_service_tuf_api.rstuf_auth.ports.user import (
     UserDTO,
@@ -21,13 +23,15 @@ class UserSQLRepository(UserRepository):
             username=username, password=self.hash_password(password)
         )
 
-        self.session.add(db_user)
-        self.session.commit()
+        try:
+            self.session.add(db_user)
+            self.session.commit()
+        except sql_exc.IntegrityError:
+            raise exceptions.UserAlreadyExists
 
         return UserDTO.from_db(db_user)
 
     def get_by_id(self, user_id: int) -> Optional[UserDTO]:
-        # TODO: handle sql exceptions and raise custom repo exception
         user = self.session.query(User).filter(User.id == user_id).first()
 
         if user is None:
@@ -36,7 +40,6 @@ class UserSQLRepository(UserRepository):
         return UserDTO.from_db(user)
 
     def get_by_username(self, username: str) -> Optional[UserDTO]:
-        # TODO: handle sql exceptions and raise custom repo exception
         user = (
             self.session.query(User).filter(User.username == username).first()
         )

@@ -154,7 +154,7 @@ class CustomAuthenticationService:
         scopes: list[ScopeName],
         expires_delta: Optional[int] = 1,
         password: Optional[str] = None,
-    ):
+    ) -> TokenDTO:
         db_user = self._user_repo.get_by_username(username)
 
         if not db_user:

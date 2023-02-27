@@ -1,12 +1,14 @@
 # SPDX-FileCopyrightText: 2022-2023 VMware Inc
 #
 # SPDX-License-Identifier: MIT
-
-from dataclasses import dataclass
-from typing import List
+import os
 
 import pytest
 from fastapi.testclient import TestClient
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
+from repository_service_tuf_api.rstuf_auth.models import Base
 
 
 @pytest.fixture()
@@ -45,17 +47,20 @@ def token_headers(test_client):
     return headers
 
 
-@pytest.fixture()
-def test_db():
-    @dataclass
-    class Scope:
-        name: str
+@pytest.fixture
+def db_session():
 
-    @dataclass
-    class User:
-        id: int
-        username: str
-        password: str
-        scopes: List[Scope]
+    db_url = f"sqlite:///{os.path.join(os.getenv('DATA_DIR'), 'users.sqlite')}"
 
-    return (User, Scope)
+    engine = create_engine(db_url, connect_args={"check_same_thread": False})
+
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
+
+    session = SessionLocal()
+
+    yield session
+
+    Base.metadata.drop_all(bind=engine)

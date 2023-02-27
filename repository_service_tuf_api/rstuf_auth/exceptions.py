@@ -26,3 +26,7 @@ class SecretKeyNotFoundInSettings(Exception):
 
 class AdminPasswordNotFoundInSettings(Exception):
     pass
+
+
+class UserAlreadyExists(Exception):
+    pass
