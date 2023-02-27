@@ -1,7 +1,9 @@
 from typing import Optional
 
+from sqlalchemy import exc as sql_exc
 from sqlalchemy.orm import Session
 
+from repository_service_tuf_api.rstuf_auth import exceptions
 from repository_service_tuf_api.rstuf_auth.models import Scope
 from repository_service_tuf_api.rstuf_auth.ports.scope import (
     ScopeDTO,
@@ -17,8 +19,12 @@ class ScopeSQLRepository(ScopeRepository):
 
     def create(self, name: str, description: Optional[str] = None) -> ScopeDTO:
         scope = Scope(name=name, description=description)
-        self.session.add(scope)
-        self.session.commit()
+
+        try:
+            self.session.add(scope)
+            self.session.commit()
+        except sql_exc.IntegrityError:
+            raise exceptions.ScopeAlreadyExists
 
         return ScopeDTO.from_db(scope)
 

@@ -30,3 +30,7 @@ class AdminPasswordNotFoundInSettings(Exception):
 
 class UserAlreadyExists(Exception):
     pass
+
+
+class ScopeAlreadyExists(Exception):
+    pass
