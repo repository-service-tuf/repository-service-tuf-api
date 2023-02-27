@@ -32,7 +32,7 @@ def get(
 
 @router.post(
     "/",
-    summary="Issue token with user/password authentication",
+    summary="Issue token user/password authentication",
     description="Issue a token with scopes for all granted user scope.",
     response_model=token.PostTokenResponse,
 )
