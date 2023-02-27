@@ -65,9 +65,9 @@ jobs:
     - name: Add final tags
       run: |
         docker pull ghcr.io/vmware/repository-service-tuf-api:${{ github.sha }}
-        docker tag ghcr.io/vmware/repository-service-tuf-api:${{ github.sha }} ghcr.io/vmware/repository-service-tuf-api:latest
         docker tag ghcr.io/vmware/repository-service-tuf-api:${{ github.sha }} ghcr.io/vmware/repository-service-tuf-api:${{ github.ref_name }}
         docker push ghcr.io/vmware/repository-service-tuf-api:${{ github.ref_name }}
+        docker tag ghcr.io/vmware/repository-service-tuf-api:${{ github.sha }} ghcr.io/vmware/repository-service-tuf-api:latest
         docker push ghcr.io/vmware/repository-service-tuf-api:latest
 
     - name: Publish GitHub Release
