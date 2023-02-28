@@ -28,7 +28,6 @@ jobs:
     needs: publish-container-image
     runs-on: ubuntu-latest
     outputs:
-      api_version: ${{ steps.api_version.outputs.VERSION }}
       worker_version: ${{ steps.worker_version.outputs.VERSION }}
       cli_version: ${{ steps.cli_version.outputs.VERSION }}
 
