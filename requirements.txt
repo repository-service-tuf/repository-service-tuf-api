@@ -21,7 +21,7 @@ prompt-toolkit==3.0.37 ; python_full_version >= '3.7.0'
 pyasn1==0.4.8
 pydantic==1.10.5 ; python_version >= '3.7'
 python-jose==3.3.0
-python-multipart==0.0.5
+python-multipart==0.0.6
 pytz==2022.7.1
 redis==4.5.1
 rsa==4.9 ; python_version >= '3.6' and python_version < '4'
