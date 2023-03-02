@@ -1,7 +1,6 @@
 import logging
 import os
 from calendar import timegm
-from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import Optional, Type
 from uuid import uuid4
@@ -12,6 +11,10 @@ from sqlalchemy.orm import sessionmaker
 
 from repository_service_tuf_api.rstuf_auth import exceptions
 from repository_service_tuf_api.rstuf_auth.models import Base
+from repository_service_tuf_api.rstuf_auth.ports.auth import (
+    AuthenticationService,
+    TokenDTO,
+)
 from repository_service_tuf_api.rstuf_auth.ports.scope import ScopeRepository
 from repository_service_tuf_api.rstuf_auth.ports.user import (
     UserDTO,
@@ -27,15 +30,6 @@ from repository_service_tuf_api.rstuf_auth.repositories.user import (
 )
 
 __all__ = ["CustomSQLAuthenticationService"]
-
-
-@dataclass
-class TokenDTO:
-    access_token: str
-    expires_at: int
-    scopes: list[str]
-    username: str
-    sub: str
 
 
 class UserDB:
@@ -88,7 +82,7 @@ def _secret_key_from_settings(secrets_settings) -> str:
     return secret_key
 
 
-class CustomAuthenticationService:
+class CustomAuthenticationService(AuthenticationService):
     """A Built-in Authentication Service Class"""
 
     def __init__(
