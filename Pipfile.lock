@@ -1061,11 +1061,11 @@
         },
         "myst-parser": {
             "hashes": [
-                "sha256:5a278c02015ce89f282dfde2a6e43d0924d957ab57d83555fce1645448810577",
-                "sha256:a71ef265d01ddc905590c3c840b8a9f38b5b48d6d2c43be3b85ad130f5fd896d"
+                "sha256:356b38aef29ed09144285ad222e5c3cb7a8e7fae8015d53dba40dbb8b9f73e2c",
+                "sha256:f2dc168ed380e01d77973ad22a64fff1377cc72a3d1ac4bced423f28258d0a42"
             ],
             "index": "pypi",
-            "version": "==0.19.0"
+            "version": "==0.19.1"
         },
         "nodeenv": {
             "hashes": [
