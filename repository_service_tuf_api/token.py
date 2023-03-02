@@ -9,9 +9,8 @@ from fastapi import HTTPException, Query, status
 from fastapi.param_functions import Form
 from pydantic import BaseModel, Field, SecretStr
 
-from repository_service_tuf_api import auth_service
+from repository_service_tuf_api import SCOPES_NAMES, auth_service
 from repository_service_tuf_api.rstuf_auth import exceptions as auth_exceptions
-from repository_service_tuf_api.rstuf_auth.enums import ScopeName
 
 
 class TokenRequestForm:
@@ -23,7 +22,7 @@ class TokenRequestForm:
             description=(
                 "Add scopes separeted by space. "
                 "Available scopes: "
-                f"{', '.join([f'`{scope}`' for scope in ScopeName])}"
+                f"{', '.join([f'`{scope}`' for scope in SCOPES_NAMES])}"
             ),
         ),
         expires: Optional[int] = Form(
@@ -59,7 +58,7 @@ class GetTokenResponse(BaseModel):
     class Config:
         example = {
             "data": {
-                "scopes": [scope for scope in ScopeName],
+                "scopes": [scope for scope in SCOPES_NAMES],
                 "expired": False,
                 "expiration": "2022-08-19T17:29:39",
             },
@@ -81,12 +80,12 @@ class PostTokenResponse(BaseModel):
 class TokenRequestPayload(BaseModel):
     scopes: List[
         Literal[
-            ScopeName.read_bootstrap,
-            ScopeName.read_settings,
-            ScopeName.read_tasks,
-            ScopeName.read_token,
-            ScopeName.write_targets,
-            ScopeName.delete_targets,
+            SCOPES_NAMES.read_bootstrap,
+            SCOPES_NAMES.read_settings,
+            SCOPES_NAMES.read_tasks,
+            SCOPES_NAMES.read_token,
+            SCOPES_NAMES.write_targets,
+            SCOPES_NAMES.delete_targets,
         ]
     ] = Field(min_items=1)
     expires: int = Field(description="In hour(s)", ge=1)
@@ -94,8 +93,8 @@ class TokenRequestPayload(BaseModel):
     class Config:
         example = {
             "scopes": [
-                ScopeName.read_token,
-                ScopeName.read_settings,
+                SCOPES_NAMES.read_token,
+                SCOPES_NAMES.read_settings,
             ],
             "expires": 24,
         }

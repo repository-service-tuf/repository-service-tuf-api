@@ -4,10 +4,10 @@ import pytest
 from dynaconf.utils import DynaconfDict
 
 from repository_service_tuf_api.rstuf_auth import exceptions
-from repository_service_tuf_api.rstuf_auth.enums import ScopeName
 from repository_service_tuf_api.rstuf_auth.services.auth import (
     CustomAuthenticationService,
 )
+from tests.unit.rstuf_auth.scopes import SCOPES_DESCRIPTION, ScopeName
 from tests.unit.rstuf_auth.services.fake_repositories.scope import (
     FakeScopeRepository,
 )
@@ -32,6 +32,7 @@ class TestCustomAuthenticationService:
 
         self.auth_service = CustomAuthenticationService(
             secrets_settings=self.mocked_secret_settings,
+            scopes=SCOPES_DESCRIPTION,
             user_repo=self.user_repo,
             scope_repo=self.scope_repo,
             user_scope_repo=self.user_scope_repo,

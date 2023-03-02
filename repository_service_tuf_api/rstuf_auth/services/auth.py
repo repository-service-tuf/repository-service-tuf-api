@@ -11,7 +11,6 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from repository_service_tuf_api.rstuf_auth import exceptions
-from repository_service_tuf_api.rstuf_auth.enums import ScopeName
 from repository_service_tuf_api.rstuf_auth.models import Base
 from repository_service_tuf_api.rstuf_auth.ports.scope import ScopeRepository
 from repository_service_tuf_api.rstuf_auth.ports.user import (
@@ -27,26 +26,14 @@ from repository_service_tuf_api.rstuf_auth.repositories.user import (
     UserSQLRepository,
 )
 
-__all__ = ["CustomSQLAuthenticationService", "SCOPES_DESCRIPTION"]
-
-
-SCOPES_DESCRIPTION = {
-    ScopeName.read_bootstrap: "Read (GET) bootstrap",
-    ScopeName.read_settings: "Read (GET) settings",
-    ScopeName.read_tasks: "Read (GET) tasks",
-    ScopeName.read_token: "Read (GET) tokens",
-    ScopeName.write_targets: "Write (POST) targets",
-    ScopeName.write_token: "Write (POST) token",
-    ScopeName.write_bootstrap: "Write (POST) bootstrap",
-    ScopeName.delete_targets: "Delete (DELETE) targets",
-}
+__all__ = ["CustomSQLAuthenticationService"]
 
 
 @dataclass
 class TokenDTO:
     access_token: str
     expires_at: int
-    scopes: list[ScopeName]
+    scopes: list[str]
     username: str
     sub: str
 
@@ -107,6 +94,7 @@ class CustomAuthenticationService:
     def __init__(
         self,
         secrets_settings,
+        scopes: dict[str, str],
         user_repo: UserRepository,
         scope_repo: ScopeRepository,
         user_scope_repo: UserScopeRepository,
@@ -115,7 +103,7 @@ class CustomAuthenticationService:
         self._scope_repo = scope_repo
         self._user_scope_repo = user_scope_repo
 
-        for scope_name, scope_description in SCOPES_DESCRIPTION.items():
+        for scope_name, scope_description in scopes.items():
             scope = self._scope_repo.get_by_name(name=scope_name)
 
             if not scope:
@@ -151,7 +139,7 @@ class CustomAuthenticationService:
     def issue_token(
         self,
         username: str,
-        scopes: list[ScopeName],
+        scopes: list[str],
         expires_delta: Optional[int] = 1,
         password: Optional[str] = None,
     ) -> TokenDTO:
@@ -201,7 +189,7 @@ class CustomAuthenticationService:
         return user_token
 
     def validate_token(
-        self, token: str, required_scopes: Optional[list[ScopeName]] = None
+        self, token: str, required_scopes: Optional[list[str]] = None
     ) -> TokenDTO:
         user_token = self._decode_token(token)
 
@@ -222,7 +210,7 @@ class CustomAuthenticationService:
             access_token=token,
             username=user_token["username"],
             sub=user_token["sub"],
-            scopes=[ScopeName(scope) for scope in user_token["scopes"]],
+            scopes=[scope for scope in user_token["scopes"]],
             expires_at=user_token["exp"],
         )
 
@@ -234,6 +222,7 @@ class CustomSQLAuthenticationService(CustomAuthenticationService):
         self,
         settings,
         secrets_settings,
+        scopes: dict[str, str],
         base_dir: str,
         user_db: Type[UserDB] = UserDB,
         user_repo: Optional[UserRepository] = None,
@@ -251,6 +240,7 @@ class CustomSQLAuthenticationService(CustomAuthenticationService):
 
         super().__init__(
             secrets_settings=secrets_settings,
+            scopes=scopes,
             user_repo=user_repo,
             scope_repo=scope_repo,
             user_scope_repo=user_scope_repo,

@@ -5,11 +5,8 @@
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, SecurityScopes
 
-from repository_service_tuf_api import auth_service
+from repository_service_tuf_api import SCOPES_DESCRIPTION, auth_service
 from repository_service_tuf_api.rstuf_auth import exceptions as auth_exceptions
-from repository_service_tuf_api.rstuf_auth.services.auth import (
-    SCOPES_DESCRIPTION,
-)
 
 oauth2_scheme = OAuth2PasswordBearer(
     tokenUrl="/api/v1/token", scopes=SCOPES_DESCRIPTION

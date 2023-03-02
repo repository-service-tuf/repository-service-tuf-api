@@ -4,12 +4,12 @@
 
 import logging
 import os
+from enum import Enum
 
 from celery import Celery
 from dynaconf import Dynaconf
 from dynaconf.loaders import redis_loader
 
-from repository_service_tuf_api.rstuf_auth.enums import ScopeName
 from repository_service_tuf_api.rstuf_auth.services.auth import (
     CustomSQLAuthenticationService,
 )
@@ -72,19 +72,39 @@ def sync_redis():
 
 
 # Initiate authentication service
+class SCOPES_NAMES(str, Enum):
+    read_bootstrap = "read:bootstrap"
+    read_settings = "read:settings"
+    read_tasks = "read:tasks"
+    read_token = "read:token"  # nosec bandit: not hard coded password
+    write_bootstrap = "write:bootstrap"
+    write_targets = "write:targets"
+    write_token = "write:token"  # nosec bandit: not hard coded password
+    delete_targets = "delete:targets"
+
+
+SCOPES_DESCRIPTION = {
+    SCOPES_NAMES.read_bootstrap: "Read (GET) bootstrap",
+    SCOPES_NAMES.read_settings: "Read (GET) settings",
+    SCOPES_NAMES.read_tasks: "Read (GET) tasks",
+    SCOPES_NAMES.read_token: "Read (GET) tokens",
+    SCOPES_NAMES.write_targets: "Write (POST) targets",
+    SCOPES_NAMES.write_token: "Write (POST) token",
+    SCOPES_NAMES.write_bootstrap: "Write (POST) bootstrap",
+    SCOPES_NAMES.delete_targets: "Delete (DELETE) targets",
+}
+
 # TODO: change the service based on a configuration (e.g., environment)
 if settings.get("BUILT_IN_AUTH", False) is False:
     auth_service = None
 
 else:
     auth_service = CustomSQLAuthenticationService(
-        settings=settings, secrets_settings=secrets_settings, base_dir=DATA_DIR
+        settings=settings,
+        secrets_settings=secrets_settings,
+        base_dir=DATA_DIR,
+        scopes=SCOPES_DESCRIPTION,
     )
-
-# TODO: remove this later. We didn't want to touch all the files that import it
-#   at the moment of the rstuf_auth change
-SCOPES_NAMES = ScopeName
-
 
 # Celery setup
 celery = Celery(__name__)
