@@ -5,18 +5,12 @@
 import logging
 import os
 from enum import Enum
-from typing import Optional
 
 from celery import Celery
 from dynaconf import Dynaconf
 from dynaconf.loaders import redis_loader
 
-from repository_service_tuf_api.rstuf_auth.ports.auth import (
-    AuthenticationService,
-)
-from repository_service_tuf_api.rstuf_auth.services.auth import (
-    CustomSQLAuthenticationService,
-)
+from repository_service_tuf_api.configuration.auth import config as config_auth
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -98,19 +92,10 @@ SCOPES_DESCRIPTION = {
     SCOPES_NAMES.delete_targets: "Delete (DELETE) targets",
 }
 
-# TODO: change the service based on a configuration (e.g., environment)
-if settings.get("BUILT_IN_AUTH", False) is False:
-    auth_service: Optional[AuthenticationService] = None
-
-else:
-    auth_service: Optional[
-        AuthenticationService
-    ] = CustomSQLAuthenticationService(
-        settings=settings,
-        secrets_settings=secrets_settings,
-        base_dir=DATA_DIR,
-        scopes=SCOPES_DESCRIPTION,
-    )
+is_auth_enabled = settings.get("BUILT_IN_AUTH", False)
+auth_service = config_auth(
+    settings, secrets_settings, DATA_DIR, SCOPES_DESCRIPTION, is_auth_enabled
+)
 
 
 # Celery setup
