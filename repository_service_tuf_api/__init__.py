@@ -93,8 +93,14 @@ SCOPES_DESCRIPTION = {
 }
 
 is_auth_enabled = settings.get("BUILT_IN_AUTH", False)
+env = settings.get("ENVIRONMENT", "production")
 auth_service = config_auth(
-    settings, secrets_settings, DATA_DIR, SCOPES_DESCRIPTION, is_auth_enabled
+    settings,
+    secrets_settings,
+    DATA_DIR,
+    SCOPES_DESCRIPTION,
+    is_auth_enabled,
+    env,
 )
 
 

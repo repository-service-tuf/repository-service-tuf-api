@@ -18,7 +18,12 @@ class AuthenticationService(ABC):
     """A Built-in Authentication Service Class"""
 
     @abstractmethod
-    def create_user(self, username: str, password: str) -> UserDTO:
+    def create_user(
+        self, username: str, password: str, scopes: Optional[list[str]] = None
+    ) -> UserDTO:
+        pass
+
+    def add_scopes_to_user(self, user_id: int, scopes: list[str]) -> None:
         pass
 
     def issue_token(

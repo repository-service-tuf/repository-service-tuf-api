@@ -25,6 +25,9 @@ class FakeScopeRepository(ScopeRepository):
     def get_all(self) -> list[ScopeDTO]:
         return [scope for scope in self.scopes_by_id.values()]
 
+    def get_all_names(self) -> list[str]:
+        return list(self.scopes_by_name.keys())
+
     def get_by_id(self, id_: int) -> Optional[ScopeDTO]:
         return self.scopes_by_id.get(id_, None)
 

@@ -29,6 +29,9 @@ class ScopeRepository(ABC):
     def get_all(self) -> list[ScopeDTO]:
         pass
 
+    def get_all_names(self) -> list[str]:
+        pass
+
     @abstractmethod
     def get_by_id(self, id_: int) -> Optional[ScopeDTO]:
         pass

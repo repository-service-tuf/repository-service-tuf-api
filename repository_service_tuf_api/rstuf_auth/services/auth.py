@@ -110,25 +110,36 @@ class CustomAuthenticationService(AuthenticationService):
 
         self.secret_key = _secret_key_from_settings(secrets_settings)
 
-    def create_user(self, username: str, password: str) -> UserDTO:
+    def create_user(
+        self, username: str, password: str, scopes: Optional[list[str]] = None
+    ) -> UserDTO:
         user = self._user_repo.create(username=username, password=password)
+
+        if scopes:
+            self.add_scopes_to_user(user.id, scopes)
 
         return user
 
-    def _initiate_admin(self, password: str) -> None:
+    def add_scopes_to_user(self, user_id: int, scopes: list[str]) -> None:
+        if not scopes:
+            return
+
+        scopes_dto = [self._scope_repo.get_by_name(scope) for scope in scopes]
+        scope_ids = [scope.id for scope in scopes_dto]
+
+        user_scope_ids = self._user_scope_repo.get_scope_ids_of_user(user_id)
+        user_missing_scopes = list(set(scope_ids) - set(user_scope_ids))
+
+        self._user_scope_repo.add_scopes_to_user(user_id, user_missing_scopes)
+
+    def _initiate_admin(self, password: str) -> UserDTO:
         user = self._user_repo.get_by_username(username="admin")
 
         if not user:
-            user = self.create_user("admin", password)
+            available_scopes = self._scope_repo.get_all_names()
+            user = self.create_user("admin", password, scopes=available_scopes)
 
-        user_scope_ids = self._user_scope_repo.get_scope_ids_of_user(user.id)
-        available_scopes = self._scope_repo.get_all()
-
-        available_scope_ids = [scope.id for scope in available_scopes]
-        user_missing_scopes = list(
-            set(available_scope_ids) - set(user_scope_ids)
-        )
-        self._user_scope_repo.add_scopes_to_user(user.id, user_missing_scopes)
+        return user
 
     def issue_token(
         self,

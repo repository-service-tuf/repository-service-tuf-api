@@ -2,12 +2,12 @@
 #
 # SPDX-License-Identifier: MIT
 
-from dataclasses import dataclass
 from datetime import datetime
-from typing import List
 
 import pretend
 from fastapi import status
+
+from repository_service_tuf_api import auth_service
 
 
 class TestGetToken:
@@ -129,39 +129,8 @@ class TestPostToken:
         assert token.status_code == status.HTTP_401_UNAUTHORIZED
         assert token.json() == {"detail": "Unauthorized"}
 
-    def test_post_forbidden_user_forbidden_to_request_scope(
-        self, monkeypatch, test_client
-    ):
-        @dataclass
-        class Scope:
-            name: str
-
-        @dataclass
-        class User:
-            id: int
-            username: str
-            password: str
-            scopes: List[Scope]
-
-        fake_user_db = pretend.call_recorder(
-            lambda *a: User(
-                id=1213,
-                username="read_user",
-                password="test",
-                scopes=[Scope("read:settings")],
-            )
-        )
-        monkeypatch.setattr(
-            "repository_service_tuf_api.token.get_user_by_username",
-            fake_user_db,
-        )
-
-        mocked_bcrypt = pretend.stub(
-            checkpw=pretend.call_recorder(lambda *a: True)
-        )
-        monkeypatch.setattr(
-            "repository_service_tuf_api.token.bcrypt", mocked_bcrypt
-        )
+    def test_post_forbidden_user_forbidden_to_request_scope(self, test_client):
+        auth_service.create_user("read_user", "test", ["read:settings"])
 
         token_url = "/api/v1/token/?expires=1"
         token_payload = {
@@ -175,7 +144,6 @@ class TestPostToken:
         assert token.json() == {
             "detail": {"error": "scope 'write:targets' forbidden"}
         }
-        assert mocked_bcrypt.checkpw.calls == [pretend.call(b"test", "test")]
 
     def test_post_with_empty_scope(self, test_client):
         url = "/api/v1/token/"

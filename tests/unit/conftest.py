@@ -8,6 +8,8 @@ from typing import List
 import pytest
 from fastapi.testclient import TestClient
 
+from repository_service_tuf_api import SCOPES_DESCRIPTION, auth_service
+
 
 @pytest.fixture()
 def test_client(monkeypatch):
@@ -16,6 +18,12 @@ def test_client(monkeypatch):
     from app import rstuf_app
 
     client = TestClient(rstuf_app)
+
+    auth_service.create_user(
+        username="admin",
+        password="secret",
+        scopes=list(SCOPES_DESCRIPTION.keys()),
+    )
 
     return client
 
