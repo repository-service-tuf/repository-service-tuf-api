@@ -23,19 +23,42 @@ class ScopeRepository(ABC):
 
     @abstractmethod
     def create(self, name: str, description: Optional[str] = None) -> ScopeDTO:
-        pass
+        """
+        Create new scope
+
+        :param name: the scope name
+        :param description: the scope description
+
+        :returns: A Scope Data Transfer Object
+        """
 
     @abstractmethod
     def get_all(self) -> list[ScopeDTO]:
-        pass
+        """
+        Get all available scopes
+
+        :returns: A list of Scope Data Transfer Objects
+        """
 
     def get_all_names(self) -> list[str]:
-        pass
+        """
+        Get the names of all available scopes
+
+        :returns: A list of names
+        """
 
     @abstractmethod
     def get_by_id(self, id_: int) -> Optional[ScopeDTO]:
-        pass
+        """
+        Get a scope by id
+
+        :returns: A Scope Data Transfer Object
+        """
 
     @abstractmethod
     def get_by_name(self, name: str) -> Optional[ScopeDTO]:
-        pass
+        """
+        Get a scope by name
+
+        :returns: A Scope Data Transfer Object
+        """
