@@ -36,7 +36,7 @@ class ScopeSQLRepository(ScopeRepository):
     def get_all_names(self) -> list[str]:
         db_scopes = self.session.query(Scope.name).all()
 
-        return db_scopes
+        return [db_scope[0] for db_scope in db_scopes]
 
     def get_by_id(self, id_: int) -> Optional[ScopeDTO]:
         db_scope = self.session.query(Scope).filter(Scope.id == id_).first()

@@ -49,3 +49,9 @@ class TestScopeSQLRepository:
 
     def test_get_by_unknown_name(self):
         assert self.scope_repo.get_by_name("unknown_scope") is None
+
+    def test_get_all_names(self):
+        ws = self.scope_repo.create(name="write:test", description="write")
+        rs = self.scope_repo.create(name="read:test", description="read")
+
+        assert self.scope_repo.get_all_names() == [rs.name, ws.name]
