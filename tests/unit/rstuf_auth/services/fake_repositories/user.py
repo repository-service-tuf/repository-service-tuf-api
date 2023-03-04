@@ -1,7 +1,7 @@
 from collections import defaultdict
 from datetime import datetime
-from typing import Optional
 
+from repository_service_tuf_api.rstuf_auth import exceptions
 from repository_service_tuf_api.rstuf_auth.ports.scope import ScopeRepository
 from repository_service_tuf_api.rstuf_auth.ports.user import (
     UserDTO,
@@ -30,11 +30,21 @@ class FakeUserRepository(UserRepository):
 
         return user
 
-    def get_by_id(self, user_id: int) -> Optional[UserDTO]:
-        return self.users_id.get(self.index, None)
+    def get_by_id(self, user_id: int) -> UserDTO:
+        try:
+            user = self.users_id[user_id]
+        except KeyError:
+            raise exceptions.UserNotFound
 
-    def get_by_username(self, username: str) -> Optional[UserDTO]:
-        return self.users_by_username.get(username, None)
+        return user
+
+    def get_by_username(self, username: str) -> UserDTO:
+        try:
+            user = self.users_by_username[username]
+        except KeyError:
+            raise exceptions.UserNotFound
+
+        return user
 
 
 class FakeUserScopeRepository(UserScopeRepository):

@@ -1,5 +1,3 @@
-from typing import Optional
-
 from sqlalchemy import exc as sql_exc
 from sqlalchemy.orm import Session
 
@@ -31,21 +29,21 @@ class UserSQLRepository(UserRepository):
 
         return UserDTO.from_db(db_user)
 
-    def get_by_id(self, user_id: int) -> Optional[UserDTO]:
+    def get_by_id(self, user_id: int) -> UserDTO:
         user = self.session.query(User).filter(User.id == user_id).first()
 
         if user is None:
-            return None
+            raise exceptions.UserNotFound
 
         return UserDTO.from_db(user)
 
-    def get_by_username(self, username: str) -> Optional[UserDTO]:
+    def get_by_username(self, username: str) -> UserDTO:
         user = (
             self.session.query(User).filter(User.username == username).first()
         )
 
         if user is None:
-            return None
+            raise exceptions.UserNotFound
 
         return UserDTO.from_db(user)
 

@@ -133,9 +133,10 @@ class CustomAuthenticationService(AuthenticationService):
         self._user_scope_repo.add_scopes_to_user(user_id, user_missing_scopes)
 
     def _initiate_admin(self, password: str) -> UserDTO:
-        user = self._user_repo.get_by_username(username="admin")
+        try:
+            user = self._user_repo.get_by_username(username="admin")
 
-        if not user:
+        except exceptions.UserNotFound:
             available_scopes = self._scope_repo.get_all_names()
             user = self.create_user("admin", password, scopes=available_scopes)
 
@@ -148,9 +149,9 @@ class CustomAuthenticationService(AuthenticationService):
         expires_delta: Optional[int] = 1,
         password: Optional[str] = None,
     ) -> TokenDTO:
-        db_user = self._user_repo.get_by_username(username)
-
-        if not db_user:
+        try:
+            db_user = self._user_repo.get_by_username(username)
+        except exceptions.UserNotFound:
             raise exceptions.UserNotFound
 
         if password:
@@ -199,9 +200,9 @@ class CustomAuthenticationService(AuthenticationService):
         user_token = self._decode_token(token)
 
         # TODO: Change username to sub
-        db_user = self._user_repo.get_by_username(user_token["username"])
-
-        if not db_user:
+        try:
+            self._user_repo.get_by_username(user_token["username"])
+        except exceptions.UserNotFound:
             raise exceptions.UserNotFound
 
         if any(

@@ -32,7 +32,8 @@ class TestUserSQLRepository:
         assert get_user == self.user
 
     def test_get_by_unknown_id(self):
-        assert self.user_repo.get_by_id(999) is None
+        with pytest.raises(exceptions.UserNotFound):
+            assert self.user_repo.get_by_id(999)
 
     def test_get_by_username(self):
         get_user = self.user_repo.get_by_username(self.user.username)
@@ -40,7 +41,8 @@ class TestUserSQLRepository:
         assert get_user == self.user
 
     def test_get_by_unknown_username(self):
-        assert self.user_repo.get_by_username("unknown_username") is None
+        with pytest.raises(exceptions.UserNotFound):
+            assert self.user_repo.get_by_username("unknown_username")
 
 
 class TestUserScopeSQLRepository:

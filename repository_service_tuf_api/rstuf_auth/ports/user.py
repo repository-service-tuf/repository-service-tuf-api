@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional
 
 import bcrypt
 
@@ -68,22 +67,24 @@ class UserRepository(ABC):
         :raises: UserAlreadyExists
         """
 
-    def get_by_id(self, user_id: int) -> Optional[UserDTO]:
+    def get_by_id(self, user_id: int) -> UserDTO:
         """
         Search a user by ID
 
         :param user_id: the id of the user
 
         :returns: a User Data Object or None
+        :raises: UserNotFound
         """
 
-    def get_by_username(self, username: str) -> Optional[UserDTO]:
+    def get_by_username(self, username: str) -> UserDTO:
         """
         Search a user by username
 
         :param username: the username of the user
 
         :returns: a User Data Object or None
+        :raises: UserNotFound
         """
 
 
