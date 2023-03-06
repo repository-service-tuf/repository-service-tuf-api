@@ -16,8 +16,11 @@ on:
         default: "latest"
         type: string
         required: False
-
-
+      latest_tag:
+        description: "Use 'latest' tag"
+        default: True
+        type: boolean
+        required: False
 jobs:
   publish-container-image:
     uses: ./.github/workflows/publish_container.yml
@@ -42,6 +45,7 @@ jobs:
         run: |
           if [[ "${{ inputs.cli_version }}" == "" ]]; then echo "VERSION=latest" >> $GITHUB_OUTPUT; else echo "VERSION=${{ inputs.cli_version }}" >> $GITHUB_OUTPUT;fi
 
+
   functional-tests:
     needs: set-component-versions
     uses: vmware/repository-service-tuf/.github/workflows/functional.yml@main
@@ -61,11 +65,18 @@ jobs:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Add final tags
+    - name: Add release tags
       run: |
         docker pull ghcr.io/vmware/repository-service-tuf-api:${{ github.sha }}
         docker tag ghcr.io/vmware/repository-service-tuf-api:${{ github.sha }} ghcr.io/vmware/repository-service-tuf-api:${{ github.ref_name }}
         docker push ghcr.io/vmware/repository-service-tuf-api:${{ github.ref_name }}
+        docker tag ghcr.io/vmware/repository-service-tuf-api:${{ github.sha }} ghcr.io/vmware/repository-service-tuf-api:latest
+        docker push ghcr.io/vmware/repository-service-tuf-api:latest
+
+    # The workflow triggered by push tag v* will be empty, for it we check != False
+    - name: Add release tags
+      if: ${{ inputs.latest_tag != False }}
+      run: |
         docker tag ghcr.io/vmware/repository-service-tuf-api:${{ github.sha }} ghcr.io/vmware/repository-service-tuf-api:latest
         docker push ghcr.io/vmware/repository-service-tuf-api:latest
 
