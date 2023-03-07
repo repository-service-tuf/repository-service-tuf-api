@@ -77,9 +77,8 @@ jobs:
       - name: Add release latest tag
         if: ${{ inputs.latest_tag != false }}
         run: |
-          echo ${{ inputs.latest_tag }}
-          # docker tag ghcr.io/vmware/repository-service-tuf-api:${{ github.sha }} ghcr.io/vmware/repository-service-tuf-api:latest
-          # docker push ghcr.io/vmware/repository-service-tuf-api:latest
+          docker tag ghcr.io/vmware/repository-service-tuf-api:${{ github.sha }} ghcr.io/vmware/repository-service-tuf-api:test-latest
+          docker push ghcr.io/vmware/repository-service-tuf-api:test-latest
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844
