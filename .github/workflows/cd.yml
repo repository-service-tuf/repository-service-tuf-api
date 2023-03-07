@@ -17,7 +17,7 @@ on:
         type: string
         required: False
       latest_tag:
-        description: "Use 'latest' tag"
+        description: "Publish release as 'latest'"
         default: True
         type: boolean
         required: False
@@ -47,17 +47,17 @@ jobs:
           if [[ "${{ inputs.cli_version }}" == "" ]]; then echo "VERSION=latest" >> $GITHUB_OUTPUT; else echo "VERSION=${{ inputs.cli_version }}" >> $GITHUB_OUTPUT;fi
 
 
-#  functional-tests:
-#    needs: set-component-versions
-#    uses: vmware/repository-service-tuf/.github/workflows/functional.yml@main
-#    with:
-#      api_version: ${{ github.sha }}
-#      worker_version: ${{ needs.set-component-versions.outputs.worker_version }}
-#      cli_version: ${{ needs.set-component-versions.outputs.cli_version }}
+  functional-tests:
+    needs: set-component-versions
+    uses: vmware/repository-service-tuf/.github/workflows/functional.yml@main
+    with:
+      api_version: ${{ github.sha }}
+      worker_version: ${{ needs.set-component-versions.outputs.worker_version }}
+      cli_version: ${{ needs.set-component-versions.outputs.cli_version }}
 
   release:
     runs-on: ubuntu-latest
-#    needs: functional-tests
+    needs: functional-tests
     steps:
       - name: Login to GitHub Container Registry
         uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
