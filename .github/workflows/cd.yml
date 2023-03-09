@@ -16,7 +16,11 @@ on:
         default: "latest"
         type: string
         required: False
-
+      latest_tag:
+        description: "Publish release as 'latest'"
+        default: True
+        type: boolean
+        required: False
 
 jobs:
   publish-container-image:
@@ -61,11 +65,16 @@ jobs:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Add final tags
+    - name: Add release branch/tag name
       run: |
         docker pull ghcr.io/vmware/repository-service-tuf-api:${{ github.sha }}
         docker tag ghcr.io/vmware/repository-service-tuf-api:${{ github.sha }} ghcr.io/vmware/repository-service-tuf-api:${{ github.ref_name }}
         docker push ghcr.io/vmware/repository-service-tuf-api:${{ github.ref_name }}
+
+    # The workflow triggered by push tag v* will be empty, because that we check != False
+    - name: Add release latest tag
+      if: ${{ inputs.latest_tag != false }}
+      run: |
         docker tag ghcr.io/vmware/repository-service-tuf-api:${{ github.sha }} ghcr.io/vmware/repository-service-tuf-api:latest
         docker push ghcr.io/vmware/repository-service-tuf-api:latest
 
