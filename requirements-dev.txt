@@ -84,7 +84,7 @@ urllib3==1.26.15 ; python_version >= '2.7' and python_version not in '3.0, 3.1, 
 virtualenv==20.21.0 ; python_version >= '3.7'
 voluptuous==0.13.1
 amqp==5.1.1 ; python_version >= '3.6'
-async-timeout==4.0.2 ; python_version >= '3.6'
+async-timeout==4.0.2 ; python_version < '3.11'
 bcrypt==4.0.1
 billiard==3.6.4.0
 celery==5.2.7
@@ -103,7 +103,7 @@ pydantic==1.10.6 ; python_version >= '3.7'
 python-jose==3.3.0
 python-multipart==0.0.6
 pytz==2022.7.1
-redis==4.5.1
+redis==4.5.2
 rsa==4.9 ; python_version >= '3.6' and python_version < '4'
 sqlalchemy==2.0.7
 starlette==0.26.1 ; python_version >= '3.7'
