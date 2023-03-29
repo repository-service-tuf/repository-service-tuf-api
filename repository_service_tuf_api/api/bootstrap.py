@@ -20,7 +20,7 @@ router = APIRouter(
         "Check the bootstrap status. "
         f"Scope: {SCOPES_NAMES.read_bootstrap.value}"
     ),
-    description=("Check if the boostrap of the system is done or not."),
+    description=("Check if the bootstrap of the system is done or not."),
     response_model=bootstrap.BootstrapGetResponse,
     response_model_exclude_none=True,
 )
@@ -37,7 +37,7 @@ def get(
         f"Scope: {SCOPES_NAMES.write_bootstrap.value}"
     ),
     description=(
-        "Initialize the TUF Respository with initial signed Metadata and "
+        "Initialize the TUF Repository with initial signed Metadata and "
         "Settings."
     ),
     response_model=bootstrap.BootstrapPostResponse,
