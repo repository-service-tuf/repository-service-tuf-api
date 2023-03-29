@@ -4,7 +4,6 @@ volumes:
   repository-service-tuf-worker-data:
   repository-service-tuf-mq-data:
   repository-service-tuf-storage:
-  repository-service-tuf-keystorage:
   repository-service-tuf-redis-data:
   repository-service-tuf-pgsql-data:
 
@@ -16,8 +15,6 @@ services:
       - 15672:15672
     volumes:
      - "repository-service-tuf-mq-data:/var/lib/rabbitmq"
-     - "repository-service-tuf-storage:/var/opt/repository-service-tuf/storage"
-     - "repository-service-tuf-keystorage:/var/opt/repository-service-tuf/keystorage"
     healthcheck:
       test: "exit 0"
     restart: always
@@ -56,12 +53,13 @@ services:
     volumes:
       - repository-service-tuf-worker-data:/data
       - repository-service-tuf-storage:/var/opt/repository-service-tuf/storage
-      - repository-service-tuf-keystorage:/var/opt/repository-service-tuf/keystorage
+      - "./tests/files/keystorage:/var/opt/repository-service-tuf/keystorage"
     environment:
       - RSTUF_STORAGE_BACKEND=LocalStorage
       - RSTUF_KEYVAULT_BACKEND=LocalKeyVault
       - RSTUF_LOCAL_STORAGE_BACKEND_PATH=/var/opt/repository-service-tuf/storage
-      - RSTUF_LOCAL_KEYVAULT_PATH=/var/opt/repository-service-tuf/keystorage
+      - RSTUF_LOCAL_KEYVAULT_PATH=/var/opt/repository-service-tuf/keystorage/online.key
+      - RSTUF_LOCAL_KEYVAULT_PASSWORD=strongPass
       - RSTUF_BROKER_SERVER=amqp://guest:guest@rabbitmq:5672
       - RSTUF_REDIS_SERVER=redis://redis
       - RSTUF_SQL_SERVER=postgresql://postgres:secret@postgres:5432

@@ -26,6 +26,10 @@ class Roles(Enum):
     TIMESTAMP = "timestamp"
     BINS = "bins"
 
+    @classmethod
+    def values(cls) -> List[str]:
+        return Literal["root", "targets", "snapshot", "timestamp", "bins"]
+
 
 class BaseErrorResponse(BaseModel):
     error: str = Field(description="Error message")
@@ -43,7 +47,7 @@ class TUFSignedDelegationsRoles(BaseModel):
 
 
 class TUFSignedDelegationsSuccinctRoles(BaseModel):
-    bit_length: int = Field(gt=0, lt=33)
+    bit_length: int = Field(gt=0, lt=15)
     name_prefix: str
     keyids: List[str]
     threshold: int
@@ -77,18 +81,7 @@ class TUFSigned(BaseModel):
     expires: str
     keys: Optional[Dict[str, TUFKeys]]
     consistent_snapshot: Optional[bool]
-    roles: Optional[
-        Dict[
-            Literal[
-                Roles.ROOT.value,
-                Roles.TARGETS.value,
-                Roles.SNAPSHOT.value,
-                Roles.TIMESTAMP.value,
-                Roles.BINS.value,
-            ],
-            TUFSignedRoles,
-        ]
-    ]
+    roles: Optional[Dict[Roles.values(), TUFSignedRoles]]
     meta: Optional[Dict[str, TUFSignedMetaFile]]
     targets: Optional[Dict[str, str]]
     delegations: Optional[TUFSignedDelegations]
@@ -107,47 +100,15 @@ class TUFMetadata(BaseModel):
     signed: TUFSigned
 
 
-class SettingsKeyBody(BaseModel):
-    keytype: str
-    scheme: str
-    keyid: str
-    keyid_hash_algorithms: List[str]
-    keyval: Dict[Literal["public", "private"], str]
-
-
-class SettingsKeys(BaseModel):
-    filename: str
-    password: str
-    key: SettingsKeyBody
-
-
-class RoleSettings(BaseModel):
-    # This is the from repository-service-tuf-cli RolesKeysInput
-    expiration: int
-    num_of_keys: int
-    threshold: int
-    keys: Optional[Dict[str, SettingsKeys]]
-    offline_keys: bool
-    paths: Optional[List[str]] = None
-    number_hash_prefixes: Optional[int] = None
-
-
 class ServiceSettings(BaseModel):
     targets_base_url: str
+    number_of_delegated_bins: int = Field(gt=1, lt=16385)
+    targets_online_key: bool
 
 
 class Settings(BaseModel):
-    roles: Dict[
-        Literal[
-            Roles.ROOT.value,
-            Roles.TARGETS.value,
-            Roles.SNAPSHOT.value,
-            Roles.TIMESTAMP.value,
-            Roles.BINS.value,
-        ],
-        RoleSettings,
-    ]
-    service: ServiceSettings
+    expiration: Dict[Roles.values(), int]
+    services: ServiceSettings
 
 
 class BootstrapPayload(BaseModel):
@@ -210,7 +171,7 @@ def get_bootstrap():
     return response
 
 
-def post_bootstrap(payload):
+def post_bootstrap(payload: BootstrapPayload) -> BootstrapPostResponse:
     if is_bootstrap_done() is True:
         raise HTTPException(
             status_code=status.HTTP_200_OK,
@@ -221,35 +182,41 @@ def post_bootstrap(payload):
 
     # Store settings
     logging.debug("Saving settings")
-    for rolename, role_settings in payload.settings.roles.items():
-        rolename = rolename.upper()
+    for role in Roles:
+        rolename = role.value.upper()
+        threshold = 1
+        num_of_keys = 1
+        if rolename == Roles.ROOT.value.upper():
+            md = payload.metadata
+            # The key to the root role is the name of the root file which uses
+            # consistent snapshot or in the format: <VERSION_NUMBER>.root.json
+            root_file_name = [name for name in md if name.endswith("root")][0]
+            threshold = md[root_file_name].signed.roles[role.value].threshold
+            num_of_keys = len(md[root_file_name].signatures)
+
         save_settings(
             f"{rolename}_EXPIRATION",
-            role_settings.expiration,
+            payload.settings.expiration[role.value],
             settings_repository,
         )
-        save_settings(
-            f"{rolename}_THRESHOLD",
-            role_settings.threshold,
-            settings_repository,
-        )
-        save_settings(
-            f"{rolename}_NUM_KEYS",
-            role_settings.num_of_keys,
-            settings_repository,
-        )
-        save_settings(
-            f"{rolename}_PATHS", role_settings.paths, settings_repository
-        )
-        save_settings(
-            f"{rolename}_NUMBER_PREFIXES",
-            role_settings.number_hash_prefixes,
-            settings_repository,
-        )
+        save_settings(f"{rolename}_THRESHOLD", threshold, settings_repository)
+        save_settings(f"{rolename}_NUM_KEYS", num_of_keys, settings_repository)
+
+    save_settings(
+        "NUMBER_OF_DELEGATED_BINS",
+        payload.settings.services.number_of_delegated_bins,
+        settings_repository,
+    )
 
     save_settings(
         "TARGETS_BASE_URL",
-        payload.settings.service.targets_base_url,
+        payload.settings.services.targets_base_url,
+        settings_repository,
+    )
+
+    save_settings(
+        "TARGETS_ONLINE_KEY",
+        payload.settings.services.targets_online_key,
         settings_repository,
     )
 
