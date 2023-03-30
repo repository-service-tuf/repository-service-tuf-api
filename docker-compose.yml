@@ -53,12 +53,12 @@ services:
     volumes:
       - repository-service-tuf-worker-data:/data
       - repository-service-tuf-storage:/var/opt/repository-service-tuf/storage
-      - "./tests/files/keystorage:/var/opt/repository-service-tuf/keystorage"
+      - "./tests/files/key_storage:/var/opt/repository-service-tuf/key_storage"
     environment:
       - RSTUF_STORAGE_BACKEND=LocalStorage
       - RSTUF_KEYVAULT_BACKEND=LocalKeyVault
       - RSTUF_LOCAL_STORAGE_BACKEND_PATH=/var/opt/repository-service-tuf/storage
-      - RSTUF_LOCAL_KEYVAULT_PATH=/var/opt/repository-service-tuf/keystorage/online.key
+      - RSTUF_LOCAL_KEYVAULT_PATH=/var/opt/repository-service-tuf/key_storage/online.key
       - RSTUF_LOCAL_KEYVAULT_PASSWORD=strongPass
       - RSTUF_BROKER_SERVER=amqp://guest:guest@rabbitmq:5672
       - RSTUF_REDIS_SERVER=redis://redis
