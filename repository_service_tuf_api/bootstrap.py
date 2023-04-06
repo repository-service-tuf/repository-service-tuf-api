@@ -113,7 +113,7 @@ class Settings(BaseModel):
 
 class BootstrapPayload(BaseModel):
     settings: Settings
-    metadata: Dict[str, TUFMetadata]
+    metadata: Dict[Literal[Roles.ROOT.value], TUFMetadata]
 
     class Config:
         with open("tests/data_examples/bootstrap/payload.json") as f:
