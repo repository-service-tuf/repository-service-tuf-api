@@ -31,11 +31,12 @@ if settings.get("BOOTSTRAP_NODE", False) is True:
 logging.info(f"Bootstrap on this node enabled: {settings.BOOTSTRAP_NODE}")
 logging.info(f"Bootstrap ID: {settings_repository.get_fresh('BOOTSTRAP')}")
 
-if settings.get("TOKENS_NODE", True) is True:
+is_authentication_enabled: bool = settings.get("AUTH", True)
+if settings.get("TOKENS_NODE", True) is True and is_authentication_enabled:
     api_v1.include_router(token_v1)
-logging.info(
-    f"Tokens on this node enabled: {settings.get('TOKENS_NODE', True)}"
-)
+    logging.info(
+        f"Tokens on this node enabled: {settings.get('TOKENS_NODE', True)}"
+    )
 
 api_v1.include_router(config_v1)
 api_v1.include_router(targets_v1)

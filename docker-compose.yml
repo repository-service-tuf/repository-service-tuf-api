@@ -94,6 +94,8 @@ services:
       - RSTUF_REDIS_SERVER="redis://redis"
       - SECRETS_RSTUF_TOKEN_KEY="secret"
       - SECRETS_RSTUF_ADMIN_PASSWORD="secret"
+      # If you want to test without authentication uncomment the next line:
+      # - RSTUF_AUTH=false
     volumes:
       - ./:/opt/repository-service-tuf-api:z
     depends_on:
