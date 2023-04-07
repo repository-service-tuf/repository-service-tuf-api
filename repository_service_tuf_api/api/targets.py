@@ -5,7 +5,9 @@
 from fastapi import APIRouter, Security, status
 
 from repository_service_tuf_api import SCOPES_NAMES, targets
-from repository_service_tuf_api.token import validate_token
+from repository_service_tuf_api.api import get_auth
+
+auth = get_auth()
 
 router = APIRouter(
     prefix="/targets",
@@ -27,7 +29,7 @@ router = APIRouter(
 )
 def post(
     payload: targets.AddPayload,
-    _user=Security(validate_token, scopes=[SCOPES_NAMES.write_targets.value]),
+    _user=Security(auth, scopes=[SCOPES_NAMES.write_targets.value]),
 ):
     return targets.post(payload)
 
@@ -45,7 +47,7 @@ def post(
 )
 def delete(
     payload: targets.DeletePayload,
-    _user=Security(validate_token, scopes=[SCOPES_NAMES.delete_targets.value]),
+    _user=Security(auth, scopes=[SCOPES_NAMES.delete_targets.value]),
 ):
     return targets.delete(payload)
 
@@ -65,6 +67,6 @@ def delete(
     status_code=status.HTTP_202_ACCEPTED,
 )
 def post_publish_targets(
-    _user=Security(validate_token, scopes=[SCOPES_NAMES.write_targets.value]),
+    _user=Security(auth, scopes=[SCOPES_NAMES.write_targets.value]),
 ):
     return targets.post_publish_targets()
