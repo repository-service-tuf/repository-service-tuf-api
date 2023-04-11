@@ -90,8 +90,6 @@ Important: It should use the same db id as used by RSTUF Workers.
 #### (Required) `RSTUF_AUTH`
 Disable/Enable RSTUF built-in token authentication. Default: true
 
-Note: Disable this feature only if you have set up another authentication provider.
-
 ##### (Required) `SECRETS_RSTUF_TOKEN_KEY`
 
 Secret Token for hash the Tokens.
