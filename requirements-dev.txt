@@ -52,7 +52,7 @@ pretend==1.0.9
 pycodestyle==2.10.0 ; python_version >= '3.6'
 pycparser==2.21
 pyflakes==3.0.1 ; python_version >= '3.6'
-pygments==2.14.0 ; python_version >= '3.6'
+pygments==2.15.0 ; python_version >= '3.7'
 pyproject-api==1.5.1 ; python_version >= '3.7'
 pyrsistent==0.19.3 ; python_version >= '3.7'
 pytest==7.3.0
