@@ -87,7 +87,8 @@ These settings are shared with the repository workers
 
 Important: It should use the same db id as used by RSTUF Workers.
 
-#### (Required) `RSTUF_AUTH`
+#### (Optional) `RSTUF_AUTH`
+
 Disable/Enable RSTUF built-in token authentication. Default: true
 
 ##### (Required) `SECRETS_RSTUF_TOKEN_KEY`
