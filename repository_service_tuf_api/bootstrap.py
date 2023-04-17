@@ -10,13 +10,13 @@ from typing import Dict, List, Literal, Optional
 from fastapi import HTTPException, status
 from pydantic import BaseModel, Field
 
-from repository_service_tuf_api import settings_repository
-from repository_service_tuf_api.config import save_settings
-from repository_service_tuf_api.metadata import (
+from repository_service_tuf_api import (
     get_task_id,
     is_bootstrap_done,
     repository_metadata,
+    settings_repository,
 )
+from repository_service_tuf_api.config import save_settings
 
 
 class Roles(Enum):

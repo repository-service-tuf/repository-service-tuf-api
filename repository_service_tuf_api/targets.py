@@ -9,7 +9,7 @@ from typing import Any, Dict, List, Optional
 from fastapi import HTTPException, status
 from pydantic import BaseModel, Field
 
-from repository_service_tuf_api.metadata import (
+from repository_service_tuf_api import (
     get_task_id,
     is_bootstrap_done,
     repository_metadata,

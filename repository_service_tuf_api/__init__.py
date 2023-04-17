@@ -5,6 +5,7 @@
 import logging
 import os
 from enum import Enum
+from uuid import uuid4
 
 from celery import Celery
 from dynaconf import Dynaconf
@@ -167,3 +168,25 @@ celery.conf.task_acks_late = True
 celery.conf.broker_pool_limit = None
 # celery.conf.broker_use_ssl
 # https://github.com/vmware/repository-service-tuf-api/issues/91
+
+
+def is_bootstrap_done():
+    """
+    Check if the boot is done.
+    """
+
+    sync_redis()
+    if settings_repository.get_fresh("BOOTSTRAP", False):
+        return True
+    else:
+        return False
+
+
+def get_task_id():
+    return uuid4().hex
+
+
+@celery.task(name="app.repository_service_tuf_worker")
+def repository_metadata(action, payload):
+    logging.debug(f"New tasks action submitted {action}")
+    return True
