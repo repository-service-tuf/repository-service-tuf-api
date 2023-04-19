@@ -93,23 +93,6 @@ class TestPostMetadata:
 
         token_headers = {"Authorization": "Bearer h4ck3r"}
 
-        mocked_check_metadata = pretend.call_recorder(lambda: True)
-        monkeypatch.setattr(
-            "repository_service_tuf_api.metadata.is_bootstrap_done",
-            mocked_check_metadata,
-        )
-
-        mocked_repository_metadata = pretend.stub(
-            apply_async=pretend.call_recorder(lambda *a, **kw: None)
-        )
-        monkeypatch.setattr(
-            "repository_service_tuf_api.metadata.repository_metadata",
-            mocked_repository_metadata,
-        )
-        monkeypatch.setattr(
-            "repository_service_tuf_api.metadata.get_task_id", lambda: "123"
-        )
-
         with open(
             "tests/data_examples/metadata/update-root-payload.json"
         ) as f:
@@ -138,23 +121,6 @@ class TestPostMetadata:
         }
 
         url = "/api/v1/metadata/"
-
-        mocked_check_metadata = pretend.call_recorder(lambda: True)
-        monkeypatch.setattr(
-            "repository_service_tuf_api.metadata.is_bootstrap_done",
-            mocked_check_metadata,
-        )
-
-        mocked_repository_metadata = pretend.stub(
-            apply_async=pretend.call_recorder(lambda *a, **kw: None)
-        )
-        monkeypatch.setattr(
-            "repository_service_tuf_api.metadata.repository_metadata",
-            mocked_repository_metadata,
-        )
-        monkeypatch.setattr(
-            "repository_service_tuf_api.metadata.get_task_id", lambda: "123"
-        )
 
         with open(
             "tests/data_examples/metadata/update-root-payload.json"

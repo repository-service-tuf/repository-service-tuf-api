@@ -21,7 +21,7 @@ auth = get_auth()
     summary=(
         f"Rotate role metadata. Scope: {SCOPES_NAMES.write_metadata.value}"
     ),
-    description=("Rotate a role metadata which requires offline signing."),
+    description=("Rotate a role metadata that requires offline signing."),
     response_model=metadata.MetadataPostResponse,
     response_model_exclude_none=True,
     status_code=status.HTTP_202_ACCEPTED,
