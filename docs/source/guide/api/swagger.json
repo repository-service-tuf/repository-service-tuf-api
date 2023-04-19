@@ -284,7 +284,7 @@
                     "v1"
                 ],
                 "summary": "Rotate role metadata. Scope: write:metadata",
-                "description": "Rotate a role metadata which requires offline signing.",
+                "description": "Rotate a role metadata that requires offline signing.",
                 "operationId": "post_api_v1_metadata__post",
                 "requestBody": {
                     "content": {
