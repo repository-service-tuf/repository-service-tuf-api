@@ -21,6 +21,14 @@ repository\_service\_tuf\_api.bootstrap module
    :undoc-members:
    :show-inheritance:
 
+repository\_service\_tuf\_api.common\_models module
+---------------------------------------------------
+
+.. automodule:: repository_service_tuf_api.common_models
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 repository\_service\_tuf\_api.config module
 -------------------------------------------
 

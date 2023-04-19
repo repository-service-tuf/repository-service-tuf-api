@@ -116,7 +116,6 @@ def _decode_token(token):
 
 
 def create_access_token(data: dict, expires_delta: int = 1):
-
     to_encode = data.copy()
     expires = datetime.utcnow() + timedelta(hours=expires_delta)
 

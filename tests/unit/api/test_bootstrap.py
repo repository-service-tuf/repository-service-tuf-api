@@ -49,7 +49,6 @@ class TestGetBootstrap:
         assert mocked_check_metadata.calls == [pretend.call()]
 
     def test_get_bootstrap_invalid_token(self, test_client, monkeypatch):
-
         url = "/api/v1/bootstrap/"
         mocked_check_metadata = pretend.call_recorder(lambda: False)
         monkeypatch.setattr(

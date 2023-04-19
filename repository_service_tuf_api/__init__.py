@@ -5,6 +5,7 @@
 import logging
 import os
 from enum import Enum
+from uuid import uuid4
 
 from celery import Celery
 from dynaconf import Dynaconf
@@ -33,6 +34,7 @@ class SCOPES_NAMES(Enum):
     read_tasks = "read:tasks"
     read_token = "read:token"  # nosec bandit: not hard coded password
     write_bootstrap = "write:bootstrap"
+    write_metadata = "write:metadata"
     write_targets = "write:targets"
     write_token = "write:token"  # nosec bandit: not hard coded password
     delete_targets = "delete:targets"
@@ -46,6 +48,7 @@ SCOPES = {
     SCOPES_NAMES.write_targets.value: "Write (POST) targets",
     SCOPES_NAMES.write_token.value: "Write (POST) token",
     SCOPES_NAMES.write_bootstrap.value: "Write (POST) bootstrap",
+    SCOPES_NAMES.write_metadata.value: "Write (POST) metadata",
     SCOPES_NAMES.delete_targets.value: "Delete (DELETE) targets",
 }
 
@@ -167,3 +170,25 @@ celery.conf.task_acks_late = True
 celery.conf.broker_pool_limit = None
 # celery.conf.broker_use_ssl
 # https://github.com/vmware/repository-service-tuf-api/issues/91
+
+
+def is_bootstrap_done():
+    """
+    Check if the boot is done.
+    """
+
+    sync_redis()
+    if settings_repository.get_fresh("BOOTSTRAP", False):
+        return True
+    else:
+        return False
+
+
+def get_task_id():
+    return uuid4().hex
+
+
+@celery.task(name="app.repository_service_tuf_worker")
+def repository_metadata(action, payload):
+    logging.debug(f"New tasks action submitted {action}")
+    return True

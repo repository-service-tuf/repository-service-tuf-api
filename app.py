@@ -10,6 +10,7 @@ from fastapi import APIRouter, FastAPI
 from repository_service_tuf_api import settings, settings_repository
 from repository_service_tuf_api.api.bootstrap import router as bootstrap_v1
 from repository_service_tuf_api.api.config import router as config_v1
+from repository_service_tuf_api.api.metadata import router as metadata_v1
 from repository_service_tuf_api.api.targets import router as targets_v1
 from repository_service_tuf_api.api.tasks import router as tasks_v1
 from repository_service_tuf_api.api.token import router as token_v1
@@ -39,6 +40,7 @@ if settings.get("TOKENS_NODE", True) is True and is_authentication_enabled:
     )
 
 api_v1.include_router(config_v1)
+api_v1.include_router(metadata_v1)
 api_v1.include_router(targets_v1)
 api_v1.include_router(tasks_v1)
 

@@ -9,7 +9,6 @@ import repository_service_tuf_api
 
 class TestRestApi:
     def test_sync_redis(self):
-
         repository_service_tuf_api.settings_repository = pretend.stub(
             get=pretend.call_recorder(
                 lambda *a: {"BOOTSTRAP": "fake_bootstrap_id"}
@@ -38,7 +37,6 @@ class TestRestApi:
         ]
 
     def test_sync_redis_without_data(self):
-
         repository_service_tuf_api.settings_repository = pretend.stub(
             get=pretend.call_recorder(
                 lambda *a: {"BOOTSTRAP": "fake_bootstrap_id"}

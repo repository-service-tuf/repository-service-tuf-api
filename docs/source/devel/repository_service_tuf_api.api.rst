@@ -20,6 +20,14 @@ repository\_service\_tuf\_api.api.config module
    :undoc-members:
    :show-inheritance:
 
+repository\_service\_tuf\_api.api.metadata module
+-------------------------------------------------
+
+.. automodule:: repository_service_tuf_api.api.metadata
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 repository\_service\_tuf\_api.api.targets module
 ------------------------------------------------
 

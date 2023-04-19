@@ -7,7 +7,7 @@ from typing import Any, Optional
 from fastapi import Query
 from pydantic import BaseModel, Field
 
-from repository_service_tuf_api.metadata import repository_metadata
+from repository_service_tuf_api import repository_metadata
 
 
 class GetParameters:
