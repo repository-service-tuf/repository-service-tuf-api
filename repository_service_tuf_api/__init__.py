@@ -155,7 +155,7 @@ celery.conf.broker_url = settings.BROKER_SERVER
 celery.conf.result_backend = (
     f"{settings.REDIS_SERVER}"
     f":{settings.get('REDIS_SERVER_PORT', 6379)}"
-    f"/{settings.get('REDIS_SERVER_DB_REPO_SETTINGS', 0)}"
+    f"/{settings.get('REDIS_SERVER_DB_RESULT', 0)}"
 )
 celery.conf.accept_content = ["json", "application/json"]
 celery.conf.task_serializer = "json"
