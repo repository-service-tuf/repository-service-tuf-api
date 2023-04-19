@@ -83,5 +83,5 @@ jobs:
       with:
         name: ${{ github.ref_name }}
         tag_name: ${{ github.ref }}
-        body: "docker pull [ghcr.io/vmware/repository-service-tuf-api:${{ github.ref_name }}](https://github.com/vmware/repository-service-tuf-api/pkgs/container/repository-service-tuf-api)"
+        body: "docker pull [ghcr.io/vmware/repository-service-tuf-api:${{ github.ref_name }}](https://github.com/repository-service-tuf/repository-service-tuf-api/pkgs/container/repository-service-tuf-api)"
         files: /tmp/repository-service-tuf-api_${{ github.ref_name }}.tar
