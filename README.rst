@@ -9,16 +9,16 @@ Repository Service for TUF API
 
 |Test Docker Image build| |Tests and Lint| |Coverage|
 
-.. |Test Docker Image build| image:: https://github.com/vmware/repository-service-tuf-api/actions/workflows/test_docker_build.yml/badge.svg
-  :target: https://github.com/vmware/repository-service-tuf-api/actions/workflows/test_docker_build.yml
-.. |Tests and Lint| image:: https://github.com/vmware/repository-service-tuf-api/actions/workflows/ci.yml/badge.svg
-  :target: https://github.com/vmware/repository-service-tuf-api/actions/workflows/ci.yml
+.. |Test Docker Image build| image:: https://github.com/repository-service-tuf/repository-service-tuf-api/actions/workflows/test_docker_build.yml/badge.svg
+  :target: https://github.com/repository-service-tuf/repository-service-tuf-api/actions/workflows/test_docker_build.yml
+.. |Tests and Lint| image:: https://github.com/repository-service-tuf/repository-service-tuf-api/actions/workflows/ci.yml/badge.svg
+  :target: https://github.com/repository-service-tuf/repository-service-tuf-api/actions/workflows/ci.yml
 .. |Coverage| image:: https://codecov.io/gh/vmware/repository-service-tuf-api/branch/main/graph/badge.svg
   :target: https://codecov.io/gh/vmware/repository-service-tuf-api
 
 
 Repository Service for TUF API is part of `Repository Service for TUF
-<https://github.com/vmware/repository-service-tuf>`_.
+<https://github.com/repository-service-tuf/repository-service-tuf>`_.
 
 
 Usage
@@ -39,7 +39,7 @@ Getting source code
 ===================
 
 `Fork <https://docs.github.com/en/get-started/quickstart/fork-a-repo>`_ the
-repository on `GitHub <https://github.com/vmware/repository-service-tuf-api>`_
+repository on `GitHub <https://github.com/repository-service-tuf/repository-service-tuf-api>`_
 and `clone <https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository>`_
 it to your local machine:
 
@@ -54,7 +54,7 @@ to make sure you stay up-to-date with our repository:
 
 .. code-block:: console
 
-    git remote add upstream https://github.com/vmware/repository-service-tuf-api
+    git remote add upstream https://github.com/repository-service-tuf/repository-service-tuf-api
     git checkout main
     git fetch upstream
     git merge upstream/main

@@ -169,7 +169,7 @@ celery.conf.result_persistent = True
 celery.conf.task_acks_late = True
 celery.conf.broker_pool_limit = None
 # celery.conf.broker_use_ssl
-# https://github.com/vmware/repository-service-tuf-api/issues/91
+# https://github.com/repository-service-tuf/repository-service-tuf-api/issues/91
 
 
 def is_bootstrap_done():
