@@ -26,6 +26,6 @@ jobs:
         context: .
         push: false
         tags: |
-            ghcr.io/vmware/repository-service-tuf-api:test
+            ghcr.io/repository-service-tuf/repository-service-tuf-api:test
         build-args: |
           RELEASE_VERSION=test

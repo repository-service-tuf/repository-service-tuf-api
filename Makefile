@@ -27,7 +27,7 @@ build-dev:
 
 run-dev:
 	$(MAKE) build-dev
-	docker pull ghcr.io/vmware/repository-service-tuf-worker:dev
+	docker pull ghcr.io/repository-service-tuf/repository-service-tuf-worker:dev
 	docker-compose up --remove-orphans
 
 stop:
