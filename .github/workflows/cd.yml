@@ -67,21 +67,21 @@ jobs:
 
     - name: Add release branch/tag name
       run: |
-        docker pull ghcr.io/vmware/repository-service-tuf-api:${{ github.sha }}
-        docker tag ghcr.io/vmware/repository-service-tuf-api:${{ github.sha }} ghcr.io/vmware/repository-service-tuf-api:${{ github.ref_name }}
-        docker push ghcr.io/vmware/repository-service-tuf-api:${{ github.ref_name }}
+        docker pull ghcr.io/repository-service-tuf/repository-service-tuf-api:${{ github.sha }}
+        docker tag ghcr.io/repository-service-tuf/repository-service-tuf-api:${{ github.sha }} ghcr.io/repository-service-tuf/repository-service-tuf-api:${{ github.ref_name }}
+        docker push ghcr.io/repository-service-tuf/repository-service-tuf-api:${{ github.ref_name }}
 
     # The workflow triggered by push tag v* will be empty, because that we check != False
     - name: Add release latest tag
       if: ${{ inputs.latest_tag != false }}
       run: |
-        docker tag ghcr.io/vmware/repository-service-tuf-api:${{ github.sha }} ghcr.io/vmware/repository-service-tuf-api:latest
-        docker push ghcr.io/vmware/repository-service-tuf-api:latest
+        docker tag ghcr.io/repository-service-tuf/repository-service-tuf-api:${{ github.sha }} ghcr.io/repository-service-tuf/repository-service-tuf-api:latest
+        docker push ghcr.io/repository-service-tuf/repository-service-tuf-api:latest
 
     - name: Publish GitHub Release
       uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844
       with:
         name: ${{ github.ref_name }}
         tag_name: ${{ github.ref }}
-        body: "docker pull [ghcr.io/vmware/repository-service-tuf-api:${{ github.ref_name }}](https://github.com/repository-service-tuf/repository-service-tuf-api/pkgs/container/repository-service-tuf-api)"
+        body: "docker pull [ghcr.io/repository-service-tuf/repository-service-tuf-api:${{ github.ref_name }}](https://github.com/repository-service-tuf/repository-service-tuf-api/pkgs/container/repository-service-tuf-api)"
         files: /tmp/repository-service-tuf-api_${{ github.ref_name }}.tar
