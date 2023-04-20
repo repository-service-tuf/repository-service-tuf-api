@@ -7,7 +7,11 @@ import logging
 
 from fastapi import APIRouter, FastAPI
 
-from repository_service_tuf_api import settings, settings_repository
+from repository_service_tuf_api import (
+    is_auth_enabled,
+    settings,
+    settings_repository,
+)
 from repository_service_tuf_api.api.bootstrap import router as bootstrap_v1
 from repository_service_tuf_api.api.config import router as config_v1
 from repository_service_tuf_api.api.metadata import router as metadata_v1
@@ -32,8 +36,7 @@ if settings.get("BOOTSTRAP_NODE", False) is True:
 logging.info(f"Bootstrap on this node enabled: {settings.BOOTSTRAP_NODE}")
 logging.info(f"Bootstrap ID: {settings_repository.get_fresh('BOOTSTRAP')}")
 
-is_authentication_enabled: bool = settings.get("AUTH", True)
-if settings.get("TOKENS_NODE", True) is True and is_authentication_enabled:
+if settings.get("TOKENS_NODE", True) is True and is_auth_enabled:
     api_v1.include_router(token_v1)
     logging.info(
         f"Tokens on this node enabled: {settings.get('TOKENS_NODE', True)}"

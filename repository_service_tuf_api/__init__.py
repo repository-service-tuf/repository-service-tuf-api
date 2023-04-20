@@ -5,6 +5,7 @@
 import logging
 import os
 from enum import Enum
+from typing import Optional
 from uuid import uuid4
 
 from celery import Celery
@@ -77,6 +78,8 @@ secrets_settings = Dynaconf(
     environments=True,
 )
 
+is_auth_enabled: bool = settings.get("AUTH", False)
+
 
 def sync_redis():
     """
@@ -97,60 +100,70 @@ def sync_redis():
         redis_loader.write(settings_repository, settings_repository.to_dict())
 
 
-# Tokens
-if secrets_settings.TOKEN_KEY.startswith("/run/secrets/"):
-    try:
-        with open(secrets_settings.TOKEN_KEY) as f:
-            SECRET_KEY = f.read().rstrip("\n")
-    except OSError as err:
-        logging.error(str(err))
+SECRET_KEY: Optional[str] = None
+ADMIN_PASSWORD: Optional[str] = None
+db: Optional[sessionmaker] = None
 
-else:
-    SECRET_KEY = secrets_settings.TOKEN_KEY
+if is_auth_enabled is True:
+    # Tokens
+    if secrets_settings.TOKEN_KEY.startswith("/run/secrets/"):
+        try:
+            with open(secrets_settings.TOKEN_KEY) as f:
+                SECRET_KEY = f.read().rstrip("\n")
+        except OSError as err:
+            logging.error(str(err))
 
-if secrets_settings.ADMIN_PASSWORD.startswith("/run/secrets/"):
-    try:
-        with open(secrets_settings.ADMIN_PASSWORD) as f:
-            ADMIN_PASSWORD = f.read().rstrip("\n")
-    except OSError as err:
-        logging.error(str(err))
+    else:
+        SECRET_KEY = secrets_settings.TOKEN_KEY
 
-else:
-    ADMIN_PASSWORD = secrets_settings.ADMIN_PASSWORD
+    if secrets_settings.ADMIN_PASSWORD.startswith("/run/secrets/"):
+        try:
+            with open(secrets_settings.ADMIN_PASSWORD) as f:
+                ADMIN_PASSWORD = f.read().rstrip("\n")
+        except OSError as err:
+            logging.error(str(err))
 
-# User database setup
-DATABASE_URL = settings.get(
-    "DATABASE_URL", f"sqlite:///{os.path.join(DATA_DIR, 'users.sqlite')}"
-)
+    else:
+        ADMIN_PASSWORD = secrets_settings.ADMIN_PASSWORD
 
-engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-
-Base.metadata.create_all(bind=engine)
-db = SessionLocal()
-
-for scope in SCOPES:
-    scope_entry = crud.get_scope_by_name(db, name=scope)
-    if not scope_entry:
-        add_scope = schemas.ScopeCreate(name=scope, description=SCOPES[scope])
-        crud.create_user_scope(db, add_scope)
-
-user = crud.get_user_by_username(db, username="admin")
-if not user:
-    user_in = schemas.UserCreate(
-        username="admin",
-        password=ADMIN_PASSWORD,
+    # User database setup
+    DATABASE_URL = settings.get(
+        "DATABASE_URL", f"sqlite:///{os.path.join(DATA_DIR, 'users.sqlite')}"
     )
-    user = crud.create_user(db, user_in)
-    crud.user_add_scopes(db, user, [scope for scope in crud.get_scopes(db)])
 
-else:
-    user_scopes = [user_scope.name for user_scope in user.scopes]
+    engine = create_engine(
+        DATABASE_URL, connect_args={"check_same_thread": False}
+    )
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+    Base.metadata.create_all(bind=engine)
+    db = SessionLocal()
+
     for scope in SCOPES:
-        if scope not in user_scopes:
-            crud.user_append_scope(db, user, scope)
-            logging.info(f"Scope '{scope}' added to admin.")
+        scope_entry = crud.get_scope_by_name(db, name=scope)
+        if not scope_entry:
+            add_scope = schemas.ScopeCreate(
+                name=scope, description=SCOPES[scope]
+            )
+            crud.create_user_scope(db, add_scope)
+
+    user = crud.get_user_by_username(db, username="admin")
+    if not user:
+        user_in = schemas.UserCreate(
+            username="admin",
+            password=ADMIN_PASSWORD,
+        )
+        user = crud.create_user(db, user_in)
+        crud.user_add_scopes(
+            db, user, [scope for scope in crud.get_scopes(db)]
+        )
+
+    else:
+        user_scopes = [user_scope.name for user_scope in user.scopes]
+        for scope in SCOPES:
+            if scope not in user_scopes:
+                crud.user_append_scope(db, user, scope)
+                logging.info(f"Scope '{scope}' added to admin.")
 
 # Celery setup
 celery = Celery(__name__)
