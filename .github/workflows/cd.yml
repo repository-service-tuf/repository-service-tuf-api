@@ -48,7 +48,7 @@ jobs:
 
   functional-tests:
     needs: set-component-versions
-    uses: vmware/repository-service-tuf/.github/workflows/functional.yml@main
+    uses: repository-service-tuf/repository-service-tuf/.github/workflows/functional.yml@main
     with:
       api_version: ${{ github.sha }}
       worker_version: ${{ needs.set-component-versions.outputs.worker_version }}
