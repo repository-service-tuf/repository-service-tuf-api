@@ -94,12 +94,6 @@ class TestPostBootstrap:
     def test_post_bootstrap(self, test_client, monkeypatch, token_headers):
         url = "/api/v1/bootstrap/"
 
-        mocked_save_settings = pretend.call_recorder(lambda *a: None)
-        monkeypatch.setattr(
-            "repository_service_tuf_api.bootstrap.save_settings",
-            mocked_save_settings,
-        )
-
         mocked_check_metadata = pretend.call_recorder(lambda: False)
         monkeypatch.setattr(
             "repository_service_tuf_api.bootstrap.is_bootstrap_done",
@@ -118,11 +112,15 @@ class TestPostBootstrap:
         monkeypatch.setattr(
             "repository_service_tuf_api.bootstrap.get_task_id", lambda: "123"
         )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.bootstrap.pre_lock_bootstrap",
+            lambda *a: None,
+        )
 
         with open("tests/data_examples/bootstrap/payload.json") as f:
             f_data = f.read()
-
         payload = json.loads(f_data)
+
         response = test_client.post(url, json=payload, headers=token_headers)
 
         assert response.status_code == status.HTTP_202_ACCEPTED
@@ -181,11 +179,6 @@ class TestPostBootstrap:
         url = "/api/v1/bootstrap/"
 
         token_headers = {"Authorization": "Bearer h4ck3r"}
-        mocked_save_settings = pretend.call_recorder(lambda *a: None)
-        monkeypatch.setattr(
-            "repository_service_tuf_api.bootstrap.save_settings",
-            mocked_save_settings,
-        )
 
         mocked_check_metadata = pretend.call_recorder(lambda: False)
         monkeypatch.setattr(
@@ -230,12 +223,6 @@ class TestPostBootstrap:
         }
 
         url = "/api/v1/bootstrap/"
-
-        mocked_save_settings = pretend.call_recorder(lambda *a: None)
-        monkeypatch.setattr(
-            "repository_service_tuf_api.bootstrap.save_settings",
-            mocked_save_settings,
-        )
 
         mocked_check_metadata = pretend.call_recorder(lambda: False)
         monkeypatch.setattr(

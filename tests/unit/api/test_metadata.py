@@ -81,6 +81,11 @@ class TestPostMetadata:
         assert response.json() == {
             "detail": [
                 {
+                    "loc": ["body", "settings"],
+                    "msg": "field required",
+                    "type": "value_error.missing",
+                },
+                {
                     "loc": ["body", "metadata"],
                     "msg": "field required",
                     "type": "value_error.missing",
@@ -143,13 +148,9 @@ class TestPostMetadata:
         payload = {"metadata": {"timestamp": {}}}
         response = test_client.post(url, json=payload, headers=token_headers)
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
-        assert response.json() == {
-            "detail": [
-                {
-                    "loc": ["body", "metadata", "__key__"],
-                    "msg": "unexpected value; permitted: 'root'",
-                    "type": "value_error.const",
-                    "ctx": {"given": "timestamp", "permitted": ["root"]},
-                },
-            ]
-        }
+        assert {
+                "loc": ["body", "metadata", "__key__"],
+                "msg": "unexpected value; permitted: 'root'",
+                "type": "value_error.const",
+                "ctx": {"given": "timestamp", "permitted": ["root"]},
+        } in response.json()["detail"]

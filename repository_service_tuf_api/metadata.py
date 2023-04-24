@@ -32,6 +32,7 @@ class Settings(BaseModel):
 
 
 class MetadataPostPayload(BaseModel):
+    settings: Settings
     metadata: Dict[Literal[Roles.ROOT.value], TUFMetadata]
 
     class Config:

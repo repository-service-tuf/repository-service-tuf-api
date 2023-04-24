@@ -11,8 +11,6 @@ from fastapi.testclient import TestClient
 
 @pytest.fixture()
 def test_client(monkeypatch):
-    monkeypatch.setattr("repository_service_tuf_api.sync_redis", lambda: None)
-
     from app import rstuf_app
 
     client = TestClient(rstuf_app)
