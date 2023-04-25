@@ -645,7 +645,7 @@
                 "type": "object",
                 "properties": {
                     "settings": {
-                        "$ref": "#/components/schemas/Settings"
+                        "$ref": "#/components/schemas/repository_service_tuf_api__bootstrap__Settings"
                     },
                     "metadata": {
                         "title": "Metadata",
@@ -859,10 +859,14 @@
             "MetadataPostPayload": {
                 "title": "MetadataPostPayload",
                 "required": [
+                    "settings",
                     "metadata"
                 ],
                 "type": "object",
                 "properties": {
+                    "settings": {
+                        "$ref": "#/components/schemas/repository_service_tuf_api__metadata__Settings"
+                    },
                     "metadata": {
                         "title": "Metadata",
                         "type": "object",
@@ -872,6 +876,20 @@
                     }
                 },
                 "example": {
+                    "settings": {
+                        "expiration": {
+                            "root": 365,
+                            "targets": 365,
+                            "snapshot": 1,
+                            "timestamp": 1,
+                            "bins": 1
+                        },
+                        "services": {
+                            "targets_base_url": "http://www.example.com/repository/",
+                            "number_of_delegated_bins": 4,
+                            "targets_online_key": true
+                        }
+                    },
                     "metadata": {
                         "root": {
                             "signatures": [
@@ -1028,51 +1046,6 @@
                         "title": "Last Update",
                         "type": "string",
                         "format": "date-time"
-                    }
-                }
-            },
-            "ServiceSettings": {
-                "title": "ServiceSettings",
-                "required": [
-                    "targets_base_url",
-                    "number_of_delegated_bins",
-                    "targets_online_key"
-                ],
-                "type": "object",
-                "properties": {
-                    "targets_base_url": {
-                        "title": "Targets Base Url",
-                        "type": "string"
-                    },
-                    "number_of_delegated_bins": {
-                        "title": "Number Of Delegated Bins",
-                        "exclusiveMaximum": 16385.0,
-                        "exclusiveMinimum": 1.0,
-                        "type": "integer"
-                    },
-                    "targets_online_key": {
-                        "title": "Targets Online Key",
-                        "type": "boolean"
-                    }
-                }
-            },
-            "Settings": {
-                "title": "Settings",
-                "required": [
-                    "expiration",
-                    "services"
-                ],
-                "type": "object",
-                "properties": {
-                    "expiration": {
-                        "title": "Expiration",
-                        "type": "object",
-                        "additionalProperties": {
-                            "type": "integer"
-                        }
-                    },
-                    "services": {
-                        "$ref": "#/components/schemas/ServiceSettings"
                     }
                 }
             },
@@ -1514,6 +1487,51 @@
                     }
                 }
             },
+            "repository_service_tuf_api__bootstrap__ServiceSettings": {
+                "title": "ServiceSettings",
+                "required": [
+                    "targets_base_url",
+                    "number_of_delegated_bins",
+                    "targets_online_key"
+                ],
+                "type": "object",
+                "properties": {
+                    "targets_base_url": {
+                        "title": "Targets Base Url",
+                        "type": "string"
+                    },
+                    "number_of_delegated_bins": {
+                        "title": "Number Of Delegated Bins",
+                        "exclusiveMaximum": 16385.0,
+                        "exclusiveMinimum": 1.0,
+                        "type": "integer"
+                    },
+                    "targets_online_key": {
+                        "title": "Targets Online Key",
+                        "type": "boolean"
+                    }
+                }
+            },
+            "repository_service_tuf_api__bootstrap__Settings": {
+                "title": "Settings",
+                "required": [
+                    "expiration",
+                    "services"
+                ],
+                "type": "object",
+                "properties": {
+                    "expiration": {
+                        "title": "Expiration",
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "integer"
+                        }
+                    },
+                    "services": {
+                        "$ref": "#/components/schemas/repository_service_tuf_api__bootstrap__ServiceSettings"
+                    }
+                }
+            },
             "repository_service_tuf_api__config__Response": {
                 "title": "Response",
                 "required": [
@@ -1569,6 +1587,51 @@
                     "task_id": {
                         "title": "Task Id",
                         "type": "string"
+                    }
+                }
+            },
+            "repository_service_tuf_api__metadata__ServiceSettings": {
+                "title": "ServiceSettings",
+                "required": [
+                    "targets_base_url",
+                    "number_of_delegated_bins",
+                    "targets_online_key"
+                ],
+                "type": "object",
+                "properties": {
+                    "targets_base_url": {
+                        "title": "Targets Base Url",
+                        "type": "string"
+                    },
+                    "number_of_delegated_bins": {
+                        "title": "Number Of Delegated Bins",
+                        "exclusiveMaximum": 16385.0,
+                        "exclusiveMinimum": 1.0,
+                        "type": "integer"
+                    },
+                    "targets_online_key": {
+                        "title": "Targets Online Key",
+                        "type": "boolean"
+                    }
+                }
+            },
+            "repository_service_tuf_api__metadata__Settings": {
+                "title": "Settings",
+                "required": [
+                    "expiration",
+                    "services"
+                ],
+                "type": "object",
+                "properties": {
+                    "expiration": {
+                        "title": "Expiration",
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "integer"
+                        }
+                    },
+                    "services": {
+                        "$ref": "#/components/schemas/repository_service_tuf_api__metadata__ServiceSettings"
                     }
                 }
             },
