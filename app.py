@@ -41,26 +41,34 @@ api_v1 = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
-# load endpoints
-disabled_endpoints: List[str] = settings.get("DISABLE_ENDPOINTS", "").split(
-    ":"
-)
-if is_auth_enabled is False:
-    disabled_endpoints.append(f"{api_v1.prefix}{token_v1.prefix}/")
 
-for v1_endpoint in v1_endpoints:
-    for endpoint_route in v1_endpoint.routes:
-        route = f"{endpoint_route.methods}{api_v1.prefix}{endpoint_route.path}"
-        if route in disabled_endpoints:
-            logging.info(f"Disabled endpoint {route}")
-            v1_endpoint.routes.remove(endpoint_route)
-    if f"{api_v1.prefix}{v1_endpoint.prefix}/" in disabled_endpoints:
-        logging.info(f"Disabled endpoint {api_v1.prefix}{v1_endpoint.prefix}/")
-    else:
-        api_v1.include_router(v1_endpoint)
+def load_endpoints():
+    # load endpoints
+    disabled_endpoints: List[str] = settings.get(
+        "DISABLE_ENDPOINTS", ""
+    ).split(":")
+    if is_auth_enabled is False:
+        disabled_endpoints.append(f"{api_v1.prefix}{token_v1.prefix}/")
 
-rstuf_app.include_router(api_v1)
+    for v1_endpoint in v1_endpoints:
+        for endpoint_route in v1_endpoint.routes:
+            route = (
+                f"{endpoint_route.methods}{api_v1.prefix}{endpoint_route.path}"
+            )
+            if route in disabled_endpoints:
+                logging.info(f"Disabled endpoint {route}")
+                v1_endpoint.routes.remove(endpoint_route)
+        if f"{api_v1.prefix}{v1_endpoint.prefix}/" in disabled_endpoints:
+            logging.info(
+                f"Disabled endpoint {api_v1.prefix}{v1_endpoint.prefix}/"
+            )
+        else:
+            api_v1.include_router(v1_endpoint)
 
+    rstuf_app.include_router(api_v1)
+
+
+load_endpoints()
 logging.info(f"Bootstrap ID: {settings_repository.get_fresh('BOOTSTRAP')}")
 
 
