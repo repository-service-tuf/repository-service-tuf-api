@@ -38,24 +38,6 @@ docker run -p 80:80 \
 
 ### Environment Variables
 
-#### (Optional) `RSTUF_TOKENS_NODE`
-
-The value type is boolean (true/false [case sensitive](https://www.dynaconf.com/configuration/#available-options)).
-Default: true
-
-Disable the container as a token node.
-
-The container is enabled to be a token node by default, the endpoint `/api/v1/token` is visible and accept connections using token authentication and scopes.
-
-#### (Optional) `RSTUF_BOOTSTRAP_NODE`
-
-The value type is boolean (true/false [case sensitive](https://www.dynaconf.com/configuration/#available-options)).
-Default: false
-
-Enable the container to be a bootstrap node.
-
-If the container is enabled to be a bootstrap node, the endpoint `/api/v1/bootstrap` will be visible and accept connections using token authentication and scope `write:bootstrap`
-
 #### (Required) `RSTUF_BROKER_SERVER`
 
 Broker server address.
@@ -106,6 +88,29 @@ Disable/Enable RSTUF built-in token authentication. Default: false
   SECRETS_RSTUF_ADMIN_PASSWORD=/run/secrets/SECRETS_RSTUF_ADMIN_PASSWORD
   SECRETS_RSTUF_TOKEN_KEY=/run/secrets/SECRETS_RSTUF_TOKEN_KEY`
   ```
+
+
+
+#### (Optional) `RSTUF_DISABLED_ENDPOINTS`
+
+Disable specific endpoints or endpoint methods from the API.
+
+This variable receives a list separetad by `:`.
+
+An endpoint can be given `/api/v1/targets`
+
+Note: It will be disabled all methods and all paths GET `/api/v1/targets`,
+POST `/api/v1/targets`, POST `/api/v1/targets/publish` etc.
+
+It is possible to disable specific method endpoint given
+`{'POST'}/api/v1/targets/publish`.
+
+Note: If you give both
+`RSTUF_DISABLE_ENDPOINTS={'POST'}/api/v1/targets/publish:/api/v1/targets` the
+`/api/v1/targets` has higher weigh and will disable all
+
+A list can be given as example bellow
+`RSTUF_DISABLE_ENDPOINTS={'POST'}/api/v1/bootstrap/:/api/v1/metadata/:/api/v1/token/:{'DELETE'}/api/v1/targets/`
 
 
 #### (Optional) `SECRETS_RSTUF_SSL_CERT`
