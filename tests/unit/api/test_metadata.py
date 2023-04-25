@@ -149,8 +149,8 @@ class TestPostMetadata:
         response = test_client.post(url, json=payload, headers=token_headers)
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
         assert {
-                "loc": ["body", "metadata", "__key__"],
-                "msg": "unexpected value; permitted: 'root'",
-                "type": "value_error.const",
-                "ctx": {"given": "timestamp", "permitted": ["root"]},
+            "loc": ["body", "metadata", "__key__"],
+            "msg": "unexpected value; permitted: 'root'",
+            "type": "value_error.const",
+            "ctx": {"given": "timestamp", "permitted": ["root"]},
         } in response.json()["detail"]
