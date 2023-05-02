@@ -46,6 +46,7 @@ class TUFKeys(BaseModel):
     keytype: str
     scheme: str
     keyval: Dict[Literal["public", "private"], str]
+    name: Optional[str]
 
 
 class TUFSignedDelegations(BaseModel):
