@@ -26,11 +26,9 @@ class TestAPP:
         caplog.set_level(app.logging.INFO)
         app.is_authentication_enabled = False
         app.load_endpoints()
-        assert (
-            "root",
-            20,
-            "Disabled endpoint /api/v1/token/",
-        ) in caplog.record_tuples
+        assert caplog.record_tuples == [
+            ("root", 20, "Disabled endpoint /api/v1/token/"),
+        ]
 
     def test_load_endpoints_disable_prefix_and_method(self, caplog):
         import app
@@ -39,14 +37,22 @@ class TestAPP:
             "{'POST'}/api/v1/targets/publish/:/api/v1/bootstrap/"
         )
         caplog.set_level(app.logging.INFO)
+        app.is_authentication_enabled = True
         app.load_endpoints()
-        assert (
-            "root",
-            20,
-            "Disabled endpoint /api/v1/bootstrap/",
-        ) in caplog.record_tuples
-        assert (
-            "root",
-            20,
-            "Disabled endpoint {'POST'}/api/v1/targets/publish/",
-        ) in caplog.record_tuples
+        assert caplog.record_tuples == [
+            ("root", 20, "Disabled endpoint /api/v1/bootstrap/"),
+            ("root", 20, "Disabled endpoint {'POST'}/api/v1/targets/publish/"),
+        ]
+
+    def test_load_endpoints_disabling_weight_check(self, caplog):
+        import app
+
+        app.settings.DISABLE_ENDPOINTS = (
+            "{'POST'}/api/v1/targets/publish/:/api/v1/targets/"
+        )
+        app.is_authentication_enabled = True
+        caplog.set_level(app.logging.INFO)
+        app.load_endpoints()
+        assert caplog.record_tuples == [
+            ("root", 20, "Disabled endpoint /api/v1/targets/"),
+        ]
