@@ -653,6 +653,11 @@
                         "additionalProperties": {
                             "$ref": "#/components/schemas/TUFMetadata"
                         }
+                    },
+                    "timeout": {
+                        "title": "Timeout",
+                        "type": "integer",
+                        "default": 300
                     }
                 },
                 "example": {
