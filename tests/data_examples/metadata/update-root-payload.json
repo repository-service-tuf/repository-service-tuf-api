@@ -6,11 +6,6 @@
       "snapshot": 1,
       "timestamp": 1,
       "bins": 1
-    },
-    "services": {
-      "targets_base_url": "http://www.example.com/repository/",
-      "number_of_delegated_bins": 4,
-      "targets_online_key": true
     }
   },
   "metadata": {
