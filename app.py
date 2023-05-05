@@ -51,13 +51,15 @@ def load_endpoints():
         disabled_endpoints.append(f"{api_v1.prefix}{token_v1.prefix}/")
 
     for v1_endpoint in v1_endpoints:
-        for endpoint_route in v1_endpoint.routes:
+        endpoint_routes = v1_endpoint.routes.copy()
+        for endpoint_route in endpoint_routes:
             route = (
                 f"{endpoint_route.methods}{api_v1.prefix}{endpoint_route.path}"
             )
             if route in disabled_endpoints:
                 logging.info(f"Disabled endpoint {route}")
                 v1_endpoint.routes.remove(endpoint_route)
+
         if f"{api_v1.prefix}{v1_endpoint.prefix}/" in disabled_endpoints:
             logging.info(
                 f"Disabled endpoint {api_v1.prefix}{v1_endpoint.prefix}/"
