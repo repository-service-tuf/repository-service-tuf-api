@@ -81,6 +81,11 @@ class TestGetBootstrap:
             "repository_service_tuf_api.bootstrap.is_bootstrap_done",
             mocked_check_metadata,
         )
+        mocked__check_bootstrap_status = pretend.call_recorder(lambda *a: None)
+        monkeypatch.setattr(
+            "repository_service_tuf_api.bootstrap._check_bootstrap_status",
+            mocked__check_bootstrap_status,
+        )
 
         response = test_client.get(url, headers=token_headers)
 
@@ -116,6 +121,11 @@ class TestPostBootstrap:
             "repository_service_tuf_api.bootstrap.pre_lock_bootstrap",
             lambda *a: None,
         )
+        mocked__check_bootstrap_status = pretend.call_recorder(lambda *a: None)
+        monkeypatch.setattr(
+            "repository_service_tuf_api.bootstrap._check_bootstrap_status",
+            mocked__check_bootstrap_status,
+        )
 
         with open("tests/data_examples/bootstrap/payload.json") as f:
             f_data = f.read()
@@ -129,6 +139,59 @@ class TestPostBootstrap:
             "message": "Bootstrap accepted.",
             "data": {"task_id": "123"},
         }
+        assert mocked__check_bootstrap_status.calls == [
+            pretend.call(task_id="123", timeout=300)
+        ]
+
+    def test_post_bootstrap_custom_timeout(
+        self, test_client, monkeypatch, token_headers
+    ):
+        url = "/api/v1/bootstrap/"
+
+        mocked_check_metadata = pretend.call_recorder(lambda: False)
+        monkeypatch.setattr(
+            "repository_service_tuf_api.bootstrap.is_bootstrap_done",
+            mocked_check_metadata,
+        )
+
+        mocked_async_result = pretend.stub(state="SUCCESS")
+        mocked_repository_metadata = pretend.stub(
+            apply_async=pretend.call_recorder(lambda *a, **kw: None),
+            AsyncResult=pretend.call_recorder(lambda *a: mocked_async_result),
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.bootstrap.repository_metadata",
+            mocked_repository_metadata,
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.bootstrap.get_task_id", lambda: "123"
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.bootstrap.pre_lock_bootstrap",
+            lambda *a: None,
+        )
+        mocked__check_bootstrap_status = pretend.call_recorder(lambda *a: None)
+        monkeypatch.setattr(
+            "repository_service_tuf_api.bootstrap._check_bootstrap_status",
+            mocked__check_bootstrap_status,
+        )
+
+        with open("tests/data_examples/bootstrap/payload.json") as f:
+            f_data = f.read()
+        payload = json.loads(f_data)
+        payload["timeout"] = 600
+
+        response = test_client.post(url, json=payload, headers=token_headers)
+
+        assert response.status_code == status.HTTP_202_ACCEPTED
+        assert response.url == f"{test_client.base_url}{url}"
+        assert response.json() == {
+            "message": "Bootstrap accepted.",
+            "data": {"task_id": "123"},
+        }
+        assert mocked__check_bootstrap_status.calls == [
+            pretend.call(task_id="123", timeout=600)
+        ]
 
     def test_post_bootstrap_already_bootstrap(
         self, test_client, monkeypatch, token_headers

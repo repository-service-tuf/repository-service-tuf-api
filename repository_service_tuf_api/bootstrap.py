@@ -17,7 +17,6 @@ from repository_service_tuf_api import (
     pre_lock_bootstrap,
     release_bootstrap_lock,
     repository_metadata,
-    settings,
 )
 from repository_service_tuf_api.common_models import (
     BaseErrorResponse,
@@ -40,6 +39,7 @@ class Settings(BaseModel):
 class BootstrapPayload(BaseModel):
     settings: Settings
     metadata: Dict[Literal[Roles.ROOT.value], TUFMetadata]
+    timeout: Optional[int] = 300
 
     class Config:
         with open("tests/data_examples/bootstrap/payload.json") as f:
@@ -139,12 +139,13 @@ def post_bootstrap(payload: BootstrapPayload) -> BootstrapPostResponse:
     logging.info(f"Bootstrap task {task_id} sent")
 
     # start a thread to check the bootstrap process
+    logging.info(f"Bootstrap process timeout: {payload.timeout} seconds")
     Thread(
         None,
         _check_bootstrap_status,
         kwargs={
             "task_id": task_id,
-            "timeout": settings.get("BOOTSTRAP_TIMEOUT", 300),
+            "timeout": payload.timeout,
         },
     ).start()
 
