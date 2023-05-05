@@ -90,15 +90,15 @@ def _check_bootstrap_status(task_id, timeout):
     while True:
         task = repository_metadata.AsyncResult(task_id)
         if task.status == "SUCCESS":
-            return None
+            return
         elif task.status == "FAILURE":
             release_bootstrap_lock()
-            return None
+            return
         else:
             if time.time() > time_timeout:
                 task.revoke(terminate=True)
                 release_bootstrap_lock()
-                return None
+                return
 
             continue
 
