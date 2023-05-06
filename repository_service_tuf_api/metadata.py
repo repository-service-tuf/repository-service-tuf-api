@@ -6,7 +6,7 @@ import json
 from typing import Dict, Literal, Optional
 
 from fastapi import HTTPException, status
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 from repository_service_tuf_api import (
     get_task_id,
