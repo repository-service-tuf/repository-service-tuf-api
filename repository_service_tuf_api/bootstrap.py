@@ -4,6 +4,8 @@
 
 import json
 import logging
+import time
+from threading import Thread
 from typing import Dict, Literal, Optional
 
 from fastapi import HTTPException, status
@@ -12,15 +14,15 @@ from pydantic import BaseModel, Field
 from repository_service_tuf_api import (
     get_task_id,
     is_bootstrap_done,
+    pre_lock_bootstrap,
+    release_bootstrap_lock,
     repository_metadata,
-    settings_repository,
 )
 from repository_service_tuf_api.common_models import (
     BaseErrorResponse,
     Roles,
     TUFMetadata,
 )
-from repository_service_tuf_api.config import save_settings
 
 
 class ServiceSettings(BaseModel):
@@ -37,6 +39,7 @@ class Settings(BaseModel):
 class BootstrapPayload(BaseModel):
     settings: Settings
     metadata: Dict[Literal[Roles.ROOT.value], TUFMetadata]
+    timeout: Optional[int] = 300
 
     class Config:
         with open("tests/data_examples/bootstrap/payload.json") as f:
@@ -81,6 +84,25 @@ class BootstrapGetResponse(BaseModel):
         schema_extra = {"example": example}
 
 
+def _check_bootstrap_status(task_id, timeout):
+    time_timeout = time.time() + timeout
+
+    while True:
+        task = repository_metadata.AsyncResult(task_id)
+        if task.status == "SUCCESS":
+            return
+        elif task.status == "FAILURE":
+            release_bootstrap_lock()
+            return
+        else:
+            if time.time() > time_timeout:
+                task.revoke(terminate=True)
+                release_bootstrap_lock()
+                return
+
+            continue
+
+
 def get_bootstrap():
     if is_bootstrap_done() is True:
         response = BootstrapGetResponse(
@@ -103,52 +125,8 @@ def post_bootstrap(payload: BootstrapPayload) -> BootstrapPostResponse:
             ).dict(exclude_none=True),
         )
 
-    # Store settings
-    logging.debug("Saving settings")
-    for role in Roles:
-        rolename = role.value.upper()
-        threshold = 1
-        num_of_keys = 1
-        if rolename == Roles.ROOT.value.upper():
-            md = payload.metadata
-            # The key to the root role is the name of the root file which uses
-            # consistent snapshot or in the format: <VERSION_NUMBER>.root.json
-            root_file_name = [name for name in md if name.endswith("root")][0]
-            threshold = md[root_file_name].signed.roles[role.value].threshold
-            num_of_keys = len(md[root_file_name].signatures)
-
-        save_settings(
-            f"{rolename}_EXPIRATION",
-            payload.settings.expiration[role.value],
-            settings_repository,
-        )
-        save_settings(f"{rolename}_THRESHOLD", threshold, settings_repository)
-        save_settings(f"{rolename}_NUM_KEYS", num_of_keys, settings_repository)
-
-    save_settings(
-        "NUMBER_OF_DELEGATED_BINS",
-        payload.settings.services.number_of_delegated_bins,
-        settings_repository,
-    )
-
-    save_settings(
-        "TARGETS_BASE_URL",
-        payload.settings.services.targets_base_url,
-        settings_repository,
-    )
-
-    save_settings(
-        "TARGETS_ONLINE_KEY",
-        payload.settings.services.targets_online_key,
-        settings_repository,
-    )
-
     task_id = get_task_id()
-    settings_repository.BOOTSTRAP = task_id
-    save_settings("BOOTSTRAP", task_id, settings_repository)
-    logging.debug(f"Bootstrap locked with id {task_id}")
-
-    logging.debug(f"Bootstrap task {task_id} sent")
+    pre_lock_bootstrap(task_id)
     repository_metadata.apply_async(
         kwargs={
             "action": "bootstrap",
@@ -158,6 +136,18 @@ def post_bootstrap(payload: BootstrapPayload) -> BootstrapPostResponse:
         queue="metadata_repository",
         acks_late=True,
     )
+    logging.info(f"Bootstrap task {task_id} sent")
+
+    # start a thread to check the bootstrap process
+    logging.info(f"Bootstrap process timeout: {payload.timeout} seconds")
+    Thread(
+        None,
+        _check_bootstrap_status,
+        kwargs={
+            "task_id": task_id,
+            "timeout": payload.timeout,
+        },
+    ).start()
 
     return BootstrapPostResponse(
         data={"task_id": task_id}, message="Bootstrap accepted."

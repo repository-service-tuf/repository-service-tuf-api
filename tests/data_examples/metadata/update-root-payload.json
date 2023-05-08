@@ -1,4 +1,13 @@
 {
+  "settings": {
+    "expiration": {
+      "root": 365,
+      "targets": 365,
+      "snapshot": 1,
+      "timestamp": 1,
+      "bins": 1
+    }
+  },
   "metadata": {
     "root": {
       "signatures": [

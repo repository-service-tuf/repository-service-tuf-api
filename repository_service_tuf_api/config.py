@@ -5,9 +5,6 @@
 import json
 from typing import Any, Dict
 
-from dynaconf import Dynaconf, loaders
-from dynaconf.base import DynaBox
-from dynaconf.loaders import redis_loader
 from fastapi import HTTPException, status
 from pydantic import BaseModel
 
@@ -31,16 +28,6 @@ class Response(BaseModel):
         }
 
 
-def save_settings(key: str, value: Any, settings: Dynaconf):
-    settings.store[key] = value
-    settings_data = settings.as_dict(env=settings.current_env)
-    redis_loader.write(settings_repository, settings_data)
-    loaders.write(
-        settings.SETTINGS_FILE_FOR_DYNACONF[0],
-        DynaBox(settings_data).to_dict(),
-    )
-
-
 def get():
     if is_bootstrap_done() is False:
         raise HTTPException(
@@ -48,6 +35,7 @@ def get():
             detail={"error": "System has not a Repository Metadata"},
         )
 
+    settings_repository.reload()
     lower_case_settings = {}
     for k, v in settings_repository.to_dict().items():
         if isinstance(v, str):

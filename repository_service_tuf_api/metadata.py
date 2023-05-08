@@ -6,7 +6,7 @@ import json
 from typing import Dict, Literal, Optional
 
 from fastapi import HTTPException, status
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 from repository_service_tuf_api import (
     get_task_id,
@@ -20,18 +20,12 @@ from repository_service_tuf_api.common_models import (
 )
 
 
-class ServiceSettings(BaseModel):
-    targets_base_url: str
-    number_of_delegated_bins: int = Field(gt=1, lt=16385)
-    targets_online_key: bool
-
-
 class Settings(BaseModel):
     expiration: Dict[Roles.values(), int]
-    services: ServiceSettings
 
 
 class MetadataPostPayload(BaseModel):
+    settings: Settings
     metadata: Dict[Literal[Roles.ROOT.value], TUFMetadata]
 
     class Config:
