@@ -58,8 +58,8 @@ services:
       - RSTUF_STORAGE_BACKEND=LocalStorage
       - RSTUF_KEYVAULT_BACKEND=LocalKeyVault
       - RSTUF_LOCAL_STORAGE_BACKEND_PATH=/var/opt/repository-service-tuf/storage
-      - RSTUF_LOCAL_KEYVAULT_PATH=/var/opt/repository-service-tuf/key_storage/online.key
-      - RSTUF_LOCAL_KEYVAULT_PASSWORD=strongPass
+      - RSTUF_LOCAL_KEYVAULT_PATH=/var/opt/repository-service-tuf/key_storage
+      - RSTUF_LOCAL_KEYVAULT_KEYS=online.key,strongPass
       - RSTUF_BROKER_SERVER=amqp://guest:guest@rabbitmq:5672
       - RSTUF_REDIS_SERVER=redis://redis
       - RSTUF_SQL_SERVER=postgresql://postgres:secret@postgres:5432
