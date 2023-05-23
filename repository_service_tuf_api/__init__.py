@@ -4,6 +4,7 @@
 
 import logging
 import os
+from dataclasses import dataclass
 from enum import Enum
 from typing import Optional
 from uuid import uuid4
@@ -27,6 +28,13 @@ logging.basicConfig(
     format="%(asctime)s %(levelname)s %(message)s",
     datefmt="%H:%M:%S",
 )
+
+
+@dataclass
+class BootstrapState:
+    bootstrap: bool
+    state: Optional[str] = None
+    task_id: Optional[str] = None
 
 
 class SCOPES_NAMES(Enum):
@@ -196,20 +204,40 @@ def release_bootstrap_lock():
     redis_loader.write(settings_repository, settings_data)
 
 
-def is_bootstrap_done():
+def bootstrap_state() -> BootstrapState:
     """
-    Check if the boot is done.
+    Bootstrap state
+
+    The bootstrap state is registered in Redis.
+    Detailed definitions are available in
+    https://repository-service-tuf.readthedocs.io/en/stable/devel/design.html#tuf-repository-settings  # noqa
     """
+
     # Reload the settings
     # The reload is required because the settings object is created in the
     # `app.py`'s initialization. The `settings_repository.get_fresh() doesn't
     # correctly reload because of that the settings_repository.reload() do
     # the job.
     settings_repository.reload()
-    if settings_repository.get_fresh("BOOTSTRAP", None) is None:
-        return False
-    else:
-        return True
+    bootstrap = settings_repository.get_fresh("BOOTSTRAP")
+
+    bootstrap_state = BootstrapState(bootstrap=False, state=None, task_id=None)
+    if bootstrap is None:
+        return bootstrap_state
+
+    if len(bootstrap.split("-")) == 1:
+        bootstrap_state.bootstrap = True
+        bootstrap_state.state = "finished"
+        bootstrap_state.task_id = bootstrap
+
+        return bootstrap_state
+
+    elif len(bootstrap.split("-")) == 2:
+        bootstrap_state.bootstrap = False
+        bootstrap_state.state = bootstrap.split("-")[0]
+        bootstrap_state.task_id = bootstrap.split("-")[1]
+
+        return bootstrap_state
 
 
 def get_task_id():

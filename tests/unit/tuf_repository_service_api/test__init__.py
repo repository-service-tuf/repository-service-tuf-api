@@ -7,24 +7,6 @@ import repository_service_tuf_api
 
 
 class TestInit:
-    def test_is_bootstrap_done_none(self):
-        repository_service_tuf_api.settings_repository = pretend.stub(
-            reload=pretend.call_recorder(lambda: None),
-            get_fresh=pretend.call_recorder(lambda *a: None),
-        )
-
-        result = repository_service_tuf_api.is_bootstrap_done()
-        assert result is False
-
-    def test_is_bootstrap_done_with_task_id(self):
-        repository_service_tuf_api.settings_repository = pretend.stub(
-            reload=pretend.call_recorder(lambda: None),
-            get_fresh=pretend.call_recorder(lambda *a: "taskid"),
-        )
-
-        result = repository_service_tuf_api.is_bootstrap_done()
-        assert result is True
-
     def test_pre_lock_bootstrap(self):
         fake_settings = pretend.stub(
             current_env="test", as_dict=pretend.call_recorder(lambda **kw: {})
@@ -56,3 +38,33 @@ class TestInit:
         assert repository_service_tuf_api.redis_loader.write.calls == [
             pretend.call(fake_settings, {"BOOTSTRAP": None})
         ]
+
+    def test_get_bootstrap_state(self):
+        repository_service_tuf_api.settings_repository = pretend.stub(
+            reload=pretend.call_recorder(lambda: None),
+            get_fresh=pretend.call_recorder(lambda *a: None),
+        )
+        result = repository_service_tuf_api.bootstrap_state()
+        assert result == repository_service_tuf_api.BootstrapState(
+            False, None, None
+        )
+
+    def test_get_bootstrap_state_signing(self):
+        repository_service_tuf_api.settings_repository = pretend.stub(
+            reload=pretend.call_recorder(lambda: None),
+            get_fresh=pretend.call_recorder(lambda *a: "signing-<task_id>"),
+        )
+        result = repository_service_tuf_api.bootstrap_state()
+        assert result == repository_service_tuf_api.BootstrapState(
+            False, "signing", "<task_id>"
+        )
+
+    def test_get_bootstrap_state_finished(self):
+        repository_service_tuf_api.settings_repository = pretend.stub(
+            reload=pretend.call_recorder(lambda: None),
+            get_fresh=pretend.call_recorder(lambda *a: "<task_id>"),
+        )
+        result = repository_service_tuf_api.bootstrap_state()
+        assert result == repository_service_tuf_api.BootstrapState(
+            True, "finished", "<task_id>"
+        )

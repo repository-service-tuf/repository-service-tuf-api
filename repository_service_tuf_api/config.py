@@ -9,8 +9,8 @@ from fastapi import HTTPException, status
 from pydantic import BaseModel
 
 from repository_service_tuf_api import (
+    bootstrap_state,
     get_task_id,
-    is_bootstrap_done,
     repository_metadata,
     settings_repository,
 )
@@ -70,10 +70,14 @@ class PutPayload(BaseModel):
 
 
 def put(payload: PutPayload):
-    if is_bootstrap_done() is False:
+    bs_state = bootstrap_state()
+    if bs_state.bootstrap is False:
         raise HTTPException(
             status.HTTP_404_NOT_FOUND,
-            detail={"error": "System has no repository metadata"},
+            detail={
+                "message": "No Repository Settings/Config found.",
+                "error": f"It requires bootstrap. State: {bs_state.state}",
+            },
         )
 
     task_id = get_task_id()
@@ -93,10 +97,14 @@ def put(payload: PutPayload):
 
 
 def get():
-    if is_bootstrap_done() is False:
+    bs_state = bootstrap_state()
+    if bs_state.bootstrap is False:
         raise HTTPException(
             status.HTTP_404_NOT_FOUND,
-            detail={"error": "System has no repository metadata"},
+            detail={
+                "message": "No Repository Settings/Config found.",
+                "error": f"It requires bootstrap. State: {bs_state.state}",
+            },
         )
 
     # Forces all values to be refreshed

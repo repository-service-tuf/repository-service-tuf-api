@@ -13,10 +13,12 @@ class TestGetBootstrap:
         self, test_client, token_headers, monkeypatch
     ):
         url = "/api/v1/bootstrap/"
-        mocked_check_metadata = pretend.call_recorder(lambda: False)
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda *a: pretend.stub(bootstrap=False, state=None, task_id=None)
+        )
         monkeypatch.setattr(
-            "repository_service_tuf_api.bootstrap.is_bootstrap_done",
-            mocked_check_metadata,
+            "repository_service_tuf_api.bootstrap.bootstrap_state",
+            mocked_bootstrap_state,
         )
 
         response = test_client.get(url, headers=token_headers)
@@ -26,35 +28,35 @@ class TestGetBootstrap:
             "data": {"bootstrap": False},
             "message": "System available for bootstrap.",
         }
-        assert mocked_check_metadata.calls == [pretend.call()]
+        assert mocked_bootstrap_state.calls == [pretend.call()]
 
     def test_get_bootstrap_not_available(
         self, test_client, monkeypatch, token_headers
     ):
         url = "/api/v1/bootstrap/"
 
-        mocked_check_metadata = pretend.call_recorder(lambda: True)
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda *a: pretend.stub(
+                bootstrap=True, state="finished", task_id="task_id"
+            )
+        )
         monkeypatch.setattr(
-            "repository_service_tuf_api.bootstrap.is_bootstrap_done",
-            mocked_check_metadata,
+            "repository_service_tuf_api.bootstrap.bootstrap_state",
+            mocked_bootstrap_state,
         )
 
         response = test_client.get(url, headers=token_headers)
         assert response.status_code == status.HTTP_200_OK
         assert response.url == f"{test_client.base_url}{url}"
         assert response.json() == {
-            "data": {"bootstrap": True},
+            "data": {"bootstrap": True, "state": "finished"},
             "message": "System LOCKED for bootstrap.",
         }
-        assert mocked_check_metadata.calls == [pretend.call()]
+        assert mocked_bootstrap_state.calls == [pretend.call()]
 
-    def test_get_bootstrap_invalid_token(self, test_client, monkeypatch):
+    def test_get_bootstrap_invalid_token(self, test_client):
         url = "/api/v1/bootstrap/"
-        mocked_check_metadata = pretend.call_recorder(lambda: False)
-        monkeypatch.setattr(
-            "repository_service_tuf_api.bootstrap.is_bootstrap_done",
-            mocked_check_metadata,
-        )
+
         token_headers = {"Authorization": "Bearer h4ck3r"}
         response = test_client.get(url, headers=token_headers)
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
@@ -62,9 +64,7 @@ class TestGetBootstrap:
             "detail": {"error": "Failed to validate token"}
         }
 
-    def test_get_bootstrap_incorrect_scope_token(
-        self, test_client, monkeypatch
-    ):
+    def test_get_bootstrap_incorrect_scope_token(self, test_client):
         token_url = "/api/v1/token/?expires=1"
         token_payload = {
             "username": "admin",
@@ -76,16 +76,6 @@ class TestGetBootstrap:
             "Authorization": f"Bearer {token.json()['access_token']}",
         }
         url = "/api/v1/bootstrap/"
-        mocked_check_metadata = pretend.call_recorder(lambda: False)
-        monkeypatch.setattr(
-            "repository_service_tuf_api.bootstrap.is_bootstrap_done",
-            mocked_check_metadata,
-        )
-        mocked__check_bootstrap_status = pretend.call_recorder(lambda *a: None)
-        monkeypatch.setattr(
-            "repository_service_tuf_api.bootstrap._check_bootstrap_status",
-            mocked__check_bootstrap_status,
-        )
 
         response = test_client.get(url, headers=token_headers)
 
@@ -99,12 +89,13 @@ class TestPostBootstrap:
     def test_post_bootstrap(self, test_client, monkeypatch, token_headers):
         url = "/api/v1/bootstrap/"
 
-        mocked_check_metadata = pretend.call_recorder(lambda: False)
-        monkeypatch.setattr(
-            "repository_service_tuf_api.bootstrap.is_bootstrap_done",
-            mocked_check_metadata,
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda *a: pretend.stub(bootstrap=False)
         )
-
+        monkeypatch.setattr(
+            "repository_service_tuf_api.bootstrap.bootstrap_state",
+            mocked_bootstrap_state,
+        )
         mocked_async_result = pretend.stub(state="SUCCESS")
         mocked_repository_metadata = pretend.stub(
             apply_async=pretend.call_recorder(lambda *a, **kw: None),
@@ -139,6 +130,7 @@ class TestPostBootstrap:
             "message": "Bootstrap accepted.",
             "data": {"task_id": "123"},
         }
+        assert mocked_bootstrap_state.calls == [pretend.call()]
         assert mocked__check_bootstrap_status.calls == [
             pretend.call(task_id="123", timeout=300)
         ]
@@ -148,12 +140,13 @@ class TestPostBootstrap:
     ):
         url = "/api/v1/bootstrap/"
 
-        mocked_check_metadata = pretend.call_recorder(lambda: False)
-        monkeypatch.setattr(
-            "repository_service_tuf_api.bootstrap.is_bootstrap_done",
-            mocked_check_metadata,
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda *a: pretend.stub(bootstrap=False)
         )
-
+        monkeypatch.setattr(
+            "repository_service_tuf_api.bootstrap.bootstrap_state",
+            mocked_bootstrap_state,
+        )
         mocked_async_result = pretend.stub(state="SUCCESS")
         mocked_repository_metadata = pretend.stub(
             apply_async=pretend.call_recorder(lambda *a, **kw: None),
@@ -189,6 +182,7 @@ class TestPostBootstrap:
             "message": "Bootstrap accepted.",
             "data": {"task_id": "123"},
         }
+        assert mocked_bootstrap_state.calls == [pretend.call()]
         assert mocked__check_bootstrap_status.calls == [
             pretend.call(task_id="123", timeout=600)
         ]
@@ -198,12 +192,15 @@ class TestPostBootstrap:
     ):
         url = "/api/v1/bootstrap/"
 
-        mocked_check_metadata = pretend.call_recorder(lambda: True)
-        monkeypatch.setattr(
-            "repository_service_tuf_api.bootstrap.is_bootstrap_done",
-            mocked_check_metadata,
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda *a: pretend.stub(
+                bootstrap=True, state="finished", task_id="task_id"
+            )
         )
-
+        monkeypatch.setattr(
+            "repository_service_tuf_api.bootstrap.bootstrap_state",
+            mocked_bootstrap_state,
+        )
         with open("tests/data_examples/bootstrap/payload.json") as f:
             f_data = f.read()
 
@@ -213,8 +210,67 @@ class TestPostBootstrap:
         assert response.status_code == status.HTTP_200_OK
         assert response.url == f"{test_client.base_url}{url}"
         assert response.json() == {
-            "detail": {"error": "System already has a Metadata."}
+            "detail": {
+                "error": "System already has a Metadata. State: finished"
+            }
         }
+        assert mocked_bootstrap_state.calls == [pretend.call()]
+
+    def test_post_bootstrap_already_bootstrap_in_pre(
+        self, test_client, monkeypatch, token_headers
+    ):
+        url = "/api/v1/bootstrap/"
+
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda *a: pretend.stub(
+                bootstrap=True, state="pre", task_id="task_id"
+            )
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.bootstrap.bootstrap_state",
+            mocked_bootstrap_state,
+        )
+        with open("tests/data_examples/bootstrap/payload.json") as f:
+            f_data = f.read()
+
+        payload = json.loads(f_data)
+        response = test_client.post(url, json=payload, headers=token_headers)
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.url == f"{test_client.base_url}{url}"
+        assert response.json() == {
+            "detail": {"error": "System already has a Metadata. State: pre"}
+        }
+        assert mocked_bootstrap_state.calls == [pretend.call()]
+
+    def test_post_bootstrap_already_bootstrap_in_signing(
+        self, test_client, monkeypatch, token_headers
+    ):
+        url = "/api/v1/bootstrap/"
+
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda *a: pretend.stub(
+                bootstrap=True, state="signing", task_id="task_id"
+            )
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.bootstrap.bootstrap_state",
+            mocked_bootstrap_state,
+        )
+        with open("tests/data_examples/bootstrap/payload.json") as f:
+            f_data = f.read()
+
+        payload = json.loads(f_data)
+        response = test_client.post(url, json=payload, headers=token_headers)
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.url == f"{test_client.base_url}{url}"
+        assert response.json() == {
+            "detail": {
+                "error": "System already has a Metadata. State: signing"
+            }
+        }
+        assert mocked_bootstrap_state.calls == [pretend.call()]
 
     def test_post_bootstrap_empty_payload(self, test_client, token_headers):
         url = "/api/v1/bootstrap/"
@@ -243,23 +299,6 @@ class TestPostBootstrap:
 
         token_headers = {"Authorization": "Bearer h4ck3r"}
 
-        mocked_check_metadata = pretend.call_recorder(lambda: False)
-        monkeypatch.setattr(
-            "repository_service_tuf_api.bootstrap.is_bootstrap_done",
-            mocked_check_metadata,
-        )
-
-        mocked_repository_metadata = pretend.stub(
-            apply_async=pretend.call_recorder(lambda *a, **kw: None)
-        )
-        monkeypatch.setattr(
-            "repository_service_tuf_api.bootstrap.repository_metadata",
-            mocked_repository_metadata,
-        )
-        monkeypatch.setattr(
-            "repository_service_tuf_api.bootstrap.get_task_id", lambda: "123"
-        )
-
         with open("tests/data_examples/bootstrap/payload.json") as f:
             f_data = f.read()
 
@@ -286,23 +325,6 @@ class TestPostBootstrap:
         }
 
         url = "/api/v1/bootstrap/"
-
-        mocked_check_metadata = pretend.call_recorder(lambda: False)
-        monkeypatch.setattr(
-            "repository_service_tuf_api.bootstrap.is_bootstrap_done",
-            mocked_check_metadata,
-        )
-
-        mocked_repository_metadata = pretend.stub(
-            apply_async=pretend.call_recorder(lambda *a, **kw: None)
-        )
-        monkeypatch.setattr(
-            "repository_service_tuf_api.bootstrap.repository_metadata",
-            mocked_repository_metadata,
-        )
-        monkeypatch.setattr(
-            "repository_service_tuf_api.bootstrap.get_task_id", lambda: "123"
-        )
 
         with open("tests/data_examples/bootstrap/payload.json") as f:
             f_data = f.read()

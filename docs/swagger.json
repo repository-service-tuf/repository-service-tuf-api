@@ -856,6 +856,10 @@
                     "bootstrap": {
                         "type": "boolean",
                         "title": "Bootstrap"
+                    },
+                    "state": {
+                        "type": "string",
+                        "title": "State"
                     }
                 },
                 "type": "object",
