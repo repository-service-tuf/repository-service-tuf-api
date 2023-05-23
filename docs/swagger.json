@@ -810,6 +810,10 @@
                     "bootstrap": {
                         "title": "Bootstrap",
                         "type": "boolean"
+                    },
+                    "state": {
+                        "title": "State",
+                        "type": "string"
                     }
                 }
             },
