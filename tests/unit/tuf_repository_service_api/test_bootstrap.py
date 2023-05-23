@@ -49,3 +49,26 @@ class TestBootstrap:
         assert len(bootstrap.repository_metadata.AsyncResult.calls) > 1
         assert fake_task.revoke.calls == [pretend.call(terminate=True)]
         assert bootstrap.release_bootstrap_lock.calls == [pretend.call()]
+
+    def test_get_bootstrap_none(self):
+        bootstrap.is_bootstrap_done = pretend.call_recorder(lambda: None)
+        bootstrap.get_bootstrap() == bootstrap.BootstrapGetResponse(
+            data=bootstrap.GetData(bootstrap=False, state=None),
+            message="System available for bootstrap.",
+        )
+
+    def test_get_bootstrap_pre(self):
+        bootstrap.is_bootstrap_done = pretend.call_recorder(
+            lambda: "pre-fakeid"
+        )
+        bootstrap.get_bootstrap() == bootstrap.BootstrapGetResponse(
+            data=bootstrap.GetData(bootstrap=False, state="pre"),
+            message="System LOCKED for bootstrap.",
+        )
+
+    def test_get_bootstrap_finished(self):
+        bootstrap.is_bootstrap_done = pretend.call_recorder(lambda: "fakeid")
+        bootstrap.get_bootstrap() == bootstrap.BootstrapGetResponse(
+            data=bootstrap.GetData(bootstrap=False, state="finished"),
+            message="System LOCKED for bootstrap.",
+        )

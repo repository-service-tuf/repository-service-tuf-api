@@ -13,7 +13,7 @@ class TestGetBootstrap:
         self, test_client, token_headers, monkeypatch
     ):
         url = "/api/v1/bootstrap/"
-        mocked_check_metadata = pretend.call_recorder(lambda: False)
+        mocked_check_metadata = pretend.call_recorder(lambda: None)
         monkeypatch.setattr(
             "repository_service_tuf_api.bootstrap.is_bootstrap_done",
             mocked_check_metadata,
@@ -33,7 +33,7 @@ class TestGetBootstrap:
     ):
         url = "/api/v1/bootstrap/"
 
-        mocked_check_metadata = pretend.call_recorder(lambda: True)
+        mocked_check_metadata = pretend.call_recorder(lambda: "fakeid")
         monkeypatch.setattr(
             "repository_service_tuf_api.bootstrap.is_bootstrap_done",
             mocked_check_metadata,
@@ -43,7 +43,7 @@ class TestGetBootstrap:
         assert response.status_code == status.HTTP_200_OK
         assert response.url == f"{test_client.base_url}{url}"
         assert response.json() == {
-            "data": {"bootstrap": True},
+            "data": {"bootstrap": True, "state": "finished"},
             "message": "System LOCKED for bootstrap.",
         }
         assert mocked_check_metadata.calls == [pretend.call()]
@@ -99,7 +99,7 @@ class TestPostBootstrap:
     def test_post_bootstrap(self, test_client, monkeypatch, token_headers):
         url = "/api/v1/bootstrap/"
 
-        mocked_check_metadata = pretend.call_recorder(lambda: False)
+        mocked_check_metadata = pretend.call_recorder(lambda: None)
         monkeypatch.setattr(
             "repository_service_tuf_api.bootstrap.is_bootstrap_done",
             mocked_check_metadata,
@@ -148,7 +148,7 @@ class TestPostBootstrap:
     ):
         url = "/api/v1/bootstrap/"
 
-        mocked_check_metadata = pretend.call_recorder(lambda: False)
+        mocked_check_metadata = pretend.call_recorder(lambda: None)
         monkeypatch.setattr(
             "repository_service_tuf_api.bootstrap.is_bootstrap_done",
             mocked_check_metadata,
@@ -198,7 +198,7 @@ class TestPostBootstrap:
     ):
         url = "/api/v1/bootstrap/"
 
-        mocked_check_metadata = pretend.call_recorder(lambda: True)
+        mocked_check_metadata = pretend.call_recorder(lambda: "fakeid")
         monkeypatch.setattr(
             "repository_service_tuf_api.bootstrap.is_bootstrap_done",
             mocked_check_metadata,
@@ -243,7 +243,7 @@ class TestPostBootstrap:
 
         token_headers = {"Authorization": "Bearer h4ck3r"}
 
-        mocked_check_metadata = pretend.call_recorder(lambda: False)
+        mocked_check_metadata = pretend.call_recorder(lambda: None)
         monkeypatch.setattr(
             "repository_service_tuf_api.bootstrap.is_bootstrap_done",
             mocked_check_metadata,
@@ -287,7 +287,7 @@ class TestPostBootstrap:
 
         url = "/api/v1/bootstrap/"
 
-        mocked_check_metadata = pretend.call_recorder(lambda: False)
+        mocked_check_metadata = pretend.call_recorder(lambda: None)
         monkeypatch.setattr(
             "repository_service_tuf_api.bootstrap.is_bootstrap_done",
             mocked_check_metadata,

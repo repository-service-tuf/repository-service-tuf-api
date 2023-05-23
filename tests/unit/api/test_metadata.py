@@ -12,7 +12,7 @@ class TestPostMetadata:
     def test_post_metadata(self, test_client, monkeypatch, token_headers):
         url = "/api/v1/metadata/"
 
-        mocked_check_metadata = pretend.call_recorder(lambda: True)
+        mocked_check_metadata = pretend.call_recorder(lambda: "fakeid")
         monkeypatch.setattr(
             "repository_service_tuf_api.metadata.is_bootstrap_done",
             mocked_check_metadata,
@@ -42,7 +42,7 @@ class TestPostMetadata:
         assert response.status_code == status.HTTP_202_ACCEPTED
         assert response.url == f"{test_client.base_url}{url}"
         assert response.json() == {
-            "message": "Metadata rotation accepted.",
+            "message": "Metadata update accepted.",
             "data": {"task_id": "123"},
         }
 
@@ -51,7 +51,7 @@ class TestPostMetadata:
     ):
         url = "/api/v1/metadata/"
 
-        mocked_check_metadata = pretend.call_recorder(lambda: False)
+        mocked_check_metadata = pretend.call_recorder(lambda: None)
         monkeypatch.setattr(
             "repository_service_tuf_api.metadata.is_bootstrap_done",
             mocked_check_metadata,
@@ -68,7 +68,7 @@ class TestPostMetadata:
         assert response.status_code == status.HTTP_200_OK
         assert response.url == f"{test_client.base_url}{url}"
         assert response.json() == {
-            "detail": {"error": "Metadata rotation requires bootstrap done."}
+            "detail": {"error": "Metadata update requires bootstrap done."}
         }
 
     def test_post_metadata_empty_payload(self, test_client, token_headers):
@@ -93,7 +93,7 @@ class TestPostMetadata:
             ]
         }
 
-    def test_post_metadata_invalid_token(self, test_client, monkeypatch):
+    def test_post_metadata_invalid_token(self, test_client):
         url = "/api/v1/metadata/"
 
         token_headers = {"Authorization": "Bearer h4ck3r"}
@@ -111,9 +111,7 @@ class TestPostMetadata:
             "detail": {"error": "Failed to validate token"}
         }
 
-    def test_post_metadata_incorrect_scope_token(
-        self, test_client, monkeypatch
-    ):
+    def test_post_metadata_incorrect_scope_token(self, test_client):
         token_url = "/api/v1/token/?expires=1"
         token_payload = {
             "username": "admin",

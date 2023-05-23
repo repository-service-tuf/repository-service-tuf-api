@@ -10,7 +10,7 @@ class TestGetSettings:
     def test_get_settings(self, test_client, token_headers, monkeypatch):
         url = "/api/v1/config"
 
-        mocked_check_metadata = pretend.call_recorder(lambda: True)
+        mocked_check_metadata = pretend.call_recorder(lambda: "fakeid")
         monkeypatch.setattr(
             "repository_service_tuf_api.config.is_bootstrap_done",
             mocked_check_metadata,
@@ -31,7 +31,7 @@ class TestGetSettings:
     ):
         url = "/api/v1/config"
 
-        mocked_check_metadata = pretend.call_recorder(lambda: False)
+        mocked_check_metadata = pretend.call_recorder(lambda: None)
         monkeypatch.setattr(
             "repository_service_tuf_api.config.is_bootstrap_done",
             mocked_check_metadata,
@@ -41,13 +41,13 @@ class TestGetSettings:
         assert test_response.status_code == status.HTTP_404_NOT_FOUND
         assert (
             test_response.json().get("detail").get("error")
-            == "System has not a Repository Metadata"
+            == "Configuration available only after bootstrap process"
         )
 
     def test_get_settings_invalid_token(self, test_client, monkeypatch):
         url = "/api/v1/config"
 
-        mocked_check_metadata = pretend.call_recorder(lambda: True)
+        mocked_check_metadata = pretend.call_recorder(lambda: "fakeid")
         monkeypatch.setattr(
             "repository_service_tuf_api.config.is_bootstrap_done",
             mocked_check_metadata,

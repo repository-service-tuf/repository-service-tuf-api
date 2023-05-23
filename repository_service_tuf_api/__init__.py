@@ -202,10 +202,7 @@ def is_bootstrap_done():
     # correctly reload it because that and the settings_repository.reload() do
     # the job.
     settings_repository.reload()
-    if settings_repository.get_fresh("BOOTSTRAP", None) is None:
-        return False
-    else:
-        return True
+    return settings_repository.get_fresh("BOOTSTRAP")
 
 
 def get_task_id():

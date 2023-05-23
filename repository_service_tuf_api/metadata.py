@@ -13,11 +13,7 @@ from repository_service_tuf_api import (
     is_bootstrap_done,
     repository_metadata,
 )
-from repository_service_tuf_api.common_models import (
-    BaseErrorResponse,
-    Roles,
-    TUFMetadata,
-)
+from repository_service_tuf_api.common_models import Roles, TUFMetadata
 
 
 class Settings(BaseModel):
@@ -57,15 +53,15 @@ class MetadataPostResponse(BaseModel):
 
 
 def post_metadata(payload: MetadataPostPayload) -> MetadataPostResponse:
-    if is_bootstrap_done() is False:
+    bootstrap = is_bootstrap_done()
+    if bootstrap is None or "pre" in bootstrap:
         raise HTTPException(
-            status_code=status.HTTP_200_OK,
-            detail=BaseErrorResponse(
-                error="Metadata rotation requires bootstrap done."
-            ).dict(exclude_none=True),
+            status.HTTP_200_OK,
+            detail={"error": "Metadata update requires bootstrap done."},
         )
 
     task_id = get_task_id()
+
     repository_metadata.apply_async(
         kwargs={
             "action": "metadata_rotation",
@@ -77,5 +73,5 @@ def post_metadata(payload: MetadataPostPayload) -> MetadataPostResponse:
     )
 
     return MetadataPostResponse(
-        data={"task_id": task_id}, message="Metadata rotation accepted."
+        data={"task_id": task_id}, message="Metadata update accepted."
     )

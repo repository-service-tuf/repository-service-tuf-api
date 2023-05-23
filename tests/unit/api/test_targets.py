@@ -22,7 +22,7 @@ class TestPostTargets:
         )
         monkeypatch.setattr(
             "repository_service_tuf_api.targets.is_bootstrap_done",
-            lambda: True,
+            lambda: "fakeid",
         )
         monkeypatch.setattr(
             "repository_service_tuf_api.targets.repository_metadata",
@@ -80,7 +80,7 @@ class TestPostTargets:
         )
         monkeypatch.setattr(
             "repository_service_tuf_api.targets.is_bootstrap_done",
-            lambda: True,
+            lambda: "fakeid",
         )
         monkeypatch.setattr(
             "repository_service_tuf_api.targets.repository_metadata",
@@ -153,7 +153,7 @@ class TestPostTargets:
 
         monkeypatch.setattr(
             "repository_service_tuf_api.targets.is_bootstrap_done",
-            lambda: True,
+            lambda: "fakeid",
         )
         fake_task_id = uuid4().hex
         monkeypatch.setattr(
@@ -207,12 +207,30 @@ class TestPostTargets:
         payload = json.loads(f_data)
         monkeypatch.setattr(
             "repository_service_tuf_api.targets.is_bootstrap_done",
-            lambda: False,
+            lambda: None,
         )
         response = test_client.post(url, json=payload, headers=token_headers)
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == {
-            "detail": {"error": "System has not a Repository Metadata"}
+            "detail": {"error": "Bootstrap is not done or still running."}
+        }
+
+    def test_post_with_bootstrap_pre(
+        self, monkeypatch, test_client, token_headers
+    ):
+        url = "/api/v1/targets/"
+        with open("tests/data_examples/targets/payload.json") as f:
+            f_data = f.read()
+
+        payload = json.loads(f_data)
+        monkeypatch.setattr(
+            "repository_service_tuf_api.targets.is_bootstrap_done",
+            lambda: "pre-fakeid",
+        )
+        response = test_client.post(url, json=payload, headers=token_headers)
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == {
+            "detail": {"error": "Bootstrap is not done or still running."}
         }
 
     def test_post_missing_required_field(self, test_client, token_headers):
@@ -281,7 +299,7 @@ class TestDeleteTargets:
 
         monkeypatch.setattr(
             "repository_service_tuf_api.targets.is_bootstrap_done",
-            lambda: True,
+            lambda: "fakeid",
         )
         mocked_repository_metadata = pretend.stub(
             apply_async=pretend.call_recorder(lambda **kw: None)
@@ -341,7 +359,7 @@ class TestDeleteTargets:
 
         monkeypatch.setattr(
             "repository_service_tuf_api.targets.is_bootstrap_done",
-            lambda: True,
+            lambda: "fakeid",
         )
         mocked_repository_metadata = pretend.stub(
             apply_async=pretend.call_recorder(lambda **kw: None)
@@ -403,7 +421,7 @@ class TestDeleteTargets:
         }
         monkeypatch.setattr(
             "repository_service_tuf_api.targets.is_bootstrap_done",
-            lambda: False,
+            lambda: None,
         )
         # https://github.com/tiangolo/fastapi/issues/5649
         response = test_client.request(
@@ -412,7 +430,29 @@ class TestDeleteTargets:
 
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == {
-            "detail": {"error": "System has not a Repository Metadata"}
+            "detail": {"error": "Bootstrap is not done or still running."}
+        }
+
+    def test_delete_with_bootstrap_pre(
+        self, monkeypatch, test_client, token_headers
+    ):
+        url = "/api/v1/targets/"
+
+        payload = {
+            "targets": ["file-v1.0.0_i683.tar.gz", "v0.4.1/file.tar.gz"]
+        }
+        monkeypatch.setattr(
+            "repository_service_tuf_api.targets.is_bootstrap_done",
+            lambda: "pre-faketaskid",
+        )
+        # https://github.com/tiangolo/fastapi/issues/5649
+        response = test_client.request(
+            "DELETE", url, json=payload, headers=token_headers
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == {
+            "detail": {"error": "Bootstrap is not done or still running."}
         }
 
     def test_delete_missing_required_field(self, test_client, token_headers):

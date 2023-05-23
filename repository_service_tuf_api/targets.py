@@ -110,10 +110,11 @@ def post(payload: AddPayload) -> Response:
     It generates a new task id, syncs with the Redis server, and posts the new
     task.
     """
-    if is_bootstrap_done() is False:
+    bootstrap = is_bootstrap_done()
+    if bootstrap is None or "pre" in bootstrap:
         raise HTTPException(
             status.HTTP_200_OK,
-            detail={"error": "System has not a Repository Metadata"},
+            detail={"error": "Bootstrap is not done or still running."},
         )
 
     task_id = get_task_id()
@@ -162,10 +163,11 @@ def delete(payload: DeletePayload) -> Response:
     It generates a new task id, syncs with the Redis server, and posts the new
     task.
     """
-    if is_bootstrap_done() is False:
+    bootstrap = is_bootstrap_done()
+    if bootstrap is None or "pre" in bootstrap:
         raise HTTPException(
             status.HTTP_200_OK,
-            detail={"error": "System has not a Repository Metadata"},
+            detail={"error": "Bootstrap is not done or still running."},
         )
 
     task_id = get_task_id()

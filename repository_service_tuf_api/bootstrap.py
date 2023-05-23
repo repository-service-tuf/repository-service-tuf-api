@@ -69,6 +69,7 @@ class BootstrapPostResponse(BaseModel):
 
 class GetData(BaseModel):
     bootstrap: bool
+    state: Optional[str]
 
 
 class BootstrapGetResponse(BaseModel):
@@ -104,20 +105,29 @@ def _check_bootstrap_status(task_id, timeout):
 
 
 def get_bootstrap():
-    if is_bootstrap_done() is True:
-        response = BootstrapGetResponse(
-            data={"bootstrap": True}, message="System LOCKED for bootstrap."
-        )
-    else:
+    bootstrap = is_bootstrap_done()
+
+    if bootstrap is None:
         response = BootstrapGetResponse(
             data={"bootstrap": False},
             message="System available for bootstrap.",
         )
+    elif "pre" in bootstrap:
+        response = BootstrapGetResponse(
+            data={"bootstrap": True, "state": bootstrap.split("-")[0]},
+            message="System LOCKED for bootstrap.",
+        )
+    else:
+        response = BootstrapGetResponse(
+            data={"bootstrap": True, "state": "finished"},
+            message="System LOCKED for bootstrap.",
+        )
+
     return response
 
 
 def post_bootstrap(payload: BootstrapPayload) -> BootstrapPostResponse:
-    if is_bootstrap_done() is True:
+    if is_bootstrap_done() is not None:
         raise HTTPException(
             status_code=status.HTTP_200_OK,
             detail=BaseErrorResponse(

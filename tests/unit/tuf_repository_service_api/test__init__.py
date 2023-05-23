@@ -14,7 +14,7 @@ class TestInit:
         )
 
         result = repository_service_tuf_api.is_bootstrap_done()
-        assert result is False
+        assert result is None
 
     def test_is_bootstrap_done_with_task_id(self):
         repository_service_tuf_api.settings_repository = pretend.stub(
@@ -23,7 +23,7 @@ class TestInit:
         )
 
         result = repository_service_tuf_api.is_bootstrap_done()
-        assert result is True
+        assert result == "taskid"
 
     def test_pre_lock_bootstrap(self):
         fake_settings = pretend.stub(

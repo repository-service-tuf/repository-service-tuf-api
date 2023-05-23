@@ -29,10 +29,12 @@ class Response(BaseModel):
 
 
 def get():
-    if is_bootstrap_done() is False:
+    if is_bootstrap_done() is None:
         raise HTTPException(
             status.HTTP_404_NOT_FOUND,
-            detail={"error": "System has not a Repository Metadata"},
+            detail={
+                "error": "Configuration available only after bootstrap process"
+            },
         )
 
     settings_repository.reload()
