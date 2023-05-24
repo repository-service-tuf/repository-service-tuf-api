@@ -31,3 +31,42 @@ def post(
     _user=Security(auth, scopes=[SCOPES_NAMES.write_metadata.value]),
 ):
     return metadata.post_metadata(payload)
+
+
+@router.get(
+    "/sign",
+    summary=(
+        "Get the role metadata signing data. Scope: "
+        f"{SCOPES_NAMES.write_metadata.value}"
+    ),
+    description=(
+        "Get signing the role metadata signging status and current metadata."
+    ),
+    response_model=metadata.MetadataSignGetResponse,
+    response_model_exclude_none=True,
+    status_code=status.HTTP_200_OK,
+)
+def get_sign(
+    _user=Security(auth, scopes=[SCOPES_NAMES.write_metadata.value]),
+):
+    return metadata.get_metadata_sign()
+
+
+@router.post(
+    "/sign",
+    summary=(
+        "Get the role metadata signing data. Scope: "
+        f"{SCOPES_NAMES.write_metadata.value}"
+    ),
+    description=(
+        "Get signing the role metadata signging status and current metadata."
+    ),
+    response_model=metadata.MetadataPostResponse,
+    response_model_exclude_none=True,
+    status_code=status.HTTP_202_ACCEPTED,
+)
+def post_sign(
+    payload: metadata.MetadataSignPostPayload,
+    _user=Security(auth, scopes=[SCOPES_NAMES.write_metadata.value]),
+):
+    return metadata.post_metadata_sign(payload)
