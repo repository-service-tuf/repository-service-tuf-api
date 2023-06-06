@@ -42,7 +42,7 @@ class TestPostMetadata:
         assert response.status_code == status.HTTP_202_ACCEPTED
         assert response.url == f"{test_client.base_url}{url}"
         assert response.json() == {
-            "message": "Metadata rotation accepted.",
+            "message": "Metadata update accepted.",
             "data": {"task_id": "123"},
         }
 
@@ -68,7 +68,7 @@ class TestPostMetadata:
         assert response.status_code == status.HTTP_200_OK
         assert response.url == f"{test_client.base_url}{url}"
         assert response.json() == {
-            "detail": {"error": "Metadata rotation requires bootstrap done."}
+            "detail": {"error": "Metadata update requires bootstrap done."}
         }
 
     def test_post_metadata_empty_payload(self, test_client, token_headers):
@@ -80,11 +80,6 @@ class TestPostMetadata:
         assert response.url == f"{test_client.base_url}{url}"
         assert response.json() == {
             "detail": [
-                {
-                    "loc": ["body", "settings"],
-                    "msg": "field required",
-                    "type": "value_error.missing",
-                },
                 {
                     "loc": ["body", "metadata"],
                     "msg": "field required",

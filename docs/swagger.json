@@ -645,7 +645,7 @@
                 "type": "object",
                 "properties": {
                     "settings": {
-                        "$ref": "#/components/schemas/repository_service_tuf_api__bootstrap__Settings"
+                        "$ref": "#/components/schemas/Settings"
                     },
                     "metadata": {
                         "title": "Metadata",
@@ -864,14 +864,10 @@
             "MetadataPostPayload": {
                 "title": "MetadataPostPayload",
                 "required": [
-                    "settings",
                     "metadata"
                 ],
                 "type": "object",
                 "properties": {
-                    "settings": {
-                        "$ref": "#/components/schemas/repository_service_tuf_api__metadata__Settings"
-                    },
                     "metadata": {
                         "title": "Metadata",
                         "type": "object",
@@ -1071,6 +1067,26 @@
                     "targets_online_key": {
                         "title": "Targets Online Key",
                         "type": "boolean"
+                    }
+                }
+            },
+            "Settings": {
+                "title": "Settings",
+                "required": [
+                    "expiration",
+                    "services"
+                ],
+                "type": "object",
+                "properties": {
+                    "expiration": {
+                        "title": "Expiration",
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "integer"
+                        }
+                    },
+                    "services": {
+                        "$ref": "#/components/schemas/ServiceSettings"
                     }
                 }
             },
@@ -1512,26 +1528,6 @@
                     }
                 }
             },
-            "repository_service_tuf_api__bootstrap__Settings": {
-                "title": "Settings",
-                "required": [
-                    "expiration",
-                    "services"
-                ],
-                "type": "object",
-                "properties": {
-                    "expiration": {
-                        "title": "Expiration",
-                        "type": "object",
-                        "additionalProperties": {
-                            "type": "integer"
-                        }
-                    },
-                    "services": {
-                        "$ref": "#/components/schemas/ServiceSettings"
-                    }
-                }
-            },
             "repository_service_tuf_api__config__Response": {
                 "title": "Response",
                 "required": [
@@ -1587,22 +1583,6 @@
                     "task_id": {
                         "title": "Task Id",
                         "type": "string"
-                    }
-                }
-            },
-            "repository_service_tuf_api__metadata__Settings": {
-                "title": "Settings",
-                "required": [
-                    "expiration"
-                ],
-                "type": "object",
-                "properties": {
-                    "expiration": {
-                        "title": "Expiration",
-                        "type": "object",
-                        "additionalProperties": {
-                            "type": "integer"
-                        }
                     }
                 }
             },

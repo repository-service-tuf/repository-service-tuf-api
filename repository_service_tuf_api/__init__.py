@@ -78,11 +78,13 @@ secrets_settings = Dynaconf(
 
 is_auth_enabled: bool = settings.get("AUTH", False)
 
+
 SECRET_KEY: Optional[str] = None
 ADMIN_PASSWORD: Optional[str] = None
 db: Optional[sessionmaker] = None
 
 if is_auth_enabled is True:
+    logging.info("AUTH enabled")
     # Tokens
     if secrets_settings.TOKEN_KEY.startswith("/run/secrets/"):
         try:

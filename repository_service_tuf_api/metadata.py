@@ -20,12 +20,7 @@ from repository_service_tuf_api.common_models import (
 )
 
 
-class Settings(BaseModel):
-    expiration: Dict[Roles.values(), int]
-
-
 class MetadataPostPayload(BaseModel):
-    settings: Settings
     metadata: Dict[Literal[Roles.ROOT.value], TUFMetadata]
 
     class Config:
@@ -61,7 +56,7 @@ def post_metadata(payload: MetadataPostPayload) -> MetadataPostResponse:
         raise HTTPException(
             status_code=status.HTTP_200_OK,
             detail=BaseErrorResponse(
-                error="Metadata rotation requires bootstrap done."
+                error="Metadata update requires bootstrap done."
             ).dict(exclude_none=True),
         )
 
@@ -77,5 +72,5 @@ def post_metadata(payload: MetadataPostPayload) -> MetadataPostResponse:
     )
 
     return MetadataPostResponse(
-        data={"task_id": task_id}, message="Metadata rotation accepted."
+        data={"task_id": task_id}, message="Metadata update accepted."
     )
