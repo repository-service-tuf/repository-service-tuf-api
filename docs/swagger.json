@@ -1547,31 +1547,25 @@
                 },
                 "example": {
                     "data": {
-                        "bootstrap": "302c84ea28fd4e38ae41d147f128a232",
-                        "bins_expiration": 1,
-                        "bins_number_prefixes": 4,
-                        "bins_num_keys": 1,
-                        "bins_threshold": 1,
-                        "bin_expiration": 365,
-                        "bin_num_keys": 1,
-                        "bin_threshold": 1,
-                        "root_expiration": 356,
-                        "root_num_keys": 2,
+                        "bootstrap": "82281613dba54b8ea88dc86211c77d0a",
+                        "root_expiration": 365,
                         "root_threshold": 1,
-                        "snapshot_expiration": 1,
-                        "snapshot_num_keys": 1,
-                        "snapshot_threshold": 1,
-                        "targets_base_url": "http://www.example.com/repository/",
+                        "root_num_keys": 2,
                         "targets_expiration": 365,
-                        "targets_num_keys": 2,
-                        "targets_paths": [
-                            "*",
-                            "*/*"
-                        ],
                         "targets_threshold": 1,
+                        "targets_num_keys": 1,
+                        "snapshot_expiration": 1,
+                        "snapshot_threshold": 1,
+                        "snapshot_num_keys": 1,
                         "timestamp_expiration": 1,
+                        "timestamp_threshold": 1,
                         "timestamp_num_keys": 1,
-                        "timestamp_threshold": 1
+                        "bins_expiration": 1,
+                        "bins_threshold": 1,
+                        "bins_num_keys": 1,
+                        "number_of_delegated_bins": 4,
+                        "targets_base_url": "http://www.example.com/repository/",
+                        "targets_online_key": true
                     },
                     "message": "Current Settings"
                 }
