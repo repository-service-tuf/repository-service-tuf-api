@@ -1,5 +1,5 @@
 {
-    "openapi": "3.0.2",
+    "openapi": "3.1.0",
     "info": {
         "title": "Repository Service for TUF API",
         "description": "Repository Service for TUF Rest API",
@@ -528,32 +528,32 @@
     "components": {
         "schemas": {
             "AddPayload": {
-                "title": "AddPayload",
-                "required": [
-                    "targets"
-                ],
-                "type": "object",
                 "properties": {
                     "targets": {
-                        "title": "Targets",
-                        "type": "array",
                         "items": {
                             "$ref": "#/components/schemas/Targets"
-                        }
+                        },
+                        "type": "array",
+                        "title": "Targets"
                     },
                     "add_task_id_to_custom": {
-                        "title": "Add Task Id To Custom",
                         "type": "boolean",
+                        "title": "Add Task Id To Custom",
                         "description": "Whether to add the id of the task in custom",
                         "default": false
                     },
                     "publish_targets": {
-                        "title": "Publish Targets",
                         "type": "boolean",
+                        "title": "Publish Targets",
                         "description": "Whether to publish the targets",
                         "default": true
                     }
                 },
+                "type": "object",
+                "required": [
+                    "targets"
+                ],
+                "title": "AddPayload",
                 "description": "POST method required Payload.",
                 "example": {
                     "targets": [
@@ -582,53 +582,53 @@
                 }
             },
             "Body_post_api_v1_token__post": {
-                "title": "Body_post_api_v1_token__post",
+                "properties": {
+                    "username": {
+                        "type": "string",
+                        "title": "Username"
+                    },
+                    "password": {
+                        "type": "string",
+                        "format": "password",
+                        "title": "Password",
+                        "writeOnly": true
+                    },
+                    "scope": {
+                        "type": "string",
+                        "title": "Scope",
+                        "description": "Add scopes separeted by space. Available scopes: `read:bootstrap`, `read:settings`, `read:tasks`, `read:token`, `write:bootstrap`, `write:metadata`, `write:targets`, `write:token`, `delete:targets`"
+                    },
+                    "expires": {
+                        "type": "integer",
+                        "minimum": 1.0,
+                        "title": "Expires",
+                        "description": "Expiration in hours. Default: 1 hour",
+                        "default": 1
+                    }
+                },
+                "type": "object",
                 "required": [
                     "username",
                     "password",
                     "scope"
                 ],
-                "type": "object",
-                "properties": {
-                    "username": {
-                        "title": "Username",
-                        "type": "string"
-                    },
-                    "password": {
-                        "title": "Password",
-                        "type": "string",
-                        "format": "password",
-                        "writeOnly": true
-                    },
-                    "scope": {
-                        "title": "Scope",
-                        "type": "string",
-                        "description": "Add scopes separeted by space. Available scopes: `read:bootstrap`, `read:settings`, `read:tasks`, `read:token`, `write:bootstrap`, `write:metadata`, `write:targets`, `write:token`, `delete:targets`"
-                    },
-                    "expires": {
-                        "title": "Expires",
-                        "minimum": 1.0,
-                        "type": "integer",
-                        "description": "Expiration in hours. Default: 1 hour",
-                        "default": 1
-                    }
-                }
+                "title": "Body_post_api_v1_token__post"
             },
             "BootstrapGetResponse": {
-                "title": "BootstrapGetResponse",
-                "required": [
-                    "message"
-                ],
-                "type": "object",
                 "properties": {
                     "data": {
                         "$ref": "#/components/schemas/GetData"
                     },
                     "message": {
-                        "title": "Message",
-                        "type": "string"
+                        "type": "string",
+                        "title": "Message"
                     }
                 },
+                "type": "object",
+                "required": [
+                    "message"
+                ],
+                "title": "BootstrapGetResponse",
                 "example": {
                     "data": {
                         "bootstrap": false
@@ -637,29 +637,29 @@
                 }
             },
             "BootstrapPayload": {
-                "title": "BootstrapPayload",
-                "required": [
-                    "settings",
-                    "metadata"
-                ],
-                "type": "object",
                 "properties": {
                     "settings": {
                         "$ref": "#/components/schemas/Settings"
                     },
                     "metadata": {
-                        "title": "Metadata",
-                        "type": "object",
                         "additionalProperties": {
                             "$ref": "#/components/schemas/TUFMetadata"
-                        }
+                        },
+                        "type": "object",
+                        "title": "Metadata"
                     },
                     "timeout": {
-                        "title": "Timeout",
                         "type": "integer",
+                        "title": "Timeout",
                         "default": 300
                     }
                 },
+                "type": "object",
+                "required": [
+                    "settings",
+                    "metadata"
+                ],
+                "title": "BootstrapPayload",
                 "example": {
                     "settings": {
                         "expiration": {
@@ -749,20 +749,20 @@
                 }
             },
             "BootstrapPostResponse": {
-                "title": "BootstrapPostResponse",
-                "required": [
-                    "message"
-                ],
-                "type": "object",
                 "properties": {
                     "data": {
                         "$ref": "#/components/schemas/repository_service_tuf_api__bootstrap__PostData"
                     },
                     "message": {
-                        "title": "Message",
-                        "type": "string"
+                        "type": "string",
+                        "title": "Message"
                     }
                 },
+                "type": "object",
+                "required": [
+                    "message"
+                ],
+                "title": "BootstrapPostResponse",
                 "example": {
                     "data": {
                         "task_id": "7a634b556f784ae88785d36425f9a218"
@@ -771,26 +771,26 @@
                 }
             },
             "DeletePayload": {
-                "title": "DeletePayload",
-                "required": [
-                    "targets"
-                ],
-                "type": "object",
                 "properties": {
                     "targets": {
-                        "title": "Targets",
-                        "type": "array",
                         "items": {
                             "type": "string"
-                        }
+                        },
+                        "type": "array",
+                        "title": "Targets"
                     },
                     "publish_targets": {
-                        "title": "Publish Targets",
                         "type": "boolean",
+                        "title": "Publish Targets",
                         "description": "Whether to publish the targets changes",
                         "default": true
                     }
                 },
+                "type": "object",
+                "required": [
+                    "targets"
+                ],
+                "title": "DeletePayload",
                 "description": "DELETE method required Payload.",
                 "example": {
                     "targets": [
@@ -801,34 +801,34 @@
                 }
             },
             "GetData": {
-                "title": "GetData",
+                "properties": {
+                    "bootstrap": {
+                        "type": "boolean",
+                        "title": "Bootstrap"
+                    }
+                },
+                "type": "object",
                 "required": [
                     "bootstrap"
                 ],
-                "type": "object",
-                "properties": {
-                    "bootstrap": {
-                        "title": "Bootstrap",
-                        "type": "boolean"
-                    }
-                }
+                "title": "GetData"
             },
             "GetTokenResponse": {
-                "title": "GetTokenResponse",
-                "required": [
-                    "data",
-                    "message"
-                ],
-                "type": "object",
                 "properties": {
                     "data": {
                         "$ref": "#/components/schemas/TokenPublicData"
                     },
                     "message": {
-                        "title": "Message",
-                        "type": "string"
+                        "type": "string",
+                        "title": "Message"
                     }
                 },
+                "type": "object",
+                "required": [
+                    "data",
+                    "message"
+                ],
+                "title": "GetTokenResponse",
                 "example": {
                     "data": {
                         "scopes": [
@@ -849,33 +849,33 @@
                 }
             },
             "HTTPValidationError": {
-                "title": "HTTPValidationError",
-                "type": "object",
                 "properties": {
                     "detail": {
-                        "title": "Detail",
-                        "type": "array",
                         "items": {
                             "$ref": "#/components/schemas/ValidationError"
-                        }
+                        },
+                        "type": "array",
+                        "title": "Detail"
                     }
-                }
+                },
+                "type": "object",
+                "title": "HTTPValidationError"
             },
             "MetadataPostPayload": {
-                "title": "MetadataPostPayload",
+                "properties": {
+                    "metadata": {
+                        "additionalProperties": {
+                            "$ref": "#/components/schemas/TUFMetadata"
+                        },
+                        "type": "object",
+                        "title": "Metadata"
+                    }
+                },
+                "type": "object",
                 "required": [
                     "metadata"
                 ],
-                "type": "object",
-                "properties": {
-                    "metadata": {
-                        "title": "Metadata",
-                        "type": "object",
-                        "additionalProperties": {
-                            "$ref": "#/components/schemas/TUFMetadata"
-                        }
-                    }
-                },
+                "title": "MetadataPostPayload",
                 "example": {
                     "settings": {
                         "expiration": {
@@ -968,20 +968,20 @@
                 }
             },
             "MetadataPostResponse": {
-                "title": "MetadataPostResponse",
-                "required": [
-                    "message"
-                ],
-                "type": "object",
                 "properties": {
                     "data": {
                         "$ref": "#/components/schemas/repository_service_tuf_api__metadata__PostData"
                     },
                     "message": {
-                        "title": "Message",
-                        "type": "string"
+                        "type": "string",
+                        "title": "Message"
                     }
                 },
+                "type": "object",
+                "required": [
+                    "message"
+                ],
+                "title": "MetadataPostResponse",
                 "example": {
                     "data": {
                         "task_id": "7a634b556f784ae88785d36425f9a218"
@@ -990,475 +990,467 @@
                 }
             },
             "PayloadTargetsHashes": {
-                "title": "PayloadTargetsHashes",
+                "properties": {
+                    "blake2b-256": {
+                        "type": "string",
+                        "title": "Blake2B-256"
+                    }
+                },
+                "type": "object",
                 "required": [
                     "blake2b-256"
                 ],
-                "type": "object",
-                "properties": {
-                    "blake2b-256": {
-                        "title": "Blake2B-256",
-                        "type": "string"
-                    }
-                }
+                "title": "PayloadTargetsHashes"
             },
             "PostTokenResponse": {
-                "title": "PostTokenResponse",
+                "properties": {
+                    "access_token": {
+                        "type": "string",
+                        "title": "Access Token"
+                    }
+                },
+                "type": "object",
                 "required": [
                     "access_token"
                 ],
-                "type": "object",
-                "properties": {
-                    "access_token": {
-                        "title": "Access Token",
-                        "type": "string"
-                    }
-                },
+                "title": "PostTokenResponse",
                 "example": {
                     "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJz...fhpp0"
                 }
             },
             "ResponseData": {
-                "title": "ResponseData",
+                "properties": {
+                    "targets": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "title": "Targets"
+                    },
+                    "task_id": {
+                        "type": "string",
+                        "title": "Task Id"
+                    },
+                    "last_update": {
+                        "type": "string",
+                        "format": "date-time",
+                        "title": "Last Update"
+                    }
+                },
+                "type": "object",
                 "required": [
                     "targets",
                     "task_id",
                     "last_update"
                 ],
-                "type": "object",
-                "properties": {
-                    "targets": {
-                        "title": "Targets",
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        }
-                    },
-                    "task_id": {
-                        "title": "Task Id",
-                        "type": "string"
-                    },
-                    "last_update": {
-                        "title": "Last Update",
-                        "type": "string",
-                        "format": "date-time"
-                    }
-                }
+                "title": "ResponseData"
             },
             "ServiceSettings": {
-                "title": "ServiceSettings",
+                "properties": {
+                    "targets_base_url": {
+                        "type": "string",
+                        "title": "Targets Base Url"
+                    },
+                    "number_of_delegated_bins": {
+                        "type": "integer",
+                        "exclusiveMaximum": 16385.0,
+                        "exclusiveMinimum": 1.0,
+                        "title": "Number Of Delegated Bins"
+                    },
+                    "targets_online_key": {
+                        "type": "boolean",
+                        "title": "Targets Online Key"
+                    }
+                },
+                "type": "object",
                 "required": [
                     "targets_base_url",
                     "number_of_delegated_bins",
                     "targets_online_key"
                 ],
-                "type": "object",
-                "properties": {
-                    "targets_base_url": {
-                        "title": "Targets Base Url",
-                        "type": "string"
-                    },
-                    "number_of_delegated_bins": {
-                        "title": "Number Of Delegated Bins",
-                        "exclusiveMaximum": 16385.0,
-                        "exclusiveMinimum": 1.0,
-                        "type": "integer"
-                    },
-                    "targets_online_key": {
-                        "title": "Targets Online Key",
-                        "type": "boolean"
-                    }
-                }
+                "title": "ServiceSettings"
             },
             "Settings": {
-                "title": "Settings",
-                "required": [
-                    "expiration",
-                    "services"
-                ],
-                "type": "object",
                 "properties": {
                     "expiration": {
-                        "title": "Expiration",
-                        "type": "object",
                         "additionalProperties": {
                             "type": "integer"
-                        }
+                        },
+                        "type": "object",
+                        "title": "Expiration"
                     },
                     "services": {
                         "$ref": "#/components/schemas/ServiceSettings"
                     }
-                }
+                },
+                "type": "object",
+                "required": [
+                    "expiration",
+                    "services"
+                ],
+                "title": "Settings"
             },
             "TUFKeys": {
-                "title": "TUFKeys",
+                "properties": {
+                    "keytype": {
+                        "type": "string",
+                        "title": "Keytype"
+                    },
+                    "scheme": {
+                        "type": "string",
+                        "title": "Scheme"
+                    },
+                    "keyval": {
+                        "additionalProperties": {
+                            "type": "string"
+                        },
+                        "type": "object",
+                        "title": "Keyval"
+                    },
+                    "name": {
+                        "type": "string",
+                        "title": "Name"
+                    }
+                },
+                "type": "object",
                 "required": [
                     "keytype",
                     "scheme",
                     "keyval"
                 ],
-                "type": "object",
-                "properties": {
-                    "keytype": {
-                        "title": "Keytype",
-                        "type": "string"
-                    },
-                    "scheme": {
-                        "title": "Scheme",
-                        "type": "string"
-                    },
-                    "keyval": {
-                        "title": "Keyval",
-                        "type": "object",
-                        "additionalProperties": {
-                            "type": "string"
-                        }
-                    },
-                    "name": {
-                        "title": "Name",
-                        "type": "string"
-                    }
-                }
+                "title": "TUFKeys"
             },
             "TUFMetadata": {
-                "title": "TUFMetadata",
-                "required": [
-                    "signatures",
-                    "signed"
-                ],
-                "type": "object",
                 "properties": {
                     "signatures": {
-                        "title": "Signatures",
-                        "type": "array",
                         "items": {
                             "$ref": "#/components/schemas/TUFSignatures"
-                        }
+                        },
+                        "type": "array",
+                        "title": "Signatures"
                     },
                     "signed": {
                         "$ref": "#/components/schemas/TUFSigned"
                     }
-                }
+                },
+                "type": "object",
+                "required": [
+                    "signatures",
+                    "signed"
+                ],
+                "title": "TUFMetadata"
             },
             "TUFSignatures": {
-                "title": "TUFSignatures",
+                "properties": {
+                    "keyid": {
+                        "type": "string",
+                        "title": "Keyid"
+                    },
+                    "sig": {
+                        "type": "string",
+                        "title": "Sig"
+                    }
+                },
+                "type": "object",
                 "required": [
                     "keyid",
                     "sig"
                 ],
-                "type": "object",
-                "properties": {
-                    "keyid": {
-                        "title": "Keyid",
-                        "type": "string"
-                    },
-                    "sig": {
-                        "title": "Sig",
-                        "type": "string"
-                    }
-                }
+                "title": "TUFSignatures"
             },
             "TUFSigned": {
-                "title": "TUFSigned",
+                "properties": {
+                    "_type": {
+                        "type": "string",
+                        "title": " Type"
+                    },
+                    "version": {
+                        "type": "integer",
+                        "title": "Version"
+                    },
+                    "spec_version": {
+                        "type": "string",
+                        "title": "Spec Version"
+                    },
+                    "expires": {
+                        "type": "string",
+                        "title": "Expires"
+                    },
+                    "keys": {
+                        "additionalProperties": {
+                            "$ref": "#/components/schemas/TUFKeys"
+                        },
+                        "type": "object",
+                        "title": "Keys"
+                    },
+                    "consistent_snapshot": {
+                        "type": "boolean",
+                        "title": "Consistent Snapshot"
+                    },
+                    "roles": {
+                        "additionalProperties": {
+                            "$ref": "#/components/schemas/TUFSignedRoles"
+                        },
+                        "type": "object",
+                        "title": "Roles"
+                    },
+                    "meta": {
+                        "additionalProperties": {
+                            "$ref": "#/components/schemas/TUFSignedMetaFile"
+                        },
+                        "type": "object",
+                        "title": "Meta"
+                    },
+                    "targets": {
+                        "additionalProperties": {
+                            "type": "string"
+                        },
+                        "type": "object",
+                        "title": "Targets"
+                    },
+                    "delegations": {
+                        "$ref": "#/components/schemas/TUFSignedDelegations"
+                    }
+                },
+                "type": "object",
                 "required": [
                     "_type",
                     "version",
                     "spec_version",
                     "expires"
                 ],
-                "type": "object",
-                "properties": {
-                    "_type": {
-                        "title": " Type",
-                        "type": "string"
-                    },
-                    "version": {
-                        "title": "Version",
-                        "type": "integer"
-                    },
-                    "spec_version": {
-                        "title": "Spec Version",
-                        "type": "string"
-                    },
-                    "expires": {
-                        "title": "Expires",
-                        "type": "string"
-                    },
-                    "keys": {
-                        "title": "Keys",
-                        "type": "object",
-                        "additionalProperties": {
-                            "$ref": "#/components/schemas/TUFKeys"
-                        }
-                    },
-                    "consistent_snapshot": {
-                        "title": "Consistent Snapshot",
-                        "type": "boolean"
-                    },
-                    "roles": {
-                        "title": "Roles",
-                        "type": "object",
-                        "additionalProperties": {
-                            "$ref": "#/components/schemas/TUFSignedRoles"
-                        }
-                    },
-                    "meta": {
-                        "title": "Meta",
-                        "type": "object",
-                        "additionalProperties": {
-                            "$ref": "#/components/schemas/TUFSignedMetaFile"
-                        }
-                    },
-                    "targets": {
-                        "title": "Targets",
-                        "type": "object",
-                        "additionalProperties": {
-                            "type": "string"
-                        }
-                    },
-                    "delegations": {
-                        "$ref": "#/components/schemas/TUFSignedDelegations"
-                    }
-                }
+                "title": "TUFSigned"
             },
             "TUFSignedDelegations": {
-                "title": "TUFSignedDelegations",
-                "required": [
-                    "keys"
-                ],
-                "type": "object",
                 "properties": {
                     "keys": {
-                        "title": "Keys",
-                        "type": "object",
                         "additionalProperties": {
                             "$ref": "#/components/schemas/TUFKeys"
-                        }
+                        },
+                        "type": "object",
+                        "title": "Keys"
                     },
                     "roles": {
-                        "title": "Roles",
-                        "type": "array",
                         "items": {
                             "$ref": "#/components/schemas/TUFSignedDelegationsRoles"
-                        }
+                        },
+                        "type": "array",
+                        "title": "Roles"
                     },
                     "succinct_roles": {
                         "$ref": "#/components/schemas/TUFSignedDelegationsSuccinctRoles"
                     }
-                }
+                },
+                "type": "object",
+                "required": [
+                    "keys"
+                ],
+                "title": "TUFSignedDelegations"
             },
             "TUFSignedDelegationsRoles": {
-                "title": "TUFSignedDelegationsRoles",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "title": "Name"
+                    },
+                    "terminating": {
+                        "type": "boolean",
+                        "title": "Terminating"
+                    },
+                    "keyids": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "title": "Keyids"
+                    },
+                    "threshold": {
+                        "type": "integer",
+                        "title": "Threshold"
+                    },
+                    "paths": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "title": "Paths"
+                    },
+                    "path_hash_prefixes": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "title": "Path Hash Prefixes"
+                    }
+                },
+                "type": "object",
                 "required": [
                     "name",
                     "terminating",
                     "keyids",
                     "threshold"
                 ],
-                "type": "object",
-                "properties": {
-                    "name": {
-                        "title": "Name",
-                        "type": "string"
-                    },
-                    "terminating": {
-                        "title": "Terminating",
-                        "type": "boolean"
-                    },
-                    "keyids": {
-                        "title": "Keyids",
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        }
-                    },
-                    "threshold": {
-                        "title": "Threshold",
-                        "type": "integer"
-                    },
-                    "paths": {
-                        "title": "Paths",
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        }
-                    },
-                    "path_hash_prefixes": {
-                        "title": "Path Hash Prefixes",
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        }
-                    }
-                }
+                "title": "TUFSignedDelegationsRoles"
             },
             "TUFSignedDelegationsSuccinctRoles": {
-                "title": "TUFSignedDelegationsSuccinctRoles",
+                "properties": {
+                    "bit_length": {
+                        "type": "integer",
+                        "exclusiveMaximum": 15.0,
+                        "exclusiveMinimum": 0.0,
+                        "title": "Bit Length"
+                    },
+                    "name_prefix": {
+                        "type": "string",
+                        "title": "Name Prefix"
+                    },
+                    "keyids": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "title": "Keyids"
+                    },
+                    "threshold": {
+                        "type": "integer",
+                        "title": "Threshold"
+                    }
+                },
+                "type": "object",
                 "required": [
                     "bit_length",
                     "name_prefix",
                     "keyids",
                     "threshold"
                 ],
-                "type": "object",
-                "properties": {
-                    "bit_length": {
-                        "title": "Bit Length",
-                        "exclusiveMaximum": 15.0,
-                        "exclusiveMinimum": 0.0,
-                        "type": "integer"
-                    },
-                    "name_prefix": {
-                        "title": "Name Prefix",
-                        "type": "string"
-                    },
-                    "keyids": {
-                        "title": "Keyids",
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        }
-                    },
-                    "threshold": {
-                        "title": "Threshold",
-                        "type": "integer"
-                    }
-                }
+                "title": "TUFSignedDelegationsSuccinctRoles"
             },
             "TUFSignedMetaFile": {
-                "title": "TUFSignedMetaFile",
+                "properties": {
+                    "version": {
+                        "type": "integer",
+                        "title": "Version"
+                    }
+                },
+                "type": "object",
                 "required": [
                     "version"
                 ],
-                "type": "object",
-                "properties": {
-                    "version": {
-                        "title": "Version",
-                        "type": "integer"
-                    }
-                }
+                "title": "TUFSignedMetaFile"
             },
             "TUFSignedRoles": {
-                "title": "TUFSignedRoles",
+                "properties": {
+                    "keyids": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "title": "Keyids"
+                    },
+                    "threshold": {
+                        "type": "integer",
+                        "title": "Threshold"
+                    }
+                },
+                "type": "object",
                 "required": [
                     "keyids",
                     "threshold"
                 ],
-                "type": "object",
-                "properties": {
-                    "keyids": {
-                        "title": "Keyids",
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        }
-                    },
-                    "threshold": {
-                        "title": "Threshold",
-                        "type": "integer"
-                    }
-                }
+                "title": "TUFSignedRoles"
             },
             "Targets": {
-                "title": "Targets",
-                "required": [
-                    "info",
-                    "path"
-                ],
-                "type": "object",
                 "properties": {
                     "info": {
                         "$ref": "#/components/schemas/TargetsInfo"
                     },
                     "path": {
-                        "title": "Path",
-                        "type": "string"
+                        "type": "string",
+                        "title": "Path"
                     }
-                }
+                },
+                "type": "object",
+                "required": [
+                    "info",
+                    "path"
+                ],
+                "title": "Targets"
             },
             "TargetsInfo": {
-                "title": "TargetsInfo",
-                "required": [
-                    "length",
-                    "hashes"
-                ],
-                "type": "object",
                 "properties": {
                     "length": {
-                        "title": "Length",
-                        "type": "integer"
+                        "type": "integer",
+                        "title": "Length"
                     },
                     "hashes": {
                         "$ref": "#/components/schemas/PayloadTargetsHashes"
                     },
                     "custom": {
-                        "title": "Custom",
-                        "type": "object"
+                        "type": "object",
+                        "title": "Custom"
                     }
-                }
+                },
+                "type": "object",
+                "required": [
+                    "length",
+                    "hashes"
+                ],
+                "title": "TargetsInfo"
             },
             "TasksData": {
-                "title": "TasksData",
-                "required": [
-                    "task_id",
-                    "state"
-                ],
-                "type": "object",
                 "properties": {
                     "task_id": {
-                        "title": "Task Id",
                         "type": "string",
+                        "title": "Task Id",
                         "description": "Task ID"
                     },
                     "state": {
-                        "title": "State",
                         "type": "string",
+                        "title": "State",
                         "description": "State according with Celery Tasks"
                     },
                     "result": {
                         "title": "Result",
                         "description": "Details about the task execution."
                     }
-                }
+                },
+                "type": "object",
+                "required": [
+                    "task_id",
+                    "state"
+                ],
+                "title": "TasksData"
             },
             "TokenPublicData": {
-                "title": "TokenPublicData",
+                "properties": {
+                    "scopes": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "title": "Scopes"
+                    },
+                    "expired": {
+                        "type": "boolean",
+                        "title": "Expired"
+                    },
+                    "expiration": {
+                        "type": "string",
+                        "format": "date-time",
+                        "title": "Expiration"
+                    }
+                },
+                "type": "object",
                 "required": [
                     "expired"
                 ],
-                "type": "object",
-                "properties": {
-                    "scopes": {
-                        "title": "Scopes",
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        }
-                    },
-                    "expired": {
-                        "title": "Expired",
-                        "type": "boolean"
-                    },
-                    "expiration": {
-                        "title": "Expiration",
-                        "type": "string",
-                        "format": "date-time"
-                    }
-                }
+                "title": "TokenPublicData"
             },
             "TokenRequestPayload": {
-                "title": "TokenRequestPayload",
-                "required": [
-                    "scopes",
-                    "expires"
-                ],
-                "type": "object",
                 "properties": {
                     "scopes": {
-                        "title": "Scopes",
-                        "minItems": 1,
-                        "type": "array",
                         "items": {
+                            "type": "string",
                             "enum": [
                                 "read:bootstrap",
                                 "read:settings",
@@ -1466,17 +1458,25 @@
                                 "read:token",
                                 "write:targets",
                                 "delete:targets"
-                            ],
-                            "type": "string"
-                        }
+                            ]
+                        },
+                        "type": "array",
+                        "minItems": 1,
+                        "title": "Scopes"
                     },
                     "expires": {
-                        "title": "Expires",
-                        "minimum": 1.0,
                         "type": "integer",
+                        "minimum": 1.0,
+                        "title": "Expires",
                         "description": "In hour(s)"
                     }
                 },
+                "type": "object",
+                "required": [
+                    "scopes",
+                    "expires"
+                ],
+                "title": "TokenRequestPayload",
                 "example": {
                     "scopes": [
                         "read:token",
@@ -1486,17 +1486,8 @@
                 }
             },
             "ValidationError": {
-                "title": "ValidationError",
-                "required": [
-                    "loc",
-                    "msg",
-                    "type"
-                ],
-                "type": "object",
                 "properties": {
                     "loc": {
-                        "title": "Location",
-                        "type": "array",
                         "items": {
                             "anyOf": [
                                 {
@@ -1506,45 +1497,54 @@
                                     "type": "integer"
                                 }
                             ]
-                        }
+                        },
+                        "type": "array",
+                        "title": "Location"
                     },
                     "msg": {
-                        "title": "Message",
-                        "type": "string"
+                        "type": "string",
+                        "title": "Message"
                     },
                     "type": {
-                        "title": "Error Type",
-                        "type": "string"
+                        "type": "string",
+                        "title": "Error Type"
                     }
-                }
+                },
+                "type": "object",
+                "required": [
+                    "loc",
+                    "msg",
+                    "type"
+                ],
+                "title": "ValidationError"
             },
             "repository_service_tuf_api__bootstrap__PostData": {
-                "title": "PostData",
-                "type": "object",
                 "properties": {
                     "task_id": {
-                        "title": "Task Id",
-                        "type": "string"
+                        "type": "string",
+                        "title": "Task Id"
                     }
-                }
+                },
+                "type": "object",
+                "title": "PostData"
             },
             "repository_service_tuf_api__config__Response": {
-                "title": "Response",
+                "properties": {
+                    "data": {
+                        "type": "object",
+                        "title": "Data"
+                    },
+                    "message": {
+                        "type": "string",
+                        "title": "Message"
+                    }
+                },
+                "type": "object",
                 "required": [
                     "data",
                     "message"
                 ],
-                "type": "object",
-                "properties": {
-                    "data": {
-                        "title": "Data",
-                        "type": "object"
-                    },
-                    "message": {
-                        "title": "Message",
-                        "type": "string"
-                    }
-                },
+                "title": "Response",
                 "example": {
                     "data": {
                         "bootstrap": "82281613dba54b8ea88dc86211c77d0a",
@@ -1571,27 +1571,27 @@
                 }
             },
             "repository_service_tuf_api__metadata__PostData": {
-                "title": "PostData",
-                "type": "object",
                 "properties": {
                     "task_id": {
-                        "title": "Task Id",
-                        "type": "string"
+                        "type": "string",
+                        "title": "Task Id"
                     }
-                }
+                },
+                "type": "object",
+                "title": "PostData"
             },
             "repository_service_tuf_api__targets__Response": {
-                "title": "Response",
-                "type": "object",
                 "properties": {
                     "data": {
                         "$ref": "#/components/schemas/ResponseData"
                     },
                     "message": {
-                        "title": "Message",
-                        "type": "string"
+                        "type": "string",
+                        "title": "Message"
                     }
                 },
+                "type": "object",
+                "title": "Response",
                 "description": "Targets Response",
                 "example": {
                     "data": {
@@ -1606,20 +1606,20 @@
                 }
             },
             "repository_service_tuf_api__tasks__Response": {
-                "title": "Response",
-                "required": [
-                    "data"
-                ],
-                "type": "object",
                 "properties": {
                     "data": {
                         "$ref": "#/components/schemas/TasksData"
                     },
                     "message": {
-                        "title": "Message",
-                        "type": "string"
+                        "type": "string",
+                        "title": "Message"
                     }
                 },
+                "type": "object",
+                "required": [
+                    "data"
+                ],
+                "title": "Response",
                 "example": {
                     "data": {
                         "task_id": "91353735ef7d48099df86d8bfa30316e",
