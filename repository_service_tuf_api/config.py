@@ -12,10 +12,10 @@ from repository_service_tuf_api import (
     get_task_id,
     is_bootstrap_done,
     repository_metadata,
-    settings_repository
+    settings_repository,
 )
-
 from repository_service_tuf_api.common_models import Roles
+
 
 class Response(BaseModel):
     data: Dict[str, Any]
@@ -49,7 +49,6 @@ class PutResponse(BaseModel):
                 "task_id": "06ee6db3cbab4b26be505352c2f2e2c3",
             }
         }
-
 
 
 class Settings(BaseModel):
@@ -88,13 +87,9 @@ def put(payload: PutPayload):
         queue="metadata_repository",
         acks_late=True,
     )
-    data = {
-        "task_id": task_id
-    }
+    data = {"task_id": task_id}
 
-    return PutResponse(
-        data=data, message="Settings successfully updated."
-    )
+    return PutResponse(data=data, message="Settings successfully updated.")
 
 
 def get():
