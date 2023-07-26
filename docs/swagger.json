@@ -121,6 +121,57 @@
                         ]
                     }
                 ]
+            },
+            "put": {
+                "tags": [
+                    "v1",
+                    "v1"
+                ],
+                "summary": "Update settings. Scope: write:settings",
+                "description": "Update configuration settings",
+                "operationId": "put_api_v1_config__put",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PutPayload"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PutResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "OAuth2PasswordBearer": [
+                            "write:settings"
+                        ]
+                    }
+                ]
             }
         },
         "/api/v1/metadata/": {
@@ -596,7 +647,7 @@
                     "scope": {
                         "type": "string",
                         "title": "Scope",
-                        "description": "Add scopes separeted by space. Available scopes: `read:bootstrap`, `read:settings`, `read:tasks`, `read:token`, `write:bootstrap`, `write:metadata`, `write:targets`, `write:token`, `delete:targets`"
+                        "description": "Add scopes separeted by space. Available scopes: `read:bootstrap`, `read:settings`, `read:tasks`, `read:token`, `write:bootstrap`, `write:settings`, `write:metadata`, `write:targets`, `write:token`, `delete:targets`"
                     },
                     "expires": {
                         "type": "integer",
@@ -639,7 +690,7 @@
             "BootstrapPayload": {
                 "properties": {
                     "settings": {
-                        "$ref": "#/components/schemas/Settings"
+                        "$ref": "#/components/schemas/repository_service_tuf_api__bootstrap__Settings"
                     },
                     "metadata": {
                         "additionalProperties": {
@@ -837,6 +888,7 @@
                             "read:tasks",
                             "read:token",
                             "write:bootstrap",
+                            "write:settings",
                             "write:metadata",
                             "write:targets",
                             "write:token",
@@ -1018,6 +1070,50 @@
                     "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJz...fhpp0"
                 }
             },
+            "PutPayload": {
+                "properties": {
+                    "settings": {
+                        "$ref": "#/components/schemas/repository_service_tuf_api__config__Settings"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "settings"
+                ],
+                "title": "PutPayload",
+                "example": {
+                    "settings": {
+                        "expiration": {
+                            "targets": 100,
+                            "snapshot": 50,
+                            "timestamp": 20,
+                            "bins": 5
+                        }
+                    }
+                }
+            },
+            "PutResponse": {
+                "properties": {
+                    "data": {
+                        "type": "object",
+                        "title": "Data"
+                    },
+                    "message": {
+                        "type": "string",
+                        "title": "Message"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "data",
+                    "message"
+                ],
+                "title": "PutResponse",
+                "example": {
+                    "message": "Settings successfully updated.",
+                    "task_id": "06ee6db3cbab4b26be505352c2f2e2c3"
+                }
+            },
             "ResponseData": {
                 "properties": {
                     "targets": {
@@ -1069,26 +1165,6 @@
                     "targets_online_key"
                 ],
                 "title": "ServiceSettings"
-            },
-            "Settings": {
-                "properties": {
-                    "expiration": {
-                        "additionalProperties": {
-                            "type": "integer"
-                        },
-                        "type": "object",
-                        "title": "Expiration"
-                    },
-                    "services": {
-                        "$ref": "#/components/schemas/ServiceSettings"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "expiration",
-                    "services"
-                ],
-                "title": "Settings"
             },
             "TUFKeys": {
                 "properties": {
@@ -1528,6 +1604,26 @@
                 "type": "object",
                 "title": "PostData"
             },
+            "repository_service_tuf_api__bootstrap__Settings": {
+                "properties": {
+                    "expiration": {
+                        "additionalProperties": {
+                            "type": "integer"
+                        },
+                        "type": "object",
+                        "title": "Expiration"
+                    },
+                    "services": {
+                        "$ref": "#/components/schemas/ServiceSettings"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "expiration",
+                    "services"
+                ],
+                "title": "Settings"
+            },
             "repository_service_tuf_api__config__Response": {
                 "properties": {
                     "data": {
@@ -1569,6 +1665,22 @@
                     },
                     "message": "Current Settings"
                 }
+            },
+            "repository_service_tuf_api__config__Settings": {
+                "properties": {
+                    "expiration": {
+                        "additionalProperties": {
+                            "type": "integer"
+                        },
+                        "type": "object",
+                        "title": "Expiration"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "expiration"
+                ],
+                "title": "Settings"
             },
             "repository_service_tuf_api__metadata__PostData": {
                 "properties": {
@@ -1648,6 +1760,7 @@
                             "write:targets": "Write (POST) targets",
                             "write:token": "Write (POST) token",
                             "write:bootstrap": "Write (POST) bootstrap",
+                            "write:settings": "Write (PUT) settings",
                             "write:metadata": "Write (POST) metadata",
                             "delete:targets": "Delete (DELETE) targets"
                         },

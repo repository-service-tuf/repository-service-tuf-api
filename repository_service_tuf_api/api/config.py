@@ -16,6 +16,20 @@ router = APIRouter(
 )
 
 
+@router.put(
+    "/",
+    summary=("Update settings. " f"Scope: {SCOPES_NAMES.write_settings.value}"),
+    description="Update configuration settings",
+    response_model=config.PutResponse,
+    response_model_exclude_none=True,
+)
+def put(
+    payload: config.PutPayload,
+    _user=Security(auth, scopes=[SCOPES_NAMES.write_settings.value])
+):
+    return config.put(payload)
+
+
 @router.get(
     "/",
     summary=("List settings. " f"Scope: {SCOPES_NAMES.read_settings.value}"),
