@@ -203,7 +203,7 @@ def is_bootstrap_done():
     # Reload the settings
     # The reload is required because the settings object is created in the
     # `app.py`'s initialization. The `settings_repository.get_fresh() doesn't
-    # correctly reload it because that and the settings_repository.reload() do
+    # correctly reload because of that the settings_repository.reload() do
     # the job.
     settings_repository.reload()
     if settings_repository.get_fresh("BOOTSTRAP", None) is None:

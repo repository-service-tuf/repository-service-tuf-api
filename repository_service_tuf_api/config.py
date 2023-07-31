@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: MIT
 
 import json
-from typing import Any, Dict, Literal
+from typing import Any, Dict
 
 from fastapi import HTTPException, status
 from pydantic import BaseModel
@@ -104,7 +104,8 @@ def get():
             detail={"error": "System has no repository metadata"},
         )
 
-    settings_repository.reload()
+    # Forces all values to be refreshed
+    settings_repository.fresh()
     lower_case_settings = {}
     for k, v in settings_repository.to_dict().items():
         if isinstance(v, str):

@@ -17,14 +17,19 @@ class TestGetSettings:
         )
 
         fake_settings = pretend.stub(
+            fresh=pretend.call_recorder(lambda: None),
             to_dict=pretend.call_recorder(
                 lambda: {"k": "v", "j": ["v1", "v2"]}
             )
         )
-        monkeypatch.setattr("repository_service_tuf_api.config", fake_settings)
+        monkeypatch.setattr(
+            "repository_service_tuf_api.config.settings_repository",
+            fake_settings
+        )
 
         test_response = test_client.get(url, headers=token_headers)
         assert test_response.status_code == status.HTTP_200_OK
+        assert fake_settings.fresh.calls == [pretend.call()]
 
     def test_get_settings_without_bootstrap(
         self, test_client, token_headers, monkeypatch
@@ -41,7 +46,7 @@ class TestGetSettings:
         assert test_response.status_code == status.HTTP_404_NOT_FOUND
         assert (
             test_response.json().get("detail").get("error")
-            == "System has not a Repository Metadata"
+            == "System has no repository metadata"
         )
 
     def test_get_settings_invalid_token(self, test_client, monkeypatch):
