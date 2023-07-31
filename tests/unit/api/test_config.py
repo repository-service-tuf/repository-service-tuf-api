@@ -33,7 +33,7 @@ class TestPutSettings:
             mocked_repository_metadata,
         )
         response = test_client.put(URL, json=payload, headers=token_headers)
-        assert response.status_code == status.HTTP_200_OK
+        assert response.status_code == status.HTTP_202_ACCEPTED
         assert mocked_check_metadata.calls == [pretend.call()]
         assert mocked_get_task_id.calls == [pretend.call()]
         assert mocked_repository_metadata.apply_async.calls == [
