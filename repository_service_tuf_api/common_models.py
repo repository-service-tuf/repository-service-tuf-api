@@ -15,9 +15,13 @@ class Roles(Enum):
     TIMESTAMP = "timestamp"
     BINS = "bins"
 
-    @classmethod
-    def values(cls) -> List[str]:
+    @staticmethod
+    def values() -> List[str]:
         return Literal["root", "targets", "snapshot", "timestamp", "bins"]
+
+    @staticmethod
+    def online_roles_values() -> List[str]:
+        return Literal["targets", "snapshot", "timestamp", "bins"]
 
 
 class BaseErrorResponse(BaseModel):

@@ -35,6 +35,7 @@ class SCOPES_NAMES(Enum):
     read_tasks = "read:tasks"
     read_token = "read:token"  # nosec bandit: not hard coded password
     write_bootstrap = "write:bootstrap"
+    write_settings = "write:settings"
     write_metadata = "write:metadata"
     write_targets = "write:targets"
     write_token = "write:token"  # nosec bandit: not hard coded password
@@ -49,6 +50,7 @@ SCOPES = {
     SCOPES_NAMES.write_targets.value: "Write (POST) targets",
     SCOPES_NAMES.write_token.value: "Write (POST) token",
     SCOPES_NAMES.write_bootstrap.value: "Write (POST) bootstrap",
+    SCOPES_NAMES.write_settings.value: "Write (PUT) settings",
     SCOPES_NAMES.write_metadata.value: "Write (POST) metadata",
     SCOPES_NAMES.delete_targets.value: "Delete (DELETE) targets",
 }
@@ -201,7 +203,7 @@ def is_bootstrap_done():
     # Reload the settings
     # The reload is required because the settings object is created in the
     # `app.py`'s initialization. The `settings_repository.get_fresh() doesn't
-    # correctly reload it because that and the settings_repository.reload() do
+    # correctly reload because of that the settings_repository.reload() do
     # the job.
     settings_repository.reload()
     if settings_repository.get_fresh("BOOTSTRAP", None) is None:
