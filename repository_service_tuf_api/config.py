@@ -45,7 +45,7 @@ class PutResponse(BaseModel):
 
         schema_extra = {
             "example": {
-                "message": "Settings successfully updated.",
+                "message": "Settings successfully submitted.",
                 "task_id": "06ee6db3cbab4b26be505352c2f2e2c3",
             }
         }
@@ -89,7 +89,7 @@ def put(payload: PutPayload):
     )
     data = {"task_id": task_id}
 
-    return PutResponse(data=data, message="Settings successfully updated.")
+    return PutResponse(data=data, message="Settings successfully submitted.")
 
 
 def get():
