@@ -226,6 +226,7 @@ def bootstrap_state() -> BootstrapState:
         return bootstrap_state
 
     if len(bootstrap.split("-")) == 1:
+        # This is a finished bootstrap. It only contains the `<task-id>``
         bootstrap_state.bootstrap = True
         bootstrap_state.state = "finished"
         bootstrap_state.task_id = bootstrap
@@ -233,6 +234,8 @@ def bootstrap_state() -> BootstrapState:
         return bootstrap_state
 
     elif len(bootstrap.split("-")) == 2:
+        # This is considered an intermediated state It is not finished because
+        # there is a `<state>-`
         bootstrap_state.bootstrap = False
         bootstrap_state.state = bootstrap.split("-")[0]
         bootstrap_state.task_id = bootstrap.split("-")[1]
