@@ -227,6 +227,143 @@
                 ]
             }
         },
+        "/api/v1/artifacts/": {
+            "post": {
+                "tags": [
+                    "v1",
+                    "v1"
+                ],
+                "summary": "Add artifacts to Metadata. Scope: write:targets",
+                "description": "Add artifacts to Metadata.",
+                "operationId": "post_api_v1_artifacts__post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AddPayload"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "202": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/repository_service_tuf_api__targets__Response"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "OAuth2PasswordBearer": [
+                            "write:targets"
+                        ]
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "v1",
+                    "v1"
+                ],
+                "summary": "Remove artifacts from Metadata. Scope: delete:targets",
+                "description": "Remove artifacts from Metadata.",
+                "operationId": "delete_api_v1_artifacts__delete",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DeletePayload"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "202": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/repository_service_tuf_api__targets__Response"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "OAuth2PasswordBearer": [
+                            "delete:targets"
+                        ]
+                    }
+                ]
+            }
+        },
+        "/api/v1/artifacts/publish/": {
+            "post": {
+                "tags": [
+                    "v1",
+                    "v1"
+                ],
+                "summary": "Submit a task to publish artifacts.Scope: write:targets",
+                "description": "Trigger a task to publish artifacts not yet published from the RSTUF Database",
+                "operationId": "post_publish_targets_api_v1_artifacts_publish__post",
+                "responses": {
+                    "202": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/repository_service_tuf_api__targets__Response"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                },
+                "security": [
+                    {
+                        "OAuth2PasswordBearer": [
+                            "write:targets"
+                        ]
+                    }
+                ]
+            }
+        },
         "/api/v1/targets/": {
             "post": {
                 "tags": [
@@ -271,6 +408,7 @@
                         }
                     }
                 },
+                "deprecated": true,
                 "security": [
                     {
                         "OAuth2PasswordBearer": [
@@ -322,6 +460,7 @@
                         }
                     }
                 },
+                "deprecated": true,
                 "security": [
                     {
                         "OAuth2PasswordBearer": [
@@ -355,6 +494,7 @@
                         "description": "Not found"
                     }
                 },
+                "deprecated": true,
                 "security": [
                     {
                         "OAuth2PasswordBearer": [
