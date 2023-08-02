@@ -39,7 +39,7 @@ class TestInit:
             pretend.call(fake_settings, {"BOOTSTRAP": None})
         ]
 
-    def test_get_bootstrap_state(self):
+    def test_bootstrap_state(self):
         repository_service_tuf_api.settings_repository = pretend.stub(
             reload=pretend.call_recorder(lambda: None),
             get_fresh=pretend.call_recorder(lambda *a: None),
@@ -49,7 +49,17 @@ class TestInit:
             False, None, None
         )
 
-    def test_get_bootstrap_state_signing(self):
+    def test_bootstrap_state_pre(self):
+        repository_service_tuf_api.settings_repository = pretend.stub(
+            reload=pretend.call_recorder(lambda: None),
+            get_fresh=pretend.call_recorder(lambda *a: "pre-<task_id>"),
+        )
+        result = repository_service_tuf_api.bootstrap_state()
+        assert result == repository_service_tuf_api.BootstrapState(
+            False, "pre", "<task_id>"
+        )
+
+    def test_bootstrap_state_signing(self):
         repository_service_tuf_api.settings_repository = pretend.stub(
             reload=pretend.call_recorder(lambda: None),
             get_fresh=pretend.call_recorder(lambda *a: "signing-<task_id>"),
@@ -59,7 +69,7 @@ class TestInit:
             False, "signing", "<task_id>"
         )
 
-    def test_get_bootstrap_state_finished(self):
+    def test_bootstrap_state_finished(self):
         repository_service_tuf_api.settings_repository = pretend.stub(
             reload=pretend.call_recorder(lambda: None),
             get_fresh=pretend.call_recorder(lambda *a: "<task_id>"),
