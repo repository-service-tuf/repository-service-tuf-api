@@ -14,9 +14,8 @@ SCRIPT=$(readlink -f "$0")
 # Absolute path this script is in, thus /home/user/bin
 SCRIPT_PATH=$(dirname "$SCRIPT")
 
-# Get Latest Swagger UI Release
-# https://github.com/swagger-api/swagger-ui/releases/latest redirects to a URL format of https://github.com/swagger-api/swagger-ui/git-lfs/releases/tag/vx.y.z
-RELEASE_TAG=$(curl -Ls -o /dev/null -w %{url_effective} https://github.com/swagger-api/swagger-ui/releases/latest | awk -F/ '{print $NF}')
+# Get specific Swagger UI Release
+RELEASE_TAG=$(curl -Ls -o /dev/null -w %{url_effective} https://github.com/swagger-api/swagger-ui/releases/v5.3.1 | awk -F/ '{print $NF}')
 echo "Swagger UI release_tag=$RELEASE_TAG"
 
 CURRENT_TAG=$(cat $SCRIPT_PATH/swagger-ui.version)
