@@ -325,12 +325,15 @@ class TestPostTargets:
 
         payload = json.loads(f_data)
 
-        mocked_repository_metadata = pretend.stub(
-            apply_async=pretend.call_recorder(lambda **kw: None)
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda *a: pretend.stub(bootstrap=True)
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.targets.is_bootstrap_done",
-            lambda: True,
+            "repository_service_tuf_api.targets.bootstrap_state",
+            mocked_bootstrap_state,
+        )
+        mocked_repository_metadata = pretend.stub(
+            apply_async=pretend.call_recorder(lambda **kw: None)
         )
         monkeypatch.setattr(
             "repository_service_tuf_api.targets.repository_metadata",
@@ -362,6 +365,7 @@ class TestPostTargets:
                 "use `/api/v1/artifacts`"
             ),
         }
+        assert mocked_bootstrap_state.calls == [pretend.call()]
         assert mocked_repository_metadata.apply_async.calls == [
             pretend.call(
                 kwargs={
@@ -632,9 +636,12 @@ class TestDeleteTargets:
             "targets": ["file-v1.0.0_i683.tar.gz", "v0.4.1/file.tar.gz"],
         }
 
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda *a: pretend.stub(bootstrap=True)
+        )
         monkeypatch.setattr(
-            "repository_service_tuf_api.targets.is_bootstrap_done",
-            lambda: True,
+            "repository_service_tuf_api.targets.bootstrap_state",
+            mocked_bootstrap_state,
         )
         mocked_repository_metadata = pretend.stub(
             apply_async=pretend.call_recorder(lambda **kw: None)
@@ -674,6 +681,7 @@ class TestDeleteTargets:
                 "use `/api/v1/artifacts`"
             ),
         }
+        assert mocked_bootstrap_state.calls == [pretend.call()]
         assert mocked_repository_metadata.apply_async.calls == [
             pretend.call(
                 kwargs={
