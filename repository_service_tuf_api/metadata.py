@@ -9,15 +9,11 @@ from fastapi import HTTPException, status
 from pydantic import BaseModel
 
 from repository_service_tuf_api import (
+    bootstrap_state,
     get_task_id,
-    is_bootstrap_done,
     repository_metadata,
 )
-from repository_service_tuf_api.common_models import (
-    BaseErrorResponse,
-    Roles,
-    TUFMetadata,
-)
+from repository_service_tuf_api.common_models import Roles, TUFMetadata
 
 
 class MetadataPostPayload(BaseModel):
@@ -52,15 +48,20 @@ class MetadataPostResponse(BaseModel):
 
 
 def post_metadata(payload: MetadataPostPayload) -> MetadataPostResponse:
-    if is_bootstrap_done() is False:
+    bs_state = bootstrap_state()
+    if bs_state.bootstrap is False:
         raise HTTPException(
-            status_code=status.HTTP_200_OK,
-            detail=BaseErrorResponse(
-                error="Metadata update requires bootstrap done."
-            ).dict(exclude_none=True),
+            status.HTTP_200_OK,
+            detail={
+                "message": "Task not accepted.",
+                "error": (
+                    f"It requires bootstrap finished. State: {bs_state.state}"
+                ),
+            },
         )
 
     task_id = get_task_id()
+
     repository_metadata.apply_async(
         kwargs={
             "action": "metadata_rotation",

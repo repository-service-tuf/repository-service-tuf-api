@@ -12,8 +12,8 @@ from fastapi import HTTPException, status
 from pydantic import BaseModel, Field
 
 from repository_service_tuf_api import (
+    bootstrap_state,
     get_task_id,
-    is_bootstrap_done,
     pre_lock_bootstrap,
     release_bootstrap_lock,
     repository_metadata,
@@ -69,6 +69,7 @@ class BootstrapPostResponse(BaseModel):
 
 class GetData(BaseModel):
     bootstrap: bool
+    state: Optional[str]
 
 
 class BootstrapGetResponse(BaseModel):
@@ -104,24 +105,35 @@ def _check_bootstrap_status(task_id, timeout):
 
 
 def get_bootstrap():
-    if is_bootstrap_done() is True:
-        response = BootstrapGetResponse(
-            data={"bootstrap": True}, message="System LOCKED for bootstrap."
-        )
+    bs_state = bootstrap_state()
+    if bs_state.bootstrap is True:
+        message = "System LOCKED for bootstrap."
+
     else:
-        response = BootstrapGetResponse(
-            data={"bootstrap": False},
-            message="System available for bootstrap.",
-        )
+        message = "System available for bootstrap."
+
+    response = BootstrapGetResponse(
+        data={
+            "bootstrap": bs_state.bootstrap,
+            "state": bs_state.state,
+            "id": bs_state.task_id,
+        },
+        message=message,
+    )
+
     return response
 
 
 def post_bootstrap(payload: BootstrapPayload) -> BootstrapPostResponse:
-    if is_bootstrap_done() is True:
+    bs_state = bootstrap_state()
+    if bs_state.bootstrap is True:
         raise HTTPException(
             status_code=status.HTTP_200_OK,
             detail=BaseErrorResponse(
-                error="System already has a Metadata."
+                error=(
+                    "System already has a Metadata. "
+                    f"State: {bs_state.state}"
+                )
             ).dict(exclude_none=True),
         )
 

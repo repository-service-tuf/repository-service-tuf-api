@@ -17,12 +17,15 @@ class TestPostTargets:
 
         payload = json.loads(f_data)
 
-        mocked_repository_metadata = pretend.stub(
-            apply_async=pretend.call_recorder(lambda **kw: None)
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda *a: pretend.stub(bootstrap=True)
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.targets.is_bootstrap_done",
-            lambda: True,
+            "repository_service_tuf_api.targets.bootstrap_state",
+            mocked_bootstrap_state,
+        )
+        mocked_repository_metadata = pretend.stub(
+            apply_async=pretend.call_recorder(lambda **kw: None)
         )
         monkeypatch.setattr(
             "repository_service_tuf_api.targets.repository_metadata",
@@ -50,6 +53,7 @@ class TestPostTargets:
             },
             "message": "Target(s) successfully submitted.",
         }
+        assert mocked_bootstrap_state.calls == [pretend.call()]
         assert mocked_repository_metadata.apply_async.calls == [
             pretend.call(
                 kwargs={
@@ -75,12 +79,15 @@ class TestPostTargets:
 
         payload = json.loads(f_data)
 
-        mocked_repository_metadata = pretend.stub(
-            apply_async=pretend.call_recorder(lambda **kw: None)
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda *a: pretend.stub(bootstrap=True)
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.targets.is_bootstrap_done",
-            lambda: True,
+            "repository_service_tuf_api.targets.bootstrap_state",
+            mocked_bootstrap_state,
+        )
+        mocked_repository_metadata = pretend.stub(
+            apply_async=pretend.call_recorder(lambda **kw: None)
         )
         monkeypatch.setattr(
             "repository_service_tuf_api.targets.repository_metadata",
@@ -124,6 +131,7 @@ class TestPostTargets:
                 **target["info"]["custom"],
             }
 
+        assert mocked_bootstrap_state.calls == [pretend.call()]
         assert mocked_repository_metadata.apply_async.calls == [
             pretend.call(
                 kwargs={
@@ -151,9 +159,12 @@ class TestPostTargets:
         # Disable publish_targets
         payload["publish_targets"] = False
 
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda *a: pretend.stub(bootstrap=True)
+        )
         monkeypatch.setattr(
-            "repository_service_tuf_api.targets.is_bootstrap_done",
-            lambda: True,
+            "repository_service_tuf_api.targets.bootstrap_state",
+            mocked_bootstrap_state,
         )
         fake_task_id = uuid4().hex
         monkeypatch.setattr(
@@ -185,6 +196,7 @@ class TestPostTargets:
             },
             "message": msg,
         }
+        assert mocked_bootstrap_state.calls == [pretend.call()]
         assert mocked_repository_metadata.apply_async.calls == [
             pretend.call(
                 kwargs={
@@ -204,16 +216,52 @@ class TestPostTargets:
         with open("tests/data_examples/targets/payload.json") as f:
             f_data = f.read()
 
-        payload = json.loads(f_data)
-        monkeypatch.setattr(
-            "repository_service_tuf_api.targets.is_bootstrap_done",
-            lambda: False,
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda *a: pretend.stub(bootstrap=False, state=None)
         )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.targets.bootstrap_state",
+            mocked_bootstrap_state,
+        )
+
+        payload = json.loads(f_data)
+
         response = test_client.post(url, json=payload, headers=token_headers)
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == {
-            "detail": {"error": "System has not a Repository Metadata"}
+            "detail": {
+                "message": "Task not accepted.",
+                "error": "It requires bootstrap finished. State: None",
+            }
         }
+        assert mocked_bootstrap_state.calls == [pretend.call()]
+
+    def test_post_with_bootstrap_intermediate_state(
+        self, monkeypatch, test_client, token_headers
+    ):
+        url = "/api/v1/targets/"
+        with open("tests/data_examples/targets/payload.json") as f:
+            f_data = f.read()
+
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda *a: pretend.stub(bootstrap=False, state="signing")
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.targets.bootstrap_state",
+            mocked_bootstrap_state,
+        )
+
+        payload = json.loads(f_data)
+
+        response = test_client.post(url, json=payload, headers=token_headers)
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == {
+            "detail": {
+                "message": "Task not accepted.",
+                "error": "It requires bootstrap finished. State: signing",
+            }
+        }
+        assert mocked_bootstrap_state.calls == [pretend.call()]
 
     def test_post_missing_required_field(self, test_client, token_headers):
         url = "/api/v1/artifacts/"
@@ -339,9 +387,12 @@ class TestDeleteTargets:
             "targets": ["file-v1.0.0_i683.tar.gz", "v0.4.1/file.tar.gz"],
         }
 
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda *a: pretend.stub(bootstrap=True)
+        )
         monkeypatch.setattr(
-            "repository_service_tuf_api.targets.is_bootstrap_done",
-            lambda: True,
+            "repository_service_tuf_api.targets.bootstrap_state",
+            mocked_bootstrap_state,
         )
         mocked_repository_metadata = pretend.stub(
             apply_async=pretend.call_recorder(lambda **kw: None)
@@ -377,6 +428,7 @@ class TestDeleteTargets:
             },
             "message": "Remove Target(s) successfully submitted.",
         }
+        assert mocked_bootstrap_state.calls == [pretend.call()]
         assert mocked_repository_metadata.apply_async.calls == [
             pretend.call(
                 kwargs={
@@ -399,9 +451,12 @@ class TestDeleteTargets:
             "publish_targets": False,
         }
 
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda *a: pretend.stub(bootstrap=True)
+        )
         monkeypatch.setattr(
-            "repository_service_tuf_api.targets.is_bootstrap_done",
-            lambda: True,
+            "repository_service_tuf_api.targets.bootstrap_state",
+            mocked_bootstrap_state,
         )
         mocked_repository_metadata = pretend.stub(
             apply_async=pretend.call_recorder(lambda **kw: None)
@@ -441,6 +496,7 @@ class TestDeleteTargets:
             },
             "message": msg,
         }
+        assert mocked_bootstrap_state.calls == [pretend.call()]
         assert mocked_repository_metadata.apply_async.calls == [
             pretend.call(
                 kwargs={
@@ -461,9 +517,12 @@ class TestDeleteTargets:
         payload = {
             "targets": ["file-v1.0.0_i683.tar.gz", "v0.4.1/file.tar.gz"]
         }
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda *a: pretend.stub(bootstrap=False, state=None)
+        )
         monkeypatch.setattr(
-            "repository_service_tuf_api.targets.is_bootstrap_done",
-            lambda: False,
+            "repository_service_tuf_api.targets.bootstrap_state",
+            mocked_bootstrap_state,
         )
         # https://github.com/tiangolo/fastapi/issues/5649
         response = test_client.request(
@@ -472,7 +531,39 @@ class TestDeleteTargets:
 
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == {
-            "detail": {"error": "System has not a Repository Metadata"}
+            "detail": {
+                "message": "Task not accepted.",
+                "error": "It requires bootstrap finished. State: None",
+            }
+        }
+        assert mocked_bootstrap_state.calls == [pretend.call()]
+
+    def test_delete_with_bootstrap_intermediate_state(
+        self, monkeypatch, test_client, token_headers
+    ):
+        url = "/api/v1/targets/"
+
+        payload = {
+            "targets": ["file-v1.0.0_i683.tar.gz", "v0.4.1/file.tar.gz"]
+        }
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda *a: pretend.stub(bootstrap=False, state="signing")
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.targets.bootstrap_state",
+            mocked_bootstrap_state,
+        )
+        # https://github.com/tiangolo/fastapi/issues/5649
+        response = test_client.request(
+            "DELETE", url, json=payload, headers=token_headers
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == {
+            "detail": {
+                "message": "Task not accepted.",
+                "error": "It requires bootstrap finished. State: signing",
+            }
         }
 
     def test_delete_missing_required_field(self, test_client, token_headers):

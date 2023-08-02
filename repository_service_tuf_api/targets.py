@@ -10,8 +10,8 @@ from fastapi import HTTPException, status
 from pydantic import BaseModel, Field
 
 from repository_service_tuf_api import (
+    bootstrap_state,
     get_task_id,
-    is_bootstrap_done,
     repository_metadata,
 )
 
@@ -110,10 +110,16 @@ def post(payload: AddPayload) -> Response:
     It generates a new task id, syncs with the Redis server, and posts the new
     task.
     """
-    if is_bootstrap_done() is False:
+    bs_state = bootstrap_state()
+    if bs_state.bootstrap is False:
         raise HTTPException(
             status.HTTP_200_OK,
-            detail={"error": "System has not a Repository Metadata"},
+            detail={
+                "message": "Task not accepted.",
+                "error": (
+                    f"It requires bootstrap finished. State: {bs_state.state}"
+                ),
+            },
         )
 
     task_id = get_task_id()
@@ -162,10 +168,16 @@ def delete(payload: DeletePayload) -> Response:
     It generates a new task id, syncs with the Redis server, and posts the new
     task.
     """
-    if is_bootstrap_done() is False:
+    bs_state = bootstrap_state()
+    if bs_state.bootstrap is False:
         raise HTTPException(
             status.HTTP_200_OK,
-            detail={"error": "System has not a Repository Metadata"},
+            detail={
+                "message": "Task not accepted.",
+                "error": (
+                    f"It requires bootstrap finished. State: {bs_state.state}"
+                ),
+            },
         )
 
     task_id = get_task_id()

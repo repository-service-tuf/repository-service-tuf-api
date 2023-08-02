@@ -12,12 +12,13 @@ class TestPostMetadata:
     def test_post_metadata(self, test_client, monkeypatch, token_headers):
         url = "/api/v1/metadata/"
 
-        mocked_check_metadata = pretend.call_recorder(lambda: True)
-        monkeypatch.setattr(
-            "repository_service_tuf_api.metadata.is_bootstrap_done",
-            mocked_check_metadata,
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda *a: pretend.stub(bootstrap=True)
         )
-
+        monkeypatch.setattr(
+            "repository_service_tuf_api.metadata.bootstrap_state",
+            mocked_bootstrap_state,
+        )
         mocked_async_result = pretend.stub(state="SUCCESS")
         mocked_repository_metadata = pretend.stub(
             apply_async=pretend.call_recorder(lambda *a, **kw: None),
@@ -30,7 +31,6 @@ class TestPostMetadata:
         monkeypatch.setattr(
             "repository_service_tuf_api.metadata.get_task_id", lambda: "123"
         )
-
         with open(
             "tests/data_examples/metadata/update-root-payload.json"
         ) as f:
@@ -45,18 +45,20 @@ class TestPostMetadata:
             "message": "Metadata update accepted.",
             "data": {"task_id": "123"},
         }
+        assert mocked_bootstrap_state.calls == [pretend.call()]
 
     def test_post_metadata_without_bootstrap(
         self, test_client, monkeypatch, token_headers
     ):
         url = "/api/v1/metadata/"
 
-        mocked_check_metadata = pretend.call_recorder(lambda: False)
-        monkeypatch.setattr(
-            "repository_service_tuf_api.metadata.is_bootstrap_done",
-            mocked_check_metadata,
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda *a: pretend.stub(bootstrap=False, state=None)
         )
-
+        monkeypatch.setattr(
+            "repository_service_tuf_api.metadata.bootstrap_state",
+            mocked_bootstrap_state,
+        )
         with open(
             "tests/data_examples/metadata/update-root-payload.json"
         ) as f:
@@ -68,8 +70,42 @@ class TestPostMetadata:
         assert response.status_code == status.HTTP_200_OK
         assert response.url == f"{test_client.base_url}{url}"
         assert response.json() == {
-            "detail": {"error": "Metadata update requires bootstrap done."}
+            "detail": {
+                "message": "Task not accepted.",
+                "error": "It requires bootstrap finished. State: None",
+            }
         }
+        assert mocked_bootstrap_state.calls == [pretend.call()]
+
+    def test_post_metadata_bootstrap_intermediate_state(
+        self, test_client, monkeypatch, token_headers
+    ):
+        url = "/api/v1/metadata/"
+
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda *a: pretend.stub(bootstrap=False, state="signing")
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.metadata.bootstrap_state",
+            mocked_bootstrap_state,
+        )
+        with open(
+            "tests/data_examples/metadata/update-root-payload.json"
+        ) as f:
+            f_data = f.read()
+
+        payload = json.loads(f_data)
+        response = test_client.post(url, json=payload, headers=token_headers)
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.url == f"{test_client.base_url}{url}"
+        assert response.json() == {
+            "detail": {
+                "message": "Task not accepted.",
+                "error": "It requires bootstrap finished. State: signing",
+            }
+        }
+        assert mocked_bootstrap_state.calls == [pretend.call()]
 
     def test_post_metadata_empty_payload(self, test_client, token_headers):
         url = "/api/v1/metadata/"
@@ -88,7 +124,7 @@ class TestPostMetadata:
             ]
         }
 
-    def test_post_metadata_invalid_token(self, test_client, monkeypatch):
+    def test_post_metadata_invalid_token(self, test_client):
         url = "/api/v1/metadata/"
 
         token_headers = {"Authorization": "Bearer h4ck3r"}
@@ -106,9 +142,7 @@ class TestPostMetadata:
             "detail": {"error": "Failed to validate token"}
         }
 
-    def test_post_metadata_incorrect_scope_token(
-        self, test_client, monkeypatch
-    ):
+    def test_post_metadata_incorrect_scope_token(self, test_client):
         token_url = "/api/v1/token/?expires=1"
         token_payload = {
             "username": "admin",
