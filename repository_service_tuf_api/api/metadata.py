@@ -36,11 +36,11 @@ def post(
 @router.get(
     "/sign",
     summary=(
-        "Get the role metadata signing data. Scope: "
+        "Get all metadata roles pending signatures. Scope: "
         f"{SCOPES_NAMES.write_metadata.value}"
     ),
     description=(
-        "Get signing the role metadata signging status and current metadata."
+        "Get all metadata roles that need more signatures before they can be used."
     ),
     response_model=metadata.MetadataSignGetResponse,
     response_model_exclude_none=True,
@@ -55,11 +55,11 @@ def get_sign(
 @router.post(
     "/sign",
     summary=(
-        "Get the role metadata signing data. Scope: "
+        "Add a signate for a metadata role"
         f"{SCOPES_NAMES.write_metadata.value}"
     ),
     description=(
-        "Get signing the role metadata signging status and current metadata."
+        "Add a signature for a metadata role."
     ),
     response_model=metadata.MetadataPostResponse,
     response_model_exclude_none=True,

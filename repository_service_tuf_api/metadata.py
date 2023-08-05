@@ -78,7 +78,7 @@ def post_metadata(payload: MetadataPostPayload) -> MetadataPostResponse:
     )
 
 
-class GetData(BaseModel):
+class SigningData(BaseModel):
     metadata: Dict[Roles, TUFMetadata]
 
 
@@ -104,18 +104,18 @@ def get_metadata_sign() -> MetadataSignGetResponse:
             detail={
                 "message": "No signing available",
                 "error": (
-                    f"It requires bootstrap started. State: {bs_state.state}"
+                    f"Requires bootstrap started. State: {bs_state.state}"
                 ),
             },
         )
 
     settings_repository.reload()
-    available_signing = list(
+    pending_signing = list(
         filter(lambda var: "SIGNING" in var, dir(settings_repository))
     )
 
     metadata_response: Dict[str, TUFMetadata] = {}
-    for singing in available_signing:
+    for role in pending_signing:
         signing_md = settings_repository.get(singing)
         if signing_md is not None:
             metadata_response[
@@ -124,7 +124,7 @@ def get_metadata_sign() -> MetadataSignGetResponse:
 
     return MetadataSignGetResponse(
         data={"metadata": metadata_response},
-        message="Available signing Metadata(s)",
+        message="Metadata role(s) pending signing",
     )
 
 
@@ -137,7 +137,7 @@ class MetadataSignPostResponse(BaseModel):
             "data": {
                 "task_id": "7a634b556f784ae88785d36425f9a218",
             },
-            "message": "Metadata Update accepted.",
+            "message": "Metadata sign accepted.",
         }
 
         schema_extra = {"example": example}
@@ -181,7 +181,7 @@ def post_metadata_sign(
             detail={
                 "message": "No signing pending.",
                 "error": (
-                    "It requires bootstrap in signing state. "
+                    "Requires bootstrap in signing state. "
                     f"State: {bs_state.state}"
                 ),
             },
