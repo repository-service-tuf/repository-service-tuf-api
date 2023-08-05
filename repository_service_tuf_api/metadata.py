@@ -56,7 +56,7 @@ def post_metadata(payload: MetadataPostPayload) -> MetadataPostResponse:
             detail={
                 "message": "Task not accepted.",
                 "error": (
-                    f"It requires bootstrap finished. State: {bs_state.state}"
+                    f"Requires bootstrap finished. State: {bs_state.state}"
                 ),
             },
         )
@@ -83,7 +83,7 @@ class SigningData(BaseModel):
 
 
 class MetadataSignGetResponse(BaseModel):
-    data: Optional[GetData]
+    data: Optional[SigningData]
     message: str
 
     class Config:
@@ -116,10 +116,10 @@ def get_metadata_sign() -> MetadataSignGetResponse:
 
     metadata_response: Dict[str, TUFMetadata] = {}
     for role in pending_signing:
-        signing_md = settings_repository.get(singing)
+        signing_md = settings_repository.get(role)
         if signing_md is not None:
             metadata_response[
-                singing.split("_")[0].lower()
+                role.split("_")[0].lower()
             ] = signing_md.to_dict()
 
     return MetadataSignGetResponse(

@@ -40,7 +40,8 @@ def post(
         f"{SCOPES_NAMES.write_metadata.value}"
     ),
     description=(
-        "Get all metadata roles that need more signatures before they can be used."
+        "Get all metadata roles that need more signatures before they can be "
+        "used."
     ),
     response_model=metadata.MetadataSignGetResponse,
     response_model_exclude_none=True,
@@ -55,12 +56,10 @@ def get_sign(
 @router.post(
     "/sign",
     summary=(
-        "Add a signate for a metadata role"
+        "Add a signature for a metadata role. Scope: "
         f"{SCOPES_NAMES.write_metadata.value}"
     ),
-    description=(
-        "Add a signature for a metadata role."
-    ),
+    description=("Add a signature for a metadata role."),
     response_model=metadata.MetadataPostResponse,
     response_model_exclude_none=True,
     status_code=status.HTTP_202_ACCEPTED,

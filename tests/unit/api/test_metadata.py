@@ -72,7 +72,7 @@ class TestPostMetadata:
         assert response.json() == {
             "detail": {
                 "message": "Task not accepted.",
-                "error": "It requires bootstrap finished. State: None",
+                "error": "Requires bootstrap finished. State: None",
             }
         }
         assert mocked_bootstrap_state.calls == [pretend.call()]
@@ -102,7 +102,7 @@ class TestPostMetadata:
         assert response.json() == {
             "detail": {
                 "message": "Task not accepted.",
-                "error": "It requires bootstrap finished. State: signing",
+                "error": "Requires bootstrap finished. State: signing",
             }
         }
         assert mocked_bootstrap_state.calls == [pretend.call()]
@@ -218,7 +218,7 @@ class TestGetMetadataSign:
         assert response.status_code == status.HTTP_200_OK, response.text
         assert response.json() == {
             "data": {"metadata": {"root": metadata_data["metadata"]["root"]}},
-            "message": "Available signing Metadata(s)",
+            "message": "Metadata role(s) pending signing",
         }
         assert mocked_bootstrap_state.calls == [pretend.call()]
         assert mocked_settings_repository.reload.calls == [pretend.call()]
@@ -245,7 +245,7 @@ class TestGetMetadataSign:
         assert response.json() == {
             "detail": {
                 "message": "No signing available",
-                "error": "It requires bootstrap started. State: None",
+                "error": "Requires bootstrap started. State: None",
             }
         }
         assert mocked_bootstrap_state.calls == [pretend.call()]
@@ -268,7 +268,7 @@ class TestGetMetadataSign:
         assert response.json() == {
             "detail": {
                 "message": "No signing available",
-                "error": "It requires bootstrap started. State: pre",
+                "error": "Requires bootstrap started. State: pre",
             }
         }
         assert mocked_bootstrap_state.calls == [pretend.call()]
@@ -339,7 +339,7 @@ class TestPostMetadataSign:
         assert response.json() == {
             "detail": {
                 "message": "No signing pending.",
-                "error": "It requires bootstrap in signing state. State: None",
+                "error": "Requires bootstrap in signing state. State: None",
             }
         }
         assert mocked_bootstrap_state.calls == [pretend.call()]
@@ -364,7 +364,7 @@ class TestPostMetadataSign:
             "detail": {
                 "message": "No signing pending.",
                 "error": (
-                    "It requires bootstrap in signing state. State: finished"
+                    "Requires bootstrap in signing state. State: finished"
                 ),
             }
         }
