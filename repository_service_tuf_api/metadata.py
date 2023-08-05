@@ -87,7 +87,7 @@ class MetadataSignGetResponse(BaseModel):
     message: str
 
     class Config:
-        with open("tests/data_examples/bootstrap/payload.json") as f:
+        with open("tests/data_examples/bootstrap/das-payload.json") as f:
             content = f.read()
         example = json.loads(content)
         schema_extra = {

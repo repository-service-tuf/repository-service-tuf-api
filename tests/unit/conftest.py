@@ -28,6 +28,7 @@ def token_headers(test_client):
             "write:targets "
             "write:bootstrap "
             "write:metadata "
+            "read:metadata "
             "read:bootstrap "
             "write:settings "
             "read:settings "

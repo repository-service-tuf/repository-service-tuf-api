@@ -37,7 +37,7 @@ def post(
     "/sign",
     summary=(
         "Get all metadata roles pending signatures. Scope: "
-        f"{SCOPES_NAMES.write_metadata.value}"
+        f"{SCOPES_NAMES.read_metadata.value}"
     ),
     description=(
         "Get all metadata roles that need more signatures before they can be "
@@ -48,7 +48,7 @@ def post(
     status_code=status.HTTP_200_OK,
 )
 def get_sign(
-    _user=Security(auth, scopes=[SCOPES_NAMES.write_metadata.value]),
+    _user=Security(auth, scopes=[SCOPES_NAMES.read_metadata.value]),
 ):
     return metadata.get_metadata_sign()
 
