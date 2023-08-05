@@ -233,8 +233,8 @@
                     "v1",
                     "v1"
                 ],
-                "summary": "Get the role metadata signing data. Scope: write:metadata",
-                "description": "Get signing the role metadata signging status and current metadata.",
+                "summary": "Get all metadata roles pending signatures. Scope: read:metadata",
+                "description": "Get all metadata roles that need more signatures before they can be used.",
                 "operationId": "get_sign_api_v1_metadata_sign_get",
                 "responses": {
                     "200": {
@@ -254,7 +254,7 @@
                 "security": [
                     {
                         "OAuth2PasswordBearer": [
-                            "write:metadata"
+                            "read:metadata"
                         ]
                     }
                 ]
@@ -264,8 +264,8 @@
                     "v1",
                     "v1"
                 ],
-                "summary": "Get the role metadata signing data. Scope: write:metadata",
-                "description": "Get signing the role metadata signging status and current metadata.",
+                "summary": "Add a signature for a metadata role. Scope: write:metadata",
+                "description": "Add a signature for a metadata role.",
                 "operationId": "post_sign_api_v1_metadata_sign_post",
                 "requestBody": {
                     "content": {
@@ -871,7 +871,7 @@
                     "scope": {
                         "type": "string",
                         "title": "Scope",
-                        "description": "Add scopes separeted by space. Available scopes: `read:bootstrap`, `read:settings`, `read:tasks`, `read:token`, `write:bootstrap`, `write:settings`, `write:metadata`, `write:targets`, `write:token`, `delete:targets`"
+                        "description": "Add scopes separeted by space. Available scopes: `read:bootstrap`, `read:settings`, `read:tasks`, `read:token`, `write:bootstrap`, `write:settings`, `write:metadata`, `read:metadata`, `write:targets`, `write:token`, `delete:targets`"
                     },
                     "expires": {
                         "type": "integer",
@@ -892,7 +892,7 @@
             "BootstrapGetResponse": {
                 "properties": {
                     "data": {
-                        "$ref": "#/components/schemas/repository_service_tuf_api__bootstrap__GetData"
+                        "$ref": "#/components/schemas/GetData"
                     },
                     "message": {
                         "type": "string",
@@ -1075,6 +1075,23 @@
                     ]
                 }
             },
+            "GetData": {
+                "properties": {
+                    "bootstrap": {
+                        "type": "boolean",
+                        "title": "Bootstrap"
+                    },
+                    "state": {
+                        "type": "string",
+                        "title": "State"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "bootstrap"
+                ],
+                "title": "GetData"
+            },
             "GetTokenResponse": {
                 "properties": {
                     "data": {
@@ -1101,6 +1118,7 @@
                             "write:bootstrap",
                             "write:settings",
                             "write:metadata",
+                            "read:metadata",
                             "write:targets",
                             "write:token",
                             "delete:targets"
@@ -1255,7 +1273,7 @@
             "MetadataSignGetResponse": {
                 "properties": {
                     "data": {
-                        "$ref": "#/components/schemas/repository_service_tuf_api__metadata__GetData"
+                        "$ref": "#/components/schemas/SigningData"
                     },
                     "message": {
                         "type": "string",
@@ -1273,50 +1291,56 @@
                             "signatures": [
                                 {
                                     "keyid": "1cebe343e35f0213f6136758e6c3a8f8e1f9eeb7e47a07d5cb336462ed31dcb7",
-                                    "sig": "b3c81b6579442b8672ff460ac36cdb51064109fcfa93f0e72dabbf338f7d0c24e1a91d3696d72d81f60e94b2782ab1bf41e6b8f3e535538216f4379bf30a4302"
-                                },
-                                {
-                                    "keyid": "800dfb5a1982b82b7893e58035e19f414f553fc08cbb1130cfbae302a7b7fee5",
-                                    "sig": "fdfbb1877da404504e8b9c111d87680df5291094dafa01f66bfe6031e470d7c63cc477c1e79210a89e27734758e54fb54adc529918b1211d9dd9971c8bb26c0a"
+                                    "sig": "9d00b77ca94da3ec38600bc64b612767efff792119207d51f7be62222d63498c86373e83662f13dbf476840716eab32ef37e90b1dac37eba1c2cd1755487f306"
                                 }
                             ],
                             "signed": {
                                 "_type": "root",
                                 "version": 1,
                                 "spec_version": "1.0.30",
-                                "expires": "2024-02-17T10:55:28Z",
+                                "expires": "2024-07-12T09:03:48Z",
                                 "consistent_snapshot": true,
                                 "keys": {
-                                    "f7a6872f297634219a80141caa2ec9ae8802098b07b67963272603e36cc19fd8": {
-                                        "keytype": "ed25519",
-                                        "scheme": "ed25519",
-                                        "keyval": {
-                                            "public": "9fe7ddccb75b977a041424a1fdc142e01be4abab918dc4c611fbfe4a3360a9a8"
-                                        }
-                                    },
                                     "1cebe343e35f0213f6136758e6c3a8f8e1f9eeb7e47a07d5cb336462ed31dcb7": {
                                         "keytype": "ed25519",
                                         "scheme": "ed25519",
                                         "keyval": {
                                             "public": "ad1709b3cb419b99c5cd7427d6411522e5a93aec6767453e91af921a73d22a3c"
-                                        }
+                                        },
+                                        "name": "jj"
                                     },
                                     "800dfb5a1982b82b7893e58035e19f414f553fc08cbb1130cfbae302a7b7fee5": {
                                         "keytype": "ed25519",
                                         "scheme": "ed25519",
                                         "keyval": {
                                             "public": "7098f769f6ab8502b50f3b58686b8a042d5d3bb75d8b3a48a2fcbc15a0223501"
-                                        }
+                                        },
+                                        "name": "jh"
+                                    },
+                                    "f7a6872f297634219a80141caa2ec9ae8802098b07b67963272603e36cc19fd8": {
+                                        "keytype": "ed25519",
+                                        "scheme": "ed25519",
+                                        "keyval": {
+                                            "public": "9fe7ddccb75b977a041424a1fdc142e01be4abab918dc4c611fbfe4a3360a9a8"
+                                        },
+                                        "name": "o"
                                     }
                                 },
                                 "roles": {
-                                    "snapshot": {
+                                    "root": {
+                                        "keyids": [
+                                            "1cebe343e35f0213f6136758e6c3a8f8e1f9eeb7e47a07d5cb336462ed31dcb7",
+                                            "800dfb5a1982b82b7893e58035e19f414f553fc08cbb1130cfbae302a7b7fee5"
+                                        ],
+                                        "threshold": 2
+                                    },
+                                    "timestamp": {
                                         "keyids": [
                                             "f7a6872f297634219a80141caa2ec9ae8802098b07b67963272603e36cc19fd8"
                                         ],
                                         "threshold": 1
                                     },
-                                    "timestamp": {
+                                    "snapshot": {
                                         "keyids": [
                                             "f7a6872f297634219a80141caa2ec9ae8802098b07b67963272603e36cc19fd8"
                                         ],
@@ -1325,13 +1349,6 @@
                                     "targets": {
                                         "keyids": [
                                             "f7a6872f297634219a80141caa2ec9ae8802098b07b67963272603e36cc19fd8"
-                                        ],
-                                        "threshold": 1
-                                    },
-                                    "root": {
-                                        "keyids": [
-                                            "1cebe343e35f0213f6136758e6c3a8f8e1f9eeb7e47a07d5cb336462ed31dcb7",
-                                            "800dfb5a1982b82b7893e58035e19f414f553fc08cbb1130cfbae302a7b7fee5"
                                         ],
                                         "threshold": 1
                                     }
@@ -1507,6 +1524,22 @@
                     "targets_online_key"
                 ],
                 "title": "ServiceSettings"
+            },
+            "SigningData": {
+                "properties": {
+                    "metadata": {
+                        "additionalProperties": {
+                            "$ref": "#/components/schemas/TUFMetadata"
+                        },
+                        "type": "object",
+                        "title": "Metadata"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "metadata"
+                ],
+                "title": "SigningData"
             },
             "TUFKeys": {
                 "properties": {
@@ -1936,23 +1969,6 @@
                 ],
                 "title": "ValidationError"
             },
-            "repository_service_tuf_api__bootstrap__GetData": {
-                "properties": {
-                    "bootstrap": {
-                        "type": "boolean",
-                        "title": "Bootstrap"
-                    },
-                    "state": {
-                        "type": "string",
-                        "title": "State"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "bootstrap"
-                ],
-                "title": "GetData"
-            },
             "repository_service_tuf_api__bootstrap__PostData": {
                 "properties": {
                     "task_id": {
@@ -2041,22 +2057,6 @@
                 ],
                 "title": "Settings"
             },
-            "repository_service_tuf_api__metadata__GetData": {
-                "properties": {
-                    "metadata": {
-                        "additionalProperties": {
-                            "$ref": "#/components/schemas/TUFMetadata"
-                        },
-                        "type": "object",
-                        "title": "Metadata"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "metadata"
-                ],
-                "title": "GetData"
-            },
             "repository_service_tuf_api__metadata__PostData": {
                 "properties": {
                     "task_id": {
@@ -2132,6 +2132,7 @@
                             "read:settings": "Read (GET) settings",
                             "read:tasks": "Read (GET) tasks",
                             "read:token": "Read (GET) tokens",
+                            "read:metadata": "Read (GET) metadata",
                             "write:targets": "Write (POST) targets",
                             "write:token": "Write (POST) token",
                             "write:bootstrap": "Write (POST) bootstrap",
