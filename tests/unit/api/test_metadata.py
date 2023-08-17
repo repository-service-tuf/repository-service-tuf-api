@@ -72,7 +72,7 @@ class TestPostMetadata:
         assert response.json() == {
             "detail": {
                 "message": "Task not accepted.",
-                "error": "It requires bootstrap finished. State: None",
+                "error": "Requires bootstrap finished. State: None",
             }
         }
         assert mocked_bootstrap_state.calls == [pretend.call()]
@@ -102,7 +102,7 @@ class TestPostMetadata:
         assert response.json() == {
             "detail": {
                 "message": "Task not accepted.",
-                "error": "It requires bootstrap finished. State: signing",
+                "error": "Requires bootstrap finished. State: signing",
             }
         }
         assert mocked_bootstrap_state.calls == [pretend.call()]
@@ -183,3 +183,189 @@ class TestPostMetadata:
             "type": "value_error.const",
             "ctx": {"given": "timestamp", "permitted": ["root"]},
         } in response.json()["detail"]
+
+
+class TestGetMetadataSign:
+    def test_get_metadata_sign(self, test_client, token_headers, monkeypatch):
+        url = "/api/v1/metadata/sign/"
+
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda *a: pretend.stub(bootstrap=True, state="signing")
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.metadata.bootstrap_state",
+            mocked_bootstrap_state,
+        )
+        with open("tests/data_examples/bootstrap/payload.json") as f:
+            md_content = f.read()
+        metadata_data = json.loads(md_content)
+        fake_metadata = pretend.stub(
+            to_dict=pretend.call_recorder(
+                lambda: metadata_data["metadata"]["root"]
+            )
+        )
+        mocked_settings_repository = pretend.stub(
+            reload=pretend.call_recorder(lambda: None),
+            get=pretend.call_recorder(lambda *a: fake_metadata),
+            ROOT_SIGNING=fake_metadata,
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.metadata.settings_repository",
+            mocked_settings_repository,
+        )
+
+        response = test_client.get(url, headers=token_headers)
+        assert response.status_code == status.HTTP_200_OK, response.text
+        assert response.json() == {
+            "data": {"metadata": {"root": metadata_data["metadata"]["root"]}},
+            "message": "Metadata role(s) pending signing",
+        }
+        assert mocked_bootstrap_state.calls == [pretend.call()]
+        assert mocked_settings_repository.reload.calls == [pretend.call()]
+        assert mocked_settings_repository.get.calls == [
+            pretend.call("ROOT_SIGNING")
+        ]
+        assert fake_metadata.to_dict.calls == [pretend.call()]
+
+    def test_get_metadata_sign_no_bootstrap(
+        self, test_client, token_headers, monkeypatch
+    ):
+        url = "/api/v1/metadata/sign/"
+
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda *a: pretend.stub(bootstrap=False, state=None)
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.metadata.bootstrap_state",
+            mocked_bootstrap_state,
+        )
+        response = test_client.get(url, headers=token_headers)
+
+        assert response.status_code == status.HTTP_200_OK, response.text
+        assert response.json() == {
+            "detail": {
+                "message": "No signing available",
+                "error": "Requires bootstrap started. State: None",
+            }
+        }
+        assert mocked_bootstrap_state.calls == [pretend.call()]
+
+    def test_get_metadata_sign_bootstrap_pre(
+        self, test_client, token_headers, monkeypatch
+    ):
+        url = "/api/v1/metadata/sign/"
+
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda *a: pretend.stub(bootstrap=False, state="pre")
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.metadata.bootstrap_state",
+            mocked_bootstrap_state,
+        )
+        response = test_client.get(url, headers=token_headers)
+
+        assert response.status_code == status.HTTP_200_OK, response.text
+        assert response.json() == {
+            "detail": {
+                "message": "No signing available",
+                "error": "Requires bootstrap started. State: pre",
+            }
+        }
+        assert mocked_bootstrap_state.calls == [pretend.call()]
+
+
+class TestPostMetadataSign:
+    def test_post_metadata_sign(self, test_client, token_headers, monkeypatch):
+        url = "/api/v1/metadata/sign/"
+
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda *a: pretend.stub(bootstrap=True, state="signing")
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.metadata.bootstrap_state",
+            mocked_bootstrap_state,
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.metadata.get_task_id",
+            lambda: "fake_id",
+        )
+        fake_repository_metadata = pretend.stub(
+            apply_async=pretend.call_recorder(lambda *a, **kw: None)
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.metadata.repository_metadata",
+            fake_repository_metadata,
+        )
+        payload = {"role": "root", "signature": {"keyid": "k1", "sig": "s1"}}
+
+        response = test_client.post(url, json=payload, headers=token_headers)
+        assert response.status_code == status.HTTP_202_ACCEPTED, response.text
+        assert response.json() == {
+            "data": {"task_id": "fake_id"},
+            "message": "Metadata sign accepted.",
+        }
+        assert mocked_bootstrap_state.calls == [pretend.call()]
+        assert fake_repository_metadata.apply_async.calls == [
+            pretend.call(
+                kwargs={
+                    "action": "sign_metadata",
+                    "payload": {
+                        "role": "root",
+                        "signature": {"keyid": "k1", "sig": "s1"},
+                    },
+                },
+                task_id="fake_id",
+                queue="metadata_repository",
+                acks_late=True,
+            )
+        ]
+
+    def test_post_metadata_no_bootstrap(
+        self, test_client, token_headers, monkeypatch
+    ):
+        url = "/api/v1/metadata/sign/"
+
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda *a: pretend.stub(bootstrap=False, state=None)
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.metadata.bootstrap_state",
+            mocked_bootstrap_state,
+        )
+        payload = {"role": "root", "signature": {"keyid": "k1", "sig": "s1"}}
+
+        response = test_client.post(url, json=payload, headers=token_headers)
+        assert response.status_code == status.HTTP_200_OK, response.text
+        assert response.json() == {
+            "detail": {
+                "message": "No signing pending.",
+                "error": "Requires bootstrap in signing state. State: None",
+            }
+        }
+        assert mocked_bootstrap_state.calls == [pretend.call()]
+
+    def test_post_metadata_bootstrap_finished(
+        self, test_client, token_headers, monkeypatch
+    ):
+        url = "/api/v1/metadata/sign/"
+
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda *a: pretend.stub(bootstrap=False, state="finished")
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.metadata.bootstrap_state",
+            mocked_bootstrap_state,
+        )
+        payload = {"role": "root", "signature": {"keyid": "k1", "sig": "s1"}}
+
+        response = test_client.post(url, json=payload, headers=token_headers)
+        assert response.status_code == status.HTTP_200_OK, response.text
+        assert response.json() == {
+            "detail": {
+                "message": "No signing pending.",
+                "error": (
+                    "Requires bootstrap in signing state. State: finished"
+                ),
+            }
+        }
+        assert mocked_bootstrap_state.calls == [pretend.call()]

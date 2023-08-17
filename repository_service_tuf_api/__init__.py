@@ -45,6 +45,7 @@ class SCOPES_NAMES(Enum):
     write_bootstrap = "write:bootstrap"
     write_settings = "write:settings"
     write_metadata = "write:metadata"
+    read_metadata = "read:metadata"
     write_targets = "write:targets"
     write_token = "write:token"  # nosec bandit: not hard coded password
     delete_targets = "delete:targets"
@@ -55,6 +56,7 @@ SCOPES = {
     SCOPES_NAMES.read_settings.value: "Read (GET) settings",
     SCOPES_NAMES.read_tasks.value: "Read (GET) tasks",
     SCOPES_NAMES.read_token.value: "Read (GET) tokens",
+    SCOPES_NAMES.read_metadata.value: "Read (GET) metadata",
     SCOPES_NAMES.write_targets.value: "Write (POST) targets",
     SCOPES_NAMES.write_token.value: "Write (POST) token",
     SCOPES_NAMES.write_bootstrap.value: "Write (POST) bootstrap",
