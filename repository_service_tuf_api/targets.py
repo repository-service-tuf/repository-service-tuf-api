@@ -46,7 +46,7 @@ class TargetsInfo(BaseModel):
     length: int
     hashes: Dict[str, str] = Field(
         description=(
-            "The key(s) must be compatible with the algorithm(s) supported by"
+            "The key(s) must be compatible with the algorithm(s) supported by "
             "a TUF client"
         )
     )
