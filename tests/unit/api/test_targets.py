@@ -47,7 +47,7 @@ class TestPostTargets:
         assert response.status_code == status.HTTP_202_ACCEPTED
         assert response.json() == {
             "data": {
-                "targets": ["file1.tar.gz", "file2.tar.gz"],
+                "targets": ["file1.tar.gz", "file2.tar.gz", "file3.tar.gz"],
                 "task_id": fake_task_id,
                 "last_update": "2019-06-16T09:05:01",
             },
@@ -113,7 +113,7 @@ class TestPostTargets:
         assert response.status_code == status.HTTP_202_ACCEPTED
         assert response.json() == {
             "data": {
-                "targets": ["file1.tar.gz", "file2.tar.gz"],
+                "targets": ["file1.tar.gz", "file2.tar.gz", "file3.tar.gz"],
                 "task_id": fake_task_id,
                 "last_update": "2019-06-16T09:05:01",
             },
@@ -190,7 +190,7 @@ class TestPostTargets:
         msg = "Target(s) successfully submitted. Publishing will be skipped."
         assert response.json() == {
             "data": {
-                "targets": ["file1.tar.gz", "file2.tar.gz"],
+                "targets": ["file1.tar.gz", "file2.tar.gz", "file3.tar.gz"],
                 "task_id": fake_task_id,
                 "last_update": "2019-06-16T09:05:01",
             },
@@ -355,7 +355,7 @@ class TestPostTargets:
         assert response.status_code == status.HTTP_202_ACCEPTED
         assert response.json() == {
             "data": {
-                "targets": ["file1.tar.gz", "file2.tar.gz"],
+                "targets": ["file1.tar.gz", "file2.tar.gz", "file3.tar.gz"],
                 "task_id": fake_task_id,
                 "last_update": "2019-06-16T09:05:01",
             },

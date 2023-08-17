@@ -852,6 +852,16 @@
                                 }
                             },
                             "path": "file2.tar.gz"
+                        },
+                        {
+                            "info": {
+                                "length": 39,
+                                "hashes": {
+                                    "sha256": "452ce8308500d83ef44248d8e6062359211992fd837ea9e370e561efb1a4ca99",
+                                    "sha512": "052b49a21e03606b28942db69aa597530fe52d47ee3d748ba65afcd14b857738e36bc1714c4f4adde46c3e683548552fe5c96722e0e0da3acd9050c2524902d8"
+                                }
+                            },
+                            "path": "file3.tar.gz"
                         }
                     ]
                 }
@@ -1400,19 +1410,6 @@
                 ],
                 "title": "MetadataSignature"
             },
-            "PayloadTargetsHashes": {
-                "properties": {
-                    "blake2b-256": {
-                        "type": "string",
-                        "title": "Blake2B-256"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "blake2b-256"
-                ],
-                "title": "PayloadTargetsHashes"
-            },
             "PostTokenResponse": {
                 "properties": {
                     "access_token": {
@@ -1834,7 +1831,12 @@
                         "title": "Length"
                     },
                     "hashes": {
-                        "$ref": "#/components/schemas/PayloadTargetsHashes"
+                        "additionalProperties": {
+                            "type": "string"
+                        },
+                        "type": "object",
+                        "title": "Hashes",
+                        "description": "The key(s) must be compatible with the algorithm(s) supported by a TUF client"
                     },
                     "custom": {
                         "type": "object",
