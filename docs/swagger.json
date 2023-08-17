@@ -1907,7 +1907,11 @@
                                 "read:settings",
                                 "read:tasks",
                                 "read:token",
+                                "read:metadata",
                                 "write:targets",
+                                "write:bootstrap",
+                                "write:settings",
+                                "write:metadata",
                                 "delete:targets"
                             ]
                         },
