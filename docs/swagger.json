@@ -852,6 +852,16 @@
                                 }
                             },
                             "path": "file2.tar.gz"
+                        },
+                        {
+                            "info": {
+                                "length": 39,
+                                "hashes": {
+                                    "sha256": "452ce8308500d83ef44248d8e6062359211992fd837ea9e370e561efb1a4ca99",
+                                    "sha512": "052b49a21e03606b28942db69aa597530fe52d47ee3d748ba65afcd14b857738e36bc1714c4f4adde46c3e683548552fe5c96722e0e0da3acd9050c2524902d8"
+                                }
+                            },
+                            "path": "file3.tar.gz"
                         }
                     ]
                 }
