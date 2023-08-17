@@ -91,7 +91,6 @@ class TokenRequestPayload(BaseModel):
             SCOPES_NAMES.read_token.value,
             SCOPES_NAMES.read_metadata.value,
             SCOPES_NAMES.write_targets.value,
-            SCOPES_NAMES.write_bootstrap.value,
             SCOPES_NAMES.write_settings.value,
             SCOPES_NAMES.write_metadata.value,
             SCOPES_NAMES.delete_targets.value,
