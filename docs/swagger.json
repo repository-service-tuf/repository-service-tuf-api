@@ -1400,19 +1400,6 @@
                 ],
                 "title": "MetadataSignature"
             },
-            "PayloadTargetsHashes": {
-                "properties": {
-                    "blake2b-256": {
-                        "type": "string",
-                        "title": "Blake2B-256"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "blake2b-256"
-                ],
-                "title": "PayloadTargetsHashes"
-            },
             "PostTokenResponse": {
                 "properties": {
                     "access_token": {
@@ -1834,7 +1821,12 @@
                         "title": "Length"
                     },
                     "hashes": {
-                        "$ref": "#/components/schemas/PayloadTargetsHashes"
+                        "additionalProperties": {
+                            "type": "string"
+                        },
+                        "type": "object",
+                        "title": "Hashes",
+                        "description": "The key(s) must be compatible with the algorithm(s) supported bya TUF client"
                     },
                     "custom": {
                         "type": "object",

@@ -42,16 +42,14 @@ class Response(BaseModel):
         schema_extra = {"example": data_example}
 
 
-class PayloadTargetsHashes(BaseModel):
-    blake2b_256: str
-
-    class Config:
-        fields = {"blake2b_256": "blake2b-256"}
-
-
 class TargetsInfo(BaseModel):
     length: int
-    hashes: PayloadTargetsHashes
+    hashes: Dict[str, str] = Field(
+        description=(
+            "The key(s) must be compatible with the algorithm(s) supported by"
+            "a TUF client"
+        )
+    )
     custom: Optional[Dict[str, Any]]
 
 
