@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2022-2023 VMware Inc
 #
 # SPDX-License-Identifier: MIT
-
+import os
 from dataclasses import dataclass
 from typing import List
 
@@ -60,3 +60,21 @@ def test_db():
         scopes: List[Scope]
 
     return (User, Scope)
+
+
+@pytest.fixture()
+def get_admin_pwd():
+    return os.getenv("SECRETS_RSTUF_ADMIN_PASSWORD")
+
+
+@pytest.fixture()
+def access_token(test_client):
+    data = {
+        "username": "admin",
+        "password": "secret",
+        "scope": "write:token read:tasks write:targets delete:targets",
+        "expires": 1,
+    }
+    response = test_client.post("/api/v1/token", data=data)
+
+    return response.json()["access_token"]
