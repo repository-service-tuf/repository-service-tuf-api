@@ -28,14 +28,14 @@ build-dev:
 run-dev:
 	$(MAKE) build-dev
 	docker pull ghcr.io/repository-service-tuf/repository-service-tuf-worker:dev
-	docker-compose up --remove-orphans
+	docker compose up --remove-orphans
 
 stop:
 	docker-compose down -v
 
 clean:
 	$(MAKE) stop
-	docker-compose rm --force
+	docker compose rm --force
 	rm -rf ./data
 	rm -rf ./data_test
 
