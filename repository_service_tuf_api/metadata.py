@@ -65,7 +65,7 @@ def post_metadata(payload: MetadataPostPayload) -> MetadataPostResponse:
 
     repository_metadata.apply_async(
         kwargs={
-            "action": "metadata_rotation",
+            "action": "metadata_update",
             "payload": payload.dict(by_alias=True, exclude_none=True),
         },
         task_id=task_id,
