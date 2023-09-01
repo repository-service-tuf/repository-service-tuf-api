@@ -69,3 +69,21 @@ def post_sign(
     _user=Security(auth, scopes=[SCOPES_NAMES.write_metadata.value]),
 ):
     return metadata.post_metadata_sign(payload)
+
+
+@router.delete(
+    "/sign",
+    summary=(
+        "Delete role metadata in signing process. Scope: "
+        f"{SCOPES_NAMES.delete_metadata.value}"
+    ),
+    description="Delete role metadata in signing process",
+    response_model=metadata.MetadataSignDeleteResponse,
+    response_model_exclude_none=True,
+    status_code=status.HTTP_202_ACCEPTED,
+)
+def delete_sign(
+    payload: metadata.MetadataSignDeletePayload,
+    _user=Security(auth, scopes=[SCOPES_NAMES.delete_metadata.value]),
+):
+    return metadata.delete_metada_sign(payload)

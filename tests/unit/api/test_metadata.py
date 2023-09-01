@@ -369,3 +369,89 @@ class TestPostMetadataSign:
             }
         }
         assert mocked_bootstrap_state.calls == [pretend.call()]
+
+
+class TestDeleteMetadataSign:
+    def test_delete_metadata_sign_no_role(
+        self, test_client, token_headers, monkeypatch
+    ):
+        url = "/api/v1/metadata/sign/"
+        mocked_settings_repository = pretend.stub(
+            reload=pretend.call_recorder(lambda: None),
+            get_fresh=pretend.call_recorder(lambda *a: "metadata"),
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.metadata.settings_repository",
+            mocked_settings_repository,
+        )
+        fake_get_task_id = pretend.call_recorder(lambda: "123")
+        monkeypatch.setattr(
+            "repository_service_tuf_api.metadata.get_task_id", fake_get_task_id
+        )
+        mocked_async_result = pretend.stub(state="SUCCESS")
+        mocked_repository_metadata = pretend.stub(
+            apply_async=pretend.call_recorder(lambda *a, **kw: None),
+            AsyncResult=pretend.call_recorder(lambda *a: mocked_async_result),
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.metadata.repository_metadata",
+            mocked_repository_metadata,
+        )
+        payload = {"role": "root"}
+
+        # https://github.com/tiangolo/fastapi/issues/5649
+        response = test_client.request(
+            "DELETE", url, json=payload, headers=token_headers
+        )
+        assert response.status_code == status.HTTP_202_ACCEPTED, response.text
+        assert response.json() == {
+            "data": {"task_id": "123"},
+            "message": "Metadata delete sign accepted.",
+        }
+        assert mocked_settings_repository.reload.calls == [pretend.call()]
+        assert mocked_settings_repository.get_fresh.calls == [
+            pretend.call("ROOT_SIGNING")
+        ]
+        assert fake_get_task_id.calls == [pretend.call()]
+        assert mocked_repository_metadata.apply_async.calls == [
+            pretend.call(
+                kwargs={
+                    "action": "delete_sign_metadata",
+                    "payload": {"role": "root"},
+                },
+                task_id="123",
+                queue="metadata_repository",
+                acks_late=True,
+            )
+        ]
+
+    def test_delete_metadata_sign_role_not_in_signing_status(
+        self, test_client, token_headers, monkeypatch
+    ):
+        url = "/api/v1/metadata/sign/"
+        mocked_settings_repository = pretend.stub(
+            reload=pretend.call_recorder(lambda: None),
+            get_fresh=pretend.call_recorder(lambda *a: None),
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.metadata.settings_repository",
+            mocked_settings_repository,
+        )
+
+        payload = {"role": "root"}
+
+        # https://github.com/tiangolo/fastapi/issues/5649
+        response = test_client.request(
+            "DELETE", url, json=payload, headers=token_headers
+        )
+        assert response.status_code == status.HTTP_200_OK, response.text
+        assert response.json() == {
+            "detail": {
+                "message": "No signing process for root.",
+                "error": "The root role is not in a signing process.",
+            }
+        }
+        assert mocked_settings_repository.reload.calls == [pretend.call()]
+        assert mocked_settings_repository.get_fresh.calls == [
+            pretend.call("ROOT_SIGNING")
+        ]

@@ -202,3 +202,58 @@ def post_metadata_sign(
     return MetadataPostResponse(
         data={"task_id": task_id}, message="Metadata sign accepted."
     )
+
+
+class MetadataSignDeletePayload(BaseModel):
+    role: str
+
+    class Config:
+        schema_extra = {"example": {"role": "root"}}
+
+
+class DeleteData(BaseModel):
+    task_id: Optional[str]
+
+
+class MetadataSignDeleteResponse(BaseModel):
+    data: Optional[DeleteData]
+    message: str
+
+    class Config:
+        example = {
+            "data": {
+                "task_id": "7a634b556f784ae88785d36425f9a218",
+            },
+            "message": "Metadata delete sign accepted.",
+        }
+
+        schema_extra = {"example": example}
+
+
+def delete_metada_sign(payload: MetadataSignDeletePayload):
+    role = payload.role
+    settings_repository.reload()
+    signing_status = settings_repository.get_fresh(f"{role.upper()}_SIGNING")
+    if signing_status is None:
+        raise HTTPException(
+            status.HTTP_200_OK,
+            detail={
+                "message": f"No signing process for {role}.",
+                "error": f"The {role} role is not in a signing process.",
+            },
+        )
+
+    task_id = get_task_id()
+    repository_metadata.apply_async(
+        kwargs={
+            "action": "delete_sign_metadata",
+            "payload": payload.dict(by_alias=True, exclude_none=True),
+        },
+        task_id=task_id,
+        queue="metadata_repository",
+        acks_late=True,
+    )
+
+    return MetadataSignDeleteResponse(
+        data={"task_id": task_id}, message="Metadata delete sign accepted."
+    )
