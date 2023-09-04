@@ -309,6 +309,57 @@
                         ]
                     }
                 ]
+            },
+            "delete": {
+                "tags": [
+                    "v1",
+                    "v1"
+                ],
+                "summary": "Delete role metadata in signing process. Scope: delete:metadata_sign",
+                "description": "Delete role metadata in signing process",
+                "operationId": "delete_sign_api_v1_metadata_sign_delete",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/MetadataSignDeletePayload"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "202": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MetadataSignDeleteResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "OAuth2PasswordBearer": [
+                            "delete:metadata_sign"
+                        ]
+                    }
+                ]
             }
         },
         "/api/v1/artifacts/": {
@@ -881,7 +932,7 @@
                     "scope": {
                         "type": "string",
                         "title": "Scope",
-                        "description": "Add scopes separeted by space. Available scopes: `read:bootstrap`, `read:settings`, `read:tasks`, `read:token`, `write:bootstrap`, `write:settings`, `write:metadata`, `read:metadata`, `write:targets`, `write:token`, `delete:targets`"
+                        "description": "Add scopes separeted by space. Available scopes: `read:bootstrap`, `read:settings`, `read:tasks`, `read:token`, `write:bootstrap`, `write:settings`, `write:metadata`, `read:metadata`, `write:targets`, `write:token`, `delete:targets`, `delete:metadata_sign`"
                     },
                     "expires": {
                         "type": "integer",
@@ -1055,6 +1106,16 @@
                     "message": "Bootstrap accepted."
                 }
             },
+            "DeleteData": {
+                "properties": {
+                    "task_id": {
+                        "type": "string",
+                        "title": "Task Id"
+                    }
+                },
+                "type": "object",
+                "title": "DeleteData"
+            },
             "DeletePayload": {
                 "properties": {
                     "targets": {
@@ -1131,7 +1192,8 @@
                             "read:metadata",
                             "write:targets",
                             "write:token",
-                            "delete:targets"
+                            "delete:targets",
+                            "delete:metadata_sign"
                         ],
                         "expired": false,
                         "expiration": "2022-08-19T17:29:39"
@@ -1278,6 +1340,44 @@
                         "task_id": "7a634b556f784ae88785d36425f9a218"
                     },
                     "message": "Metadata Update accepted."
+                }
+            },
+            "MetadataSignDeletePayload": {
+                "properties": {
+                    "role": {
+                        "type": "string",
+                        "title": "Role"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "role"
+                ],
+                "title": "MetadataSignDeletePayload",
+                "example": {
+                    "role": "root"
+                }
+            },
+            "MetadataSignDeleteResponse": {
+                "properties": {
+                    "data": {
+                        "$ref": "#/components/schemas/DeleteData"
+                    },
+                    "message": {
+                        "type": "string",
+                        "title": "Message"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "message"
+                ],
+                "title": "MetadataSignDeleteResponse",
+                "example": {
+                    "data": {
+                        "task_id": "7a634b556f784ae88785d36425f9a218"
+                    },
+                    "message": "Metadata delete sign accepted."
                 }
             },
             "MetadataSignGetResponse": {
@@ -2143,7 +2243,8 @@
                             "write:bootstrap": "Write (POST) bootstrap",
                             "write:settings": "Write (PUT) settings",
                             "write:metadata": "Write (POST) metadata",
-                            "delete:targets": "Delete (DELETE) targets"
+                            "delete:targets": "Delete (DELETE) targets",
+                            "delete:metadata_sign": "Delete (DELETE) metadata"
                         },
                         "tokenUrl": "/api/v1/token"
                     }
