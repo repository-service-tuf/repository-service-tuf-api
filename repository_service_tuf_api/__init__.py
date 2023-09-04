@@ -44,8 +44,8 @@ class SCOPES_NAMES(Enum):
     read_token = "read:token"  # nosec bandit: not hard coded password
     write_bootstrap = "write:bootstrap"
     write_settings = "write:settings"
-    write_metadata = "write:metadata"
-    read_metadata = "read:metadata"
+    write_metadata_sign = "write:metadata_sign"
+    read_metadata_sign = "read:metadata_sign"
     write_targets = "write:targets"
     write_token = "write:token"  # nosec bandit: not hard coded password
     delete_targets = "delete:targets"
@@ -57,12 +57,12 @@ SCOPES = {
     SCOPES_NAMES.read_settings.value: "Read (GET) settings",
     SCOPES_NAMES.read_tasks.value: "Read (GET) tasks",
     SCOPES_NAMES.read_token.value: "Read (GET) tokens",
-    SCOPES_NAMES.read_metadata.value: "Read (GET) metadata",
+    SCOPES_NAMES.read_metadata_sign.value: "Read (GET) metadata",
     SCOPES_NAMES.write_targets.value: "Write (POST) targets",
     SCOPES_NAMES.write_token.value: "Write (POST) token",
     SCOPES_NAMES.write_bootstrap.value: "Write (POST) bootstrap",
     SCOPES_NAMES.write_settings.value: "Write (PUT) settings",
-    SCOPES_NAMES.write_metadata.value: "Write (POST) metadata",
+    SCOPES_NAMES.write_metadata_sign.value: "Write (POST) metadata",
     SCOPES_NAMES.delete_targets.value: "Delete (DELETE) targets",
     SCOPES_NAMES.delete_metadata_sign.value: "Delete (DELETE) metadata",
 }

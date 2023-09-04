@@ -89,10 +89,10 @@ class TokenRequestPayload(BaseModel):
             SCOPES_NAMES.read_settings.value,
             SCOPES_NAMES.read_tasks.value,
             SCOPES_NAMES.read_token.value,
-            SCOPES_NAMES.read_metadata.value,
+            SCOPES_NAMES.read_metadata_sign.value,
             SCOPES_NAMES.write_targets.value,
             SCOPES_NAMES.write_settings.value,
-            SCOPES_NAMES.write_metadata.value,
+            SCOPES_NAMES.write_metadata_sign.value,
             SCOPES_NAMES.delete_targets.value,
         ]
     ] = Field(min_items=1)

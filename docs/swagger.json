@@ -180,7 +180,7 @@
                     "v1",
                     "v1"
                 ],
-                "summary": "Rotate role metadata. Scope: write:metadata",
+                "summary": "Rotate role metadata. Scope: write:metadata_sign",
                 "description": "Rotate a role metadata that requires offline signing.",
                 "operationId": "post_api_v1_metadata__post",
                 "requestBody": {
@@ -221,7 +221,7 @@
                 "security": [
                     {
                         "OAuth2PasswordBearer": [
-                            "write:metadata"
+                            "write:metadata_sign"
                         ]
                     }
                 ]
@@ -233,7 +233,7 @@
                     "v1",
                     "v1"
                 ],
-                "summary": "Get all metadata roles pending signatures. Scope: read:metadata",
+                "summary": "Get all metadata roles pending signatures. Scope: read:metadata_sign",
                 "description": "Get all metadata roles that need more signatures before they can be used.",
                 "operationId": "get_sign_api_v1_metadata_sign_get",
                 "responses": {
@@ -254,7 +254,7 @@
                 "security": [
                     {
                         "OAuth2PasswordBearer": [
-                            "read:metadata"
+                            "read:metadata_sign"
                         ]
                     }
                 ]
@@ -264,7 +264,7 @@
                     "v1",
                     "v1"
                 ],
-                "summary": "Add a signature for a metadata role. Scope: write:metadata",
+                "summary": "Add a signature for a metadata role. Scope: write:metadata_sign",
                 "description": "Add a signature for a metadata role.",
                 "operationId": "post_sign_api_v1_metadata_sign_post",
                 "requestBody": {
@@ -305,7 +305,7 @@
                 "security": [
                     {
                         "OAuth2PasswordBearer": [
-                            "write:metadata"
+                            "write:metadata_sign"
                         ]
                     }
                 ]
@@ -932,7 +932,7 @@
                     "scope": {
                         "type": "string",
                         "title": "Scope",
-                        "description": "Add scopes separeted by space. Available scopes: `read:bootstrap`, `read:settings`, `read:tasks`, `read:token`, `write:bootstrap`, `write:settings`, `write:metadata`, `read:metadata`, `write:targets`, `write:token`, `delete:targets`, `delete:metadata_sign`"
+                        "description": "Add scopes separeted by space. Available scopes: `read:bootstrap`, `read:settings`, `read:tasks`, `read:token`, `write:bootstrap`, `write:settings`, `write:metadata_sign`, `read:metadata_sign`, `write:targets`, `write:token`, `delete:targets`, `delete:metadata_sign`"
                     },
                     "expires": {
                         "type": "integer",
@@ -1188,8 +1188,8 @@
                             "read:token",
                             "write:bootstrap",
                             "write:settings",
-                            "write:metadata",
-                            "read:metadata",
+                            "write:metadata_sign",
+                            "read:metadata_sign",
                             "write:targets",
                             "write:token",
                             "delete:targets",
@@ -2009,10 +2009,10 @@
                                 "read:settings",
                                 "read:tasks",
                                 "read:token",
-                                "read:metadata",
+                                "read:metadata_sign",
                                 "write:targets",
                                 "write:settings",
-                                "write:metadata",
+                                "write:metadata_sign",
                                 "delete:targets"
                             ]
                         },
@@ -2237,12 +2237,12 @@
                             "read:settings": "Read (GET) settings",
                             "read:tasks": "Read (GET) tasks",
                             "read:token": "Read (GET) tokens",
-                            "read:metadata": "Read (GET) metadata",
+                            "read:metadata_sign": "Read (GET) metadata",
                             "write:targets": "Write (POST) targets",
                             "write:token": "Write (POST) token",
                             "write:bootstrap": "Write (POST) bootstrap",
                             "write:settings": "Write (PUT) settings",
-                            "write:metadata": "Write (POST) metadata",
+                            "write:metadata_sign": "Write (POST) metadata",
                             "delete:targets": "Delete (DELETE) targets",
                             "delete:metadata_sign": "Delete (DELETE) metadata"
                         },
