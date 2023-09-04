@@ -315,7 +315,7 @@
                     "v1",
                     "v1"
                 ],
-                "summary": "Delete role metadata in signing process. Scope: delete_metadata",
+                "summary": "Delete role metadata in signing process. Scope: delete:metadata_sign",
                 "description": "Delete role metadata in signing process",
                 "operationId": "delete_sign_api_v1_metadata_sign_delete",
                 "requestBody": {
@@ -356,7 +356,7 @@
                 "security": [
                     {
                         "OAuth2PasswordBearer": [
-                            "delete_metadata"
+                            "delete:metadata_sign"
                         ]
                     }
                 ]
@@ -932,7 +932,7 @@
                     "scope": {
                         "type": "string",
                         "title": "Scope",
-                        "description": "Add scopes separeted by space. Available scopes: `read:bootstrap`, `read:settings`, `read:tasks`, `read:token`, `write:bootstrap`, `write:settings`, `write:metadata`, `read:metadata`, `write:targets`, `write:token`, `delete:targets`, `delete_metadata`"
+                        "description": "Add scopes separeted by space. Available scopes: `read:bootstrap`, `read:settings`, `read:tasks`, `read:token`, `write:bootstrap`, `write:settings`, `write:metadata`, `read:metadata`, `write:targets`, `write:token`, `delete:targets`, `delete:metadata_sign`"
                     },
                     "expires": {
                         "type": "integer",
@@ -1193,7 +1193,7 @@
                             "write:targets",
                             "write:token",
                             "delete:targets",
-                            "delete_metadata"
+                            "delete:metadata_sign"
                         ],
                         "expired": false,
                         "expiration": "2022-08-19T17:29:39"
@@ -2244,7 +2244,7 @@
                             "write:settings": "Write (PUT) settings",
                             "write:metadata": "Write (POST) metadata",
                             "delete:targets": "Delete (DELETE) targets",
-                            "delete_metadata": "Delete (DELETE) metadata"
+                            "delete:metadata_sign": "Delete (DELETE) metadata"
                         },
                         "tokenUrl": "/api/v1/token"
                     }

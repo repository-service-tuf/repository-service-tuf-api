@@ -230,7 +230,7 @@ class MetadataSignDeleteResponse(BaseModel):
         schema_extra = {"example": example}
 
 
-def delete_metada_sign(payload: MetadataSignDeletePayload):
+def delete_metadata_sign(payload: MetadataSignDeletePayload):
     role = payload.role
     settings_repository.reload()
     signing_status = settings_repository.get_fresh(f"{role.upper()}_SIGNING")
@@ -255,5 +255,5 @@ def delete_metada_sign(payload: MetadataSignDeletePayload):
     )
 
     return MetadataSignDeleteResponse(
-        data={"task_id": task_id}, message="Metadata delete sign accepted."
+        data={"task_id": task_id}, message="Metadata sign delete accepted."
     )

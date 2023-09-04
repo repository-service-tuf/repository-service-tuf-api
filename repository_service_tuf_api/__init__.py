@@ -49,7 +49,7 @@ class SCOPES_NAMES(Enum):
     write_targets = "write:targets"
     write_token = "write:token"  # nosec bandit: not hard coded password
     delete_targets = "delete:targets"
-    delete_metadata = "delete_metadata"
+    delete_metadata_sign = "delete:metadata_sign"
 
 
 SCOPES = {
@@ -64,7 +64,7 @@ SCOPES = {
     SCOPES_NAMES.write_settings.value: "Write (PUT) settings",
     SCOPES_NAMES.write_metadata.value: "Write (POST) metadata",
     SCOPES_NAMES.delete_targets.value: "Delete (DELETE) targets",
-    SCOPES_NAMES.delete_metadata.value: "Delete (DELETE) metadata",
+    SCOPES_NAMES.delete_metadata_sign.value: "Delete (DELETE) metadata",
 }
 
 DATA_DIR = os.getenv("DATA_DIR", "/data")

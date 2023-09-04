@@ -372,7 +372,7 @@ class TestPostMetadataSign:
 
 
 class TestDeleteMetadataSign:
-    def test_delete_metadata_sign_no_role(
+    def test_delete_metadata_sign(
         self, test_client, token_headers, monkeypatch
     ):
         url = "/api/v1/metadata/sign/"
@@ -406,7 +406,7 @@ class TestDeleteMetadataSign:
         assert response.status_code == status.HTTP_202_ACCEPTED, response.text
         assert response.json() == {
             "data": {"task_id": "123"},
-            "message": "Metadata delete sign accepted.",
+            "message": "Metadata sign delete accepted.",
         }
         assert mocked_settings_repository.reload.calls == [pretend.call()]
         assert mocked_settings_repository.get_fresh.calls == [

@@ -75,7 +75,7 @@ def post_sign(
     "/sign",
     summary=(
         "Delete role metadata in signing process. Scope: "
-        f"{SCOPES_NAMES.delete_metadata.value}"
+        f"{SCOPES_NAMES.delete_metadata_sign.value}"
     ),
     description="Delete role metadata in signing process",
     response_model=metadata.MetadataSignDeleteResponse,
@@ -84,6 +84,6 @@ def post_sign(
 )
 def delete_sign(
     payload: metadata.MetadataSignDeletePayload,
-    _user=Security(auth, scopes=[SCOPES_NAMES.delete_metadata.value]),
+    _user=Security(auth, scopes=[SCOPES_NAMES.delete_metadata_sign.value]),
 ):
-    return metadata.delete_metada_sign(payload)
+    return metadata.delete_metadata_sign(payload)
