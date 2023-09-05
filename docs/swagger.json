@@ -180,7 +180,7 @@
                     "v1",
                     "v1"
                 ],
-                "summary": "Rotate role metadata. Scope: write:metadata_sign",
+                "summary": "Rotate role metadata. Scope: write:metadata",
                 "description": "Rotate a role metadata that requires offline signing.",
                 "operationId": "post_api_v1_metadata__post",
                 "requestBody": {
@@ -221,7 +221,7 @@
                 "security": [
                     {
                         "OAuth2PasswordBearer": [
-                            "write:metadata_sign"
+                            "write:metadata"
                         ]
                     }
                 ]
@@ -932,7 +932,7 @@
                     "scope": {
                         "type": "string",
                         "title": "Scope",
-                        "description": "Add scopes separeted by space. Available scopes: `read:bootstrap`, `read:settings`, `read:tasks`, `read:token`, `write:bootstrap`, `write:settings`, `write:metadata_sign`, `read:metadata_sign`, `write:targets`, `write:token`, `delete:targets`, `delete:metadata_sign`"
+                        "description": "Add scopes separeted by space. Available scopes: `read:bootstrap`, `read:settings`, `read:tasks`, `read:token`, `write:bootstrap`, `write:settings`, `write:metadata`, `write:metadata_sign`, `read:metadata_sign`, `write:targets`, `write:token`, `delete:targets`, `delete:metadata_sign`"
                     },
                     "expires": {
                         "type": "integer",
@@ -1188,6 +1188,7 @@
                             "read:token",
                             "write:bootstrap",
                             "write:settings",
+                            "write:metadata",
                             "write:metadata_sign",
                             "read:metadata_sign",
                             "write:targets",
@@ -2012,6 +2013,7 @@
                                 "read:metadata_sign",
                                 "write:targets",
                                 "write:settings",
+                                "write:metadata",
                                 "write:metadata_sign",
                                 "delete:targets"
                             ]
@@ -2242,7 +2244,8 @@
                             "write:token": "Write (POST) token",
                             "write:bootstrap": "Write (POST) bootstrap",
                             "write:settings": "Write (PUT) settings",
-                            "write:metadata_sign": "Write (POST) metadata",
+                            "write:metadata": "Write (POST) metadata",
+                            "write:metadata_sign": "Write (POST) metadata sign",
                             "delete:targets": "Delete (DELETE) targets",
                             "delete:metadata_sign": "Delete (DELETE) metadata"
                         },

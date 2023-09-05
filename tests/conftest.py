@@ -27,6 +27,7 @@ def token_headers(test_client):
         "scope": (
             "write:targets "
             "write:bootstrap "
+            "write:metadata "
             "write:metadata_sign "
             "read:metadata_sign "
             "read:bootstrap "

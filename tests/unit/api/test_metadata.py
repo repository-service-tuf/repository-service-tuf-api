@@ -166,7 +166,7 @@ class TestPostMetadata:
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
         assert response.json() == {
-            "detail": {"error": "scope 'write:metadata_sign' not allowed"}
+            "detail": {"error": "scope 'write:metadata' not allowed"}
         }
 
     def test_post_payload_incorrect_md_format(

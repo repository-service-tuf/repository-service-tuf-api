@@ -19,8 +19,7 @@ auth = get_auth()
 @router.post(
     "/",
     summary=(
-        f"Rotate role metadata. Scope: "
-        f"{SCOPES_NAMES.write_metadata_sign.value}"
+        f"Rotate role metadata. Scope: " f"{SCOPES_NAMES.write_metadata.value}"
     ),
     description=("Rotate a role metadata that requires offline signing."),
     response_model=metadata.MetadataPostResponse,
@@ -29,7 +28,7 @@ auth = get_auth()
 )
 def post(
     payload: metadata.MetadataPostPayload,
-    _user=Security(auth, scopes=[SCOPES_NAMES.write_metadata_sign.value]),
+    _user=Security(auth, scopes=[SCOPES_NAMES.write_metadata.value]),
 ):
     return metadata.post_metadata(payload)
 
