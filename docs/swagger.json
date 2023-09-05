@@ -2015,7 +2015,8 @@
                                 "write:settings",
                                 "write:metadata",
                                 "write:metadata_sign",
-                                "delete:targets"
+                                "delete:targets",
+                                "delete:metadata_sign"
                             ]
                         },
                         "type": "array",

@@ -95,6 +95,7 @@ class TokenRequestPayload(BaseModel):
             SCOPES_NAMES.write_metadata.value,
             SCOPES_NAMES.write_metadata_sign.value,
             SCOPES_NAMES.delete_targets.value,
+            SCOPES_NAMES.delete_metadata_sign.value,
         ]
     ] = Field(min_items=1)
     expires: int = Field(description="In hour(s)", ge=1)
