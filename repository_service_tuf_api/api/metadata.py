@@ -19,7 +19,7 @@ auth = get_auth()
 @router.post(
     "/",
     summary=(
-        f"Rotate role metadata. Scope: " f"{SCOPES_NAMES.write_metadata.value}"
+        f"Rotate role metadata. Scope: {SCOPES_NAMES.write_metadata.value}"
     ),
     description=("Rotate a role metadata that requires offline signing."),
     response_model=metadata.MetadataPostResponse,
