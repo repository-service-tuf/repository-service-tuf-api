@@ -49,7 +49,55 @@ class TestGetBootstrap:
         assert response.status_code == status.HTTP_200_OK
         assert response.url == f"{test_client.base_url}{url}"
         assert response.json() == {
-            "data": {"bootstrap": True, "state": "finished"},
+            "data": {"bootstrap": True, "state": "finished", "id": "task_id"},
+            "message": "System LOCKED for bootstrap.",
+        }
+        assert mocked_bootstrap_state.calls == [pretend.call()]
+
+    def test_get_bootstrap_already_bootstrap_in_pre(
+        self, test_client, monkeypatch, token_headers
+    ):
+        url = "/api/v1/bootstrap/"
+
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda *a: pretend.stub(
+                bootstrap=False, state="pre", task_id="task_id"
+            )
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.bootstrap.bootstrap_state",
+            mocked_bootstrap_state,
+        )
+
+        response = test_client.get(url, headers=token_headers)
+        assert response.status_code == status.HTTP_200_OK
+        assert response.url == f"{test_client.base_url}{url}"
+        assert response.json() == {
+            "data": {"bootstrap": False, "state": "pre", "id": "task_id"},
+            "message": "System LOCKED for bootstrap.",
+        }
+        assert mocked_bootstrap_state.calls == [pretend.call()]
+
+    def test_get_bootstrap_already_bootstrap_in_signing(
+        self, test_client, monkeypatch, token_headers
+    ):
+        url = "/api/v1/bootstrap/"
+
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda *a: pretend.stub(
+                bootstrap=False, state="signing", task_id="task_id"
+            )
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.bootstrap.bootstrap_state",
+            mocked_bootstrap_state,
+        )
+
+        response = test_client.get(url, headers=token_headers)
+        assert response.status_code == status.HTTP_200_OK
+        assert response.url == f"{test_client.base_url}{url}"
+        assert response.json() == {
+            "data": {"bootstrap": False, "state": "signing", "id": "task_id"},
             "message": "System LOCKED for bootstrap.",
         }
         assert mocked_bootstrap_state.calls == [pretend.call()]
@@ -90,7 +138,9 @@ class TestPostBootstrap:
         url = "/api/v1/bootstrap/"
 
         mocked_bootstrap_state = pretend.call_recorder(
-            lambda *a: pretend.stub(bootstrap=False)
+            lambda *a: pretend.stub(
+                bootstrap=False, state="finished", task_id="task_id"
+            )
         )
         monkeypatch.setattr(
             "repository_service_tuf_api.bootstrap.bootstrap_state",
@@ -141,7 +191,9 @@ class TestPostBootstrap:
         url = "/api/v1/bootstrap/"
 
         mocked_bootstrap_state = pretend.call_recorder(
-            lambda *a: pretend.stub(bootstrap=False)
+            lambda *a: pretend.stub(
+                bootstrap=False, state="finished", task_id="task_id"
+            )
         )
         monkeypatch.setattr(
             "repository_service_tuf_api.bootstrap.bootstrap_state",
@@ -223,7 +275,7 @@ class TestPostBootstrap:
 
         mocked_bootstrap_state = pretend.call_recorder(
             lambda *a: pretend.stub(
-                bootstrap=True, state="pre", task_id="task_id"
+                bootstrap=False, state="pre", task_id="task_id"
             )
         )
         monkeypatch.setattr(
@@ -250,7 +302,7 @@ class TestPostBootstrap:
 
         mocked_bootstrap_state = pretend.call_recorder(
             lambda *a: pretend.stub(
-                bootstrap=True, state="signing", task_id="task_id"
+                bootstrap=False, state="signing", task_id="task_id"
             )
         )
         monkeypatch.setattr(

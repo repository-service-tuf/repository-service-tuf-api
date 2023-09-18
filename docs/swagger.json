@@ -1155,6 +1155,10 @@
                     "state": {
                         "type": "string",
                         "title": "State"
+                    },
+                    "id": {
+                        "type": "string",
+                        "title": "Id"
                     }
                 },
                 "type": "object",

@@ -70,6 +70,7 @@ class BootstrapPostResponse(BaseModel):
 class GetData(BaseModel):
     bootstrap: bool
     state: Optional[str]
+    id: Optional[str]
 
 
 class BootstrapGetResponse(BaseModel):
@@ -104,9 +105,11 @@ def _check_bootstrap_status(task_id, timeout):
             continue
 
 
-def get_bootstrap():
+def get_bootstrap() -> BootstrapGetResponse:
     bs_state = bootstrap_state()
-    if bs_state.bootstrap is True:
+    # If bootstrap ceremony has completed, is executed in the moment ("pre")
+    # or is in the process of DAS signing ("signing") we consider it as locked.
+    if bs_state.bootstrap is True or bs_state.state in ["pre", "signing"]:
         message = "System LOCKED for bootstrap."
 
     else:
@@ -126,7 +129,9 @@ def get_bootstrap():
 
 def post_bootstrap(payload: BootstrapPayload) -> BootstrapPostResponse:
     bs_state = bootstrap_state()
-    if bs_state.bootstrap is True:
+    # If bootstrap ceremony has completed, is executed in the moment ("pre")
+    # or is in the process of DAS signing ("signing") we consider it as locked.
+    if bs_state.bootstrap is True or bs_state.state in ["pre", "signing"]:
         raise HTTPException(
             status_code=status.HTTP_200_OK,
             detail=BaseErrorResponse(

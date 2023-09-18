@@ -240,8 +240,8 @@ def bootstrap_state() -> BootstrapState:
         return bootstrap_state
 
     elif len(bootstrap.split("-")) == 2:
-        # This is considered an intermediated state It is not finished because
-        # there is a `<state>-`
+        # This is considered an intermediated state. It is not finished because
+        # there is a `<state>-` like 'pre-<task_id>' or 'signing-<task_id>'.
         bootstrap_state.bootstrap = False
         bootstrap_state.state = bootstrap.split("-")[0]
         bootstrap_state.task_id = bootstrap.split("-")[1]
