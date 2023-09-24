@@ -9,7 +9,7 @@ from threading import Thread
 from typing import Dict, Literal, Optional
 
 from fastapi import HTTPException, status
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 from repository_service_tuf_api import (
     bootstrap_state,
@@ -27,7 +27,10 @@ from repository_service_tuf_api.common_models import (
 
 class ServiceSettings(BaseModel):
     targets_base_url: str
-    number_of_delegated_bins: int = Field(gt=1, lt=16385)
+    # We cannot add the limit range
+    # https://github.com/tiangolo/fastapi/discussions/9140
+    # number_of_delegated_bins: int = Field(gt=1, lt=16385)
+    number_of_delegated_bins: int
     targets_online_key: bool
 
 

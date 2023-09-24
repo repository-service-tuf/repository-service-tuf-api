@@ -435,16 +435,13 @@
                 "operationId": "get_api_v1_task__get",
                 "parameters": [
                     {
-                        "name": "task_id",
-                        "in": "query",
                         "required": true,
                         "schema": {
-                            "title": "Task Id",
-                            "description": "Task id",
-                            "required": true,
-                            "type": "string"
+                            "type": "string",
+                            "title": "Task Id"
                         },
-                        "description": "Task id"
+                        "name": "task_id",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1146,8 +1143,6 @@
                     },
                     "number_of_delegated_bins": {
                         "type": "integer",
-                        "exclusiveMaximum": 16385.0,
-                        "exclusiveMinimum": 1.0,
                         "title": "Number Of Delegated Bins"
                     },
                     "targets_online_key": {
