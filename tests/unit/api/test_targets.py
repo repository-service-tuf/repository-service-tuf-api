@@ -51,7 +51,7 @@ class TestPostTargets:
                 "task_id": fake_task_id,
                 "last_update": "2019-06-16T09:05:01",
             },
-            "message": "Target(s) successfully submitted.",
+            "message": "New Target(s) successfully submitted.",
         }
         assert mocked_bootstrap_state.calls == [pretend.call()]
         assert mocked_repository_metadata.apply_async.calls == [
@@ -117,7 +117,7 @@ class TestPostTargets:
                 "task_id": fake_task_id,
                 "last_update": "2019-06-16T09:05:01",
             },
-            "message": "Target(s) successfully submitted.",
+            "message": "New Target(s) successfully submitted.",
         }
 
         # Add task_id info into custom as it will be done in the post function
@@ -187,7 +187,10 @@ class TestPostTargets:
         )
         response = test_client.post(url, json=payload, headers=token_headers)
         assert response.status_code == status.HTTP_202_ACCEPTED
-        msg = "Target(s) successfully submitted. Publishing will be skipped."
+        msg = (
+            "New Target(s) successfully submitted. "
+            "Publishing will be skipped."
+        )
         assert response.json() == {
             "data": {
                 "targets": ["file1.tar.gz", "file2.tar.gz", "file3.tar.gz"],
@@ -360,7 +363,7 @@ class TestPostTargets:
                 "last_update": "2019-06-16T09:05:01",
             },
             "message": (
-                "Target(s) successfully submitted. "
+                "New Target(s) successfully submitted. "
                 "Deprecation Warning: this endpoint will removed in v1.0.0, "
                 "use `/api/v1/artifacts`"
             ),
