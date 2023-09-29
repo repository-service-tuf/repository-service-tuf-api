@@ -23,33 +23,12 @@ jobs:
     with:
       image_version: ${{ github.sha }}
 
-  set-component-versions:
-    needs: publish-container-image
-    runs-on: ubuntu-latest
-    outputs:
-      worker_version: ${{ steps.worker_version.outputs.VERSION }}
-      cli_version: ${{ steps.cli_version.outputs.VERSION }}
-
-    steps:
-      - id: worker_version
-        name: dynamic input worker version
-        run: |
-          if [[ "${{ inputs.worker_version }}" == "" ]]; then echo "VERSION=latest" >> $GITHUB_OUTPUT; else echo "VERSION=${{ inputs.worker_version }}" >> $GITHUB_OUTPUT;fi
-
-      - id: cli_version
-        name: dynamic input cli version
-        run: |
-          if [[ "${{ inputs.cli_version }}" == "" ]]; then echo "VERSION=latest" >> $GITHUB_OUTPUT; else echo "VERSION=${{ inputs.cli_version }}" >> $GITHUB_OUTPUT;fi
-
-  functional-tests:
-    needs: set-component-versions
-    uses: repository-service-tuf/repository-service-tuf/.github/workflows/functional.yml@main
+  functional-tests-local:
+    name: FT Deploy Local Services
+    uses: ./.github/workflows/functional-tests.yml
     with:
-      api_version: ${{ github.sha }}
-      worker_version: ${{ needs.set-component-versions.outputs.worker_version }}
-      cli_version: ${{ needs.set-component-versions.outputs.cli_version }}
-    secrets:
-      RSTUF_ONLINE_KEY: ${{ secrets.RSTUF_ONLINE_KEY }}
+      worker_version: ${{ inputs.worker_version }}
+      cli_version: ${{ inputs.cli_version }}
 
   release:
     runs-on: ubuntu-latest

@@ -5,6 +5,8 @@ metadata/**
 database/*.sqlite
 data_test/
 data/
+payload.json
+rstuf-umbrealla/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
