@@ -146,7 +146,7 @@ def post(payload: AddPayload) -> Response:
         acks_late=True,
     )
 
-    message = "Target(s) successfully submitted."
+    message = "New Target(s) successfully submitted."
     if payload.publish_targets is False:
         message += " Publishing will be skipped."
 
