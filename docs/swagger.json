@@ -1380,8 +1380,6 @@
                 "properties": {
                     "bit_length": {
                         "type": "integer",
-                        "exclusiveMaximum": 15.0,
-                        "exclusiveMinimum": 0.0,
                         "title": "Bit Length"
                     },
                     "name_prefix": {
