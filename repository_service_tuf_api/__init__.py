@@ -3,20 +3,13 @@
 # SPDX-License-Identifier: MIT
 
 import logging
-import os
 from dataclasses import dataclass
-from enum import Enum
 from typing import Optional
 from uuid import uuid4
 
 from celery import Celery
 from dynaconf import Dynaconf
 from dynaconf.loaders import redis_loader
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-
-from repository_service_tuf_api.users import crud, schemas
-from repository_service_tuf_api.users.models import Base
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -37,46 +30,7 @@ class BootstrapState:
     task_id: Optional[str] = None
 
 
-class SCOPES_NAMES(Enum):
-    read_bootstrap = "read:bootstrap"
-    read_settings = "read:settings"
-    read_tasks = "read:tasks"
-    read_token = "read:token"  # nosec bandit: not hard coded password
-    write_bootstrap = "write:bootstrap"
-    write_settings = "write:settings"
-    write_metadata = "write:metadata"
-    write_metadata_sign = "write:metadata_sign"
-    read_metadata_sign = "read:metadata_sign"
-    write_targets = "write:targets"
-    write_token = "write:token"  # nosec bandit: not hard coded password
-    delete_targets = "delete:targets"
-    delete_metadata_sign = "delete:metadata_sign"
-
-
-SCOPES = {
-    SCOPES_NAMES.read_bootstrap.value: "Read (GET) bootstrap",
-    SCOPES_NAMES.read_settings.value: "Read (GET) settings",
-    SCOPES_NAMES.read_tasks.value: "Read (GET) tasks",
-    SCOPES_NAMES.read_token.value: "Read (GET) tokens",
-    SCOPES_NAMES.read_metadata_sign.value: "Read (GET) metadata",
-    SCOPES_NAMES.write_targets.value: "Write (POST) targets",
-    SCOPES_NAMES.write_token.value: "Write (POST) token",
-    SCOPES_NAMES.write_bootstrap.value: "Write (POST) bootstrap",
-    SCOPES_NAMES.write_settings.value: "Write (PUT) settings",
-    SCOPES_NAMES.write_metadata.value: "Write (POST) metadata",
-    SCOPES_NAMES.write_metadata_sign.value: "Write (POST) metadata sign",
-    SCOPES_NAMES.delete_targets.value: "Delete (DELETE) targets",
-    SCOPES_NAMES.delete_metadata_sign.value: "Delete (DELETE) metadata",
-}
-
-DATA_DIR = os.getenv("DATA_DIR", "/data")
-os.makedirs(DATA_DIR, exist_ok=True)
-SETTINGS_FILE = os.path.join(DATA_DIR, "settings.yaml")
-
-settings = Dynaconf(
-    envvar_prefix="RSTUF",
-    settings_files=[SETTINGS_FILE],
-)
+settings = Dynaconf(envvar_prefix="RSTUF")
 
 settings_repository = Dynaconf(
     redis_enabled=True,
@@ -91,75 +45,6 @@ secrets_settings = Dynaconf(
     envvar_prefix="SECRETS_RSTUF",
     environments=True,
 )
-
-is_auth_enabled: bool = settings.get("AUTH", False)
-
-
-SECRET_KEY: Optional[str] = None
-ADMIN_PASSWORD: Optional[str] = None
-db: Optional[sessionmaker] = None
-
-if is_auth_enabled is True:
-    logging.info("AUTH enabled")
-    # Tokens
-    if secrets_settings.TOKEN_KEY.startswith("/run/secrets/"):
-        try:
-            with open(secrets_settings.TOKEN_KEY) as f:
-                SECRET_KEY = f.read().rstrip("\n")
-        except OSError as err:
-            logging.error(str(err))
-
-    else:
-        SECRET_KEY = secrets_settings.TOKEN_KEY
-
-    if secrets_settings.ADMIN_PASSWORD.startswith("/run/secrets/"):
-        try:
-            with open(secrets_settings.ADMIN_PASSWORD) as f:
-                ADMIN_PASSWORD = f.read().rstrip("\n")
-        except OSError as err:
-            logging.error(str(err))
-
-    else:
-        ADMIN_PASSWORD = secrets_settings.ADMIN_PASSWORD
-
-    # User database setup
-    DATABASE_URL = settings.get(
-        "DATABASE_URL", f"sqlite:///{os.path.join(DATA_DIR, 'users.sqlite')}"
-    )
-
-    engine = create_engine(
-        DATABASE_URL, connect_args={"check_same_thread": False}
-    )
-    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-    Base.metadata.create_all(bind=engine)
-    db = SessionLocal()
-
-    for scope in SCOPES:
-        scope_entry = crud.get_scope_by_name(db, name=scope)
-        if not scope_entry:
-            add_scope = schemas.ScopeCreate(
-                name=scope, description=SCOPES[scope]
-            )
-            crud.create_user_scope(db, add_scope)
-
-    user = crud.get_user_by_username(db, username="admin")
-    if not user:
-        user_in = schemas.UserCreate(
-            username="admin",
-            password=ADMIN_PASSWORD,
-        )
-        user = crud.create_user(db, user_in)
-        crud.user_add_scopes(
-            db, user, [scope for scope in crud.get_scopes(db)]
-        )
-
-    else:
-        user_scopes = [user_scope.name for user_scope in user.scopes]
-        for scope in SCOPES:
-            if scope not in user_scopes:
-                crud.user_append_scope(db, user, scope)
-                logging.info(f"Scope '{scope}' added to admin.")
 
 # Celery setup
 celery = Celery(__name__)

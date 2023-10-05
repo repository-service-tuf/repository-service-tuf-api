@@ -8,7 +8,6 @@ Subpackages
    :maxdepth: 4
 
    repository_service_tuf_api.api
-   repository_service_tuf_api.users
 
 Submodules
 ----------
@@ -57,14 +56,6 @@ repository\_service\_tuf\_api.tasks module
 ------------------------------------------
 
 .. automodule:: repository_service_tuf_api.tasks
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-repository\_service\_tuf\_api.token module
-------------------------------------------
-
-.. automodule:: repository_service_tuf_api.token
    :members:
    :undoc-members:
    :show-inheritance:

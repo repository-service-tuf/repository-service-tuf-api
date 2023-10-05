@@ -2,10 +2,9 @@
 #
 # SPDX-License-Identifier: MIT
 
-from fastapi import APIRouter, Security, status
+from fastapi import APIRouter, status
 
-from repository_service_tuf_api import SCOPES_NAMES, bootstrap
-from repository_service_tuf_api.api import get_auth
+from repository_service_tuf_api import bootstrap
 
 router = APIRouter(
     prefix="/bootstrap",
@@ -13,29 +12,21 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
-auth = get_auth()
-
 
 @router.get(
     "/",
-    summary=(
-        "Check the bootstrap status. "
-        f"Scope: {SCOPES_NAMES.read_bootstrap.value}"
-    ),
+    summary="Check the bootstrap status.",
     description=("Check if the bootstrap of the system is done or not."),
     response_model=bootstrap.BootstrapGetResponse,
     response_model_exclude_none=True,
 )
-def get(_user=Security(auth, scopes=[SCOPES_NAMES.read_bootstrap.value])):
+def get():
     return bootstrap.get_bootstrap()
 
 
 @router.post(
     "/",
-    summary=(
-        "Bootstrap the system with initial signed Metadata. "
-        f"Scope: {SCOPES_NAMES.write_bootstrap.value}"
-    ),
+    summary="Bootstrap the system with initial signed Metadata.",
     description=(
         "Initialize the TUF Repository with initial signed Metadata and "
         "Settings."
@@ -46,6 +37,5 @@ def get(_user=Security(auth, scopes=[SCOPES_NAMES.read_bootstrap.value])):
 )
 def post(
     payload: bootstrap.BootstrapPayload,
-    _user=Security(auth, scopes=[SCOPES_NAMES.write_bootstrap.value]),
 ):
     return bootstrap.post_bootstrap(payload)

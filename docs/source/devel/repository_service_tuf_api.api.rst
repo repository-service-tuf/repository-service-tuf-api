@@ -44,14 +44,6 @@ repository\_service\_tuf\_api.api.tasks module
    :undoc-members:
    :show-inheritance:
 
-repository\_service\_tuf\_api.api.token module
-----------------------------------------------
-
-.. automodule:: repository_service_tuf_api.api.token
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 Module contents
 ---------------
 

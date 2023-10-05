@@ -40,7 +40,6 @@ myst-parser = "*"
 pre-commit = "*"
 bandit = "*"
 httpx = "*"
-pytest-bdd = "*"
 
 [requires]
 python_version = "3.10"

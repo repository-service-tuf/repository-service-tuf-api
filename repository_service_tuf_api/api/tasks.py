@@ -2,12 +2,9 @@
 #
 # SPDX-License-Identifier: MIT
 
-from fastapi import APIRouter, Depends, Security
+from fastapi import APIRouter, Depends
 
-from repository_service_tuf_api import SCOPES_NAMES, tasks
-from repository_service_tuf_api.api import get_auth
-
-auth = get_auth()
+from repository_service_tuf_api import tasks
 
 router = APIRouter(
     prefix="/task",
@@ -18,7 +15,7 @@ router = APIRouter(
 
 @router.get(
     "/",
-    summary=("Get task state. " f"Scope: {SCOPES_NAMES.read_tasks.value}"),
+    summary="Get task state.",
     description=(
         "Get Repository Metadata task state. "
         "The state is according with Celery tasks: "
@@ -32,8 +29,5 @@ router = APIRouter(
     response_model=tasks.Response,
     response_model_exclude_none=True,
 )
-def get(
-    params: tasks.GetParameters = Depends(),
-    _user=Security(auth, scopes=[SCOPES_NAMES.read_tasks.value]),
-):
+def get(params: tasks.GetParameters = Depends()):
     return tasks.get(params.task_id)
