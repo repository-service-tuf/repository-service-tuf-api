@@ -48,12 +48,16 @@ class TestAPP:
         import app
 
         app.settings.DISABLE_ENDPOINTS = (
-            "{'POST'}/api/v1/targets/publish/:/api/v1/targets/"
+            "{'POST'}/api/v1/artifacts/publish/:/api/v1/artifacts/"
         )
         app.is_auth_enabled = True
         caplog.set_level(app.logging.INFO)
         app.load_endpoints()
         assert caplog.record_tuples == [
-            ("root", 20, "Disabled endpoint {'POST'}/api/v1/targets/publish/"),
-            ("root", 20, "Disabled endpoint /api/v1/targets/"),
+            (
+                "root",
+                20,
+                "Disabled endpoint {'POST'}/api/v1/artifacts/publish/",
+            ),
+            ("root", 20, "Disabled endpoint /api/v1/artifacts/"),
         ]

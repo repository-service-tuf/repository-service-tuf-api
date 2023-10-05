@@ -37,7 +37,7 @@ class Response(BaseModel):
                 "task_id": "06ee6db3cbab4b26be505352c2f2e2c3",
                 "last_update": "2022-12-01T12:10:00.578086",
             },
-            "message": "New Target(s) successfully submitted.",
+            "message": "New Artifact(s) successfully submitted.",
         }
         schema_extra = {"example": data_example}
 
@@ -146,7 +146,7 @@ def post(payload: AddPayload) -> Response:
         acks_late=True,
     )
 
-    message = "New Target(s) successfully submitted."
+    message = "New Artifact(s) successfully submitted."
     if payload.publish_targets is False:
         message += " Publishing will be skipped."
 
@@ -194,7 +194,7 @@ def delete(payload: DeletePayload) -> Response:
         "last_update": datetime.now(),
     }
 
-    message = "Remove Target(s) successfully submitted."
+    message = "Remove Artifact(s) successfully submitted."
     if payload.publish_targets is False:
         message += " Publishing will be skipped."
     return Response(data=data, message=message)
