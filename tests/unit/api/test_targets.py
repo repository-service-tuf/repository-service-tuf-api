@@ -10,7 +10,7 @@ from fastapi import status
 
 
 class TestPostTargets:
-    def test_post(self, monkeypatch, test_client, token_headers):
+    def test_post(self, monkeypatch, test_client):
         url = "/api/v1/artifacts/"
         with open("tests/data_examples/targets/payload.json") as f:
             f_data = f.read()
@@ -43,7 +43,7 @@ class TestPostTargets:
         monkeypatch.setattr(
             "repository_service_tuf_api.targets.datetime", fake_datetime
         )
-        response = test_client.post(url, json=payload, headers=token_headers)
+        response = test_client.post(url, json=payload)
         assert response.status_code == status.HTTP_202_ACCEPTED
         assert response.json() == {
             "data": {
@@ -70,9 +70,7 @@ class TestPostTargets:
             )
         ]
 
-    def test_post_with_add_task_id_to_custom(
-        self, monkeypatch, test_client, token_headers
-    ):
+    def test_post_with_add_task_id_to_custom(self, monkeypatch, test_client):
         url = "/api/v1/artifacts/"
         with open("tests/data_examples/targets/payload.json") as f:
             f_data = f.read()
@@ -109,7 +107,7 @@ class TestPostTargets:
         # enable to add task id to custom metadata field
         payload["add_task_id_to_custom"] = True
 
-        response = test_client.post(url, json=payload, headers=token_headers)
+        response = test_client.post(url, json=payload)
         assert response.status_code == status.HTTP_202_ACCEPTED
         assert response.json() == {
             "data": {
@@ -147,9 +145,7 @@ class TestPostTargets:
             )
         ]
 
-    def test_post_publish_targets_false(
-        self, monkeypatch, test_client, token_headers
-    ):
+    def test_post_publish_targets_false(self, monkeypatch, test_client):
         url = "/api/v1/artifacts/"
         with open("tests/data_examples/targets/payload.json") as f:
             f_data = f.read()
@@ -185,7 +181,7 @@ class TestPostTargets:
             "repository_service_tuf_api.targets.repository_metadata",
             mocked_repository_metadata,
         )
-        response = test_client.post(url, json=payload, headers=token_headers)
+        response = test_client.post(url, json=payload)
         assert response.status_code == status.HTTP_202_ACCEPTED
         msg = (
             "New Artifact(s) successfully submitted. "
@@ -212,9 +208,7 @@ class TestPostTargets:
             )
         ]
 
-    def test_post_without_bootstrap(
-        self, monkeypatch, test_client, token_headers
-    ):
+    def test_post_without_bootstrap(self, monkeypatch, test_client):
         url = "/api/v1/artifacts/"
         with open("tests/data_examples/targets/payload.json") as f:
             f_data = f.read()
@@ -229,7 +223,7 @@ class TestPostTargets:
 
         payload = json.loads(f_data)
 
-        response = test_client.post(url, json=payload, headers=token_headers)
+        response = test_client.post(url, json=payload)
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == {
             "detail": {
@@ -240,7 +234,7 @@ class TestPostTargets:
         assert mocked_bootstrap_state.calls == [pretend.call()]
 
     def test_post_with_bootstrap_intermediate_state(
-        self, monkeypatch, test_client, token_headers
+        self, monkeypatch, test_client
     ):
         url = "/api/v1/artifacts/"
         with open("tests/data_examples/targets/payload.json") as f:
@@ -256,7 +250,7 @@ class TestPostTargets:
 
         payload = json.loads(f_data)
 
-        response = test_client.post(url, json=payload, headers=token_headers)
+        response = test_client.post(url, json=payload)
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == {
             "detail": {
@@ -266,7 +260,7 @@ class TestPostTargets:
         }
         assert mocked_bootstrap_state.calls == [pretend.call()]
 
-    def test_post_missing_required_field(self, test_client, token_headers):
+    def test_post_missing_required_field(self, test_client):
         url = "/api/v1/artifacts/"
         payload = {
             "targets": [
@@ -279,51 +273,12 @@ class TestPostTargets:
             ]
         }
 
-        response = test_client.post(url, json=payload, headers=token_headers)
+        response = test_client.post(url, json=payload)
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
-
-    def test_post_unauthorized_invalid_token(self, test_client):
-        headers = {
-            "Authorization": "Bearer 123456789abcef",
-        }
-        url = "/api/v1/artifacts/"
-        with open("tests/data_examples/targets/payload.json") as f:
-            f_data = f.read()
-
-        payload = json.loads(f_data)
-
-        response = test_client.post(url, json=payload, headers=headers)
-        assert response.status_code == status.HTTP_401_UNAUTHORIZED
-        assert response.json() == {
-            "detail": {"error": "Failed to validate token"}
-        }
-
-    def test_post_forbidden_user_incorrect_scope_token(self, test_client):
-        token_url = "/api/v1/token/?expires=1"
-        token_payload = {
-            "username": "admin",
-            "password": "secret",
-            "scope": "read:settings",
-        }
-        token = test_client.post(token_url, data=token_payload)
-        headers = {
-            "Authorization": f"Bearer {token.json()['access_token']}",
-        }
-        url = "/api/v1/artifacts/"
-        with open("tests/data_examples/targets/payload.json") as f:
-            f_data = f.read()
-
-        payload = json.loads(f_data)
-
-        response = test_client.post(url, json=payload, headers=headers)
-        assert response.status_code == status.HTTP_403_FORBIDDEN
-        assert response.json() == {
-            "detail": {"error": "scope 'write:targets' not allowed"}
-        }
 
 
 class TestDeleteTargets:
-    def test_delete(self, monkeypatch, test_client, token_headers):
+    def test_delete(self, monkeypatch, test_client):
         url = "/api/v1/artifacts/"
 
         payload = {
@@ -358,9 +313,7 @@ class TestDeleteTargets:
         )
 
         # https://github.com/tiangolo/fastapi/issues/5649
-        response = test_client.request(
-            "DELETE", url, json=payload, headers=token_headers
-        )
+        response = test_client.request("DELETE", url, json=payload)
 
         assert response.status_code == status.HTTP_202_ACCEPTED
         assert response.json() == {
@@ -384,9 +337,7 @@ class TestDeleteTargets:
             )
         ]
 
-    def test_delete_publish_targets_false(
-        self, monkeypatch, test_client, token_headers
-    ):
+    def test_delete_publish_targets_false(self, monkeypatch, test_client):
         url = "/api/v1/artifacts/"
 
         payload = {
@@ -422,9 +373,7 @@ class TestDeleteTargets:
         )
 
         # https://github.com/tiangolo/fastapi/issues/5649
-        response = test_client.request(
-            "DELETE", url, json=payload, headers=token_headers
-        )
+        response = test_client.request("DELETE", url, json=payload)
 
         assert response.status_code == status.HTTP_202_ACCEPTED
         msg = (
@@ -452,9 +401,7 @@ class TestDeleteTargets:
             )
         ]
 
-    def test_delete_without_bootstrap(
-        self, monkeypatch, test_client, token_headers
-    ):
+    def test_delete_without_bootstrap(self, monkeypatch, test_client):
         url = "/api/v1/artifacts/"
 
         payload = {
@@ -468,9 +415,7 @@ class TestDeleteTargets:
             mocked_bootstrap_state,
         )
         # https://github.com/tiangolo/fastapi/issues/5649
-        response = test_client.request(
-            "DELETE", url, json=payload, headers=token_headers
-        )
+        response = test_client.request("DELETE", url, json=payload)
 
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == {
@@ -482,7 +427,7 @@ class TestDeleteTargets:
         assert mocked_bootstrap_state.calls == [pretend.call()]
 
     def test_delete_with_bootstrap_intermediate_state(
-        self, monkeypatch, test_client, token_headers
+        self, monkeypatch, test_client
     ):
         url = "/api/v1/artifacts/"
 
@@ -497,9 +442,7 @@ class TestDeleteTargets:
             mocked_bootstrap_state,
         )
         # https://github.com/tiangolo/fastapi/issues/5649
-        response = test_client.request(
-            "DELETE", url, json=payload, headers=token_headers
-        )
+        response = test_client.request("DELETE", url, json=payload)
 
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == {
@@ -509,68 +452,19 @@ class TestDeleteTargets:
             }
         }
 
-    def test_delete_missing_required_field(self, test_client, token_headers):
+    def test_delete_missing_required_field(self, test_client):
         url = "/api/v1/artifacts/"
 
         payload = {"paths": ["file-v1.0.0_i683.tar.gz", "v0.4.1/file.tar.gz"]}
 
         # https://github.com/tiangolo/fastapi/issues/5649
-        response = test_client.request(
-            "DELETE", url, json=payload, headers=token_headers
-        )
+        response = test_client.request("DELETE", url, json=payload)
 
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
-    def test_delete_unauthorized_invalid_token(self, test_client):
-        headers = {
-            "Authorization": "Bearer 123456789abcef",
-        }
-        url = "/api/v1/artifacts/"
-
-        payload = {
-            "targets": ["file-v1.0.0_i683.tar.gz", "v0.4.1/file.tar.gz"]
-        }
-
-        # https://github.com/tiangolo/fastapi/issues/5649
-        response = test_client.request(
-            "DELETE", url, json=payload, headers=headers
-        )
-
-        assert response.status_code == status.HTTP_401_UNAUTHORIZED
-        assert response.json() == {
-            "detail": {"error": "Failed to validate token"}
-        }
-
-    def test_delete_forbidden_user_incorrect_scope_token(self, test_client):
-        token_url = "/api/v1/token/?expires=1"
-        token_payload = {
-            "username": "admin",
-            "password": "secret",
-            "scope": "write:targets",
-        }
-        token = test_client.post(token_url, data=token_payload)
-        headers = {
-            "Authorization": f"Bearer {token.json()['access_token']}",
-        }
-        url = "/api/v1/artifacts/"
-
-        payload = {
-            "targets": ["file-v1.0.0_i683.tar.gz", "v0.4.1/file.tar.gz"]
-        }
-
-        # https://github.com/tiangolo/fastapi/issues/5649
-        response = test_client.request(
-            "DELETE", url, json=payload, headers=headers
-        )
-
-        assert response.status_code == status.HTTP_403_FORBIDDEN
-        assert response.json() == {
-            "detail": {"error": "scope 'delete:targets' not allowed"}
-        }
-
 
 class TestPostTargetsPublish:
-    def test_post_publish(self, monkeypatch, test_client, token_headers):
+    def test_post_publish(self, monkeypatch, test_client):
         url = "/api/v1/artifacts/publish/"
 
         mocked_repository_metadata = pretend.stub(
@@ -592,7 +486,7 @@ class TestPostTargetsPublish:
         monkeypatch.setattr(
             "repository_service_tuf_api.targets.datetime", fake_datetime
         )
-        response = test_client.post(url, headers=token_headers)
+        response = test_client.post(url)
         assert response.status_code == status.HTTP_202_ACCEPTED
         assert response.json() == {
             "data": {

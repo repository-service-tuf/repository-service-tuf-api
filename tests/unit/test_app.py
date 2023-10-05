@@ -20,28 +20,16 @@ class TestAPP:
         assert response.status_code == status.HTTP_404_NOT_FOUND
         assert response.json() == {"detail": "Not Found"}
 
-    def test_load_endpoints_auth_disabled(self, caplog):
-        import app
-
-        caplog.set_level(app.logging.INFO)
-        app.is_auth_enabled = False
-        app.load_endpoints()
-        assert caplog.record_tuples == [
-            ("root", 20, "Disabled endpoint /api/v1/token/"),
-        ]
-
     def test_load_endpoints_disable_prefix_and_method(self, caplog):
         import app
 
         app.settings.DISABLE_ENDPOINTS = (
-            "{'POST'}/api/v1/token/new/:/api/v1/bootstrap/"
+            "{'POST'}/api/v1/metadata/sign/:/api/v1/bootstrap/"
         )
         caplog.set_level(app.logging.INFO)
-        app.is_auth_enabled = True
         app.load_endpoints()
         assert caplog.record_tuples == [
             ("root", 20, "Disabled endpoint /api/v1/bootstrap/"),
-            ("root", 20, "Disabled endpoint {'POST'}/api/v1/token/new/"),
         ]
 
     def test_load_endpoints_disabling_priority_check(self, caplog):
@@ -50,7 +38,6 @@ class TestAPP:
         app.settings.DISABLE_ENDPOINTS = (
             "{'POST'}/api/v1/artifacts/publish/:/api/v1/artifacts/"
         )
-        app.is_auth_enabled = True
         caplog.set_level(app.logging.INFO)
         app.load_endpoints()
         assert caplog.record_tuples == [

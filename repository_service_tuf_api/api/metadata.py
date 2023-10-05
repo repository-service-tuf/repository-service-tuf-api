@@ -2,10 +2,9 @@
 #
 # SPDX-License-Identifier: MIT
 
-from fastapi import APIRouter, Security, status
+from fastapi import APIRouter, status
 
-from repository_service_tuf_api import SCOPES_NAMES, metadata
-from repository_service_tuf_api.api import get_auth
+from repository_service_tuf_api import metadata
 
 router = APIRouter(
     prefix="/metadata",
@@ -13,32 +12,22 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
-auth = get_auth()
-
 
 @router.post(
     "/",
-    summary=(
-        f"Rotate role metadata. Scope: {SCOPES_NAMES.write_metadata.value}"
-    ),
-    description=("Rotate a role metadata that requires offline signing."),
+    summary="Rotate role metadata.",
+    description="Rotate a role metadata that requires offline signing.",
     response_model=metadata.MetadataPostResponse,
     response_model_exclude_none=True,
     status_code=status.HTTP_202_ACCEPTED,
 )
-def post(
-    payload: metadata.MetadataPostPayload,
-    _user=Security(auth, scopes=[SCOPES_NAMES.write_metadata.value]),
-):
+def post(payload: metadata.MetadataPostPayload):
     return metadata.post_metadata(payload)
 
 
 @router.get(
     "/sign",
-    summary=(
-        "Get all metadata roles pending signatures. Scope: "
-        f"{SCOPES_NAMES.read_metadata_sign.value}"
-    ),
+    summary="Get all metadata roles pending signatures.",
     description=(
         "Get all metadata roles that need more signatures before they can be "
         "used."
@@ -47,43 +36,29 @@ def post(
     response_model_exclude_none=True,
     status_code=status.HTTP_200_OK,
 )
-def get_sign(
-    _user=Security(auth, scopes=[SCOPES_NAMES.read_metadata_sign.value]),
-):
+def get_sign():
     return metadata.get_metadata_sign()
 
 
 @router.post(
     "/sign",
-    summary=(
-        "Add a signature for a metadata role. Scope: "
-        f"{SCOPES_NAMES.write_metadata_sign.value}"
-    ),
-    description=("Add a signature for a metadata role."),
+    summary="Add a signature for a metadata role.",
+    description="Add a signature for a metadata role.",
     response_model=metadata.MetadataPostResponse,
     response_model_exclude_none=True,
     status_code=status.HTTP_202_ACCEPTED,
 )
-def post_sign(
-    payload: metadata.MetadataSignPostPayload,
-    _user=Security(auth, scopes=[SCOPES_NAMES.write_metadata_sign.value]),
-):
+def post_sign(payload: metadata.MetadataSignPostPayload):
     return metadata.post_metadata_sign(payload)
 
 
 @router.post(
     "/sign/delete",
-    summary=(
-        "Delete role metadata in signing process. Scope: "
-        f"{SCOPES_NAMES.delete_metadata_sign.value}"
-    ),
+    summary="Delete role metadata in signing process.",
     description="Delete role metadata in signing process",
     response_model=metadata.MetadataSignDeleteResponse,
     response_model_exclude_none=True,
     status_code=status.HTTP_202_ACCEPTED,
 )
-def post_delete_sign(
-    payload: metadata.MetadataSignDeletePayload,
-    _user=Security(auth, scopes=[SCOPES_NAMES.delete_metadata_sign.value]),
-):
+def post_delete_sign(payload: metadata.MetadataSignDeletePayload):
     return metadata.delete_metadata_sign(payload)

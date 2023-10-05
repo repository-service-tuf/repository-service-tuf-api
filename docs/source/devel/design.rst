@@ -19,8 +19,7 @@ Rest API that will receive requests from ``repository-service-tuf-cli``
 (using HTTP + Token) as usual, not limited but also from third part software
 using HTTP + Token.
 
-The ``repository-service-tuf-api`` writes synchronously some data to the filesystem
-``$DATA_DIR``. ``repository-service-tuf-api`` uses the file system, but the volume
+The ``repository-service-tuf-api`` uses the file system, but the volume
 is part of the OS.
 
 ``repository-service-tuf-api`` has two type of settings, **Service Configuration
@@ -34,19 +33,14 @@ Metadata Repository. To be considered, the Repository Configuration must be
 a configuration for the TUF Metadata Repository.
 
 This configuration is stored in the ``RSTUF_REDIS_SERVER`` (Redis Server) to
-efficiently distribute to the ``repository-service-tuf-worker``(s)
-that execute operations in the Metadata. A copy of this settings is stored
-localy in ``$DATA_DIR/repository_settings.ini``.
+efficiently distribute to the ``repository-service-tuf-worker``\(s)
+that execute operations in the Metadata.
 
 .. note::
 
     The Redis Server should have its persistent data setup and recovery
     mechanism. There is an implementation ``sync_redis`` that identifies
     that Redis doesn't have the Repository Settings and send it again.
-
-
-The ``repository-service-tuf-api`` service stores the User database used to
-manage the tokens in the filesystem.
 
 All operations to the Repository Metadata, the service publish to the Broker as
 a task, and ``repository-service-tuf-worker`` will consume it. The

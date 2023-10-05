@@ -7,7 +7,7 @@ from fastapi import status
 
 
 class TestGetTask:
-    def test_get(self, test_client, token_headers, monkeypatch):
+    def test_get(self, test_client, monkeypatch):
         url = "/api/v1/task/"
 
         mocked_task_result = pretend.stub(
@@ -21,9 +21,7 @@ class TestGetTask:
             mocked_repository_metadata,
         )
 
-        test_response = test_client.get(
-            f"{url}?task_id=test_id", headers=token_headers
-        )
+        test_response = test_client.get(f"{url}?task_id=test_id")
         assert test_response.status_code == status.HTTP_200_OK
         assert test_response.json() == {
             "data": {
@@ -37,9 +35,7 @@ class TestGetTask:
             pretend.call("test_id")
         ]
 
-    def test_get_result_is_exception(
-        self, test_client, token_headers, monkeypatch
-    ):
+    def test_get_result_is_exception(self, test_client, monkeypatch):
         url = "/api/v1/task/"
 
         mocked_task_result = pretend.stub(
@@ -53,9 +49,7 @@ class TestGetTask:
             mocked_repository_metadata,
         )
 
-        test_response = test_client.get(
-            f"{url}?task_id=test_id", headers=token_headers
-        )
+        test_response = test_client.get(f"{url}?task_id=test_id")
         assert test_response.status_code == status.HTTP_200_OK
         assert test_response.json() == {
             "data": {
@@ -68,24 +62,3 @@ class TestGetTask:
         assert mocked_repository_metadata.AsyncResult.calls == [
             pretend.call("test_id")
         ]
-
-    def test_get_invalid_scope(self, test_client, monkeypatch):
-        url = "/api/v1/task/"
-        token_url = "/api/v1/token/?expires=1"
-        token_payload = {
-            "username": "admin",
-            "password": "secret",
-            "scope": "read:settings",
-        }
-        token = test_client.post(token_url, data=token_payload)
-        headers = {
-            "Authorization": f"Bearer {token.json()['access_token']}",
-        }
-
-        test_response = test_client.get(
-            f"{url}?task_id=test_id", headers=headers
-        )
-        assert test_response.status_code == status.HTTP_403_FORBIDDEN
-        assert test_response.json() == {
-            "detail": {"error": "scope 'read:tasks' not allowed"}
-        }

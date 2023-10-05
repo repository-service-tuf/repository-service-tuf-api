@@ -3,8 +3,6 @@
 settings.ini
 metadata/**
 database/*.sqlite
-data_test/
-data/
 payload.json
 rstuf-umbrealla/
 
