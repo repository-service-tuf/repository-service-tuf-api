@@ -309,15 +309,17 @@
                         ]
                     }
                 ]
-            },
-            "delete": {
+            }
+        },
+        "/api/v1/metadata/sign/delete": {
+            "post": {
                 "tags": [
                     "v1",
                     "v1"
                 ],
                 "summary": "Delete role metadata in signing process. Scope: delete:metadata_sign",
                 "description": "Delete role metadata in signing process",
-                "operationId": "delete_sign_api_v1_metadata_sign_delete",
+                "operationId": "post_delete_sign_api_v1_metadata_sign_delete_post",
                 "requestBody": {
                     "content": {
                         "application/json": {

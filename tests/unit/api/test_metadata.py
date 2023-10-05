@@ -371,11 +371,11 @@ class TestPostMetadataSign:
         assert mocked_bootstrap_state.calls == [pretend.call()]
 
 
-class TestDeleteMetadataSign:
-    def test_delete_metadata_sign(
+class TestPostMetadataSignDelete:
+    def test_post_metadata_sign_delete(
         self, test_client, token_headers, monkeypatch
     ):
-        url = "/api/v1/metadata/sign/"
+        url = "/api/v1/metadata/sign/delete"
         mocked_settings_repository = pretend.stub(
             reload=pretend.call_recorder(lambda: None),
             get_fresh=pretend.call_recorder(lambda *a: "metadata"),
@@ -399,10 +399,7 @@ class TestDeleteMetadataSign:
         )
         payload = {"role": "root"}
 
-        # https://github.com/tiangolo/fastapi/issues/5649
-        response = test_client.request(
-            "DELETE", url, json=payload, headers=token_headers
-        )
+        response = test_client.post(url, json=payload, headers=token_headers)
         assert response.status_code == status.HTTP_202_ACCEPTED, response.text
         assert response.json() == {
             "data": {"task_id": "123"},
@@ -425,10 +422,10 @@ class TestDeleteMetadataSign:
             )
         ]
 
-    def test_delete_metadata_sign_role_not_in_signing_status(
+    def test_metadata_sign_delete_role_not_in_signing_status(
         self, test_client, token_headers, monkeypatch
     ):
-        url = "/api/v1/metadata/sign/"
+        url = "/api/v1/metadata/sign/delete"
         mocked_settings_repository = pretend.stub(
             reload=pretend.call_recorder(lambda: None),
             get_fresh=pretend.call_recorder(lambda *a: None),
@@ -440,10 +437,7 @@ class TestDeleteMetadataSign:
 
         payload = {"role": "root"}
 
-        # https://github.com/tiangolo/fastapi/issues/5649
-        response = test_client.request(
-            "DELETE", url, json=payload, headers=token_headers
-        )
+        response = test_client.post(url, json=payload, headers=token_headers)
         assert response.status_code == status.HTTP_200_OK, response.text
         assert response.json() == {
             "detail": {
