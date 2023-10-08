@@ -12,7 +12,7 @@
                     "v1",
                     "v1"
                 ],
-                "summary": "Check the bootstrap status. Scope: read:bootstrap",
+                "summary": "Check the bootstrap status.",
                 "description": "Check if the bootstrap of the system is done or not.",
                 "operationId": "get_api_v1_bootstrap__get",
                 "responses": {
@@ -29,21 +29,14 @@
                     "404": {
                         "description": "Not found"
                     }
-                },
-                "security": [
-                    {
-                        "OAuth2PasswordBearer": [
-                            "read:bootstrap"
-                        ]
-                    }
-                ]
+                }
             },
             "post": {
                 "tags": [
                     "v1",
                     "v1"
                 ],
-                "summary": "Bootstrap the system with initial signed Metadata. Scope: write:bootstrap",
+                "summary": "Bootstrap the system with initial signed Metadata.",
                 "description": "Initialize the TUF Repository with initial signed Metadata and Settings.",
                 "operationId": "post_api_v1_bootstrap__post",
                 "requestBody": {
@@ -80,14 +73,7 @@
                             }
                         }
                     }
-                },
-                "security": [
-                    {
-                        "OAuth2PasswordBearer": [
-                            "write:bootstrap"
-                        ]
-                    }
-                ]
+                }
             }
         },
         "/api/v1/config/": {
@@ -96,7 +82,7 @@
                     "v1",
                     "v1"
                 ],
-                "summary": "List settings. Scope: read:settings",
+                "summary": "List settings.",
                 "description": "Returns the configuration settings",
                 "operationId": "get_api_v1_config__get",
                 "responses": {
@@ -113,21 +99,14 @@
                     "404": {
                         "description": "Not found"
                     }
-                },
-                "security": [
-                    {
-                        "OAuth2PasswordBearer": [
-                            "read:settings"
-                        ]
-                    }
-                ]
+                }
             },
             "put": {
                 "tags": [
                     "v1",
                     "v1"
                 ],
-                "summary": "Update settings. Scope: write:settings",
+                "summary": "Update settings.",
                 "description": "Update configuration settings",
                 "operationId": "put_api_v1_config__put",
                 "requestBody": {
@@ -164,14 +143,7 @@
                             }
                         }
                     }
-                },
-                "security": [
-                    {
-                        "OAuth2PasswordBearer": [
-                            "write:settings"
-                        ]
-                    }
-                ]
+                }
             }
         },
         "/api/v1/metadata/": {
@@ -180,7 +152,7 @@
                     "v1",
                     "v1"
                 ],
-                "summary": "Rotate role metadata. Scope: write:metadata",
+                "summary": "Rotate role metadata.",
                 "description": "Rotate a role metadata that requires offline signing.",
                 "operationId": "post_api_v1_metadata__post",
                 "requestBody": {
@@ -217,14 +189,7 @@
                             }
                         }
                     }
-                },
-                "security": [
-                    {
-                        "OAuth2PasswordBearer": [
-                            "write:metadata"
-                        ]
-                    }
-                ]
+                }
             }
         },
         "/api/v1/metadata/sign": {
@@ -233,7 +198,7 @@
                     "v1",
                     "v1"
                 ],
-                "summary": "Get all metadata roles pending signatures. Scope: read:metadata_sign",
+                "summary": "Get all metadata roles pending signatures.",
                 "description": "Get all metadata roles that need more signatures before they can be used.",
                 "operationId": "get_sign_api_v1_metadata_sign_get",
                 "responses": {
@@ -250,21 +215,14 @@
                     "404": {
                         "description": "Not found"
                     }
-                },
-                "security": [
-                    {
-                        "OAuth2PasswordBearer": [
-                            "read:metadata_sign"
-                        ]
-                    }
-                ]
+                }
             },
             "post": {
                 "tags": [
                     "v1",
                     "v1"
                 ],
-                "summary": "Add a signature for a metadata role. Scope: write:metadata_sign",
+                "summary": "Add a signature for a metadata role.",
                 "description": "Add a signature for a metadata role.",
                 "operationId": "post_sign_api_v1_metadata_sign_post",
                 "requestBody": {
@@ -301,23 +259,18 @@
                             }
                         }
                     }
-                },
-                "security": [
-                    {
-                        "OAuth2PasswordBearer": [
-                            "write:metadata_sign"
-                        ]
-                    }
-                ]
-            },
-            "delete": {
+                }
+            }
+        },
+        "/api/v1/metadata/sign/delete": {
+            "post": {
                 "tags": [
                     "v1",
                     "v1"
                 ],
-                "summary": "Delete role metadata in signing process. Scope: delete:metadata_sign",
+                "summary": "Delete role metadata in signing process.",
                 "description": "Delete role metadata in signing process",
-                "operationId": "delete_sign_api_v1_metadata_sign_delete",
+                "operationId": "post_delete_sign_api_v1_metadata_sign_delete_post",
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -352,14 +305,7 @@
                             }
                         }
                     }
-                },
-                "security": [
-                    {
-                        "OAuth2PasswordBearer": [
-                            "delete:metadata_sign"
-                        ]
-                    }
-                ]
+                }
             }
         },
         "/api/v1/artifacts/": {
@@ -368,7 +314,7 @@
                     "v1",
                     "v1"
                 ],
-                "summary": "Add artifacts to Metadata. Scope: write:targets",
+                "summary": "Add artifacts to Metadata.",
                 "description": "Add artifacts to Metadata.",
                 "operationId": "post_api_v1_artifacts__post",
                 "requestBody": {
@@ -405,21 +351,14 @@
                             }
                         }
                     }
-                },
-                "security": [
-                    {
-                        "OAuth2PasswordBearer": [
-                            "write:targets"
-                        ]
-                    }
-                ]
+                }
             },
             "delete": {
                 "tags": [
                     "v1",
                     "v1"
                 ],
-                "summary": "Remove artifacts from Metadata. Scope: delete:targets",
+                "summary": "Remove artifacts from Metadata.",
                 "description": "Remove artifacts from Metadata.",
                 "operationId": "delete_api_v1_artifacts__delete",
                 "requestBody": {
@@ -456,14 +395,7 @@
                             }
                         }
                     }
-                },
-                "security": [
-                    {
-                        "OAuth2PasswordBearer": [
-                            "delete:targets"
-                        ]
-                    }
-                ]
+                }
             }
         },
         "/api/v1/artifacts/publish/": {
@@ -472,7 +404,7 @@
                     "v1",
                     "v1"
                 ],
-                "summary": "Submit a task to publish artifacts.Scope: write:targets",
+                "summary": "Submit a task to publish artifacts.",
                 "description": "Trigger a task to publish artifacts not yet published from the RSTUF Database",
                 "operationId": "post_publish_targets_api_v1_artifacts_publish__post",
                 "responses": {
@@ -489,154 +421,7 @@
                     "404": {
                         "description": "Not found"
                     }
-                },
-                "security": [
-                    {
-                        "OAuth2PasswordBearer": [
-                            "write:targets"
-                        ]
-                    }
-                ]
-            }
-        },
-        "/api/v1/targets/": {
-            "post": {
-                "tags": [
-                    "v1",
-                    "v1"
-                ],
-                "summary": "Add targets files to Metadata. Scope: write:targets",
-                "description": "Add targets files to Metadata.",
-                "operationId": "post_api_v1_targets__post",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/AddPayload"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "202": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/repository_service_tuf_api__targets__Response"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not found"
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                },
-                "deprecated": true,
-                "security": [
-                    {
-                        "OAuth2PasswordBearer": [
-                            "write:targets"
-                        ]
-                    }
-                ]
-            },
-            "delete": {
-                "tags": [
-                    "v1",
-                    "v1"
-                ],
-                "summary": "Remove targets files from Metadata. Scope: delete:targets",
-                "description": "Remove targets files from Metadata.",
-                "operationId": "delete_api_v1_targets__delete",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/DeletePayload"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "202": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/repository_service_tuf_api__targets__Response"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not found"
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                },
-                "deprecated": true,
-                "security": [
-                    {
-                        "OAuth2PasswordBearer": [
-                            "delete:targets"
-                        ]
-                    }
-                ]
-            }
-        },
-        "/api/v1/targets/publish/": {
-            "post": {
-                "tags": [
-                    "v1",
-                    "v1"
-                ],
-                "summary": "Submit a task to publish targets.Scope: write:targets",
-                "description": "Trigger a task to publish targets not yet published from the RSTUF Database",
-                "operationId": "post_publish_targets_api_v1_targets_publish__post",
-                "responses": {
-                    "202": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/repository_service_tuf_api__targets__Response"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not found"
-                    }
-                },
-                "deprecated": true,
-                "security": [
-                    {
-                        "OAuth2PasswordBearer": [
-                            "write:targets"
-                        ]
-                    }
-                ]
+                }
             }
         },
         "/api/v1/task/": {
@@ -645,16 +430,9 @@
                     "v1",
                     "v1"
                 ],
-                "summary": "Get task state. Scope: read:tasks",
+                "summary": "Get task state.",
                 "description": "Get Repository Metadata task state. The state is according with Celery tasks: `PENDING` the task still not processed or unknown/inexistent task. `RECEIVED` task is reveived by the broker server. `PRE_RUN` the task will start by repository-service-tuf-worker. `RUNNING` the task is in execution. `FAILURE` the task failed to executed. `SUCCESS` the task execution is finished.",
                 "operationId": "get_api_v1_task__get",
-                "security": [
-                    {
-                        "OAuth2PasswordBearer": [
-                            "read:tasks"
-                        ]
-                    }
-                ],
                 "parameters": [
                     {
                         "name": "task_id",
@@ -694,160 +472,6 @@
                         }
                     }
                 }
-            }
-        },
-        "/api/v1/token/": {
-            "get": {
-                "tags": [
-                    "v1",
-                    "v1"
-                ],
-                "summary": "Get token details. Scope: read:token",
-                "description": "Return the token details. It requires an authenticated token with scope authorization.",
-                "operationId": "get_api_v1_token__get",
-                "security": [
-                    {
-                        "OAuth2PasswordBearer": [
-                            "read:token"
-                        ]
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "token",
-                        "in": "query",
-                        "required": true,
-                        "schema": {
-                            "title": "Token",
-                            "description": "Token to be validated",
-                            "required": true,
-                            "type": "string"
-                        },
-                        "description": "Token to be validated"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/GetTokenResponse"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not found"
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "post": {
-                "tags": [
-                    "v1",
-                    "v1"
-                ],
-                "summary": "Issue token user/password authentication",
-                "description": "Issue a token with scopes for all granted user scope.",
-                "operationId": "post_api_v1_token__post",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/x-www-form-urlencoded": {
-                            "schema": {
-                                "$ref": "#/components/schemas/Body_post_api_v1_token__post"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/PostTokenResponse"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not found"
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/token/new/": {
-            "post": {
-                "tags": [
-                    "v1",
-                    "v1"
-                ],
-                "summary": "Issue token from authenticated token. Scope: write:token",
-                "description": "Issue token from a valid and existent token.",
-                "operationId": "post_token_api_v1_token_new__post",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/TokenRequestPayload"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/PostTokenResponse"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not found"
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "OAuth2PasswordBearer": [
-                            "write:token"
-                        ]
-                    }
-                ]
             }
         }
     },
@@ -916,39 +540,6 @@
                         }
                     ]
                 }
-            },
-            "Body_post_api_v1_token__post": {
-                "properties": {
-                    "username": {
-                        "type": "string",
-                        "title": "Username"
-                    },
-                    "password": {
-                        "type": "string",
-                        "format": "password",
-                        "title": "Password",
-                        "writeOnly": true
-                    },
-                    "scope": {
-                        "type": "string",
-                        "title": "Scope",
-                        "description": "Add scopes separeted by space. Available scopes: `read:bootstrap`, `read:settings`, `read:tasks`, `read:token`, `write:bootstrap`, `write:settings`, `write:metadata`, `write:metadata_sign`, `read:metadata_sign`, `write:targets`, `write:token`, `delete:targets`, `delete:metadata_sign`"
-                    },
-                    "expires": {
-                        "type": "integer",
-                        "minimum": 1.0,
-                        "title": "Expires",
-                        "description": "Expiration in hours. Default: 1 hour",
-                        "default": 1
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "username",
-                    "password",
-                    "scope"
-                ],
-                "title": "Body_post_api_v1_token__post"
             },
             "BootstrapGetResponse": {
                 "properties": {
@@ -1166,45 +757,6 @@
                     "bootstrap"
                 ],
                 "title": "GetData"
-            },
-            "GetTokenResponse": {
-                "properties": {
-                    "data": {
-                        "$ref": "#/components/schemas/TokenPublicData"
-                    },
-                    "message": {
-                        "type": "string",
-                        "title": "Message"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "data",
-                    "message"
-                ],
-                "title": "GetTokenResponse",
-                "example": {
-                    "data": {
-                        "scopes": [
-                            "read:bootstrap",
-                            "read:settings",
-                            "read:tasks",
-                            "read:token",
-                            "write:bootstrap",
-                            "write:settings",
-                            "write:metadata",
-                            "write:metadata_sign",
-                            "read:metadata_sign",
-                            "write:targets",
-                            "write:token",
-                            "delete:targets",
-                            "delete:metadata_sign"
-                        ],
-                        "expired": false,
-                        "expiration": "2022-08-19T17:29:39"
-                    },
-                    "message": "Token information"
-                }
             },
             "HTTPValidationError": {
                 "properties": {
@@ -1514,22 +1066,6 @@
                     "sig"
                 ],
                 "title": "MetadataSignature"
-            },
-            "PostTokenResponse": {
-                "properties": {
-                    "access_token": {
-                        "type": "string",
-                        "title": "Access Token"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "access_token"
-                ],
-                "title": "PostTokenResponse",
-                "example": {
-                    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJz...fhpp0"
-                }
             },
             "PutPayload": {
                 "properties": {
@@ -1979,75 +1515,6 @@
                 ],
                 "title": "TasksData"
             },
-            "TokenPublicData": {
-                "properties": {
-                    "scopes": {
-                        "items": {
-                            "type": "string"
-                        },
-                        "type": "array",
-                        "title": "Scopes"
-                    },
-                    "expired": {
-                        "type": "boolean",
-                        "title": "Expired"
-                    },
-                    "expiration": {
-                        "type": "string",
-                        "format": "date-time",
-                        "title": "Expiration"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "expired"
-                ],
-                "title": "TokenPublicData"
-            },
-            "TokenRequestPayload": {
-                "properties": {
-                    "scopes": {
-                        "items": {
-                            "type": "string",
-                            "enum": [
-                                "read:bootstrap",
-                                "read:settings",
-                                "read:tasks",
-                                "read:token",
-                                "read:metadata_sign",
-                                "write:targets",
-                                "write:settings",
-                                "write:metadata",
-                                "write:metadata_sign",
-                                "delete:targets",
-                                "delete:metadata_sign"
-                            ]
-                        },
-                        "type": "array",
-                        "minItems": 1,
-                        "title": "Scopes"
-                    },
-                    "expires": {
-                        "type": "integer",
-                        "minimum": 1.0,
-                        "title": "Expires",
-                        "description": "In hour(s)"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "scopes",
-                    "expires"
-                ],
-                "title": "TokenRequestPayload",
-                "example": {
-                    "scopes": [
-                        "read:token",
-                        "read:settings"
-                    ],
-                    "expires": 24
-                }
-            },
             "ValidationError": {
                 "properties": {
                     "loc": {
@@ -2201,7 +1668,7 @@
                         "task_id": "06ee6db3cbab4b26be505352c2f2e2c3",
                         "last_update": "2022-12-01T12:10:00.578086"
                     },
-                    "message": "New Target(s) successfully submitted."
+                    "message": "New Artifact(s) successfully submitted."
                 }
             },
             "repository_service_tuf_api__tasks__Response": {
@@ -2231,31 +1698,6 @@
                         }
                     },
                     "message": "Task state."
-                }
-            }
-        },
-        "securitySchemes": {
-            "OAuth2PasswordBearer": {
-                "type": "oauth2",
-                "flows": {
-                    "password": {
-                        "scopes": {
-                            "read:bootstrap": "Read (GET) bootstrap",
-                            "read:settings": "Read (GET) settings",
-                            "read:tasks": "Read (GET) tasks",
-                            "read:token": "Read (GET) tokens",
-                            "read:metadata_sign": "Read (GET) metadata",
-                            "write:targets": "Write (POST) targets",
-                            "write:token": "Write (POST) token",
-                            "write:bootstrap": "Write (POST) bootstrap",
-                            "write:settings": "Write (PUT) settings",
-                            "write:metadata": "Write (POST) metadata",
-                            "write:metadata_sign": "Write (POST) metadata sign",
-                            "delete:targets": "Delete (DELETE) targets",
-                            "delete:metadata_sign": "Delete (DELETE) metadata"
-                        },
-                        "tokenUrl": "/api/v1/token"
-                    }
                 }
             }
         }

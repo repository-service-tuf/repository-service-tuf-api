@@ -8,27 +8,19 @@ from typing import List
 
 from fastapi import APIRouter, FastAPI
 
-from repository_service_tuf_api import (
-    is_auth_enabled,
-    settings,
-    settings_repository,
-)
+from repository_service_tuf_api import settings, settings_repository
 from repository_service_tuf_api.api.bootstrap import router as bootstrap_v1
 from repository_service_tuf_api.api.config import router as config_v1
 from repository_service_tuf_api.api.metadata import router as metadata_v1
 from repository_service_tuf_api.api.targets import router as targets_v1
-from repository_service_tuf_api.api.targets import router_alias as artifacts_v1
 from repository_service_tuf_api.api.tasks import router as tasks_v1
-from repository_service_tuf_api.api.token import router as token_v1
 
 v1_endpoints = [
     bootstrap_v1,
     config_v1,
     metadata_v1,
-    artifacts_v1,
     targets_v1,
     tasks_v1,
-    token_v1,
 ]
 
 rstuf_app = FastAPI(
@@ -49,8 +41,6 @@ def load_endpoints():
     disabled_endpoints: List[str] = settings.get(
         "DISABLE_ENDPOINTS", ""
     ).split(":")
-    if is_auth_enabled is False:
-        disabled_endpoints.append(f"{api_v1.prefix}{token_v1.prefix}/")
 
     for v1_endpoint in v1_endpoints:
         endpoint_routes = v1_endpoint.routes.copy()

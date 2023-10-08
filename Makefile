@@ -41,8 +41,6 @@ stop:
 clean:
 	$(MAKE) stop
 	docker compose rm --force
-	rm -rf ./data
-	rm -rf ./data_test
 
 purge:
 	$(MAKE) clean

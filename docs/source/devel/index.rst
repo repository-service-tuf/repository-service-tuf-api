@@ -16,5 +16,4 @@ Component level
 
    repository_service_tuf_api
    repository_service_tuf_api.api
-   repository_service_tuf_api.users
    modules

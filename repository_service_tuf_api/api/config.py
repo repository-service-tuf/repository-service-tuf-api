@@ -2,12 +2,9 @@
 #
 # SPDX-License-Identifier: MIT
 
-from fastapi import APIRouter, Security, status
+from fastapi import APIRouter, status
 
-from repository_service_tuf_api import SCOPES_NAMES, config
-from repository_service_tuf_api.api import get_auth
-
-auth = get_auth()
+from repository_service_tuf_api import config
 
 router = APIRouter(
     prefix="/config",
@@ -18,27 +15,22 @@ router = APIRouter(
 
 @router.put(
     "/",
-    summary=(
-        "Update settings. " f"Scope: {SCOPES_NAMES.write_settings.value}"
-    ),
+    summary="Update settings.",
     description="Update configuration settings",
     response_model=config.PutResponse,
     response_model_exclude_none=True,
     status_code=status.HTTP_202_ACCEPTED,
 )
-def put(
-    payload: config.PutPayload,
-    _user=Security(auth, scopes=[SCOPES_NAMES.write_settings.value]),
-):
+def put(payload: config.PutPayload):
     return config.put(payload)
 
 
 @router.get(
     "/",
-    summary=("List settings. " f"Scope: {SCOPES_NAMES.read_settings.value}"),
+    summary="List settings.",
     description="Returns the configuration settings",
     response_model=config.Response,
     response_model_exclude_none=True,
 )
-def get(_user=Security(auth, scopes=[SCOPES_NAMES.read_settings.value])):
+def get():
     return config.get()
