@@ -277,9 +277,9 @@ class TestPostTargets:
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
 
-class TestDeleteTargets:
-    def test_delete(self, monkeypatch, test_client):
-        url = "/api/v1/artifacts/"
+class TestPostTargetsDelete:
+    def test_post_delete(self, monkeypatch, test_client):
+        url = "/api/v1/artifacts/delete"
 
         payload = {
             "targets": ["file-v1.0.0_i683.tar.gz", "v0.4.1/file.tar.gz"],
@@ -312,8 +312,7 @@ class TestDeleteTargets:
             "repository_service_tuf_api.targets.datetime", fake_datetime
         )
 
-        # https://github.com/tiangolo/fastapi/issues/5649
-        response = test_client.request("DELETE", url, json=payload)
+        response = test_client.post(url, json=payload)
 
         assert response.status_code == status.HTTP_202_ACCEPTED
         assert response.json() == {
@@ -337,8 +336,8 @@ class TestDeleteTargets:
             )
         ]
 
-    def test_delete_publish_targets_false(self, monkeypatch, test_client):
-        url = "/api/v1/artifacts/"
+    def test_post_publish_targets_delete_false(self, monkeypatch, test_client):
+        url = "/api/v1/artifacts/delete"
 
         payload = {
             "targets": ["file-v1.0.0_i683.tar.gz", "v0.4.1/file.tar.gz"],
@@ -372,8 +371,7 @@ class TestDeleteTargets:
             "repository_service_tuf_api.targets.datetime", fake_datetime
         )
 
-        # https://github.com/tiangolo/fastapi/issues/5649
-        response = test_client.request("DELETE", url, json=payload)
+        response = test_client.post(url, json=payload)
 
         assert response.status_code == status.HTTP_202_ACCEPTED
         msg = (
@@ -401,8 +399,8 @@ class TestDeleteTargets:
             )
         ]
 
-    def test_delete_without_bootstrap(self, monkeypatch, test_client):
-        url = "/api/v1/artifacts/"
+    def test_post_without_bootstrap_delete(self, monkeypatch, test_client):
+        url = "/api/v1/artifacts/delete"
 
         payload = {
             "targets": ["file-v1.0.0_i683.tar.gz", "v0.4.1/file.tar.gz"]
@@ -414,8 +412,7 @@ class TestDeleteTargets:
             "repository_service_tuf_api.targets.bootstrap_state",
             mocked_bootstrap_state,
         )
-        # https://github.com/tiangolo/fastapi/issues/5649
-        response = test_client.request("DELETE", url, json=payload)
+        response = test_client.post(url, json=payload)
 
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == {
@@ -426,10 +423,10 @@ class TestDeleteTargets:
         }
         assert mocked_bootstrap_state.calls == [pretend.call()]
 
-    def test_delete_with_bootstrap_intermediate_state(
+    def test_post_with_bootstrap_intermediate_state_delete(
         self, monkeypatch, test_client
     ):
-        url = "/api/v1/artifacts/"
+        url = "/api/v1/artifacts/delete"
 
         payload = {
             "targets": ["file-v1.0.0_i683.tar.gz", "v0.4.1/file.tar.gz"]
@@ -441,8 +438,7 @@ class TestDeleteTargets:
             "repository_service_tuf_api.targets.bootstrap_state",
             mocked_bootstrap_state,
         )
-        # https://github.com/tiangolo/fastapi/issues/5649
-        response = test_client.request("DELETE", url, json=payload)
+        response = test_client.post(url, json=payload)
 
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == {
@@ -452,13 +448,12 @@ class TestDeleteTargets:
             }
         }
 
-    def test_delete_missing_required_field(self, test_client):
-        url = "/api/v1/artifacts/"
+    def test_post_missing_required_field_delete(self, test_client):
+        url = "/api/v1/artifacts/delete"
 
         payload = {"paths": ["file-v1.0.0_i683.tar.gz", "v0.4.1/file.tar.gz"]}
 
-        # https://github.com/tiangolo/fastapi/issues/5649
-        response = test_client.request("DELETE", url, json=payload)
+        response = test_client.post(url, json=payload)
 
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
