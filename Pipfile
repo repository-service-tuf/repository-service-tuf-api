@@ -7,13 +7,9 @@ name = "pypi"
 fastapi = "~=0.99.1"
 uvicorn = "*"
 dynaconf = "*"
-configobj = "*"
 celery = "*"
 python-multipart = "*"
-python-jose = "*"
-sqlalchemy = "*"
 redis = "*"
-bcrypt = "*"
 
 [dev-packages]
 black = "*"
