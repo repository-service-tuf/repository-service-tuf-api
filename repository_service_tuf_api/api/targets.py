@@ -32,15 +32,15 @@ def post(payload: targets.AddPayload):
     return response
 
 
-@router.delete(
-    "/",
-    summary="Remove artifacts from Metadata.",
+@router.post(
+    "/delete",
+    summary="Remove artifacts from Metadata. ",
     description="Remove artifacts from Metadata.",
     response_model=targets.Response,
     response_model_exclude_none=True,
     status_code=status.HTTP_202_ACCEPTED,
 )
-def delete(payload: targets.DeletePayload):
+def post_delete(payload: targets.DeletePayload):
     response = targets.delete(payload)
 
     return response

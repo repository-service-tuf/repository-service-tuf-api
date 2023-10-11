@@ -352,15 +352,17 @@
                         }
                     }
                 }
-            },
-            "delete": {
+            }
+        },
+        "/api/v1/artifacts/delete": {
+            "post": {
                 "tags": [
                     "v1",
                     "v1"
                 ],
-                "summary": "Remove artifacts from Metadata.",
+                "summary": "Remove artifacts from Metadata. ",
                 "description": "Remove artifacts from Metadata.",
-                "operationId": "delete_api_v1_artifacts__delete",
+                "operationId": "post_delete_api_v1_artifacts_delete_post",
                 "requestBody": {
                     "content": {
                         "application/json": {
