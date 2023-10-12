@@ -7,13 +7,54 @@ import logging
 from typing import List
 
 from fastapi import APIRouter, FastAPI
+from fastapi.openapi.utils import get_openapi
 
-from repository_service_tuf_api import settings, settings_repository
+from repository_service_tuf_api import (
+    __version__,
+    settings,
+    settings_repository,
+)
 from repository_service_tuf_api.api.bootstrap import router as bootstrap_v1
 from repository_service_tuf_api.api.config import router as config_v1
 from repository_service_tuf_api.api.metadata import router as metadata_v1
 from repository_service_tuf_api.api.targets import router as targets_v1
 from repository_service_tuf_api.api.tasks import router as tasks_v1
+
+TITLE = "Repository Service for TUF API"
+DESCRITPTION = "Repository Service for TUF Rest API"
+DOCS_URL = "/"
+OPENAPI_VERSION = "3.0.0"
+
+rstuf_app = FastAPI(
+    title=TITLE,
+    version=__version__.version,
+    openapi_version=OPENAPI_VERSION,
+    docs_url="/",
+)
+
+
+def _custom_openapi():  # pragma: no cover -- not used by RSTUF logic
+    if rstuf_app.openapi_schema:
+        return rstuf_app.openapi_schema
+    openapi_schema = get_openapi(
+        title=TITLE,
+        version=__version__.version,
+        openapi_version=OPENAPI_VERSION,
+        description=DESCRITPTION,
+        routes=rstuf_app.routes,
+    )
+    rstuf_app.openapi_schema = openapi_schema
+    return rstuf_app.openapi_schema
+
+
+rstuf_app.openapi = _custom_openapi
+
+
+api_v1 = APIRouter(
+    prefix="/api/v1",
+    tags=["v1"],
+    responses={404: {"description": "Not found"}},
+)
 
 v1_endpoints = [
     bootstrap_v1,
@@ -22,18 +63,6 @@ v1_endpoints = [
     targets_v1,
     tasks_v1,
 ]
-
-rstuf_app = FastAPI(
-    title="Repository Service for TUF API",
-    description="Repository Service for TUF Rest API",
-    docs_url="/",
-)
-
-api_v1 = APIRouter(
-    prefix="/api/v1",
-    tags=["v1"],
-    responses={404: {"description": "Not found"}},
-)
 
 
 def load_endpoints():

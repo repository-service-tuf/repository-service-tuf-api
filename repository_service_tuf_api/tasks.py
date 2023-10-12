@@ -4,18 +4,13 @@
 
 from typing import Any, Optional
 
-from fastapi import Query
 from pydantic import BaseModel, Field
 
 from repository_service_tuf_api import repository_metadata
 
 
-class GetParameters:
-    def __init__(
-        self,
-        task_id: str = Query(description="Task id", required=True),
-    ):
-        self.task_id = task_id
+class GetParameters(BaseModel):
+    task_id: str
 
 
 class TasksData(BaseModel):
