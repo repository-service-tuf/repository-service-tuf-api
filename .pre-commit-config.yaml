@@ -40,3 +40,31 @@ repos:
       files: ''
       pass_filenames: false
       verbose: true
+
+
+name: Update pre-commit Hooks
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  update-hooks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Install Pre-Commit
+        run: pip install pre-commit
+      - name: Update Pre-Commit Hooks
+        run: pre-commit autoupdate
+      - name: Commit Changes
+        run: |
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "GitHub Actions"
+          git commit -am "Update pre-commit hooks"
+      - name: Push Changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
