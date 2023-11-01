@@ -8,7 +8,7 @@ from typing import Dict, List, Literal, Optional
 from pydantic import BaseModel, Field
 
 
-class Roles(Enum):
+class EnumRoles(Enum):
     ROOT = "root"
     TARGETS = "targets"
     SNAPSHOT = "snapshot"
@@ -78,7 +78,7 @@ class TUFSigned(BaseModel):
     expires: str
     keys: Optional[Dict[str, TUFKeys]]
     consistent_snapshot: Optional[bool]
-    roles: Optional[Dict[Roles.values(), TUFSignedRoles]]
+    roles: Optional[Dict[EnumRoles.values(), TUFSignedRoles]]
     meta: Optional[Dict[str, TUFSignedMetaFile]]
     targets: Optional[Dict[str, str]]
     delegations: Optional[TUFSignedDelegations]
