@@ -21,9 +21,11 @@ router = APIRouter(
 @router.post(
     "/",
     summary="Add artifacts to Metadata.",
-    description="Submit an asynchronous task to add artifacts to Metadata. "
-    "Check the status and result using the task ID and the "
-    "`get task state` endpoint.",
+    description=(
+        "Submit an asynchronous task to add artifacts to Metadata. "
+        "Check the status and result using the task ID and the "
+        "`get task state` endpoint."
+    ),
     response_model=targets.Response,
     response_model_exclude_none=True,
     status_code=status.HTTP_202_ACCEPTED,
@@ -38,7 +40,7 @@ def post(payload: targets.AddPayload):
     "/delete",
     summary="Submit a task to remove artifacts from Metadata.",
     description=(
-        "Submit an asynchronous task to remove artifacts from"
+        "Submit an asynchronous task to remove artifacts from "
         "Metadata. "
         "Check the status and result using the task ID and the "
         "`get task state` endpoint."
