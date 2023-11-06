@@ -16,7 +16,11 @@ router = APIRouter(
 @router.put(
     "/",
     summary="Update settings.",
-    description="Update configuration settings",
+    description=(
+        "Submit an asynchronous task to update configuration settings. "
+        "Use the task ID to retrieve the task status in the endpoint "
+        "/api/v1/task."
+    ),
     response_model=config.PutResponse,
     response_model_exclude_none=True,
     status_code=status.HTTP_202_ACCEPTED,

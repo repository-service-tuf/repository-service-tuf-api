@@ -19,8 +19,8 @@ router = APIRouter(
     description=(
         "Submit an asynchronous task to rotate "
         "a role metadata that requires offline signing. "
-        "Check the status and result using the task ID and the "
-        "`get task state` endpoint."
+        "Use the task ID to retrieve the task status in the endpoint "
+        "/api/v1/task."
     ),
     response_model=metadata.MetadataPostResponse,
     response_model_exclude_none=True,
@@ -51,8 +51,8 @@ def get_sign():
     description=(
         "Submit an asynchronous task to add a signature "
         "for a metadata role. "
-        "Check the status and result using the task ID and the "
-        "`get task state` endpoint."
+        "Use the task ID to retrieve the task status in the endpoint "
+        "/api/v1/task."
     ),
     response_model=metadata.MetadataPostResponse,
     response_model_exclude_none=True,

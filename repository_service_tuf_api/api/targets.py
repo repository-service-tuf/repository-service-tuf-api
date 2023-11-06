@@ -23,8 +23,8 @@ router = APIRouter(
     summary="Add artifacts to Metadata.",
     description=(
         "Submit an asynchronous task to add artifacts to Metadata. "
-        "Check the status and result using the task ID and the "
-        "`get task state` endpoint."
+        "Use the task ID to retrieve the task status in the endpoint "
+        "/api/v1/task."
     ),
     response_model=targets.Response,
     response_model_exclude_none=True,
@@ -42,8 +42,8 @@ def post(payload: targets.AddPayload):
     description=(
         "Submit an asynchronous task to remove artifacts from "
         "Metadata. "
-        "Check the status and result using the task ID and the "
-        "`get task state` endpoint."
+        "Use the task ID to retrieve the task status in the endpoint "
+        "/api/v1/task."
     ),
     response_model=targets.Response,
     response_model_exclude_none=True,
@@ -61,8 +61,8 @@ def post_delete(payload: targets.DeletePayload):
     description=(
         "Submit an asynchronous task to publish artifacts not yet published "
         "from the RSTUF Database. "
-        "Check the status and result using the task ID and the "
-        "`get task state` endpoint."
+        "Use the task ID to retrieve the task status in the endpoint "
+        "/api/v1/task."
     ),
     response_model=targets.Response,
     response_model_exclude_none=True,

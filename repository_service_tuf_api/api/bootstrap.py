@@ -30,8 +30,8 @@ def get():
     description=(
         "Submit an asynchronous task to initialize the TUF Repository with "
         "initial signed Metadata and Settings. "
-        "Check the status and result using the task ID and the "
-        "`get task state` endpoint."
+        "Use the task ID to retrieve the task status in the endpoint "
+        "/api/v1/task."
     ),
     response_model=bootstrap.BootstrapPostResponse,
     response_model_exclude_none=True,
