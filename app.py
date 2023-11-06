@@ -52,7 +52,6 @@ rstuf_app.openapi = _custom_openapi
 
 api_v1 = APIRouter(
     prefix="/api/v1",
-    tags=["v1"],
     responses={404: {"description": "Not found"}},
 )
 
