@@ -16,7 +16,12 @@ router = APIRouter(
 @router.post(
     "/",
     summary="Rotate role metadata.",
-    description="Rotate a role metadata that requires offline signing.",
+    description=(
+        "Submit an asynchronous task to rotate "
+        "a role metadata that requires offline signing. "
+        "Check the status and result using the task ID and the "
+        "`get task state` endpoint."
+    ),
     response_model=metadata.MetadataPostResponse,
     response_model_exclude_none=True,
     status_code=status.HTTP_202_ACCEPTED,
@@ -43,7 +48,12 @@ def get_sign():
 @router.post(
     "/sign",
     summary="Add a signature for a metadata role.",
-    description="Add a signature for a metadata role.",
+    description=(
+        "Submit an asynchronous task to add a signature "
+        "for a metadata role. "
+        "Check the status and result using the task ID and the "
+        "`get task state` endpoint."
+    ),
     response_model=metadata.MetadataPostResponse,
     response_model_exclude_none=True,
     status_code=status.HTTP_202_ACCEPTED,
@@ -54,8 +64,13 @@ def post_sign(payload: metadata.MetadataSignPostPayload):
 
 @router.post(
     "/sign/delete",
-    summary="Delete role metadata in signing process.",
-    description="Delete role metadata in signing process",
+    summary="Submit a task to delete role metadata in signing process.",
+    description=(
+        "Submit an asynchronous task to delete role metadata in "
+        "signing process. "
+        "Check the status and result using the task ID and the "
+        "`get task state` endpoint."
+    ),
     response_model=metadata.MetadataSignDeleteResponse,
     response_model_exclude_none=True,
     status_code=status.HTTP_202_ACCEPTED,

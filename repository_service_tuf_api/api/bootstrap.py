@@ -28,8 +28,10 @@ def get():
     "/",
     summary="Bootstrap the system with initial signed Metadata.",
     description=(
-        "Initialize the TUF Repository with initial signed Metadata and "
-        "Settings."
+        "Submit an asynchronous task to initialize the TUF Repository with "
+        "initial signed Metadata and Settings. "
+        "Check the status and result using the task ID and the "
+        "`get task state` endpoint."
     ),
     response_model=bootstrap.BootstrapPostResponse,
     response_model_exclude_none=True,
