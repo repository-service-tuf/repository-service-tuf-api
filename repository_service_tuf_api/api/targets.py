@@ -20,7 +20,7 @@ router = APIRouter(
 
 @router.post(
     "/",
-    summary="Add artifacts to Metadata.",
+    summary="Submit a task to add artifacts to Metadata.",
     description=(
         "Submit an asynchronous task to add artifacts to Metadata. "
         "Use the task ID to retrieve the task status in the endpoint "
