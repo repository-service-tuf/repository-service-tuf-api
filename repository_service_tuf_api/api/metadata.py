@@ -8,7 +8,7 @@ from repository_service_tuf_api import metadata
 
 router = APIRouter(
     prefix="/metadata",
-    tags=["v1"],
+    tags=["Metadata"],
     responses={404: {"description": "Not found"}},
 )
 

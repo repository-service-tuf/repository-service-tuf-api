@@ -8,7 +8,7 @@ from repository_service_tuf_api import bootstrap
 
 router = APIRouter(
     prefix="/bootstrap",
-    tags=["v1"],
+    tags=["Bootstrap"],
     responses={404: {"description": "Not found"}},
 )
 
