@@ -8,7 +8,7 @@ from repository_service_tuf_api import config
 
 router = APIRouter(
     prefix="/config",
-    tags=["v1"],
+    tags=["Config"],
     responses={404: {"description": "Not found"}},
 )
 

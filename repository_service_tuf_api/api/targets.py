@@ -13,7 +13,7 @@ deprecation_warning = (
 
 router = APIRouter(
     prefix="/artifacts",
-    tags=["v1"],
+    tags=["Artifacts"],
     responses={404: {"description": "Not found"}},
 )
 

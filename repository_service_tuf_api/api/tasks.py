@@ -8,7 +8,7 @@ from repository_service_tuf_api import tasks
 
 router = APIRouter(
     prefix="/task",
-    tags=["v1"],
+    tags=["Task"],
     responses={404: {"description": "Not found"}},
 )
 
