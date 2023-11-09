@@ -15,7 +15,7 @@ router = APIRouter(
 
 @router.post(
     "/",
-    summary="Rotate role metadata.",
+    summary="Post a task to rotate role metadata.",
     description=(
         "Submit an asynchronous task to rotate "
         "a role metadata that requires offline signing. "
@@ -47,7 +47,7 @@ def get_sign():
 
 @router.post(
     "/sign",
-    summary="Add a signature for a metadata role.",
+    summary="Post a task to add a signature for a metadata role.",
     description=(
         "Submit an asynchronous task to add a signature "
         "for a metadata role. "
@@ -64,7 +64,7 @@ def post_sign(payload: metadata.MetadataSignPostPayload):
 
 @router.post(
     "/sign/delete",
-    summary="Submit a task to delete role metadata in signing process.",
+    summary="Post a task to delete role metadata in signing process.",
     description=(
         "Submit an asynchronous task to delete role metadata in "
         "signing process. "

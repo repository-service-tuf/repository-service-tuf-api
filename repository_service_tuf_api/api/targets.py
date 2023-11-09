@@ -20,7 +20,7 @@ router = APIRouter(
 
 @router.post(
     "/",
-    summary="Submit a task to add artifacts to Metadata.",
+    summary="Post a task to add artifacts to Metadata.",
     description=(
         "Submit an asynchronous task to add artifacts to Metadata. "
         "Use the task ID to retrieve the task status in the endpoint "
@@ -38,7 +38,7 @@ def post(payload: targets.AddPayload):
 
 @router.post(
     "/delete",
-    summary="Submit a task to remove artifacts from Metadata.",
+    summary="Post a task to remove artifacts from Metadata.",
     description=(
         "Submit an asynchronous task to remove artifacts from "
         "Metadata. "
@@ -57,7 +57,7 @@ def post_delete(payload: targets.DeletePayload):
 
 @router.post(
     "/publish/",
-    summary="Submit a task to publish artifacts.",
+    summary="Post a task to publish artifacts.",
     description=(
         "Submit an asynchronous task to publish artifacts not yet published "
         "from the RSTUF Database. "

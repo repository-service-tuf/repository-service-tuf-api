@@ -15,7 +15,7 @@ router = APIRouter(
 
 @router.put(
     "/",
-    summary="Update settings.",
+    summary="Put a task to update settings.",
     description=(
         "Submit an asynchronous task to update configuration settings. "
         "Use the task ID to retrieve the task status in the endpoint "
