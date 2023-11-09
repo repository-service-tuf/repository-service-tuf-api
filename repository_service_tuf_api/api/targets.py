@@ -20,8 +20,12 @@ router = APIRouter(
 
 @router.post(
     "/",
-    summary="Add artifacts to Metadata.",
-    description="Add artifacts to Metadata.",
+    summary="Post a task to add artifacts to Metadata.",
+    description=(
+        "Submit an asynchronous task to add artifacts to Metadata. "
+        "Use the task ID to retrieve the task status in the endpoint "
+        "/api/v1/task."
+    ),
     response_model=targets.Response,
     response_model_exclude_none=True,
     status_code=status.HTTP_202_ACCEPTED,
@@ -34,8 +38,13 @@ def post(payload: targets.AddPayload):
 
 @router.post(
     "/delete",
-    summary="Remove artifacts from Metadata. ",
-    description="Remove artifacts from Metadata.",
+    summary="Post a task to remove artifacts from Metadata.",
+    description=(
+        "Submit an asynchronous task to remove artifacts from "
+        "Metadata. "
+        "Use the task ID to retrieve the task status in the endpoint "
+        "/api/v1/task."
+    ),
     response_model=targets.Response,
     response_model_exclude_none=True,
     status_code=status.HTTP_202_ACCEPTED,
@@ -48,10 +57,12 @@ def post_delete(payload: targets.DeletePayload):
 
 @router.post(
     "/publish/",
-    summary="Submit a task to publish artifacts.",
+    summary="Post a task to publish artifacts.",
     description=(
-        "Trigger a task to publish artifacts not yet published from the "
-        "RSTUF Database"
+        "Submit an asynchronous task to publish artifacts not yet published "
+        "from the RSTUF Database. "
+        "Use the task ID to retrieve the task status in the endpoint "
+        "/api/v1/task."
     ),
     response_model=targets.Response,
     response_model_exclude_none=True,

@@ -34,8 +34,8 @@
                 "tags": [
                     "Bootstrap"
                 ],
-                "summary": "Bootstrap the system with initial signed Metadata.",
-                "description": "Initialize the TUF Repository with initial signed Metadata and Settings.",
+                "summary": "Post a task to bootstrap the system with initial signed Metadata.",
+                "description": "Submit an asynchronous task to initialize the TUF Repository with initial signed Metadata and Settings. Use the task ID to retrieve the task status in the endpoint /api/v1/task.",
                 "operationId": "post_api_v1_bootstrap__post",
                 "requestBody": {
                     "content": {
@@ -102,8 +102,8 @@
                 "tags": [
                     "Config"
                 ],
-                "summary": "Update settings.",
-                "description": "Update configuration settings",
+                "summary": "Put a task to update settings.",
+                "description": "Submit an asynchronous task to update configuration settings. Use the task ID to retrieve the task status in the endpoint /api/v1/task.",
                 "operationId": "put_api_v1_config__put",
                 "requestBody": {
                     "content": {
@@ -147,8 +147,8 @@
                 "tags": [
                     "Metadata"
                 ],
-                "summary": "Rotate role metadata.",
-                "description": "Rotate a role metadata that requires offline signing.",
+                "summary": "Post a task to rotate role metadata.",
+                "description": "Submit an asynchronous task to rotate a role metadata that requires offline signing. Use the task ID to retrieve the task status in the endpoint /api/v1/task.",
                 "operationId": "post_api_v1_metadata__post",
                 "requestBody": {
                     "content": {
@@ -215,8 +215,8 @@
                 "tags": [
                     "Metadata"
                 ],
-                "summary": "Add a signature for a metadata role.",
-                "description": "Add a signature for a metadata role.",
+                "summary": "Post a task to add a signature for a metadata role.",
+                "description": "Submit an asynchronous task to add a signature for a metadata role. Use the task ID to retrieve the task status in the endpoint /api/v1/task.",
                 "operationId": "post_sign_api_v1_metadata_sign_post",
                 "requestBody": {
                     "content": {
@@ -260,8 +260,8 @@
                 "tags": [
                     "Metadata"
                 ],
-                "summary": "Delete role metadata in signing process.",
-                "description": "Delete role metadata in signing process",
+                "summary": "Post a task to delete role metadata in signing process.",
+                "description": "Submit an asynchronous task to delete role metadata in signing process. Check the status and result using the task ID and the `get task state` endpoint.",
                 "operationId": "post_delete_sign_api_v1_metadata_sign_delete_post",
                 "requestBody": {
                     "content": {
@@ -305,8 +305,8 @@
                 "tags": [
                     "Artifacts"
                 ],
-                "summary": "Add artifacts to Metadata.",
-                "description": "Add artifacts to Metadata.",
+                "summary": "Post a task to add artifacts to Metadata.",
+                "description": "Submit an asynchronous task to add artifacts to Metadata. Use the task ID to retrieve the task status in the endpoint /api/v1/task.",
                 "operationId": "post_api_v1_artifacts__post",
                 "requestBody": {
                     "content": {
@@ -350,8 +350,8 @@
                 "tags": [
                     "Artifacts"
                 ],
-                "summary": "Remove artifacts from Metadata. ",
-                "description": "Remove artifacts from Metadata.",
+                "summary": "Post a task to remove artifacts from Metadata.",
+                "description": "Submit an asynchronous task to remove artifacts from Metadata. Use the task ID to retrieve the task status in the endpoint /api/v1/task.",
                 "operationId": "post_delete_api_v1_artifacts_delete_post",
                 "requestBody": {
                     "content": {
@@ -395,8 +395,8 @@
                 "tags": [
                     "Artifacts"
                 ],
-                "summary": "Submit a task to publish artifacts.",
-                "description": "Trigger a task to publish artifacts not yet published from the RSTUF Database",
+                "summary": "Post a task to publish artifacts.",
+                "description": "Submit an asynchronous task to publish artifacts not yet published from the RSTUF Database. Use the task ID to retrieve the task status in the endpoint /api/v1/task.",
                 "operationId": "post_publish_targets_api_v1_artifacts_publish__post",
                 "responses": {
                     "202": {

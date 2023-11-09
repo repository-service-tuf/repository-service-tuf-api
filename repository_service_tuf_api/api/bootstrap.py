@@ -26,10 +26,13 @@ def get():
 
 @router.post(
     "/",
-    summary="Bootstrap the system with initial signed Metadata.",
+    summary="Post a task to bootstrap the system with initial signed "
+    "Metadata.",
     description=(
-        "Initialize the TUF Repository with initial signed Metadata and "
-        "Settings."
+        "Submit an asynchronous task to initialize the TUF Repository with "
+        "initial signed Metadata and Settings. "
+        "Use the task ID to retrieve the task status in the endpoint "
+        "/api/v1/task."
     ),
     response_model=bootstrap.BootstrapPostResponse,
     response_model_exclude_none=True,
