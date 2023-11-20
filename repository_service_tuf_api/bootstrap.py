@@ -5,6 +5,7 @@
 import json
 import logging
 import time
+from datetime import datetime
 from threading import Thread
 from typing import Dict, Literal, Optional
 
@@ -53,6 +54,7 @@ class BootstrapPayload(BaseModel):
 
 class PostData(BaseModel):
     task_id: Optional[str]
+    last_update: datetime
 
 
 class BootstrapPostResponse(BaseModel):
@@ -63,6 +65,7 @@ class BootstrapPostResponse(BaseModel):
         example = {
             "data": {
                 "task_id": "7a634b556f784ae88785d36425f9a218",
+                "last_update": "2022-12-01T12:10:00.578086",
             },
             "message": "Bootstrap accepted.",
         }
@@ -169,6 +172,13 @@ def post_bootstrap(payload: BootstrapPayload) -> BootstrapPostResponse:
         },
     ).start()
 
+    message = "Bootstrap accepted."
+    data = {
+        "task_id": task_id,
+        "last_update": datetime.now(),
+    }
+
     return BootstrapPostResponse(
-        data={"task_id": task_id}, message="Bootstrap accepted."
+        data=data,
+        message=message,
     )

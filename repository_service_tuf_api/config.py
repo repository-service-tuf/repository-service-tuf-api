@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: MIT
 
 import json
+from datetime import datetime
 from typing import Any, Dict
 
 from fastapi import HTTPException, status
@@ -43,12 +44,15 @@ class PutResponse(BaseModel):
             content = f.read()
         example_settings = json.loads(content)
 
-        schema_extra = {
-            "example": {
-                "message": "Settings successfully submitted.",
+        example = {
+            "data": {
                 "task_id": "06ee6db3cbab4b26be505352c2f2e2c3",
-            }
+                "last_update": "2022-12-01T12:10:00.578086",
+            },
+            "message": "Settings successfully submitted.",
         }
+
+        schema_extra = {"example": example}
 
 
 class Settings(BaseModel):
@@ -91,9 +95,14 @@ def put(payload: PutPayload):
         queue="metadata_repository",
         acks_late=True,
     )
-    data = {"task_id": task_id}
 
-    return PutResponse(data=data, message="Settings successfully submitted.")
+    data = {
+        "task_id": task_id,
+        "last_update": datetime.now(),
+    }
+    message = "Settings successfully submitted."
+
+    return PutResponse(data=data, message=message)
 
 
 def get():

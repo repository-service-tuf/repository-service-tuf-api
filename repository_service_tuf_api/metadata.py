@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: MIT
 
 import json
+from datetime import datetime
 from typing import Dict, Literal, Optional
 
 from fastapi import HTTPException, status
@@ -31,16 +32,18 @@ class MetadataPostPayload(BaseModel):
 
 class PostData(BaseModel):
     task_id: Optional[str]
+    last_update: datetime
 
 
 class MetadataPostResponse(BaseModel):
     data: Optional[PostData]
-    message: str
+    message: Optional[str]
 
     class Config:
         example = {
             "data": {
                 "task_id": "7a634b556f784ae88785d36425f9a218",
+                "last_update": "2022-12-01T12:10:00.578086",
             },
             "message": "Metadata Update accepted.",
         }
@@ -73,9 +76,12 @@ def post_metadata(payload: MetadataPostPayload) -> MetadataPostResponse:
         acks_late=True,
     )
 
-    return MetadataPostResponse(
-        data={"task_id": task_id}, message="Metadata update accepted."
-    )
+    message = "Metadata update accepted."
+    data = {
+        "task_id": task_id,
+        "last_update": datetime.now(),
+    }
+    return MetadataPostResponse(data=data, message=message)
 
 
 class SigningData(BaseModel):
@@ -136,6 +142,7 @@ class MetadataSignPostResponse(BaseModel):
         example = {
             "data": {
                 "task_id": "7a634b556f784ae88785d36425f9a218",
+                "last_update": "2022-12-01T12:10:00.578086",
             },
             "message": "Metadata sign accepted.",
         }
@@ -199,9 +206,13 @@ def post_metadata_sign(
         acks_late=True,
     )
 
-    return MetadataPostResponse(
-        data={"task_id": task_id}, message="Metadata sign accepted."
-    )
+    message = "Metadata sign accepted."
+    data = {
+        "task_id": task_id,
+        "last_update": datetime.now(),
+    }
+
+    return MetadataPostResponse(data=data, message=message)
 
 
 class MetadataSignDeletePayload(BaseModel):
@@ -213,6 +224,7 @@ class MetadataSignDeletePayload(BaseModel):
 
 class DeleteData(BaseModel):
     task_id: Optional[str]
+    last_update: datetime
 
 
 class MetadataSignDeleteResponse(BaseModel):
@@ -223,6 +235,7 @@ class MetadataSignDeleteResponse(BaseModel):
         example = {
             "data": {
                 "task_id": "7a634b556f784ae88785d36425f9a218",
+                "last_update": "2022-12-01T12:10:00.578086",
             },
             "message": "Metadata delete sign accepted.",
         }
@@ -254,6 +267,10 @@ def delete_metadata_sign(payload: MetadataSignDeletePayload):
         acks_late=True,
     )
 
-    return MetadataSignDeleteResponse(
-        data={"task_id": task_id}, message="Metadata sign delete accepted."
-    )
+    message = "Metadata sign delete accepted."
+    data = {
+        "task_id": task_id,
+        "last_update": datetime.now(),
+    }
+
+    return MetadataSignDeleteResponse(data=data, message=message)

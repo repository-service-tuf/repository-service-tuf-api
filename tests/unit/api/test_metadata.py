@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: MIT
 
+import datetime
 import json
 
 import pretend
@@ -31,6 +32,13 @@ class TestPostMetadata:
         monkeypatch.setattr(
             "repository_service_tuf_api.metadata.get_task_id", lambda: "123"
         )
+        fake_time = datetime.datetime(2019, 6, 16, 9, 5, 1)
+        fake_datetime = pretend.stub(
+            now=pretend.call_recorder(lambda: fake_time)
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.metadata.datetime", fake_datetime
+        )
         with open(
             "tests/data_examples/metadata/update-root-payload.json"
         ) as f:
@@ -43,7 +51,7 @@ class TestPostMetadata:
         assert response.url == f"{test_client.base_url}{url}"
         assert response.json() == {
             "message": "Metadata update accepted.",
-            "data": {"task_id": "123"},
+            "data": {"task_id": "123", "last_update": "2019-06-16T09:05:01"},
         }
         assert mocked_bootstrap_state.calls == [pretend.call()]
 
@@ -243,12 +251,22 @@ class TestPostMetadataSign:
             "repository_service_tuf_api.metadata.repository_metadata",
             fake_repository_metadata,
         )
+        fake_time = datetime.datetime(2019, 6, 16, 9, 5, 1)
+        fake_datetime = pretend.stub(
+            now=pretend.call_recorder(lambda: fake_time)
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.metadata.datetime", fake_datetime
+        )
         payload = {"role": "root", "signature": {"keyid": "k1", "sig": "s1"}}
 
         response = test_client.post(url, json=payload)
         assert response.status_code == status.HTTP_202_ACCEPTED, response.text
         assert response.json() == {
-            "data": {"task_id": "fake_id"},
+            "data": {
+                "task_id": "fake_id",
+                "last_update": "2019-06-16T09:05:01",
+            },
             "message": "Metadata sign accepted.",
         }
         assert mocked_bootstrap_state.calls == [pretend.call()]
@@ -339,11 +357,18 @@ class TestPostMetadataSignDelete:
             mocked_repository_metadata,
         )
         payload = {"role": "root"}
+        fake_time = datetime.datetime(2019, 6, 16, 9, 5, 1)
+        fake_datetime = pretend.stub(
+            now=pretend.call_recorder(lambda: fake_time)
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.metadata.datetime", fake_datetime
+        )
 
         response = test_client.post(url, json=payload)
         assert response.status_code == status.HTTP_202_ACCEPTED, response.text
         assert response.json() == {
-            "data": {"task_id": "123"},
+            "data": {"task_id": "123", "last_update": "2019-06-16T09:05:01"},
             "message": "Metadata sign delete accepted.",
         }
         assert mocked_settings_repository.reload.calls == [pretend.call()]

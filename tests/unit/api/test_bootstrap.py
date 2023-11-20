@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: MIT
 
+import datetime
 import json
 
 import pretend
@@ -134,6 +135,14 @@ class TestPostBootstrap:
             mocked__check_bootstrap_status,
         )
 
+        fake_time = datetime.datetime(2019, 6, 16, 9, 5, 1)
+        fake_datetime = pretend.stub(
+            now=pretend.call_recorder(lambda: fake_time)
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.bootstrap.datetime", fake_datetime
+        )
+
         with open("tests/data_examples/bootstrap/payload.json") as f:
             f_data = f.read()
         payload = json.loads(f_data)
@@ -144,7 +153,7 @@ class TestPostBootstrap:
         assert response.url == f"{test_client.base_url}{url}"
         assert response.json() == {
             "message": "Bootstrap accepted.",
-            "data": {"task_id": "123"},
+            "data": {"task_id": "123", "last_update": "2019-06-16T09:05:01"},
         }
         assert mocked_bootstrap_state.calls == [pretend.call()]
         assert mocked__check_bootstrap_status.calls == [
@@ -185,6 +194,14 @@ class TestPostBootstrap:
             mocked__check_bootstrap_status,
         )
 
+        fake_time = datetime.datetime(2019, 6, 16, 9, 5, 1)
+        fake_datetime = pretend.stub(
+            now=pretend.call_recorder(lambda: fake_time)
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.bootstrap.datetime", fake_datetime
+        )
+
         with open("tests/data_examples/bootstrap/payload.json") as f:
             f_data = f.read()
         payload = json.loads(f_data)
@@ -196,7 +213,7 @@ class TestPostBootstrap:
         assert response.url == f"{test_client.base_url}{url}"
         assert response.json() == {
             "message": "Bootstrap accepted.",
-            "data": {"task_id": "123"},
+            "data": {"task_id": "123", "last_update": "2019-06-16T09:05:01"},
         }
         assert mocked_bootstrap_state.calls == [pretend.call()]
         assert mocked__check_bootstrap_status.calls == [
