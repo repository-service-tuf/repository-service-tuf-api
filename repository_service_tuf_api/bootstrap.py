@@ -172,7 +172,6 @@ def post_bootstrap(payload: BootstrapPayload) -> BootstrapPostResponse:
         },
     ).start()
 
-    message = "Bootstrap accepted."
     data = {
         "task_id": task_id,
         "last_update": datetime.now(),
@@ -180,5 +179,5 @@ def post_bootstrap(payload: BootstrapPayload) -> BootstrapPostResponse:
 
     return BootstrapPostResponse(
         data=data,
-        message=message,
+        message="Bootstrap accepted.",
     )

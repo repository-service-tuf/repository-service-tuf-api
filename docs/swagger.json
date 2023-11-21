@@ -884,6 +884,9 @@
                     }
                 },
                 "type": "object",
+                "required": [
+                    "message"
+                ],
                 "title": "MetadataPostResponse",
                 "example": {
                     "data": {
@@ -1062,6 +1065,25 @@
                 ],
                 "title": "MetadataSignature"
             },
+            "PutData": {
+                "properties": {
+                    "task_id": {
+                        "type": "string",
+                        "title": "Task Id"
+                    },
+                    "last_update": {
+                        "type": "string",
+                        "format": "date-time",
+                        "title": "Last Update"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "task_id",
+                    "last_update"
+                ],
+                "title": "PutData"
+            },
             "PutPayload": {
                 "properties": {
                     "settings": {
@@ -1087,8 +1109,7 @@
             "PutResponse": {
                 "properties": {
                     "data": {
-                        "type": "object",
-                        "title": "Data"
+                        "$ref": "#/components/schemas/PutData"
                     },
                     "message": {
                         "type": "string",
@@ -1097,7 +1118,6 @@
                 },
                 "type": "object",
                 "required": [
-                    "data",
                     "message"
                 ],
                 "title": "PutResponse",

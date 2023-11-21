@@ -4,7 +4,7 @@
 
 import json
 from datetime import datetime
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from fastapi import HTTPException, status
 from pydantic import BaseModel
@@ -35,8 +35,13 @@ class Response(BaseModel):
         }
 
 
+class PutData(BaseModel):
+    task_id: str
+    last_update: datetime
+
+
 class PutResponse(BaseModel):
-    data: Dict[str, Any]
+    data: Optional[PutData]
     message: str
 
     class Config:
@@ -100,9 +105,8 @@ def put(payload: PutPayload):
         "task_id": task_id,
         "last_update": datetime.now(),
     }
-    message = "Settings successfully submitted."
 
-    return PutResponse(data=data, message=message)
+    return PutResponse(data=data, message="Settings successfully submitted.")
 
 
 def get():

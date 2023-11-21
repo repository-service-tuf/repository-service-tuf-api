@@ -314,6 +314,7 @@ class TestPostTargetsDelete:
 
         response = test_client.post(url, json=payload)
 
+        assert fake_datetime.now.calls == [pretend.call()]
         assert response.status_code == status.HTTP_202_ACCEPTED
         assert response.json() == {
             "data": {

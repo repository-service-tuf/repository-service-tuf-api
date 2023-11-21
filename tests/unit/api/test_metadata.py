@@ -47,6 +47,7 @@ class TestPostMetadata:
         payload = json.loads(f_data)
         response = test_client.post(url, json=payload)
 
+        assert fake_datetime.now.calls == [pretend.call()]
         assert response.status_code == status.HTTP_202_ACCEPTED
         assert response.url == f"{test_client.base_url}{url}"
         assert response.json() == {
@@ -261,6 +262,7 @@ class TestPostMetadataSign:
         payload = {"role": "root", "signature": {"keyid": "k1", "sig": "s1"}}
 
         response = test_client.post(url, json=payload)
+        assert fake_datetime.now.calls == [pretend.call()]
         assert response.status_code == status.HTTP_202_ACCEPTED, response.text
         assert response.json() == {
             "data": {
@@ -366,6 +368,7 @@ class TestPostMetadataSignDelete:
         )
 
         response = test_client.post(url, json=payload)
+        assert fake_datetime.now.calls == [pretend.call()]
         assert response.status_code == status.HTTP_202_ACCEPTED, response.text
         assert response.json() == {
             "data": {"task_id": "123", "last_update": "2019-06-16T09:05:01"},

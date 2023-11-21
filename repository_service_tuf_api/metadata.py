@@ -37,7 +37,7 @@ class PostData(BaseModel):
 
 class MetadataPostResponse(BaseModel):
     data: Optional[PostData]
-    message: Optional[str]
+    message: str
 
     class Config:
         example = {
