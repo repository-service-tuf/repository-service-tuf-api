@@ -42,7 +42,7 @@ class GetParameters(BaseModel):
 class TaskDetails(BaseModel):
     message: str = Field(description="Result detail description")
     error: Optional[str] = Field(
-        description="If task status result is `False` shows error message"
+        description="If the task status result is `False` shows an error message"
     )
     any: Any = Field(description="Any releavant information from task")
 
@@ -66,7 +66,7 @@ class TasksData(BaseModel):
             "`RECEIVED`: Task received by a worker (only used in events).\n\n"
             "`STARTED`: Task started by a worker.\n\n"
             "`RUNNING`: Task is running.\n\n"
-            "`SUCCESS`: Task success.\n\n"
+            "`SUCCESS`: Task succeeded.\n\n"
             "`FAILURE`: Task failed.\n\n"
             "`REVOKED`: Task revoked.\n\n"
             "`REJECTED`: Task was rejected (only used in events).\n\n"
