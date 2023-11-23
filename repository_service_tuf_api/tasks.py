@@ -42,7 +42,9 @@ class GetParameters(BaseModel):
 class TaskDetails(BaseModel):
     message: str = Field(description="Result detail description")
     error: Optional[str] = Field(
-        description="If the task status result is `False` shows an error message"
+        description=(
+            "If the task status result is `False` shows an error message"
+        )
     )
     any: Any = Field(description="Any releavant information from task")
 
@@ -73,7 +75,9 @@ class TasksData(BaseModel):
         )
     )
     result: Optional[Union[Any, TaskResult]] = Field(
-        description="Task result details when `SUCCESS`"
+        description=(
+            "Task result details (state `SUCCESS` uses schema `TaskResult)"
+        )
     )
 
 
