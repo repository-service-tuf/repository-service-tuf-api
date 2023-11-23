@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: MIT
 
+import datetime
 import json
 
 import pretend
@@ -35,8 +36,23 @@ class TestPutSettings:
             "repository_service_tuf_api.config.repository_metadata",
             mocked_repository_metadata,
         )
+        fake_time = datetime.datetime(2019, 6, 16, 9, 5, 1)
+        fake_datetime = pretend.stub(
+            now=pretend.call_recorder(lambda: fake_time)
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.config.datetime", fake_datetime
+        )
         response = test_client.put(URL, json=payload)
+        assert fake_datetime.now.calls == [pretend.call()]
         assert response.status_code == status.HTTP_202_ACCEPTED
+        assert response.json() == {
+            "data": {
+                "task_id": "task-id",
+                "last_update": "2019-06-16T09:05:01",
+            },
+            "message": "Settings successfully submitted.",
+        }
         assert mocked_bootstrap_state.calls == [pretend.call()]
         assert mocked_get_task_id.calls == [pretend.call()]
         assert mocked_repository_metadata.apply_async.calls == [
