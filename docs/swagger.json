@@ -679,7 +679,8 @@
                 "title": "BootstrapPostResponse",
                 "example": {
                     "data": {
-                        "task_id": "7a634b556f784ae88785d36425f9a218"
+                        "task_id": "7a634b556f784ae88785d36425f9a218",
+                        "last_update": "2022-12-01T12:10:00.578086"
                     },
                     "message": "Bootstrap accepted."
                 }
@@ -689,9 +690,17 @@
                     "task_id": {
                         "type": "string",
                         "title": "Task Id"
+                    },
+                    "last_update": {
+                        "type": "string",
+                        "format": "date-time",
+                        "title": "Last Update"
                     }
                 },
                 "type": "object",
+                "required": [
+                    "last_update"
+                ],
                 "title": "DeleteData"
             },
             "DeletePayload": {
@@ -881,7 +890,8 @@
                 "title": "MetadataPostResponse",
                 "example": {
                     "data": {
-                        "task_id": "7a634b556f784ae88785d36425f9a218"
+                        "task_id": "7a634b556f784ae88785d36425f9a218",
+                        "last_update": "2022-12-01T12:10:00.578086"
                     },
                     "message": "Metadata Update accepted."
                 }
@@ -919,7 +929,8 @@
                 "title": "MetadataSignDeleteResponse",
                 "example": {
                     "data": {
-                        "task_id": "7a634b556f784ae88785d36425f9a218"
+                        "task_id": "7a634b556f784ae88785d36425f9a218",
+                        "last_update": "2022-12-01T12:10:00.578086"
                     },
                     "message": "Metadata delete sign accepted."
                 }
@@ -1054,6 +1065,25 @@
                 ],
                 "title": "MetadataSignature"
             },
+            "PutData": {
+                "properties": {
+                    "task_id": {
+                        "type": "string",
+                        "title": "Task Id"
+                    },
+                    "last_update": {
+                        "type": "string",
+                        "format": "date-time",
+                        "title": "Last Update"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "task_id",
+                    "last_update"
+                ],
+                "title": "PutData"
+            },
             "PutPayload": {
                 "properties": {
                     "settings": {
@@ -1079,8 +1109,7 @@
             "PutResponse": {
                 "properties": {
                     "data": {
-                        "type": "object",
-                        "title": "Data"
+                        "$ref": "#/components/schemas/PutData"
                     },
                     "message": {
                         "type": "string",
@@ -1089,13 +1118,15 @@
                 },
                 "type": "object",
                 "required": [
-                    "data",
                     "message"
                 ],
                 "title": "PutResponse",
                 "example": {
-                    "message": "Settings successfully submitted.",
-                    "task_id": "06ee6db3cbab4b26be505352c2f2e2c3"
+                    "data": {
+                        "task_id": "06ee6db3cbab4b26be505352c2f2e2c3",
+                        "last_update": "2022-12-01T12:10:00.578086"
+                    },
+                    "message": "Settings successfully submitted."
                 }
             },
             "ResponseData": {
@@ -1640,9 +1671,17 @@
                     "task_id": {
                         "type": "string",
                         "title": "Task Id"
+                    },
+                    "last_update": {
+                        "type": "string",
+                        "format": "date-time",
+                        "title": "Last Update"
                     }
                 },
                 "type": "object",
+                "required": [
+                    "last_update"
+                ],
                 "title": "PostData"
             },
             "repository_service_tuf_api__bootstrap__Settings": {
@@ -1728,9 +1767,17 @@
                     "task_id": {
                         "type": "string",
                         "title": "Task Id"
+                    },
+                    "last_update": {
+                        "type": "string",
+                        "format": "date-time",
+                        "title": "Last Update"
                     }
                 },
                 "type": "object",
+                "required": [
+                    "last_update"
+                ],
                 "title": "PostData"
             },
             "repository_service_tuf_api__targets__Response": {
