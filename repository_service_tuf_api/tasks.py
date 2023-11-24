@@ -6,22 +6,23 @@ import enum
 from datetime import datetime
 from typing import Any, Optional, Union
 
+from celery import states
 from pydantic import BaseModel, Field
 
 from repository_service_tuf_api import repository_metadata
 
-
 class TaskState(str, enum.Enum):
-    PENDING = "PENDING"
-    RECEIVED = "RECEIVED"
-    STARTED = "STARTED"
-    RUNNING = "RUNNING"
-    SUCCESS = "SUCCESS"
-    FAILURE = "FAILURE"
-    REVOKED = "REVOKED"
-    REJECTED = "REJECTED"
-    RETRY = "RETRY"
-    IGNORED = "IGNORED"
+    PENDING = states.PENDING
+    RECEIVED = states.RECEIVED
+    STARTED = states.STARTED
+    SUCCESS = states.SUCCESS
+    FAILURE = states.FAILURE
+    REVOKED = states.REVOKED
+    REJECTED = states.REJECTED
+    RETRY = states.RETRY
+    IGNORED = states.IGNORED
+    RUNNING = "RUNNING"  # custom state used when a task is RUNNING in RSTUF
+
 
 
 class TaskName(str, enum.Enum):
