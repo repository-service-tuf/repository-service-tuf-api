@@ -11,7 +11,13 @@ class TestGetTask:
         url = "/api/v1/task/"
 
         mocked_task_result = pretend.stub(
-            state="SUCCESS", result={"status": "Task finished."}
+            state="SUCCESS",
+            result={
+                "status": True,
+                "task": "add_targets",
+                "last_update": "2023-11-17T09:54:15.762882",
+                "details": {"message": "Target(s) Added"},
+            },
         )
         mocked_repository_metadata = pretend.stub(
             AsyncResult=pretend.call_recorder(lambda t: mocked_task_result)
@@ -27,7 +33,12 @@ class TestGetTask:
             "data": {
                 "task_id": "test_id",
                 "state": "SUCCESS",
-                "result": {"status": "Task finished."},
+                "result": {
+                    "status": True,
+                    "task": "add_targets",
+                    "last_update": "2023-11-17T09:54:15.762882",
+                    "details": {"message": "Target(s) Added"},
+                },
             },
             "message": "Task state.",
         }
