@@ -1589,13 +1589,13 @@
                     "PENDING",
                     "RECEIVED",
                     "STARTED",
-                    "RUNNING",
                     "SUCCESS",
                     "FAILURE",
                     "REVOKED",
                     "REJECTED",
                     "RETRY",
-                    "IGNORED"
+                    "IGNORED",
+                    "RUNNING"
                 ],
                 "title": "TaskState",
                 "description": "An enumeration."

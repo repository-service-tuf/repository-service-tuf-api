@@ -11,6 +11,7 @@ from pydantic import BaseModel, Field
 
 from repository_service_tuf_api import repository_metadata
 
+
 class TaskState(str, enum.Enum):
     PENDING = states.PENDING
     RECEIVED = states.RECEIVED
@@ -22,7 +23,6 @@ class TaskState(str, enum.Enum):
     RETRY = states.RETRY
     IGNORED = states.IGNORED
     RUNNING = "RUNNING"  # custom state used when a task is RUNNING in RSTUF
-
 
 
 class TaskName(str, enum.Enum):
