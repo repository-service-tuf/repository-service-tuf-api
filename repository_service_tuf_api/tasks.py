@@ -2,24 +2,83 @@
 #
 # SPDX-License-Identifier: MIT
 
-from typing import Any, Optional
+import enum
+from datetime import datetime
+from typing import Any, Optional, Union
 
+from celery import states
 from pydantic import BaseModel, Field
 
 from repository_service_tuf_api import repository_metadata
+
+
+class TaskState(str, enum.Enum):
+    PENDING = states.PENDING
+    RECEIVED = states.RECEIVED
+    STARTED = states.STARTED
+    SUCCESS = states.SUCCESS
+    FAILURE = states.FAILURE
+    REVOKED = states.REVOKED
+    REJECTED = states.REJECTED
+    RETRY = states.RETRY
+    IGNORED = states.IGNORED
+    RUNNING = "RUNNING"  # custom state used when a task is RUNNING in RSTUF
+
+
+class TaskName(str, enum.Enum):
+    ADD_TARGETS = "add_targets"
+    REMOVE_TARGETS = "remove_targets"
+    BOOTSTRAP = "bootstrap"
+    UPDATE_SETTINGS = "update_settings"
+    PUBLISH_TARGETS = "publish_targets"
+    METADATA_UPDATE = "metadata_update"
+    SIGN_METADATA = "sign_metadata"
+    DELETE_SIGN_METADATA = "delete_sign_metadata"
 
 
 class GetParameters(BaseModel):
     task_id: str
 
 
+class TaskDetails(BaseModel):
+    message: str = Field(description="Result detail description")
+    error: Optional[str] = Field(
+        description=(
+            "If the task status result is `False` shows an error message"
+        )
+    )
+    any: Any = Field(description="Any releavant information from task")
+
+
+class TaskResult(BaseModel):
+    status: bool = Field(
+        description="Task result status. `True` Success | `False` Failure"
+    )
+    task: TaskName = Field(description="Task name by worker")
+    last_update: datetime = Field(description="Last time task was updated")
+    details: TaskDetails = Field(description="Relevant result details")
+
+
 class TasksData(BaseModel):
     task_id: str = Field(description="Task ID")
-    state: str = Field(
-        description="State according with Celery Tasks",
+    state: TaskState = Field(
+        description=(
+            "The Celery task state. Note: It isn't the task result status.\n\n"
+            "`PENDING`: Task state is unknown (assumed pending since you know "
+            "the id).\n\n"
+            "`RECEIVED`: Task received by a worker (only used in events).\n\n"
+            "`STARTED`: Task started by a worker.\n\n"
+            "`RUNNING`: Task is running.\n\n"
+            "`SUCCESS`: Task succeeded.\n\n"
+            "`FAILURE`: Task failed.\n\n"
+            "`REVOKED`: Task revoked.\n\n"
+            "`REJECTED`: Task was rejected (only used in events).\n\n"
+        )
     )
-    result: Optional[Any] = Field(
-        description="Details about the task execution.",
+    result: Optional[Union[Any, TaskResult]] = Field(
+        description=(
+            "Task result details (state `SUCCESS` uses schema `TaskResult)"
+        )
     )
 
 
@@ -30,11 +89,13 @@ class Response(BaseModel):
     class Config:
         data_example = {
             "data": {
-                "task_id": "91353735ef7d48099df86d8bfa30316e",
-                "state": "SUCCESS",
+                "task_id": "33e66671dcc84cdfa2535a1eb030104c",
+                "state": TaskState.SUCCESS,
                 "result": {
-                    "status": "Task finished.",
-                    "details": {"key": "value"},
+                    "status": True,
+                    "task": TaskName.ADD_TARGETS,
+                    "last_update": "2023-11-17T09:54:15.762882",
+                    "details": {"message": "Target(s) Added"},
                 },
             },
             "message": "Task state.",

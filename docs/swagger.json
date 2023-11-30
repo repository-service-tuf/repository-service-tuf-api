@@ -421,7 +421,7 @@
                     "Task"
                 ],
                 "summary": "Get task state.",
-                "description": "Get Repository Metadata task state. The state is according with Celery tasks: `PENDING` the task still not processed or unknown/inexistent task. `RECEIVED` task is reveived by the broker server. `PRE_RUN` the task will start by repository-service-tuf-worker. `RUNNING` the task is in execution. `FAILURE` the task failed to executed. `SUCCESS` the task execution is finished.",
+                "description": "Get RSTUF tasks information.",
                 "operationId": "get_api_v1_task__get",
                 "parameters": [
                     {
@@ -1505,6 +1505,101 @@
                 ],
                 "title": "TargetsInfo"
             },
+            "TaskDetails": {
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "title": "Message",
+                        "description": "Result detail description"
+                    },
+                    "error": {
+                        "type": "string",
+                        "title": "Error",
+                        "description": "If the task status result is `False` shows an error message"
+                    },
+                    "any": {
+                        "title": "Any",
+                        "description": "Any releavant information from task"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "message"
+                ],
+                "title": "TaskDetails"
+            },
+            "TaskName": {
+                "type": "string",
+                "enum": [
+                    "add_targets",
+                    "remove_targets",
+                    "bootstrap",
+                    "update_settings",
+                    "publish_targets",
+                    "metadata_update",
+                    "sign_metadata",
+                    "delete_sign_metadata"
+                ],
+                "title": "TaskName",
+                "description": "An enumeration."
+            },
+            "TaskResult": {
+                "properties": {
+                    "status": {
+                        "type": "boolean",
+                        "title": "Status",
+                        "description": "Task result status. `True` Success | `False` Failure"
+                    },
+                    "task": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/TaskName"
+                            }
+                        ],
+                        "description": "Task name by worker"
+                    },
+                    "last_update": {
+                        "type": "string",
+                        "format": "date-time",
+                        "title": "Last Update",
+                        "description": "Last time task was updated"
+                    },
+                    "details": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/TaskDetails"
+                            }
+                        ],
+                        "title": "Details",
+                        "description": "Relevant result details"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "status",
+                    "task",
+                    "last_update",
+                    "details"
+                ],
+                "title": "TaskResult"
+            },
+            "TaskState": {
+                "type": "string",
+                "enum": [
+                    "PENDING",
+                    "RECEIVED",
+                    "STARTED",
+                    "SUCCESS",
+                    "FAILURE",
+                    "REVOKED",
+                    "REJECTED",
+                    "RETRY",
+                    "IGNORED",
+                    "RUNNING"
+                ],
+                "title": "TaskState",
+                "description": "An enumeration."
+            },
             "TasksData": {
                 "properties": {
                     "task_id": {
@@ -1513,13 +1608,22 @@
                         "description": "Task ID"
                     },
                     "state": {
-                        "type": "string",
-                        "title": "State",
-                        "description": "State according with Celery Tasks"
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/TaskState"
+                            }
+                        ],
+                        "description": "The Celery task state. Note: It isn't the task result status.\n\n`PENDING`: Task state is unknown (assumed pending since you know the id).\n\n`RECEIVED`: Task received by a worker (only used in events).\n\n`STARTED`: Task started by a worker.\n\n`RUNNING`: Task is running.\n\n`SUCCESS`: Task succeeded.\n\n`FAILURE`: Task failed.\n\n`REVOKED`: Task revoked.\n\n`REJECTED`: Task was rejected (only used in events).\n\n"
                     },
                     "result": {
+                        "anyOf": [
+                            {},
+                            {
+                                "$ref": "#/components/schemas/TaskResult"
+                            }
+                        ],
                         "title": "Result",
-                        "description": "Details about the task execution."
+                        "description": "Task result details (state `SUCCESS` uses schema `TaskResult)"
                     }
                 },
                 "type": "object",
@@ -1718,12 +1822,14 @@
                 "title": "Response",
                 "example": {
                     "data": {
-                        "task_id": "91353735ef7d48099df86d8bfa30316e",
+                        "task_id": "33e66671dcc84cdfa2535a1eb030104c",
                         "state": "SUCCESS",
                         "result": {
-                            "status": "Task finished.",
+                            "status": true,
+                            "task": "add_targets",
+                            "last_update": "2023-11-17T09:54:15.762882",
                             "details": {
-                                "key": "value"
+                                "message": "Target(s) Added"
                             }
                         }
                     },
