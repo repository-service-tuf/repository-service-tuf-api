@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: MIT
 
+import copy
 import datetime
 import json
 
@@ -164,9 +165,15 @@ class TestGetMetadataSign:
                 lambda: metadata_data["metadata"]["root"]
             )
         )
+
+        def get_role(role_setting: str):
+            if role_setting == "ROOT_SIGNING":
+                return fake_metadata
+            return None
+
         mocked_settings_repository = pretend.stub(
             reload=pretend.call_recorder(lambda: None),
-            get=pretend.call_recorder(lambda *a: fake_metadata),
+            get=pretend.call_recorder(lambda a: get_role(a)),
             ROOT_SIGNING=fake_metadata,
         )
         monkeypatch.setattr(
@@ -177,15 +184,145 @@ class TestGetMetadataSign:
         response = test_client.get(url)
         assert response.status_code == status.HTTP_200_OK, response.text
         assert response.json() == {
-            "data": {"metadata": {"root": metadata_data["metadata"]["root"]}},
+            "data": {
+                "metadata": {
+                    "root": metadata_data["metadata"]["root"],
+                    "trusted_root": {},
+                }
+            },
             "message": "Metadata role(s) pending signing",
         }
         assert mocked_bootstrap_state.calls == [pretend.call()]
         assert mocked_settings_repository.reload.calls == [pretend.call()]
         assert mocked_settings_repository.get.calls == [
-            pretend.call("ROOT_SIGNING")
+            pretend.call("ROOT_SIGNING"),
+            pretend.call("TRUSTED_ROOT"),
         ]
         assert fake_metadata.to_dict.calls == [pretend.call()]
+
+    def test_get_metadata_sign_with_trusted_root_same_version(
+        self, test_client, monkeypatch
+    ):
+        url = "/api/v1/metadata/sign/"
+
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda *a: pretend.stub(bootstrap=True, state="signing")
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.metadata.bootstrap_state",
+            mocked_bootstrap_state,
+        )
+        with open("tests/data_examples/bootstrap/payload.json") as f:
+            md_content = f.read()
+
+        metadata_data = json.loads(md_content)
+        fake_metadata = pretend.stub(
+            to_dict=pretend.call_recorder(
+                lambda: metadata_data["metadata"]["root"]
+            )
+        )
+
+        def get_role(setting: str):
+            if setting == "ROOT_SIGNING" or setting == "TRUSTED_ROOT":
+                return fake_metadata
+            return None
+
+        mocked_settings_repository = pretend.stub(
+            reload=pretend.call_recorder(lambda: None),
+            get=pretend.call_recorder(lambda a: get_role(a)),
+            ROOT_SIGNING=fake_metadata,
+            TRUSTED_ROOT=fake_metadata,
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.metadata.settings_repository",
+            mocked_settings_repository,
+        )
+
+        response = test_client.get(url)
+        assert response.status_code == status.HTTP_200_OK, response.text
+        assert response.json() == {
+            "data": {
+                "metadata": {
+                    "root": metadata_data["metadata"]["root"],
+                    "trusted_root": {},
+                }
+            },
+            "message": "Metadata role(s) pending signing",
+        }
+        assert mocked_bootstrap_state.calls == [pretend.call()]
+        assert mocked_settings_repository.reload.calls == [pretend.call()]
+        assert mocked_settings_repository.get.calls == [
+            pretend.call("ROOT_SIGNING"),
+            pretend.call("TRUSTED_ROOT"),
+        ]
+        assert fake_metadata.to_dict.calls == [pretend.call(), pretend.call()]
+
+    def test_get_metadata_sign_with_trusted_root_diff_version(
+        self, test_client, monkeypatch
+    ):
+        url = "/api/v1/metadata/sign/"
+
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda *a: pretend.stub(bootstrap=True, state="signing")
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.metadata.bootstrap_state",
+            mocked_bootstrap_state,
+        )
+        with open("tests/data_examples/bootstrap/payload.json") as f:
+            md_content = f.read()
+
+        metadata_data = json.loads(md_content)
+        fake_metadata = pretend.stub(
+            to_dict=pretend.call_recorder(
+                lambda: metadata_data["metadata"]["root"]
+            )
+        )
+        # Change trusted root:
+        trusted_root_dict = copy.deepcopy(metadata_data["metadata"]["root"])
+        trusted_root_dict["signed"]["version"] = 10
+        fake_trusted_metadata = pretend.stub(
+            to_dict=pretend.call_recorder(lambda: trusted_root_dict)
+        )
+
+        def get_role(setting: str):
+            if setting == "ROOT_SIGNING":
+                return fake_metadata
+            elif setting == "TRUSTED_ROOT":
+                return fake_trusted_metadata
+
+            return None
+
+        mocked_settings_repository = pretend.stub(
+            reload=pretend.call_recorder(lambda: None),
+            get=pretend.call_recorder(lambda a: get_role(a)),
+            ROOT_SIGNING=fake_metadata,
+            TRUSTED_ROOT=fake_metadata,
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.metadata.settings_repository",
+            mocked_settings_repository,
+        )
+
+        response = test_client.get(url)
+        assert response.status_code == status.HTTP_200_OK, response.text
+        assert response.json() == {
+            "data": {
+                "metadata": {
+                    "root": metadata_data["metadata"]["root"],
+                    "trusted_root": trusted_root_dict,
+                }
+            },
+            "message": "Metadata role(s) pending signing",
+        }
+        assert mocked_bootstrap_state.calls == [pretend.call()]
+        assert mocked_settings_repository.reload.calls == [pretend.call()]
+        assert mocked_settings_repository.get.calls == [
+            pretend.call("ROOT_SIGNING"),
+            pretend.call("TRUSTED_ROOT"),
+        ]
+        assert fake_metadata.to_dict.calls == [pretend.call()]
+        assert fake_trusted_metadata.to_dict.calls == [pretend.call()]
 
     def test_get_metadata_sign_no_bootstrap(self, test_client, monkeypatch):
         url = "/api/v1/metadata/sign/"

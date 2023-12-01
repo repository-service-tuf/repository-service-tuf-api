@@ -4,7 +4,7 @@
 
 import json
 from datetime import datetime
-from typing import Dict, Literal, Optional
+from typing import Dict, Literal, Optional, Union
 
 from fastapi import HTTPException, status
 from pydantic import BaseModel
@@ -84,8 +84,13 @@ def post_metadata(payload: MetadataPostPayload) -> MetadataPostResponse:
     return MetadataPostResponse(data=data, message=message)
 
 
+class RolesData(BaseModel):
+    root: TUFMetadata
+    trusted_root: Union[TUFMetadata, Dict]  # Will be {} if root is bootstrap
+
+
 class SigningData(BaseModel):
-    metadata: Dict[Roles, TUFMetadata]
+    metadata: RolesData
 
 
 class MetadataSignGetResponse(BaseModel):
@@ -120,13 +125,23 @@ def get_metadata_sign() -> MetadataSignGetResponse:
         filter(lambda var: "SIGNING" in var, dir(settings_repository))
     )
 
-    metadata_response: Dict[str, TUFMetadata] = {}
-    for role in pending_signing:
-        signing_md = settings_repository.get(role)
-        if signing_md is not None:
-            metadata_response[
-                role.split("_")[0].lower()
-            ] = signing_md.to_dict()
+    metadata_response = None
+    for role_setting in pending_signing:
+        signing_role_obj = settings_repository.get(role_setting)
+        if signing_role_obj is not None:
+            metadata_response = {}
+            signing_role_dict = signing_role_obj.to_dict()
+            role = role_setting.split("_")[0].lower()
+            metadata_response[role] = signing_role_dict
+
+            trusted_obj = settings_repository.get(f"TRUSTED_{role.upper()}")
+            metadata_response[f"trusted_{role}"] = {}
+            if trusted_obj is not None:
+                trusted_dict = trusted_obj.to_dict()
+                # If versions match, signing_role_obj is initial bootsrap root.
+                signing_ver = signing_role_dict["signed"]["version"]
+                if trusted_dict["signed"]["version"] != signing_ver:
+                    metadata_response[f"trusted_{role}"] = trusted_dict
 
     return MetadataSignGetResponse(
         data={"metadata": metadata_response},
