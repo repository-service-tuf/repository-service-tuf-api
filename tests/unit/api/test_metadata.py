@@ -324,6 +324,35 @@ class TestGetMetadataSign:
         assert fake_metadata.to_dict.calls == [pretend.call()]
         assert fake_trusted_metadata.to_dict.calls == [pretend.call()]
 
+    def test_get_metadata_sign_no_pending_roles(
+        self, test_client, monkeypatch
+    ):
+        url = "/api/v1/metadata/sign/"
+
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda *a: pretend.stub(bootstrap=True, state="signing")
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.metadata.bootstrap_state",
+            mocked_bootstrap_state,
+        )
+
+        mocked_settings_repository = pretend.stub(
+            reload=pretend.call_recorder(lambda: None),
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.metadata.settings_repository",
+            mocked_settings_repository,
+        )
+
+        response = test_client.get(url)
+        assert response.status_code == status.HTTP_200_OK, response.text
+        assert response.json() == {
+            "message": "No metadata pending signing available",
+        }
+        assert mocked_bootstrap_state.calls == [pretend.call()]
+        assert mocked_settings_repository.reload.calls == [pretend.call()]
+
     def test_get_metadata_sign_no_bootstrap(self, test_client, monkeypatch):
         url = "/api/v1/metadata/sign/"
 
@@ -339,7 +368,7 @@ class TestGetMetadataSign:
         assert response.status_code == status.HTTP_200_OK, response.text
         assert response.json() == {
             "detail": {
-                "message": "No signing available",
+                "message": "No metadata pending signing available",
                 "error": "Requires bootstrap started. State: None",
             }
         }
@@ -360,7 +389,7 @@ class TestGetMetadataSign:
         assert response.status_code == status.HTTP_200_OK, response.text
         assert response.json() == {
             "detail": {
-                "message": "No signing available",
+                "message": "No metadata pending signing available",
                 "error": "Requires bootstrap started. State: pre",
             }
         }
