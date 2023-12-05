@@ -4,7 +4,7 @@
 
 import json
 from datetime import datetime
-from typing import Dict, Literal, Optional, Union
+from typing import Dict, Literal, Optional
 
 from fastapi import HTTPException, status
 from pydantic import BaseModel
@@ -86,7 +86,7 @@ def post_metadata(payload: MetadataPostPayload) -> MetadataPostResponse:
 
 class RolesData(BaseModel):
     root: TUFMetadata
-    trusted_root: Union[TUFMetadata, Dict]  # Will be {} if root is bootstrap
+    trusted_root: Optional[TUFMetadata]
 
 
 class SigningData(BaseModel):
@@ -134,13 +134,8 @@ def get_metadata_sign() -> MetadataSignGetResponse:
             md_response[role] = signing_role_dict
 
             trusted_obj = settings_repository.get(f"TRUSTED_{role.upper()}")
-            md_response[f"trusted_{role}"] = {}
             if trusted_obj is not None:
-                trusted_dict = trusted_obj.to_dict()
-                # If versions match, signing_role_obj is initial bootsrap root.
-                signing_ver = signing_role_dict["signed"]["version"]
-                if trusted_dict["signed"]["version"] != signing_ver:
-                    md_response[f"trusted_{role}"] = trusted_dict
+                md_response[f"trusted_{role}"] = trusted_obj.to_dict()
 
     if len(md_response) > 0:
         data = {"metadata": md_response}

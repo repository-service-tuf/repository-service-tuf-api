@@ -1162,21 +1162,12 @@
                         "$ref": "#/components/schemas/TUFMetadata"
                     },
                     "trusted_root": {
-                        "anyOf": [
-                            {
-                                "$ref": "#/components/schemas/TUFMetadata"
-                            },
-                            {
-                                "type": "object"
-                            }
-                        ],
-                        "title": "Trusted Root"
+                        "$ref": "#/components/schemas/TUFMetadata"
                     }
                 },
                 "type": "object",
                 "required": [
-                    "root",
-                    "trusted_root"
+                    "root"
                 ],
                 "title": "RolesData"
             },
