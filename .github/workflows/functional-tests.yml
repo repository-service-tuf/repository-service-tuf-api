@@ -101,4 +101,4 @@ jobs:
 
       - name: Bootstrap/Setup RSTUF full Signed and run Functional Tests
         run: |
-          make ft-signed CLI_VERSION=${{ inputs.cli_version }}
+          make ft-signed CLI_VERSION=${{ inputs.cli_version }} PYTEST_GROUP=${{ matrix.pytest-group }}
