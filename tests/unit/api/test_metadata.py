@@ -229,8 +229,6 @@ class TestGetMetadataSign:
             elif setting == "TRUSTED_ROOT":
                 return fake_trusted_metadata
 
-            return None
-
         mocked_settings_repository = pretend.stub(
             reload=pretend.call_recorder(lambda: None),
             get=pretend.call_recorder(lambda a: get_role(a)),
