@@ -51,6 +51,9 @@ jobs:
   functional-das:
     name: "DAS"
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        pytest-group: [ "1", "2", "3", "4", "5" ]
 
     steps:
       - name: Checkout RSTUF API source code
@@ -72,7 +75,7 @@ jobs:
 
       - name: Bootstrap/Setup RSTUF DAS and run Functional Tests
         run: |
-          make ft-das CLI_VERSION=${{ inputs.cli_version }}
+          make ft-das CLI_VERSION=${{ inputs.cli_version }} PYTEST_GROUP=${{ matrix.pytest-group }}
 
   functional-signed:
     name: "Signed"
