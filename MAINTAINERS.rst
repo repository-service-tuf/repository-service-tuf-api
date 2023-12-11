@@ -4,7 +4,7 @@ Maintainers
 Kairo de Araujo
 ---------------
 
-Email: kdearaujo@vmware.com
+Email: kdearaujo@testifysec.com
 
 GitHub username: @kairoaraujo
 
