@@ -77,6 +77,10 @@ jobs:
         run: |
           make ft-das CLI_VERSION=${{ inputs.cli_version }} PYTEST_GROUP=${{ matrix.pytest-group }}
 
+      - name: Very slow tests
+        run: |
+          pytest --exitfirst tests/functional/targets/test_performance.py::test_api_requester_multiple_request_and_targets[50-50-600] -vvv --cucumberjson=test-report.json --durations=0 --html=test-report.html
+
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@153407881ec5c347639a548ade7d8ad1d6740e38
         with:
@@ -117,6 +121,10 @@ jobs:
       - name: Bootstrap/Setup RSTUF full Signed and run Functional Tests
         run: |
           make ft-signed CLI_VERSION=${{ inputs.cli_version }} PYTEST_GROUP=${{ matrix.pytest-group }}
+
+      - name: Very slow tests
+        run: |
+          pytest --exitfirst tests/functional/targets/test_performance.py::test_api_requester_multiple_request_and_targets[50-50-600] -vvv --cucumberjson=test-report.json --durations=0 --html=test-report.html
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@153407881ec5c347639a548ade7d8ad1d6740e38
