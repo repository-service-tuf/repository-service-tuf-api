@@ -81,17 +81,17 @@ jobs:
         run: |
           make ft-das CLI_VERSION=${{ inputs.cli_version }} PYTEST_GROUP=${{ matrix.pytest-group }} SLOW=yes
 
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@153407881ec5c347639a548ade7d8ad1d6740e38
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "build: Get test duration times"
-          branch: "rstuf-bot/get-test-durations-times-functional-das"
-          delete-branch: true
-          title: "build: Get test duration times functional-das"
-          body: >
-            The following PR shows us the test durations times.
-          labels: automated pr
+#      - name: Create Pull Request
+#        uses: peter-evans/create-pull-request@153407881ec5c347639a548ade7d8ad1d6740e38
+#        with:
+#          token: ${{ secrets.GITHUB_TOKEN }}
+#          commit-message: "build: Get test duration times"
+#          branch: "rstuf-bot/get-test-durations-times-functional-das"
+#          delete-branch: true
+#          title: "build: Get test duration times functional-das"
+#          body: >
+#            The following PR shows us the test durations times.
+#          labels: automated pr
 
   functional-signed:
     name: "Signed"
@@ -126,14 +126,14 @@ jobs:
         run: |
           make ft-signed CLI_VERSION=${{ inputs.cli_version }} PYTEST_GROUP=${{ matrix.pytest-group }} SLOW=yes
 
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@153407881ec5c347639a548ade7d8ad1d6740e38
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "build: Get test duration times "
-          branch: "rstuf-bot/get-test-durations-times-functional-signed"
-          delete-branch: true
-          title: "build: Get test duration times functional-signed"
-          body: >
-            The following PR shows us the test durations times.
-          labels: automated pr
+#      - name: Create Pull Request
+#        uses: peter-evans/create-pull-request@153407881ec5c347639a548ade7d8ad1d6740e38
+#        with:
+#          token: ${{ secrets.GITHUB_TOKEN }}
+#          commit-message: "build: Get test duration times "
+#          branch: "rstuf-bot/get-test-durations-times-functional-signed"
+#          delete-branch: true
+#          title: "build: Get test duration times functional-signed"
+#          body: >
+#            The following PR shows us the test durations times.
+#          labels: automated pr
