@@ -32,10 +32,13 @@ def post(payload: metadata.MetadataPostPayload):
 
 @router.get(
     "/sign",
-    summary="Get all metadata roles pending signatures.",
+    summary=(
+        "Get all metadata roles pending signatures together with their latest "
+        "trusted versions."
+    ),
     description=(
         "Get all metadata roles that need more signatures before they can be "
-        "used."
+        "used and their corresponding latest trusted versions."
     ),
     response_model=metadata.MetadataSignGetResponse,
     response_model_exclude_none=True,

@@ -84,8 +84,13 @@ def post_metadata(payload: MetadataPostPayload) -> MetadataPostResponse:
     return MetadataPostResponse(data=data, message=message)
 
 
+class RolesData(BaseModel):
+    root: TUFMetadata
+    trusted_root: Optional[TUFMetadata]
+
+
 class SigningData(BaseModel):
-    metadata: Dict[Roles, TUFMetadata]
+    metadata: RolesData
 
 
 class MetadataSignGetResponse(BaseModel):
@@ -108,7 +113,7 @@ def get_metadata_sign() -> MetadataSignGetResponse:
         raise HTTPException(
             status.HTTP_200_OK,
             detail={
-                "message": "No signing available",
+                "message": "No metadata pending signing available",
                 "error": (
                     f"Requires bootstrap started. State: {bs_state.state}"
                 ),
@@ -120,18 +125,26 @@ def get_metadata_sign() -> MetadataSignGetResponse:
         filter(lambda var: "SIGNING" in var, dir(settings_repository))
     )
 
-    metadata_response: Dict[str, TUFMetadata] = {}
-    for role in pending_signing:
-        signing_md = settings_repository.get(role)
-        if signing_md is not None:
-            metadata_response[
-                role.split("_")[0].lower()
-            ] = signing_md.to_dict()
+    md_response = {}
+    for role_setting in pending_signing:
+        signing_role_obj = settings_repository.get(role_setting)
+        if signing_role_obj is not None:
+            signing_role_dict = signing_role_obj.to_dict()
+            role = role_setting.split("_")[0].lower()
+            md_response[role] = signing_role_dict
 
-    return MetadataSignGetResponse(
-        data={"metadata": metadata_response},
-        message="Metadata role(s) pending signing",
-    )
+            trusted_obj = settings_repository.get(f"TRUSTED_{role.upper()}")
+            if trusted_obj is not None:
+                md_response[f"trusted_{role}"] = trusted_obj.to_dict()
+
+    if len(md_response) > 0:
+        data = {"metadata": md_response}
+        msg = "Metadata role(s) pending signing"
+    else:
+        data = None
+        msg = "No metadata pending signing available"
+
+    return MetadataSignGetResponse(data=data, message=msg)
 
 
 class MetadataSignPostResponse(BaseModel):
