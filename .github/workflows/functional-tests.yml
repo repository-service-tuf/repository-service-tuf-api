@@ -101,7 +101,7 @@ jobs:
 
         - name: Very slow tests
           run: |
-            make ft-das CLI_VERSION=${{ inputs.cli_version }} PYTEST_GROUP=${{ matrix.pytest-group }} SLOW=yes
+            make ft-das CLI_VERSION=${{ inputs.cli_version }} PYTEST_GROUP=${{ matrix.pytest-group }} SLOW="yes"
 
 #      - name: Create Pull Request
 #        uses: peter-evans/create-pull-request@153407881ec5c347639a548ade7d8ad1d6740e38
@@ -168,7 +168,7 @@ jobs:
 
         - name: Very slow tests
           run: |
-            make ft-signed CLI_VERSION=${{ inputs.cli_version }} PYTEST_GROUP=${{ matrix.pytest-group }} SLOW=yes
+            make ft-signed CLI_VERSION=${{ inputs.cli_version }} PYTEST_GROUP=${{ matrix.pytest-group }} SLOW="yes"
 
   #      - name: Create Pull Request
   #        uses: peter-evans/create-pull-request@153407881ec5c347639a548ade7d8ad1d6740e38
