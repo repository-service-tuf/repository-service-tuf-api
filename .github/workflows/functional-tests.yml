@@ -77,31 +77,31 @@ jobs:
         run: |
           make ft-das CLI_VERSION=${{ inputs.cli_version }} PYTEST_GROUP=${{ matrix.pytest-group }}
 
-#  functional-das-slow:
-#      name: "DAS Slow"
-#      runs-on: ubuntu-latest
-#
-#      steps:
-#        - name: Checkout RSTUF API source code
-#          uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
-#
-#        - name: Checkout RSTUF Umbrella (FT)
-#          uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
-#          with:
-#            repository: repository-service-tuf/repository-service-tuf
-#            path: rstuf-umbrella
-#            ref: ${{ inputs.umbrella_branch }}
-#
-#        - name: Deploy RSTUF with API container from source code
-#          uses: isbang/compose-action@178aeba5c9dbeed89ffffbb3e6548ec08e9839cf
-#          with:
-#            compose-file: ${{ inputs.docker_compose }}
-#          env:
-#            WORKER_VERSION: ${{ inputs.worker_version }}
-#
-#        - name: Very slow tests
-#          run: |
-#            make ft-das CLI_VERSION=${{ inputs.cli_version }} PYTEST_GROUP=none SLOW="yes"
+  functional-das-slow:
+      name: "DAS Slow"
+      runs-on: ubuntu-latest
+
+      steps:
+        - name: Checkout RSTUF API source code
+          uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+
+        - name: Checkout RSTUF Umbrella (FT)
+          uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+          with:
+            repository: repository-service-tuf/repository-service-tuf
+            path: rstuf-umbrella
+            ref: ${{ inputs.umbrella_branch }}
+
+        - name: Deploy RSTUF with API container from source code
+          uses: isbang/compose-action@178aeba5c9dbeed89ffffbb3e6548ec08e9839cf
+          with:
+            compose-file: ${{ inputs.docker_compose }}
+          env:
+            WORKER_VERSION: ${{ inputs.worker_version }}
+
+        - name: Very slow tests
+          run: |
+            make ft-das CLI_VERSION=${{ inputs.cli_version }} PYTEST_GROUP=none SLOW="yes"
 
 #      - name: Create Pull Request
 #        uses: peter-evans/create-pull-request@153407881ec5c347639a548ade7d8ad1d6740e38
@@ -144,31 +144,31 @@ jobs:
         run: |
           make ft-signed CLI_VERSION=${{ inputs.cli_version }} PYTEST_GROUP=${{ matrix.pytest-group }}
 
-#  functional-signed-slow:
-#      name: "Signed Slow"
-#      runs-on: ubuntu-latest
-#
-#      steps:
-#        - name: Checkout RSTUF API source code
-#          uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
-#
-#        - name: Checkout RSTUF Umbrella (FT)
-#          uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
-#          with:
-#            repository: repository-service-tuf/repository-service-tuf
-#            path: rstuf-umbrella
-#            ref: ${{ inputs.umbrella_branch }}
-#
-#        - name: Deploy RSTUF with API container from source code
-#          uses: isbang/compose-action@178aeba5c9dbeed89ffffbb3e6548ec08e9839cf
-#          with:
-#            compose-file: ${{ inputs.docker_compose }}
-#          env:
-#            WORKER_VERSION: ${{ inputs.worker_version }}
-#
-#        - name: Very slow tests
-#          run: |
-#            make ft-signed CLI_VERSION=${{ inputs.cli_version }} PYTEST_GROUP=none SLOW="yes"
+  functional-signed-slow:
+      name: "Signed Slow"
+      runs-on: ubuntu-latest
+
+      steps:
+        - name: Checkout RSTUF API source code
+          uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+
+        - name: Checkout RSTUF Umbrella (FT)
+          uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+          with:
+            repository: repository-service-tuf/repository-service-tuf
+            path: rstuf-umbrella
+            ref: ${{ inputs.umbrella_branch }}
+
+        - name: Deploy RSTUF with API container from source code
+          uses: isbang/compose-action@178aeba5c9dbeed89ffffbb3e6548ec08e9839cf
+          with:
+            compose-file: ${{ inputs.docker_compose }}
+          env:
+            WORKER_VERSION: ${{ inputs.worker_version }}
+
+        - name: Very slow tests
+          run: |
+            make ft-signed CLI_VERSION=${{ inputs.cli_version }} PYTEST_GROUP=none SLOW="yes"
 
   #      - name: Create Pull Request
   #        uses: peter-evans/create-pull-request@153407881ec5c347639a548ade7d8ad1d6740e38
