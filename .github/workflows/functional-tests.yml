@@ -53,7 +53,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        pytest-group: [ "1", "2", "3", "4", "5"]
+        pytest-group: [ "1", "2", "3"]
 
     steps:
       - name: Checkout RSTUF API source code
@@ -120,7 +120,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        pytest-group: [ "1", "2", "3", "4", "5"]
+        pytest-group: [ "1", "2", "3"]
 
     steps:
       - name: Checkout RSTUF API source code
