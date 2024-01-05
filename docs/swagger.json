@@ -143,6 +143,49 @@
             }
         },
         "/api/v1/metadata/": {
+            "put": {
+                "tags": [
+                    "Metadata"
+                ],
+                "summary": "Force a new version of online metadata role(s).",
+                "description": "Force a new version of online metadata role(s). The new metadata version(s) will have extended expiration which will equal to: today + ROLE_NAME_EXPIRATION number of days, where ROLE_NAME_EXPIRATION is a tuf repository setting. Note: depending on which metadata role you want to update other online roles will likely be updated as well otherwise consistency will be lost.",
+                "operationId": "put_api_v1_metadata__put",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/MetadataPutPayload"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "202": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MetadataPutResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
             "post": {
                 "tags": [
                     "Metadata"
@@ -1084,6 +1127,58 @@
                         "last_update": "2022-12-01T12:10:00.578086",
                         "task_id": "7a634b556f784ae88785d36425f9a218"
                     }
+                }
+            },
+            "MetadataPutPayload": {
+                "properties": {
+                    "roles": {
+                        "items": {
+                            "type": "string",
+                            "enum": [
+                                "root",
+                                "targets",
+                                "snapshot",
+                                "timestamp",
+                                "bins"
+                            ]
+                        },
+                        "type": "array",
+                        "title": "Roles"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "roles"
+                ],
+                "title": "MetadataPutPayload",
+                "example": {
+                    "roles": [
+                        "targets",
+                        "snapshot"
+                    ]
+                }
+            },
+            "MetadataPutResponse": {
+                "properties": {
+                    "data": {
+                        "$ref": "#/components/schemas/TaskData"
+                    },
+                    "message": {
+                        "type": "string",
+                        "title": "Message"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "message"
+                ],
+                "title": "MetadataPutResponse",
+                "example": {
+                    "data": {
+                        "task_id": "7a634b556f784ae88785d36425f9a218",
+                        "last_update": "2022-12-01T12:10:00.578086"
+                    },
+                    "message": "Force new online metadata accepted."
                 }
             },
             "MetadataSignDeletePayload": {

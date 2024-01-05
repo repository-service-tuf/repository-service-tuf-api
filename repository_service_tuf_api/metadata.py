@@ -88,6 +88,63 @@ def post_metadata(payload: MetadataPostPayload) -> MetadataPostResponse:
     return MetadataPostResponse(data=data, message=message)
 
 
+class MetadataPutPayload(BaseModel):
+    roles: List[Roles.values()]
+
+    class Config:
+        example = {"roles": ["targets", "snapshot"]}
+
+        schema_extra = {"example": example}
+
+
+class MetadataPutResponse(BaseModel):
+    data: Optional[TaskData]
+    message: str
+
+    class Config:
+        example = {
+            "data": {
+                "task_id": "7a634b556f784ae88785d36425f9a218",
+                "last_update": "2022-12-01T12:10:00.578086",
+            },
+            "message": "Force new online metadata accepted.",
+        }
+
+        schema_extra = {"example": example}
+
+
+def put_metadata(payload: MetadataPutPayload) -> MetadataPutResponse:
+    bs_state = bootstrap_state()
+    if bs_state.bootstrap is False:
+        raise HTTPException(
+            status.HTTP_200_OK,
+            detail={
+                "message": "Task not accepted.",
+                "error": (
+                    f"Requires bootstrap finished. State: {bs_state.state}"
+                ),
+            },
+        )
+
+    task_id = get_task_id()
+    repository_metadata.apply_async(
+        kwargs={
+            "action": "force_online_metadata_update",
+            "payload": payload.dict(by_alias=True, exclude_none=True),
+        },
+        task_id=task_id,
+        queue="metadata_repository",
+        acks_late=True,
+    )
+
+    message = "Force online metadata update accepted."
+    data = {
+        "task_id": task_id,
+        "last_update": datetime.now(),
+    }
+    return MetadataPutResponse(data=data, message=message)
+
+
 class RolesData(BaseModel):
     root: TUFMetadata
     trusted_root: TUFMetadata | None = None
