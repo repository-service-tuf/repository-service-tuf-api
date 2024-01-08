@@ -152,6 +152,82 @@ class TestPostMetadata:
         } == response.json()
 
 
+class TestPutMetadata:
+    def test_put_metadata(self, test_client, monkeypatch):
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda: pretend.stub(bootstrap=True, state="ab123")
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.metadata.bootstrap_state",
+            mocked_bootstrap_state,
+        )
+        fake_id = "fake_id"
+        fake_get_task_id = pretend.call_recorder(lambda: fake_id)
+        monkeypatch.setattr(
+            "repository_service_tuf_api.metadata.get_task_id",
+            fake_get_task_id,
+        )
+        fake_repository_metadata = pretend.stub(
+            apply_async=pretend.call_recorder(lambda *a, **kw: None)
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.metadata.repository_metadata",
+            fake_repository_metadata,
+        )
+        fake_time = datetime.datetime(2019, 6, 16, 9, 5, 1)
+        fake_datetime = pretend.stub(
+            now=pretend.call_recorder(lambda: fake_time)
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.metadata.datetime", fake_datetime
+        )
+        payload = {"roles": ["snapshot", "targets"]}
+
+        response = test_client.put(METADATA_URL, json=payload)
+        assert response.status_code == status.HTTP_202_ACCEPTED, response.text
+        assert response.json() == {
+            "data": {
+                "task_id": fake_id,
+                "last_update": "2019-06-16T09:05:01",
+            },
+            "message": "Force online metadata update accepted.",
+        }
+        assert mocked_bootstrap_state.calls == [pretend.call()]
+        assert fake_get_task_id.calls == [pretend.call()]
+        assert fake_repository_metadata.apply_async.calls == [
+            pretend.call(
+                kwargs={
+                    "action": "force_online_metadata_update",
+                    "payload": payload,
+                },
+                task_id=fake_id,
+                queue="metadata_repository",
+                acks_late=True,
+            )
+        ]
+        assert fake_datetime.now.calls == [pretend.call()]
+
+    def test_put_metadata_bootstrap_not_ready(self, test_client, monkeypatch):
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda: pretend.stub(bootstrap=False, state="signing-")
+        )
+        payload = {"roles": ["snapshot", "targets"]}
+        monkeypatch.setattr(
+            "repository_service_tuf_api.metadata.bootstrap_state",
+            mocked_bootstrap_state,
+        )
+
+        response = test_client.put(METADATA_URL, json=payload)
+        assert response.status_code == status.HTTP_200_OK, response.text
+        assert response.json() == {
+            "detail": {
+                "message": "Task not accepted.",
+                "error": "Requires bootstrap finished. State: signing-",
+            },
+        }
+        assert mocked_bootstrap_state.calls == [pretend.call()]
+
+
 class TestGetMetadataSign:
     def test_get_metadata_sign(self, test_client, monkeypatch):
         mocked_bootstrap_state = pretend.call_recorder(
