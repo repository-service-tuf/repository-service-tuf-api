@@ -10,11 +10,13 @@ import json
 import pretend
 from fastapi import status
 
+METADATA_URL = "/api/v1/metadata/"
+SIGN_URL = "/api/v1/metadata/sign/"
+DELETE_SIGN_URL = "/api/v1/metadata/sign/delete"
+
 
 class TestPostMetadata:
     def test_post_metadata(self, test_client, monkeypatch):
-        url = "/api/v1/metadata/"
-
         mocked_bootstrap_state = pretend.call_recorder(
             lambda *a: pretend.stub(bootstrap=True)
         )
@@ -47,11 +49,11 @@ class TestPostMetadata:
             f_data = f.read()
 
         payload = json.loads(f_data)
-        response = test_client.post(url, json=payload)
+        response = test_client.post(METADATA_URL, json=payload)
 
         assert fake_datetime.now.calls == [pretend.call()]
         assert response.status_code == status.HTTP_202_ACCEPTED
-        assert response.url == f"{test_client.base_url}{url}"
+        assert response.url == f"{test_client.base_url}{METADATA_URL}"
         assert response.json() == {
             "message": "Metadata update accepted.",
             "data": {"task_id": "123", "last_update": "2019-06-16T09:05:01"},
@@ -59,8 +61,6 @@ class TestPostMetadata:
         assert mocked_bootstrap_state.calls == [pretend.call()]
 
     def test_post_metadata_without_bootstrap(self, test_client, monkeypatch):
-        url = "/api/v1/metadata/"
-
         mocked_bootstrap_state = pretend.call_recorder(
             lambda *a: pretend.stub(bootstrap=False, state=None)
         )
@@ -74,10 +74,10 @@ class TestPostMetadata:
             f_data = f.read()
 
         payload = json.loads(f_data)
-        response = test_client.post(url, json=payload)
+        response = test_client.post(METADATA_URL, json=payload)
 
         assert response.status_code == status.HTTP_200_OK
-        assert response.url == f"{test_client.base_url}{url}"
+        assert response.url == f"{test_client.base_url}{METADATA_URL}"
         assert response.json() == {
             "detail": {
                 "message": "Task not accepted.",
@@ -89,8 +89,6 @@ class TestPostMetadata:
     def test_post_metadata_bootstrap_intermediate_state(
         self, test_client, monkeypatch
     ):
-        url = "/api/v1/metadata/"
-
         mocked_bootstrap_state = pretend.call_recorder(
             lambda *a: pretend.stub(bootstrap=False, state="signing")
         )
@@ -104,10 +102,10 @@ class TestPostMetadata:
             f_data = f.read()
 
         payload = json.loads(f_data)
-        response = test_client.post(url, json=payload)
+        response = test_client.post(METADATA_URL, json=payload)
 
         assert response.status_code == status.HTTP_200_OK
-        assert response.url == f"{test_client.base_url}{url}"
+        assert response.url == f"{test_client.base_url}{METADATA_URL}"
         assert response.json() == {
             "detail": {
                 "message": "Task not accepted.",
@@ -117,12 +115,10 @@ class TestPostMetadata:
         assert mocked_bootstrap_state.calls == [pretend.call()]
 
     def test_post_metadata_empty_payload(self, test_client):
-        url = "/api/v1/metadata/"
-
-        response = test_client.post(url, json={})
+        response = test_client.post(METADATA_URL, json={})
 
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
-        assert response.url == f"{test_client.base_url}{url}"
+        assert response.url == f"{test_client.base_url}{METADATA_URL}"
         assert response.json() == {
             "detail": [
                 {
@@ -134,10 +130,8 @@ class TestPostMetadata:
         }
 
     def test_post_payload_incorrect_md_format(self, test_client):
-        url = "/api/v1/metadata/"
-
         payload = {"metadata": {"timestamp": {}}}
-        response = test_client.post(url, json=payload)
+        response = test_client.post(METADATA_URL, json=payload)
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
         assert {
             "loc": ["body", "metadata", "__key__"],
@@ -149,8 +143,6 @@ class TestPostMetadata:
 
 class TestGetMetadataSign:
     def test_get_metadata_sign(self, test_client, monkeypatch):
-        url = "/api/v1/metadata/sign/"
-
         mocked_bootstrap_state = pretend.call_recorder(
             lambda *a: pretend.stub(bootstrap=True, state="signing")
         )
@@ -182,7 +174,7 @@ class TestGetMetadataSign:
             mocked_settings_repository,
         )
 
-        response = test_client.get(url)
+        response = test_client.get(SIGN_URL)
         assert response.status_code == status.HTTP_200_OK, response.text
         assert response.json() == {
             "data": {"metadata": {"root": metadata_data["metadata"]["root"]}},
@@ -199,8 +191,6 @@ class TestGetMetadataSign:
     def test_get_metadata_sign_with_trusted_root(
         self, test_client, monkeypatch
     ):
-        url = "/api/v1/metadata/sign/"
-
         mocked_bootstrap_state = pretend.call_recorder(
             lambda *a: pretend.stub(bootstrap=True, state="signing")
         )
@@ -241,7 +231,7 @@ class TestGetMetadataSign:
             mocked_settings_repository,
         )
 
-        response = test_client.get(url)
+        response = test_client.get(SIGN_URL)
         assert response.status_code == status.HTTP_200_OK, response.text
         assert response.json() == {
             "data": {
@@ -264,8 +254,6 @@ class TestGetMetadataSign:
     def test_get_metadata_sign_no_pending_roles(
         self, test_client, monkeypatch
     ):
-        url = "/api/v1/metadata/sign/"
-
         mocked_bootstrap_state = pretend.call_recorder(
             lambda *a: pretend.stub(bootstrap=True, state="signing")
         )
@@ -282,7 +270,7 @@ class TestGetMetadataSign:
             mocked_settings_repository,
         )
 
-        response = test_client.get(url)
+        response = test_client.get(SIGN_URL)
         assert response.status_code == status.HTTP_200_OK, response.text
         assert response.json() == {
             "message": "No metadata pending signing available",
@@ -291,8 +279,6 @@ class TestGetMetadataSign:
         assert mocked_settings_repository.reload.calls == [pretend.call()]
 
     def test_get_metadata_sign_no_bootstrap(self, test_client, monkeypatch):
-        url = "/api/v1/metadata/sign/"
-
         mocked_bootstrap_state = pretend.call_recorder(
             lambda *a: pretend.stub(bootstrap=False, state=None)
         )
@@ -300,7 +286,7 @@ class TestGetMetadataSign:
             "repository_service_tuf_api.metadata.bootstrap_state",
             mocked_bootstrap_state,
         )
-        response = test_client.get(url)
+        response = test_client.get(SIGN_URL)
 
         assert response.status_code == status.HTTP_200_OK, response.text
         assert response.json() == {
@@ -312,8 +298,6 @@ class TestGetMetadataSign:
         assert mocked_bootstrap_state.calls == [pretend.call()]
 
     def test_get_metadata_sign_bootstrap_pre(self, test_client, monkeypatch):
-        url = "/api/v1/metadata/sign/"
-
         mocked_bootstrap_state = pretend.call_recorder(
             lambda *a: pretend.stub(bootstrap=False, state="pre")
         )
@@ -321,7 +305,7 @@ class TestGetMetadataSign:
             "repository_service_tuf_api.metadata.bootstrap_state",
             mocked_bootstrap_state,
         )
-        response = test_client.get(url)
+        response = test_client.get(SIGN_URL)
 
         assert response.status_code == status.HTTP_200_OK, response.text
         assert response.json() == {
@@ -335,8 +319,6 @@ class TestGetMetadataSign:
 
 class TestPostMetadataSign:
     def test_post_metadata_sign(self, test_client, monkeypatch):
-        url = "/api/v1/metadata/sign/"
-
         mocked_bootstrap_state = pretend.call_recorder(
             lambda *a: pretend.stub(bootstrap=True, state="signing")
         )
@@ -364,7 +346,7 @@ class TestPostMetadataSign:
         )
         payload = {"role": "root", "signature": {"keyid": "k1", "sig": "s1"}}
 
-        response = test_client.post(url, json=payload)
+        response = test_client.post(SIGN_URL, json=payload)
         assert fake_datetime.now.calls == [pretend.call()]
         assert response.status_code == status.HTTP_202_ACCEPTED, response.text
         assert response.json() == {
@@ -391,8 +373,6 @@ class TestPostMetadataSign:
         ]
 
     def test_post_metadata_no_bootstrap(self, test_client, monkeypatch):
-        url = "/api/v1/metadata/sign/"
-
         mocked_bootstrap_state = pretend.call_recorder(
             lambda *a: pretend.stub(bootstrap=False, state=None)
         )
@@ -402,7 +382,7 @@ class TestPostMetadataSign:
         )
         payload = {"role": "root", "signature": {"keyid": "k1", "sig": "s1"}}
 
-        response = test_client.post(url, json=payload)
+        response = test_client.post(SIGN_URL, json=payload)
         assert response.status_code == status.HTTP_200_OK, response.text
         assert response.json() == {
             "detail": {
@@ -413,8 +393,6 @@ class TestPostMetadataSign:
         assert mocked_bootstrap_state.calls == [pretend.call()]
 
     def test_post_metadata_bootstrap_finished(self, test_client, monkeypatch):
-        url = "/api/v1/metadata/sign/"
-
         mocked_bootstrap_state = pretend.call_recorder(
             lambda *a: pretend.stub(bootstrap=False, state="finished")
         )
@@ -424,7 +402,7 @@ class TestPostMetadataSign:
         )
         payload = {"role": "root", "signature": {"keyid": "k1", "sig": "s1"}}
 
-        response = test_client.post(url, json=payload)
+        response = test_client.post(SIGN_URL, json=payload)
         assert response.status_code == status.HTTP_200_OK, response.text
         assert response.json() == {
             "detail": {
@@ -439,7 +417,6 @@ class TestPostMetadataSign:
 
 class TestPostMetadataSignDelete:
     def test_post_metadata_sign_delete(self, test_client, monkeypatch):
-        url = "/api/v1/metadata/sign/delete"
         mocked_settings_repository = pretend.stub(
             reload=pretend.call_recorder(lambda: None),
             get_fresh=pretend.call_recorder(lambda *a: "metadata"),
@@ -470,7 +447,7 @@ class TestPostMetadataSignDelete:
             "repository_service_tuf_api.metadata.datetime", fake_datetime
         )
 
-        response = test_client.post(url, json=payload)
+        response = test_client.post(DELETE_SIGN_URL, json=payload)
         assert fake_datetime.now.calls == [pretend.call()]
         assert response.status_code == status.HTTP_202_ACCEPTED, response.text
         assert response.json() == {
@@ -497,7 +474,6 @@ class TestPostMetadataSignDelete:
     def test_metadata_sign_delete_role_not_in_signing_status(
         self, test_client, monkeypatch
     ):
-        url = "/api/v1/metadata/sign/delete"
         mocked_settings_repository = pretend.stub(
             reload=pretend.call_recorder(lambda: None),
             get_fresh=pretend.call_recorder(lambda *a: None),
@@ -509,7 +485,7 @@ class TestPostMetadataSignDelete:
 
         payload = {"role": "root"}
 
-        response = test_client.post(url, json=payload)
+        response = test_client.post(DELETE_SIGN_URL, json=payload)
         assert response.status_code == status.HTTP_200_OK, response.text
         assert response.json() == {
             "detail": {

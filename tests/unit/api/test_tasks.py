@@ -6,11 +6,11 @@
 import pretend
 from fastapi import status
 
+TASK_URL = "/api/v1/task/"
+
 
 class TestGetTask:
     def test_get(self, test_client, monkeypatch):
-        url = "/api/v1/task/"
-
         mocked_task_result = pretend.stub(
             state="SUCCESS",
             result={
@@ -28,7 +28,7 @@ class TestGetTask:
             mocked_repository_metadata,
         )
 
-        test_response = test_client.get(f"{url}?task_id=test_id")
+        test_response = test_client.get(f"{TASK_URL}?task_id=test_id")
         assert test_response.status_code == status.HTTP_200_OK
         assert test_response.json() == {
             "data": {
@@ -48,8 +48,6 @@ class TestGetTask:
         ]
 
     def test_get_result_is_exception(self, test_client, monkeypatch):
-        url = "/api/v1/task/"
-
         mocked_task_result = pretend.stub(
             state="SUCCESS", result=ValueError("Failed to load")
         )
@@ -61,7 +59,7 @@ class TestGetTask:
             mocked_repository_metadata,
         )
 
-        test_response = test_client.get(f"{url}?task_id=test_id")
+        test_response = test_client.get(f"{TASK_URL}?task_id=test_id")
         assert test_response.status_code == status.HTTP_200_OK
         assert test_response.json() == {
             "data": {
