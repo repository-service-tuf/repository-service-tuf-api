@@ -9,10 +9,13 @@ from uuid import uuid4
 import pretend
 from fastapi import status
 
+ARTIFACTS_URL = "/api/v1/artifacts/"
+ARTIFACTS_DELETE_URL = "/api/v1/artifacts/delete"
+ARTIFACTS_POST_URL = "/api/v1/artifacts/publish/"
+
 
 class TestPostTargets:
     def test_post(self, monkeypatch, test_client):
-        url = "/api/v1/artifacts/"
         with open("tests/data_examples/targets/payload.json") as f:
             f_data = f.read()
 
@@ -44,7 +47,7 @@ class TestPostTargets:
         monkeypatch.setattr(
             "repository_service_tuf_api.targets.datetime", fake_datetime
         )
-        response = test_client.post(url, json=payload)
+        response = test_client.post(ARTIFACTS_URL, json=payload)
         assert response.status_code == status.HTTP_202_ACCEPTED
         assert response.json() == {
             "data": {
@@ -72,7 +75,6 @@ class TestPostTargets:
         ]
 
     def test_post_with_add_task_id_to_custom(self, monkeypatch, test_client):
-        url = "/api/v1/artifacts/"
         with open("tests/data_examples/targets/payload.json") as f:
             f_data = f.read()
 
@@ -108,7 +110,7 @@ class TestPostTargets:
         # enable to add task id to custom metadata field
         payload["add_task_id_to_custom"] = True
 
-        response = test_client.post(url, json=payload)
+        response = test_client.post(ARTIFACTS_URL, json=payload)
         assert response.status_code == status.HTTP_202_ACCEPTED
         assert response.json() == {
             "data": {
@@ -147,7 +149,6 @@ class TestPostTargets:
         ]
 
     def test_post_publish_targets_false(self, monkeypatch, test_client):
-        url = "/api/v1/artifacts/"
         with open("tests/data_examples/targets/payload.json") as f:
             f_data = f.read()
 
@@ -182,7 +183,7 @@ class TestPostTargets:
             "repository_service_tuf_api.targets.repository_metadata",
             mocked_repository_metadata,
         )
-        response = test_client.post(url, json=payload)
+        response = test_client.post(ARTIFACTS_URL, json=payload)
         assert response.status_code == status.HTTP_202_ACCEPTED
         msg = (
             "New Artifact(s) successfully submitted. "
@@ -210,7 +211,6 @@ class TestPostTargets:
         ]
 
     def test_post_without_bootstrap(self, monkeypatch, test_client):
-        url = "/api/v1/artifacts/"
         with open("tests/data_examples/targets/payload.json") as f:
             f_data = f.read()
 
@@ -224,7 +224,7 @@ class TestPostTargets:
 
         payload = json.loads(f_data)
 
-        response = test_client.post(url, json=payload)
+        response = test_client.post(ARTIFACTS_URL, json=payload)
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == {
             "detail": {
@@ -237,7 +237,6 @@ class TestPostTargets:
     def test_post_with_bootstrap_intermediate_state(
         self, monkeypatch, test_client
     ):
-        url = "/api/v1/artifacts/"
         with open("tests/data_examples/targets/payload.json") as f:
             f_data = f.read()
 
@@ -251,7 +250,7 @@ class TestPostTargets:
 
         payload = json.loads(f_data)
 
-        response = test_client.post(url, json=payload)
+        response = test_client.post(ARTIFACTS_URL, json=payload)
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == {
             "detail": {
@@ -262,7 +261,6 @@ class TestPostTargets:
         assert mocked_bootstrap_state.calls == [pretend.call()]
 
     def test_post_missing_required_field(self, test_client):
-        url = "/api/v1/artifacts/"
         payload = {
             "targets": [
                 {
@@ -274,14 +272,12 @@ class TestPostTargets:
             ]
         }
 
-        response = test_client.post(url, json=payload)
+        response = test_client.post(ARTIFACTS_URL, json=payload)
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
 
 class TestPostTargetsDelete:
     def test_post_delete(self, monkeypatch, test_client):
-        url = "/api/v1/artifacts/delete"
-
         payload = {
             "targets": ["file-v1.0.0_i683.tar.gz", "v0.4.1/file.tar.gz"],
         }
@@ -313,7 +309,7 @@ class TestPostTargetsDelete:
             "repository_service_tuf_api.targets.datetime", fake_datetime
         )
 
-        response = test_client.post(url, json=payload)
+        response = test_client.post(ARTIFACTS_DELETE_URL, json=payload)
 
         assert fake_datetime.now.calls == [pretend.call()]
         assert response.status_code == status.HTTP_202_ACCEPTED
@@ -339,8 +335,6 @@ class TestPostTargetsDelete:
         ]
 
     def test_post_publish_targets_delete_false(self, monkeypatch, test_client):
-        url = "/api/v1/artifacts/delete"
-
         payload = {
             "targets": ["file-v1.0.0_i683.tar.gz", "v0.4.1/file.tar.gz"],
             "publish_targets": False,
@@ -373,7 +367,7 @@ class TestPostTargetsDelete:
             "repository_service_tuf_api.targets.datetime", fake_datetime
         )
 
-        response = test_client.post(url, json=payload)
+        response = test_client.post(ARTIFACTS_DELETE_URL, json=payload)
 
         assert response.status_code == status.HTTP_202_ACCEPTED
         msg = (
@@ -402,8 +396,6 @@ class TestPostTargetsDelete:
         ]
 
     def test_post_without_bootstrap_delete(self, monkeypatch, test_client):
-        url = "/api/v1/artifacts/delete"
-
         payload = {
             "targets": ["file-v1.0.0_i683.tar.gz", "v0.4.1/file.tar.gz"]
         }
@@ -414,7 +406,7 @@ class TestPostTargetsDelete:
             "repository_service_tuf_api.targets.bootstrap_state",
             mocked_bootstrap_state,
         )
-        response = test_client.post(url, json=payload)
+        response = test_client.post(ARTIFACTS_DELETE_URL, json=payload)
 
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == {
@@ -428,8 +420,6 @@ class TestPostTargetsDelete:
     def test_post_with_bootstrap_intermediate_state_delete(
         self, monkeypatch, test_client
     ):
-        url = "/api/v1/artifacts/delete"
-
         payload = {
             "targets": ["file-v1.0.0_i683.tar.gz", "v0.4.1/file.tar.gz"]
         }
@@ -440,7 +430,7 @@ class TestPostTargetsDelete:
             "repository_service_tuf_api.targets.bootstrap_state",
             mocked_bootstrap_state,
         )
-        response = test_client.post(url, json=payload)
+        response = test_client.post(ARTIFACTS_DELETE_URL, json=payload)
 
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == {
@@ -451,19 +441,15 @@ class TestPostTargetsDelete:
         }
 
     def test_post_missing_required_field_delete(self, test_client):
-        url = "/api/v1/artifacts/delete"
-
         payload = {"paths": ["file-v1.0.0_i683.tar.gz", "v0.4.1/file.tar.gz"]}
 
-        response = test_client.post(url, json=payload)
+        response = test_client.post(ARTIFACTS_DELETE_URL, json=payload)
 
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
 
 class TestPostTargetsPublish:
     def test_post_publish(self, monkeypatch, test_client):
-        url = "/api/v1/artifacts/publish/"
-
         mocked_repository_metadata = pretend.stub(
             apply_async=pretend.call_recorder(lambda **kw: None)
         )
@@ -483,7 +469,7 @@ class TestPostTargetsPublish:
         monkeypatch.setattr(
             "repository_service_tuf_api.targets.datetime", fake_datetime
         )
-        response = test_client.post(url)
+        response = test_client.post(ARTIFACTS_POST_URL)
         assert response.status_code == status.HTTP_202_ACCEPTED
         assert response.json() == {
             "data": {

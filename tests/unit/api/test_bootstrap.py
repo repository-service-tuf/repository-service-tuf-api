@@ -9,10 +9,11 @@ import json
 import pretend
 from fastapi import status
 
+BOOTSTRAP_URL = "/api/v1/bootstrap/"
+
 
 class TestGetBootstrap:
     def test_get_bootstrap_available(self, test_client, monkeypatch):
-        url = "/api/v1/bootstrap/"
         mocked_bootstrap_state = pretend.call_recorder(
             lambda *a: pretend.stub(bootstrap=False, state=None, task_id=None)
         )
@@ -21,9 +22,9 @@ class TestGetBootstrap:
             mocked_bootstrap_state,
         )
 
-        response = test_client.get(url)
+        response = test_client.get(BOOTSTRAP_URL)
         assert response.status_code == status.HTTP_200_OK
-        assert response.url == f"{test_client.base_url}{url}"
+        assert response.url == f"{test_client.base_url}{BOOTSTRAP_URL}"
         assert response.json() == {
             "data": {"bootstrap": False},
             "message": "System available for bootstrap.",
@@ -31,8 +32,6 @@ class TestGetBootstrap:
         assert mocked_bootstrap_state.calls == [pretend.call()]
 
     def test_get_bootstrap_not_available(self, test_client, monkeypatch):
-        url = "/api/v1/bootstrap/"
-
         mocked_bootstrap_state = pretend.call_recorder(
             lambda *a: pretend.stub(
                 bootstrap=True, state="finished", task_id="task_id"
@@ -43,9 +42,9 @@ class TestGetBootstrap:
             mocked_bootstrap_state,
         )
 
-        response = test_client.get(url)
+        response = test_client.get(BOOTSTRAP_URL)
         assert response.status_code == status.HTTP_200_OK
-        assert response.url == f"{test_client.base_url}{url}"
+        assert response.url == f"{test_client.base_url}{BOOTSTRAP_URL}"
         assert response.json() == {
             "data": {"bootstrap": True, "state": "finished", "id": "task_id"},
             "message": "System LOCKED for bootstrap.",
@@ -55,8 +54,6 @@ class TestGetBootstrap:
     def test_get_bootstrap_already_bootstrap_in_pre(
         self, test_client, monkeypatch
     ):
-        url = "/api/v1/bootstrap/"
-
         mocked_bootstrap_state = pretend.call_recorder(
             lambda *a: pretend.stub(
                 bootstrap=False, state="pre", task_id="task_id"
@@ -67,9 +64,9 @@ class TestGetBootstrap:
             mocked_bootstrap_state,
         )
 
-        response = test_client.get(url)
+        response = test_client.get(BOOTSTRAP_URL)
         assert response.status_code == status.HTTP_200_OK
-        assert response.url == f"{test_client.base_url}{url}"
+        assert response.url == f"{test_client.base_url}{BOOTSTRAP_URL}"
         assert response.json() == {
             "data": {"bootstrap": False, "state": "pre", "id": "task_id"},
             "message": "System LOCKED for bootstrap.",
@@ -79,8 +76,6 @@ class TestGetBootstrap:
     def test_get_bootstrap_already_bootstrap_in_signing(
         self, test_client, monkeypatch
     ):
-        url = "/api/v1/bootstrap/"
-
         mocked_bootstrap_state = pretend.call_recorder(
             lambda *a: pretend.stub(
                 bootstrap=False, state="signing", task_id="task_id"
@@ -91,9 +86,9 @@ class TestGetBootstrap:
             mocked_bootstrap_state,
         )
 
-        response = test_client.get(url)
+        response = test_client.get(BOOTSTRAP_URL)
         assert response.status_code == status.HTTP_200_OK
-        assert response.url == f"{test_client.base_url}{url}"
+        assert response.url == f"{test_client.base_url}{BOOTSTRAP_URL}"
         assert response.json() == {
             "data": {"bootstrap": False, "state": "signing", "id": "task_id"},
             "message": "System LOCKED for bootstrap.",
@@ -103,8 +98,6 @@ class TestGetBootstrap:
 
 class TestPostBootstrap:
     def test_post_bootstrap(self, test_client, monkeypatch):
-        url = "/api/v1/bootstrap/"
-
         mocked_bootstrap_state = pretend.call_recorder(
             lambda *a: pretend.stub(
                 bootstrap=False, state="finished", task_id="task_id"
@@ -148,11 +141,11 @@ class TestPostBootstrap:
             f_data = f.read()
         payload = json.loads(f_data)
 
-        response = test_client.post(url, json=payload)
+        response = test_client.post(BOOTSTRAP_URL, json=payload)
 
         assert fake_datetime.now.calls == [pretend.call()]
         assert response.status_code == status.HTTP_202_ACCEPTED
-        assert response.url == f"{test_client.base_url}{url}"
+        assert response.url == f"{test_client.base_url}{BOOTSTRAP_URL}"
         assert response.json() == {
             "message": "Bootstrap accepted.",
             "data": {"task_id": "123", "last_update": "2019-06-16T09:05:01"},
@@ -163,8 +156,6 @@ class TestPostBootstrap:
         ]
 
     def test_post_bootstrap_custom_timeout(self, test_client, monkeypatch):
-        url = "/api/v1/bootstrap/"
-
         mocked_bootstrap_state = pretend.call_recorder(
             lambda *a: pretend.stub(
                 bootstrap=False, state="finished", task_id="task_id"
@@ -209,11 +200,11 @@ class TestPostBootstrap:
         payload = json.loads(f_data)
         payload["timeout"] = 600
 
-        response = test_client.post(url, json=payload)
+        response = test_client.post(BOOTSTRAP_URL, json=payload)
 
         assert fake_datetime.now.calls == [pretend.call()]
         assert response.status_code == status.HTTP_202_ACCEPTED
-        assert response.url == f"{test_client.base_url}{url}"
+        assert response.url == f"{test_client.base_url}{BOOTSTRAP_URL}"
         assert response.json() == {
             "message": "Bootstrap accepted.",
             "data": {"task_id": "123", "last_update": "2019-06-16T09:05:01"},
@@ -224,8 +215,6 @@ class TestPostBootstrap:
         ]
 
     def test_post_bootstrap_already_bootstrap(self, test_client, monkeypatch):
-        url = "/api/v1/bootstrap/"
-
         mocked_bootstrap_state = pretend.call_recorder(
             lambda *a: pretend.stub(
                 bootstrap=True, state="finished", task_id="task_id"
@@ -239,10 +228,10 @@ class TestPostBootstrap:
             f_data = f.read()
 
         payload = json.loads(f_data)
-        response = test_client.post(url, json=payload)
+        response = test_client.post(BOOTSTRAP_URL, json=payload)
 
         assert response.status_code == status.HTTP_200_OK
-        assert response.url == f"{test_client.base_url}{url}"
+        assert response.url == f"{test_client.base_url}{BOOTSTRAP_URL}"
         assert response.json() == {
             "detail": {
                 "error": "System already has a Metadata. State: finished"
@@ -253,8 +242,6 @@ class TestPostBootstrap:
     def test_post_bootstrap_already_bootstrap_in_pre(
         self, test_client, monkeypatch
     ):
-        url = "/api/v1/bootstrap/"
-
         mocked_bootstrap_state = pretend.call_recorder(
             lambda *a: pretend.stub(
                 bootstrap=False, state="pre", task_id="task_id"
@@ -268,10 +255,10 @@ class TestPostBootstrap:
             f_data = f.read()
 
         payload = json.loads(f_data)
-        response = test_client.post(url, json=payload)
+        response = test_client.post(BOOTSTRAP_URL, json=payload)
 
         assert response.status_code == status.HTTP_200_OK
-        assert response.url == f"{test_client.base_url}{url}"
+        assert response.url == f"{test_client.base_url}{BOOTSTRAP_URL}"
         assert response.json() == {
             "detail": {"error": "System already has a Metadata. State: pre"}
         }
@@ -280,8 +267,6 @@ class TestPostBootstrap:
     def test_post_bootstrap_already_bootstrap_in_signing(
         self, test_client, monkeypatch
     ):
-        url = "/api/v1/bootstrap/"
-
         mocked_bootstrap_state = pretend.call_recorder(
             lambda *a: pretend.stub(
                 bootstrap=False, state="signing", task_id="task_id"
@@ -295,10 +280,10 @@ class TestPostBootstrap:
             f_data = f.read()
 
         payload = json.loads(f_data)
-        response = test_client.post(url, json=payload)
+        response = test_client.post(BOOTSTRAP_URL, json=payload)
 
         assert response.status_code == status.HTTP_200_OK
-        assert response.url == f"{test_client.base_url}{url}"
+        assert response.url == f"{test_client.base_url}{BOOTSTRAP_URL}"
         assert response.json() == {
             "detail": {
                 "error": "System already has a Metadata. State: signing"
@@ -307,12 +292,10 @@ class TestPostBootstrap:
         assert mocked_bootstrap_state.calls == [pretend.call()]
 
     def test_post_bootstrap_empty_payload(self, test_client):
-        url = "/api/v1/bootstrap/"
-
-        response = test_client.post(url, json={})
+        response = test_client.post(BOOTSTRAP_URL, json={})
 
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
-        assert response.url == f"{test_client.base_url}{url}"
+        assert response.url == f"{test_client.base_url}{BOOTSTRAP_URL}"
         assert response.json() == {
             "detail": [
                 {
@@ -329,10 +312,8 @@ class TestPostBootstrap:
         }
 
     def test_post_payload_incorrect_md_format(self, test_client):
-        url = "/api/v1/bootstrap/"
-
         payload = {"settings": {}, "metadata": {"timestamp": {}}}
-        response = test_client.post(url, json=payload)
+        response = test_client.post(BOOTSTRAP_URL, json=payload)
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
         assert response.json() == {
             "detail": [
