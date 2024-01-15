@@ -89,7 +89,7 @@ def post_metadata(payload: MetadataPostPayload) -> MetadataPostResponse:
 
 
 class MetadataPutPayload(BaseModel):
-    roles: List[Roles.values()]
+    roles: List[Roles.online_roles_values()]
 
     class Config:
         example = {"roles": ["targets", "snapshot"]}
