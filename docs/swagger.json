@@ -148,7 +148,7 @@
                     "Metadata"
                 ],
                 "summary": "Force a new version of online metadata role(s).",
-                "description": "Force a new version of online metadata role(s). The new metadata version(s) will have extended expiration which will equal to: today + ROLE_NAME_EXPIRATION number of days, where ROLE_NAME_EXPIRATION is a tuf repository setting. Note: depending on which metadata role you want to update other online roles will likely be updated as well otherwise consistency will be lost.",
+                "description": "Force a new version of online metadata role(s). If the roles list is empty all roles will be updated. The new metadata version(s) will have extended expiration which will equal to: today + ROLE_NAME_EXPIRATION number of days, where ROLE_NAME_EXPIRATION is a tuf repository setting. Note: depending on which metadata role you want to update other online roles will likely be updated as well otherwise consistency will be lost.",
                 "operationId": "put_api_v1_metadata__put",
                 "requestBody": {
                     "content": {
@@ -1135,7 +1135,6 @@
                         "items": {
                             "type": "string",
                             "enum": [
-                                "root",
                                 "targets",
                                 "snapshot",
                                 "timestamp",

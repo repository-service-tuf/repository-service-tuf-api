@@ -10,6 +10,8 @@ from datetime import timezone
 import pretend
 from fastapi import status
 
+import repository_service_tuf_api.common_models as common_models
+
 METADATA_URL = "/api/v1/metadata/"
 SIGN_URL = "/api/v1/metadata/sign/"
 DELETE_SIGN_URL = "/api/v1/metadata/sign/delete"
@@ -211,6 +213,73 @@ class TestPutMetadata:
                 kwargs={
                     "action": "force_online_metadata_update",
                     "payload": payload,
+                },
+                task_id=fake_id,
+                queue="metadata_repository",
+                acks_late=True,
+            )
+        ]
+        assert fake_datetime.now.calls == [pretend.call()]
+
+    def test_put_metadata_empty_payload(self, test_client, monkeypatch):
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda: pretend.stub(bootstrap=True, state="ab123")
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.metadata.bootstrap_state",
+            mocked_bootstrap_state,
+        )
+        mocked_settings_repository = pretend.stub(
+            reload=pretend.call_recorder(lambda: None),
+            get_fresh=pretend.call_recorder(lambda a: True),
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.metadata.settings_repository",
+            mocked_settings_repository,
+        )
+        fake_id = "fake_id"
+        fake_get_task_id = pretend.call_recorder(lambda: fake_id)
+        monkeypatch.setattr(
+            "repository_service_tuf_api.metadata.get_task_id",
+            fake_get_task_id,
+        )
+        fake_repository_metadata = pretend.stub(
+            apply_async=pretend.call_recorder(lambda *a, **kw: None)
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.metadata.repository_metadata",
+            fake_repository_metadata,
+        )
+        fake_time = datetime.datetime(2019, 6, 16, 9, 5, 1)
+        fake_datetime = pretend.stub(
+            now=pretend.call_recorder(lambda: fake_time)
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.metadata.datetime", fake_datetime
+        )
+        payload = {"roles": []}
+
+        response = test_client.put(METADATA_URL, json=payload)
+        assert response.status_code == status.HTTP_202_ACCEPTED, response.text
+        assert response.json() == {
+            "data": {
+                "task_id": fake_id,
+                "last_update": "2019-06-16T09:05:01",
+            },
+            "message": "Force online metadata update accepted.",
+        }
+        assert mocked_bootstrap_state.calls == [pretend.call()]
+        assert mocked_settings_repository.reload.calls == [pretend.call()]
+        assert mocked_settings_repository.get_fresh.calls == [
+            pretend.call("TARGETS_ONLINE_KEY")
+        ]
+        assert fake_get_task_id.calls == [pretend.call()]
+        expected_payload = {"roles": common_models.Roles.online_roles_values()}
+        assert fake_repository_metadata.apply_async.calls == [
+            pretend.call(
+                kwargs={
+                    "action": "force_online_metadata_update",
+                    "payload": expected_payload,
                 },
                 task_id=fake_id,
                 queue="metadata_repository",
