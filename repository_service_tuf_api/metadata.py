@@ -138,6 +138,10 @@ def put_metadata(payload: MetadataPutPayload) -> MetadataPutResponse:
             },
         )
 
+    # If no roles are provided, then bump all.
+    if len(payload.roles) == 0:
+        payload.roles = Roles.online_roles_values()
+
     task_id = get_task_id()
     repository_metadata.apply_async(
         kwargs={
