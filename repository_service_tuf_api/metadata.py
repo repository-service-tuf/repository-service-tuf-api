@@ -126,6 +126,18 @@ def put_metadata(payload: MetadataPutPayload) -> MetadataPutResponse:
             },
         )
 
+    settings_repository.reload()
+    if not settings_repository.get_fresh("TARGETS_ONLINE_KEY"):
+        raise HTTPException(
+            status.HTTP_200_OK,
+            detail={
+                "message": "Task not accepted.",
+                "error": (
+                    "Targets is an offline role - use other endpoint to update"
+                ),
+            },
+        )
+
     task_id = get_task_id()
     repository_metadata.apply_async(
         kwargs={
