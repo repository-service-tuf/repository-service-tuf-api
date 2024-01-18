@@ -5,7 +5,7 @@
 
 import json
 from datetime import datetime, timezone
-from typing import Dict, Literal
+from typing import Dict, Literal, List
 
 from fastapi import HTTPException, status
 from pydantic import BaseModel, ConfigDict

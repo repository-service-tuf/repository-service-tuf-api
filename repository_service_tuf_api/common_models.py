@@ -8,6 +8,8 @@ from typing import Any, Dict, List, Literal, Optional
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from repository_service_tuf_api import settings_repository
+
 
 class Roles(Enum):
     ROOT = "root"
@@ -19,6 +21,15 @@ class Roles(Enum):
     @staticmethod
     def values() -> List[str]:
         return Literal["root", "targets", "snapshot", "timestamp", "bins"]
+
+    @staticmethod
+    def online_roles_values() -> List[str]:
+        online_roles = Literal["targets", "snapshot", "timestamp", "bins"]
+        settings_repository.reload()
+        if not settings_repository.get_fresh("TARGETS_ONLINE_KEY", True):
+            online_roles = Literal["snapshot", "timestamp", "bins"]
+
+        return online_roles
 
 
 class BaseErrorResponse(BaseModel):
