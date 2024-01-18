@@ -161,6 +161,14 @@ class TestPutMetadata:
             "repository_service_tuf_api.metadata.bootstrap_state",
             mocked_bootstrap_state,
         )
+        mocked_settings_repository = pretend.stub(
+            reload=pretend.call_recorder(lambda: None),
+            get_fresh=pretend.call_recorder(lambda a: True),
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.metadata.settings_repository",
+            mocked_settings_repository,
+        )
         fake_id = "fake_id"
         fake_get_task_id = pretend.call_recorder(lambda: fake_id)
         monkeypatch.setattr(
@@ -193,6 +201,10 @@ class TestPutMetadata:
             "message": "Force online metadata update accepted.",
         }
         assert mocked_bootstrap_state.calls == [pretend.call()]
+        assert mocked_settings_repository.reload.calls == [pretend.call()]
+        assert mocked_settings_repository.get_fresh.calls == [
+            pretend.call("TARGETS_ONLINE_KEY")
+        ]
         assert fake_get_task_id.calls == [pretend.call()]
         assert fake_repository_metadata.apply_async.calls == [
             pretend.call(
@@ -226,6 +238,41 @@ class TestPutMetadata:
             },
         }
         assert mocked_bootstrap_state.calls == [pretend.call()]
+
+    def test_put_metadata_targets_offline_role_cannot_update(
+        self, test_client, monkeypatch
+    ):
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda: pretend.stub(bootstrap=True, state="ab123")
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.metadata.bootstrap_state",
+            mocked_bootstrap_state,
+        )
+        mocked_settings_repository = pretend.stub(
+            reload=pretend.call_recorder(lambda: None),
+            get_fresh=pretend.call_recorder(lambda a: False),
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.metadata.settings_repository",
+            mocked_settings_repository,
+        )
+        payload = {"roles": ["snapshot", "targets"]}
+
+        response = test_client.put(METADATA_URL, json=payload)
+        assert response.status_code == status.HTTP_200_OK, response.text
+        err_msg = "Targets is an offline role - use other endpoint to update"
+        assert response.json() == {
+            "detail": {
+                "message": "Task not accepted.",
+                "error": err_msg,
+            },
+        }
+        assert mocked_bootstrap_state.calls == [pretend.call()]
+        assert mocked_settings_repository.reload.calls == [pretend.call()]
+        assert mocked_settings_repository.get_fresh.calls == [
+            pretend.call("TARGETS_ONLINE_KEY")
+        ]
 
 
 class TestGetMetadataSign:
