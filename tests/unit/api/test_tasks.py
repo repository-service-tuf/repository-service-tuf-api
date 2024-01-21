@@ -116,3 +116,63 @@ class TestGetTask:
         assert mocked_repository_metadata.AsyncResult.calls == [
             pretend.call("test_id")
         ]
+
+    def test_get_result_success_with_empty_result(
+        self, test_client, monkeypatch
+    ):
+        mocked_task_result = pretend.stub(
+            state="SUCCESS",
+            result={},
+        )
+        mocked_repository_metadata = pretend.stub(
+            AsyncResult=pretend.call_recorder(lambda t: mocked_task_result)
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.tasks.repository_metadata",
+            mocked_repository_metadata,
+        )
+
+        test_response = test_client.get(f"{TASK_URL}?task_id=test_id")
+        assert test_response.status_code == status.HTTP_200_OK
+
+        assert test_response.json() == {
+            "data": {
+                "task_id": "test_id",
+                "state": "ERRORED",
+                "result": {},
+            },
+            "message": "Task state.",
+        }
+        assert mocked_repository_metadata.AsyncResult.calls == [
+            pretend.call("test_id")
+        ]
+
+    def test_get_result_failure_with_empty_result(
+        self, test_client, monkeypatch
+    ):
+        mocked_task_result = pretend.stub(
+            state="FAILURE",
+            result={},
+        )
+        mocked_repository_metadata = pretend.stub(
+            AsyncResult=pretend.call_recorder(lambda t: mocked_task_result)
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.tasks.repository_metadata",
+            mocked_repository_metadata,
+        )
+
+        test_response = test_client.get(f"{TASK_URL}?task_id=test_id")
+        assert test_response.status_code == status.HTTP_200_OK
+
+        assert test_response.json() == {
+            "data": {
+                "task_id": "test_id",
+                "state": "FAILURE",
+                "result": {},
+            },
+            "message": "Task state.",
+        }
+        assert mocked_repository_metadata.AsyncResult.calls == [
+            pretend.call("test_id")
+        ]
