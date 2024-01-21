@@ -17,6 +17,8 @@ class TestGetTask:
                 "status": True,
                 "task": "add_targets",
                 "last_update": "2023-11-17T09:54:15.762882",
+                "message": None,
+                "error": None,
                 "details": {"message": "Target(s) Added"},
             },
         )
@@ -80,7 +82,9 @@ class TestGetTask:
                 "status": False,
                 "task": "sign_metadata",
                 "last_update": "2023-11-17T09:54:15.762882",
-                "details": {"message": "Signature Failed"},
+                "message": "Signature Failed",
+                "error": "No signatures pending for root",
+                "details": {},
             },
         )
         mocked_repository_metadata = pretend.stub(
@@ -102,7 +106,9 @@ class TestGetTask:
                     "status": False,
                     "task": "sign_metadata",
                     "last_update": "2023-11-17T09:54:15.762882",
-                    "details": {"message": "Signature Failed"},
+                    "message": "Signature Failed",
+                    "error": "No signatures pending for root",
+                    "details": {},
                 },
             },
             "message": "Task state.",
