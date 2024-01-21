@@ -128,7 +128,9 @@ def get(task_id: str) -> Response:
 
     if isinstance(task.result, Exception):
         task_result = str(task.result)
-    elif task_state == TaskState.SUCCESS and not task_result["status"]:
+    elif task_state == TaskState.SUCCESS and not task_result.get(
+        "status", False
+    ):
         task_state = TaskState.ERRORED
 
     return Response(
