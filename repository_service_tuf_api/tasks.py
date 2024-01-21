@@ -23,6 +23,7 @@ class TaskState(str, enum.Enum):
     REJECTED = states.REJECTED
     RETRY = states.RETRY
     IGNORED = states.IGNORED
+    ERRORED = "ERRORED"
     RUNNING = "RUNNING"  # custom state used when a task is RUNNING in RSTUF
 
 
@@ -72,6 +73,7 @@ class TasksData(BaseModel):
             "`RUNNING`: Task is running.\n\n"
             "`SUCCESS`: Task succeeded.\n\n"
             "`FAILURE`: Task failed.\n\n"
+            "`ERRORED`: Task errored.\n\n"
             "`REVOKED`: Task revoked.\n\n"
             "`REJECTED`: Task was rejected (only used in events).\n\n"
         )
@@ -120,12 +122,16 @@ def get(task_id: str) -> Response:
         ``Response`` as BaseModel from pydantic
     """
     task = repository_metadata.AsyncResult(task_id)
+
+    task_state = task.state
+    task_result = task.result
+
     if isinstance(task.result, Exception):
         task_result = str(task.result)
-    else:
-        task_result = task.result
+    elif task_state == TaskState.SUCCESS and not task_result["status"]:
+        task_state = TaskState.ERRORED
 
     return Response(
-        data=TasksData(task_id=task_id, state=task.state, result=task_result),
+        data=TasksData(task_id=task_id, state=task_state, result=task_result),
         message="Task state.",
     )

@@ -72,3 +72,41 @@ class TestGetTask:
         assert mocked_repository_metadata.AsyncResult.calls == [
             pretend.call("test_id")
         ]
+
+    def test_get_result_is_errored(self, test_client, monkeypatch):
+        mocked_task_result = pretend.stub(
+            state="SUCCESS",
+            result={
+                "status": False,
+                "task": "sign_metadata",
+                "last_update": "2023-11-17T09:54:15.762882",
+                "details": {"message": "Signature Failed"},
+            },
+        )
+        mocked_repository_metadata = pretend.stub(
+            AsyncResult=pretend.call_recorder(lambda t: mocked_task_result)
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.tasks.repository_metadata",
+            mocked_repository_metadata,
+        )
+
+        test_response = test_client.get(f"{TASK_URL}?task_id=test_id")
+        assert test_response.status_code == status.HTTP_200_OK
+
+        assert test_response.json() == {
+            "data": {
+                "task_id": "test_id",
+                "state": "ERRORED",
+                "result": {
+                    "status": False,
+                    "task": "sign_metadata",
+                    "last_update": "2023-11-17T09:54:15.762882",
+                    "details": {"message": "Signature Failed"},
+                },
+            },
+            "message": "Task state.",
+        }
+        assert mocked_repository_metadata.AsyncResult.calls == [
+            pretend.call("test_id")
+        ]
