@@ -52,10 +52,7 @@ class TUFSignedDelegationsRoles(BaseModel):
 
 
 class TUFSignedDelegationsSuccinctRoles(BaseModel):
-    # We cannot add the limit range
-    # https://github.com/tiangolo/fastapi/discussions/9140
-    # bit_length: int = Field(gt=0, lt=15)
-    bit_length: int
+    bit_length: int = Field(gt=0, lt=15)
     name_prefix: str
     keyids: List[str]
     threshold: int
