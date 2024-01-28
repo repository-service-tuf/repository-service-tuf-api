@@ -17,9 +17,9 @@ class TestGetTask:
                 "status": True,
                 "task": "add_targets",
                 "last_update": "2023-11-17T09:54:15.762882",
-                "message": None,
+                "message": "Target(s) Added",
                 "error": None,
-                "details": {"message": "Target(s) Added"},
+                "details": {},
             },
         )
         mocked_repository_metadata = pretend.stub(
@@ -40,7 +40,8 @@ class TestGetTask:
                     "status": True,
                     "task": "add_targets",
                     "last_update": "2023-11-17T09:54:15.762882",
-                    "details": {"message": "Target(s) Added"},
+                    "message": "Target(s) Added",
+                    "details": {},
                 },
             },
             "message": "Task state.",
