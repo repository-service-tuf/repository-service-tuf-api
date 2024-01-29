@@ -1528,8 +1528,9 @@
                         "title": "Error",
                         "description": "If the task status result is `False` shows an error message"
                     },
-                    "any": {
-                        "title": "Any",
+                    "details": {
+                        "type": "object",
+                        "title": "Details",
                         "description": "Any releavant information from task"
                     }
                 },
@@ -1625,7 +1626,7 @@
                                 "$ref": "#/components/schemas/TaskState"
                             }
                         ],
-                        "description": "The Celery task state. Note: It isn't the task result status.\n\n`PENDING`: Task state is unknown (assumed pending since you know the id).\n\n`RECEIVED`: Task received by a worker (only used in events).\n\n`STARTED`: Task started by a worker.\n\n`RUNNING`: Task is running.\n\n`SUCCESS`: Task succeeded.\n\n`FAILURE`: Task failed.\n\n`ERRORED`: Task errored.\n\n`REVOKED`: Task revoked.\n\n`REJECTED`: Task was rejected (only used in events).\n\n"
+                        "description": "The Celery task state. Note: It isn't the task result status.\n\n`PENDING`: Task state is unknown (assumed pending since you know the id).\n\n`RECEIVED`: Task received by a worker (only used in events).\n\n`STARTED`: Task started by a worker.\n\n`RUNNING`: Task is running.\n\n`SUCCESS`: Task succeeded.\n\n`FAILURE`: Task failed.\n\n`ERRORED`: Task errored. RSTUF identified an error while processing the task.\n\n`REVOKED`: Task revoked.\n\n`REJECTED`: Task was rejected (only used in events).\n\n"
                     },
                     "result": {
                         "anyOf": [
@@ -1837,11 +1838,17 @@
                         "task_id": "33e66671dcc84cdfa2535a1eb030104c",
                         "state": "SUCCESS",
                         "result": {
-                            "status": true,
                             "task": "add_targets",
+                            "status": true,
                             "last_update": "2023-11-17T09:54:15.762882",
+                            "message": "Target(s) Added",
                             "details": {
-                                "message": "Target(s) Added"
+                                "targets": [
+                                    "file1.tar.gz"
+                                ],
+                                "target_roles": [
+                                    "bins-3"
+                                ]
                             }
                         }
                     },

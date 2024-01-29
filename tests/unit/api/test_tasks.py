@@ -19,7 +19,14 @@ class TestGetTask:
                 "last_update": "2023-11-17T09:54:15.762882",
                 "message": "Target(s) Added",
                 "error": None,
-                "details": {},
+                "details": {
+                    "targets": [
+                        "file1.tar.gz",
+                        "file2.tar.gz",
+                        "file3.tar.gz",
+                    ],
+                    "target_roles": ["bins-3", "bins-2"],
+                },
             },
         )
         mocked_repository_metadata = pretend.stub(
@@ -41,7 +48,14 @@ class TestGetTask:
                     "task": "add_targets",
                     "last_update": "2023-11-17T09:54:15.762882",
                     "message": "Target(s) Added",
-                    "details": {},
+                    "details": {
+                        "targets": [
+                            "file1.tar.gz",
+                            "file2.tar.gz",
+                            "file3.tar.gz",
+                        ],
+                        "target_roles": ["bins-3", "bins-2"],
+                    },
                 },
             },
             "message": "Task state.",
@@ -68,7 +82,7 @@ class TestGetTask:
             "data": {
                 "task_id": "test_id",
                 "state": "SUCCESS",
-                "result": "Failed to load",
+                "result": {"message": "Failed to load"},
             },
             "message": "Task state.",
         }
@@ -85,7 +99,7 @@ class TestGetTask:
                 "last_update": "2023-11-17T09:54:15.762882",
                 "message": "Signature Failed",
                 "error": "No signatures pending for root",
-                "details": {},
+                "details": None,
             },
         )
         mocked_repository_metadata = pretend.stub(
@@ -109,7 +123,6 @@ class TestGetTask:
                     "last_update": "2023-11-17T09:54:15.762882",
                     "message": "Signature Failed",
                     "error": "No signatures pending for root",
-                    "details": {},
                 },
             },
             "message": "Task state.",
