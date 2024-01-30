@@ -5,7 +5,7 @@
 
 import enum
 from datetime import datetime
-from typing import Any, Optional, Union
+from typing import Any, Dict, Optional, Union
 
 from celery import states
 from pydantic import BaseModel, Field
@@ -23,6 +23,7 @@ class TaskState(str, enum.Enum):
     REJECTED = states.REJECTED
     RETRY = states.RETRY
     IGNORED = states.IGNORED
+    ERRORED = "ERRORED"
     RUNNING = "RUNNING"  # custom state used when a task is RUNNING in RSTUF
 
 
@@ -48,7 +49,9 @@ class TaskDetails(BaseModel):
             "If the task status result is `False` shows an error message"
         )
     )
-    any: Any = Field(description="Any releavant information from task")
+    details: Optional[Dict[str, Any]] = Field(
+        description="Any releavant information from task"
+    )
 
 
 class TaskResult(BaseModel):
@@ -72,6 +75,8 @@ class TasksData(BaseModel):
             "`RUNNING`: Task is running.\n\n"
             "`SUCCESS`: Task succeeded.\n\n"
             "`FAILURE`: Task failed.\n\n"
+            "`ERRORED`: Task errored. RSTUF identified an error while "
+            "processing the task.\n\n"
             "`REVOKED`: Task revoked.\n\n"
             "`REJECTED`: Task was rejected (only used in events).\n\n"
         )
@@ -93,10 +98,14 @@ class Response(BaseModel):
                 "task_id": "33e66671dcc84cdfa2535a1eb030104c",
                 "state": TaskState.SUCCESS,
                 "result": {
-                    "status": True,
                     "task": TaskName.ADD_TARGETS,
+                    "status": True,
                     "last_update": "2023-11-17T09:54:15.762882",
-                    "details": {"message": "Target(s) Added"},
+                    "message": "Target(s) Added",
+                    "details": {
+                        "targets": ["file1.tar.gz"],
+                        "target_roles": ["bins-3"],
+                    },
                 },
             },
             "message": "Task state.",
@@ -120,12 +129,18 @@ def get(task_id: str) -> Response:
         ``Response`` as BaseModel from pydantic
     """
     task = repository_metadata.AsyncResult(task_id)
+
+    task_state = task.state
+    task_result = task.result
+
     if isinstance(task.result, Exception):
-        task_result = str(task.result)
-    else:
-        task_result = task.result
+        task_result = {"message": str(task.result)}
+    elif task_state == TaskState.SUCCESS and not task_result.get(
+        "status", False
+    ):
+        task_state = TaskState.ERRORED
 
     return Response(
-        data=TasksData(task_id=task_id, state=task.state, result=task_result),
+        data=TasksData(task_id=task_id, state=task_state, result=task_result),
         message="Task state.",
     )
