@@ -1516,30 +1516,6 @@
                 ],
                 "title": "TargetsInfo"
             },
-            "TaskDetails": {
-                "properties": {
-                    "message": {
-                        "type": "string",
-                        "title": "Message",
-                        "description": "Result detail description"
-                    },
-                    "error": {
-                        "type": "string",
-                        "title": "Error",
-                        "description": "If the task status result is `False` shows an error message"
-                    },
-                    "details": {
-                        "type": "object",
-                        "title": "Details",
-                        "description": "Any releavant information from task"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "message"
-                ],
-                "title": "TaskDetails"
-            },
             "TaskName": {
                 "type": "string",
                 "enum": [
@@ -1557,6 +1533,16 @@
             },
             "TaskResult": {
                 "properties": {
+                    "message": {
+                        "type": "string",
+                        "title": "Message",
+                        "description": "Result detail description"
+                    },
+                    "error": {
+                        "type": "string",
+                        "title": "Error",
+                        "description": "If the task status result is `False` shows an error message"
+                    },
                     "status": {
                         "type": "boolean",
                         "title": "Status",
@@ -1577,21 +1563,14 @@
                         "description": "Last time task was updated"
                     },
                     "details": {
-                        "allOf": [
-                            {
-                                "$ref": "#/components/schemas/TaskDetails"
-                            }
-                        ],
+                        "type": "object",
                         "title": "Details",
                         "description": "Relevant result details"
                     }
                 },
                 "type": "object",
                 "required": [
-                    "status",
-                    "task",
-                    "last_update",
-                    "details"
+                    "message"
                 ],
                 "title": "TaskResult"
             },
@@ -1629,14 +1608,13 @@
                         "description": "The Celery task state. Note: It isn't the task result status.\n\n`PENDING`: Task state is unknown (assumed pending since you know the id).\n\n`RECEIVED`: Task received by a worker (only used in events).\n\n`STARTED`: Task started by a worker.\n\n`RUNNING`: Task is running.\n\n`SUCCESS`: Task succeeded.\n\n`FAILURE`: Task failed.\n\n`ERRORED`: Task errored. RSTUF identified an error while processing the task.\n\n`REVOKED`: Task revoked.\n\n`REJECTED`: Task was rejected (only used in events).\n\n"
                     },
                     "result": {
-                        "anyOf": [
-                            {},
+                        "allOf": [
                             {
                                 "$ref": "#/components/schemas/TaskResult"
                             }
                         ],
                         "title": "Result",
-                        "description": "Task result details (state `SUCCESS` uses schema `TaskResult)"
+                        "description": "Task result if available."
                     }
                 },
                 "type": "object",

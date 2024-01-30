@@ -5,7 +5,7 @@
 
 import enum
 from datetime import datetime
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, Optional
 
 from celery import states
 from pydantic import BaseModel, Field
@@ -42,25 +42,23 @@ class GetParameters(BaseModel):
     task_id: str
 
 
-class TaskDetails(BaseModel):
+class TaskResult(BaseModel):
     message: str = Field(description="Result detail description")
     error: Optional[str] = Field(
         description=(
             "If the task status result is `False` shows an error message"
         )
     )
-    details: Optional[Dict[str, Any]] = Field(
-        description="Any releavant information from task"
-    )
-
-
-class TaskResult(BaseModel):
-    status: bool = Field(
+    status: Optional[bool] = Field(
         description="Task result status. `True` Success | `False` Failure"
     )
-    task: TaskName = Field(description="Task name by worker")
-    last_update: datetime = Field(description="Last time task was updated")
-    details: TaskDetails = Field(description="Relevant result details")
+    task: Optional[TaskName] = Field(description="Task name by worker")
+    last_update: Optional[datetime] = Field(
+        description="Last time task was updated"
+    )
+    details: Optional[Dict[str, Any]] = Field(
+        description="Relevant result details"
+    )
 
 
 class TasksData(BaseModel):
@@ -81,10 +79,8 @@ class TasksData(BaseModel):
             "`REJECTED`: Task was rejected (only used in events).\n\n"
         )
     )
-    result: Optional[Union[Any, TaskResult]] = Field(
-        description=(
-            "Task result details (state `SUCCESS` uses schema `TaskResult)"
-        )
+    result: Optional[TaskResult] = Field(
+        description=("Task result if available.")
     )
 
 
@@ -133,9 +129,24 @@ def get(task_id: str) -> Response:
     task_state = task.state
     task_result = task.result
 
+    # Celery FAILURE task, we include the task result (exception) as an error
+    # and default message as critical failure executing the task.
     if isinstance(task.result, Exception):
-        task_result = {"message": str(task.result)}
-    elif task_state == TaskState.SUCCESS and not task_result.get(
+        task_result = {
+            "message": "Critical failure executing the task.",
+            "error": str(task.result),
+            "status": False,
+        }
+
+    # There are Celery states without result (i.e. PENDING, RECEIVED, STARTED)
+    # In RSTUF Worker the 'message' key is mandatory, but in case of it still
+    # return a task result without a message we considere it an errored task
+    if task_result is None or task_result.get("message") is None:
+        task_result = {"status": False, "message": "No message available."}
+
+    # If the task state is SUCCESS and the task result is False we considere
+    # it an errored task.
+    if task_state == TaskState.SUCCESS and not task_result.get(
         "status", False
     ):
         task_state = TaskState.ERRORED
