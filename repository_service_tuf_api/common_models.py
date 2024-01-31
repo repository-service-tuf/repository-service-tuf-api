@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2023 Repository Service for TUF Contributors
+# SPDX-FileCopyrightText: 2023-2024 Repository Service for TUF Contributors
 # SPDX-FileCopyrightText: 2022-2023 VMware Inc
 #
 # SPDX-License-Identifier: MIT
@@ -6,7 +6,7 @@
 from enum import Enum
 from typing import Any, Dict, List, Literal, Optional
 
-from pydantic import BaseModel, ConfigDict, Extra, Field, root_validator
+from pydantic import BaseModel, Extra, Field, root_validator
 
 
 class Roles(Enum):
@@ -86,13 +86,9 @@ class TUFSigned(BaseModel):
 
     class Config:
         fields = {"type": "_type"}
+        # allow extra unrecognized fields (but it will be validated)
         # https://docs.pydantic.dev/latest/api/config/#pydantic.config.ConfigDict.extra
-        model_config = ConfigDict(
-            extra="allow",
-        )
-        extra = (
-            Extra.allow
-        )  # allow extra unrecognized fields (but it will be validated)
+        extra = Extra.allow
 
     # Custom Validator for the extra fields (TUF unrecognized_fields)
     @root_validator(pre=True)
@@ -100,9 +96,7 @@ class TUFSigned(BaseModel):
         cls, values: Dict[str, Any]
     ) -> Dict[str, Any]:
         all_required_field_names = {
-            field.alias
-            for field in cls.__fields__.values()
-            if field.alias != "extra"  # to support alias
+            field.alias for field in cls.__fields__.values()
         }
 
         for field_name in list(values):
