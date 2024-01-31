@@ -4,9 +4,9 @@
 # SPDX-License-Identifier: MIT
 
 from enum import Enum
-from typing import Dict, List, Literal, Optional
+from typing import Any, Dict, List, Literal, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Extra, Field, root_validator
 
 
 class Roles(Enum):
@@ -86,6 +86,36 @@ class TUFSigned(BaseModel):
 
     class Config:
         fields = {"type": "_type"}
+        # https://docs.pydantic.dev/latest/api/config/#pydantic.config.ConfigDict.extra
+        model_config = ConfigDict(
+            extra="allow",
+        )
+        extra = (
+            Extra.allow
+        )  # allow extra unrecognized fields (but it will be validated)
+
+    # Custom Validator for the extra fields (TUF unrecognized_fields)
+    @root_validator(pre=True)
+    def validate_unrecognized_fields(
+        cls, values: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        all_required_field_names = {
+            field.alias
+            for field in cls.__fields__.values()
+            if field.alias != "extra"  # to support alias
+        }
+
+        for field_name in list(values):
+            if field_name not in all_required_field_names:
+                if (
+                    not field_name.startswith("x")
+                    or len(field_name.split("-")) < 3
+                ):
+                    raise ValueError(
+                        f"Invalid: `{field_name}` field name, "
+                        "unrecognized_field must use format x-<vendor>-<name>"
+                    )
+        return values
 
 
 class TUFSignatures(BaseModel):
