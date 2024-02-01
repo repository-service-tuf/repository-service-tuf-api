@@ -87,7 +87,7 @@ class TUFSigned(BaseModel):
     class Config:
         fields = {"type": "_type"}
         # allow extra unrecognized fields (but it will be validated)
-        # https://docs.pydantic.dev/latest/api/config/#pydantic.config.ConfigDict.extra
+        # https://docs.pydantic.dev/1.10/usage/model_config/#options
         extra = Extra.allow
 
     # Custom Validator for the extra fields (TUF unrecognized_fields)
