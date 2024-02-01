@@ -1605,7 +1605,7 @@
                                 "$ref": "#/components/schemas/TaskState"
                             }
                         ],
-                        "description": "The Celery task state. Note: It isn't the task result status.\n\n`PENDING`: Task state is unknown (assumed pending since you know the id).\n\n`RECEIVED`: Task received by a worker (only used in events).\n\n`STARTED`: Task started by a worker.\n\n`RUNNING`: Task is running.\n\n`SUCCESS`: Task succeeded.\n\n`FAILURE`: Task failed.\n\n`ERRORED`: Task errored. RSTUF identified an error while processing the task.\n\n`REVOKED`: Task revoked.\n\n`REJECTED`: Task was rejected (only used in events).\n\n"
+                        "description": "The Celery task state. Note: It isn't the task result status.\n\n`PENDING`: Task state is unknown (assumed pending since you know the id).\n\n`RECEIVED`: Task received by a RSTUF Eorker (only used in events).\n\n`SUCCESS`: Task succeeded.\n\n`STARTED`: Task started by a RSTUF Worker.\n\n`RUNNING`: Task is running on RSTUF Worker.\n\n`FAILURE`: Task failed (unexpected).\n\n`REVOKED`: Task revoked.\n\n`RETRY`: Task is waiting for retry.\n\n`ERRORED`: Task errored. RSTUF identified an error while processing the task.\n\n`REJECTED`: Task was rejected (only used in events).\n\n`IGNORED`: Task was ignored."
                     },
                     "result": {
                         "allOf": [
