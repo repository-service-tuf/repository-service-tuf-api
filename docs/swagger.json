@@ -425,13 +425,13 @@
                 "operationId": "get_api_v1_task__get",
                 "parameters": [
                     {
+                        "name": "task_id",
+                        "in": "query",
                         "required": true,
                         "schema": {
                             "type": "string",
                             "title": "Task Id"
-                        },
-                        "name": "task_id",
-                        "in": "query"
+                        }
                     }
                 ],
                 "responses": {
@@ -491,47 +491,19 @@
                     "targets"
                 ],
                 "title": "AddPayload",
-                "description": "POST method required Payload.",
-                "example": {
-                    "targets": [
-                        {
-                            "info": {
-                                "length": 11342,
-                                "hashes": {
-                                    "blake2b-256": "716f6e863f744b9ac22c97ec7b76ea5f5908bc5b2f67c61510bfc4751384ea7a"
-                                },
-                                "custom": {
-                                    "key": "value"
-                                }
-                            },
-                            "path": "file1.tar.gz"
-                        },
-                        {
-                            "info": {
-                                "length": 630,
-                                "hashes": {
-                                    "blake2b-256": "69217a3079908094e11121d042354a7c1f55b6482ca1a51e1b250dfd1ed0eef9"
-                                }
-                            },
-                            "path": "file2.tar.gz"
-                        },
-                        {
-                            "info": {
-                                "length": 39,
-                                "hashes": {
-                                    "sha256": "452ce8308500d83ef44248d8e6062359211992fd837ea9e370e561efb1a4ca99",
-                                    "sha512": "052b49a21e03606b28942db69aa597530fe52d47ee3d748ba65afcd14b857738e36bc1714c4f4adde46c3e683548552fe5c96722e0e0da3acd9050c2524902d8"
-                                }
-                            },
-                            "path": "file3.tar.gz"
-                        }
-                    ]
-                }
+                "description": "POST method required Payload."
             },
             "BootstrapGetResponse": {
                 "properties": {
                     "data": {
-                        "$ref": "#/components/schemas/GetData"
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/GetData"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
                     },
                     "message": {
                         "type": "string",
@@ -540,15 +512,10 @@
                 },
                 "type": "object",
                 "required": [
+                    "data",
                     "message"
                 ],
-                "title": "BootstrapGetResponse",
-                "example": {
-                    "data": {
-                        "bootstrap": false
-                    },
-                    "message": "System available for bootstrap."
-                }
+                "title": "BootstrapGetResponse"
             },
             "BootstrapPayload": {
                 "properties": {
@@ -557,13 +524,20 @@
                     },
                     "metadata": {
                         "additionalProperties": {
-                            "$ref": "#/components/schemas/TUFMetadata"
+                            "$ref": "#/components/schemas/TUFMetadata-Input"
                         },
                         "type": "object",
                         "title": "Metadata"
                     },
                     "timeout": {
-                        "type": "integer",
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
                         "title": "Timeout",
                         "default": 300
                     }
@@ -573,99 +547,19 @@
                     "settings",
                     "metadata"
                 ],
-                "title": "BootstrapPayload",
-                "example": {
-                    "settings": {
-                        "expiration": {
-                            "root": 365,
-                            "targets": 365,
-                            "snapshot": 1,
-                            "timestamp": 1,
-                            "bins": 1
-                        },
-                        "services": {
-                            "targets_base_url": "http://www.example.com/repository/",
-                            "number_of_delegated_bins": 4,
-                            "targets_online_key": true
-                        }
-                    },
-                    "metadata": {
-                        "root": {
-                            "signatures": [
-                                {
-                                    "keyid": "1cebe343e35f0213f6136758e6c3a8f8e1f9eeb7e47a07d5cb336462ed31dcb7",
-                                    "sig": "b3c81b6579442b8672ff460ac36cdb51064109fcfa93f0e72dabbf338f7d0c24e1a91d3696d72d81f60e94b2782ab1bf41e6b8f3e535538216f4379bf30a4302"
-                                },
-                                {
-                                    "keyid": "800dfb5a1982b82b7893e58035e19f414f553fc08cbb1130cfbae302a7b7fee5",
-                                    "sig": "fdfbb1877da404504e8b9c111d87680df5291094dafa01f66bfe6031e470d7c63cc477c1e79210a89e27734758e54fb54adc529918b1211d9dd9971c8bb26c0a"
-                                }
-                            ],
-                            "signed": {
-                                "_type": "root",
-                                "version": 1,
-                                "spec_version": "1.0.30",
-                                "expires": "2024-02-17T10:55:28Z",
-                                "consistent_snapshot": true,
-                                "keys": {
-                                    "f7a6872f297634219a80141caa2ec9ae8802098b07b67963272603e36cc19fd8": {
-                                        "keytype": "ed25519",
-                                        "scheme": "ed25519",
-                                        "keyval": {
-                                            "public": "9fe7ddccb75b977a041424a1fdc142e01be4abab918dc4c611fbfe4a3360a9a8"
-                                        }
-                                    },
-                                    "1cebe343e35f0213f6136758e6c3a8f8e1f9eeb7e47a07d5cb336462ed31dcb7": {
-                                        "keytype": "ed25519",
-                                        "scheme": "ed25519",
-                                        "keyval": {
-                                            "public": "ad1709b3cb419b99c5cd7427d6411522e5a93aec6767453e91af921a73d22a3c"
-                                        }
-                                    },
-                                    "800dfb5a1982b82b7893e58035e19f414f553fc08cbb1130cfbae302a7b7fee5": {
-                                        "keytype": "ed25519",
-                                        "scheme": "ed25519",
-                                        "keyval": {
-                                            "public": "7098f769f6ab8502b50f3b58686b8a042d5d3bb75d8b3a48a2fcbc15a0223501"
-                                        }
-                                    }
-                                },
-                                "roles": {
-                                    "snapshot": {
-                                        "keyids": [
-                                            "f7a6872f297634219a80141caa2ec9ae8802098b07b67963272603e36cc19fd8"
-                                        ],
-                                        "threshold": 1
-                                    },
-                                    "timestamp": {
-                                        "keyids": [
-                                            "f7a6872f297634219a80141caa2ec9ae8802098b07b67963272603e36cc19fd8"
-                                        ],
-                                        "threshold": 1
-                                    },
-                                    "targets": {
-                                        "keyids": [
-                                            "f7a6872f297634219a80141caa2ec9ae8802098b07b67963272603e36cc19fd8"
-                                        ],
-                                        "threshold": 1
-                                    },
-                                    "root": {
-                                        "keyids": [
-                                            "1cebe343e35f0213f6136758e6c3a8f8e1f9eeb7e47a07d5cb336462ed31dcb7",
-                                            "800dfb5a1982b82b7893e58035e19f414f553fc08cbb1130cfbae302a7b7fee5"
-                                        ],
-                                        "threshold": 1
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+                "title": "BootstrapPayload"
             },
             "BootstrapPostResponse": {
                 "properties": {
                     "data": {
-                        "$ref": "#/components/schemas/repository_service_tuf_api__bootstrap__PostData"
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/PostData"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
                     },
                     "message": {
                         "type": "string",
@@ -674,21 +568,22 @@
                 },
                 "type": "object",
                 "required": [
+                    "data",
                     "message"
                 ],
-                "title": "BootstrapPostResponse",
-                "example": {
-                    "data": {
-                        "task_id": "7a634b556f784ae88785d36425f9a218",
-                        "last_update": "2022-12-01T12:10:00.578086"
-                    },
-                    "message": "Bootstrap accepted."
-                }
+                "title": "BootstrapPostResponse"
             },
             "DeleteData": {
                 "properties": {
                     "task_id": {
-                        "type": "string",
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
                         "title": "Task Id"
                     },
                     "last_update": {
@@ -699,6 +594,7 @@
                 },
                 "type": "object",
                 "required": [
+                    "task_id",
                     "last_update"
                 ],
                 "title": "DeleteData"
@@ -724,14 +620,7 @@
                     "targets"
                 ],
                 "title": "DeletePayload",
-                "description": "DELETE method required Payload.",
-                "example": {
-                    "targets": [
-                        "v3.4.1/file-3.4.1.tar.gz",
-                        "config-3.4.1.yaml",
-                        "file1.tar.gz"
-                    ]
-                }
+                "description": "DELETE method required Payload."
             },
             "GetData": {
                 "properties": {
@@ -740,17 +629,33 @@
                         "title": "Bootstrap"
                     },
                     "state": {
-                        "type": "string",
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
                         "title": "State"
                     },
                     "id": {
-                        "type": "string",
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
                         "title": "Id"
                     }
                 },
                 "type": "object",
                 "required": [
-                    "bootstrap"
+                    "bootstrap",
+                    "state",
+                    "id"
                 ],
                 "title": "GetData"
             },
@@ -771,7 +676,7 @@
                 "properties": {
                     "metadata": {
                         "additionalProperties": {
-                            "$ref": "#/components/schemas/TUFMetadata"
+                            "$ref": "#/components/schemas/TUFMetadata-Input"
                         },
                         "type": "object",
                         "title": "Metadata"
@@ -781,102 +686,19 @@
                 "required": [
                     "metadata"
                 ],
-                "title": "MetadataPostPayload",
-                "example": {
-                    "settings": {
-                        "expiration": {
-                            "root": 365,
-                            "targets": 365,
-                            "snapshot": 1,
-                            "timestamp": 1,
-                            "bins": 1
-                        }
-                    },
-                    "metadata": {
-                        "root": {
-                            "signatures": [
-                                {
-                                    "keyid": "1cebe343e35f0213f6136758e6c3a8f8e1f9eeb7e47a07d5cb336462ed31dcb7",
-                                    "sig": "c471d9376651ed68bf5b0ce61bd21ba0bef7c38f293f8a4cfb3d56934e1c2f9106d58a9d57fafdd559d1e66e2581c21755b1ef5a6cdef59c40fcdc7bb158c80b"
-                                },
-                                {
-                                    "keyid": "7feb22ed6a1139913ebdbfac85513890814e661d94084212972ba0c0a5c8ce27",
-                                    "sig": "5558cdf391cc1feaeacf2a25e26b2042e50d286296c2a0c4bc3421788e8e11465b6956c3dc0e7ada29672e3740fa003b518e9d9c2a8411b5b279be94a40f750f"
-                                }
-                            ],
-                            "signed": {
-                                "_type": "root",
-                                "consistent_snapshot": true,
-                                "expires": "2024-04-17T08:51:40Z",
-                                "keys": {
-                                    "1cebe343e35f0213f6136758e6c3a8f8e1f9eeb7e47a07d5cb336462ed31dcb7": {
-                                        "keytype": "ed25519",
-                                        "keyval": {
-                                            "public": "ad1709b3cb419b99c5cd7427d6411522e5a93aec6767453e91af921a73d22a3c"
-                                        },
-                                        "scheme": "ed25519"
-                                    },
-                                    "7feb22ed6a1139913ebdbfac85513890814e661d94084212972ba0c0a5c8ce27": {
-                                        "keytype": "ed25519",
-                                        "keyval": {
-                                            "public": "664d366b6838648405e1e18e9ef5b4e326713b0c0338935e2f715b9f02a05313"
-                                        },
-                                        "scheme": "ed25519"
-                                    },
-                                    "800dfb5a1982b82b7893e58035e19f414f553fc08cbb1130cfbae302a7b7fee5": {
-                                        "keytype": "ed25519",
-                                        "keyval": {
-                                            "public": "7098f769f6ab8502b50f3b58686b8a042d5d3bb75d8b3a48a2fcbc15a0223501"
-                                        },
-                                        "scheme": "ed25519"
-                                    },
-                                    "f7a6872f297634219a80141caa2ec9ae8802098b07b67963272603e36cc19fd8": {
-                                        "keytype": "ed25519",
-                                        "keyval": {
-                                            "public": "9fe7ddccb75b977a041424a1fdc142e01be4abab918dc4c611fbfe4a3360a9a8"
-                                        },
-                                        "scheme": "ed25519"
-                                    }
-                                },
-                                "roles": {
-                                    "root": {
-                                        "keyids": [
-                                            "1cebe343e35f0213f6136758e6c3a8f8e1f9eeb7e47a07d5cb336462ed31dcb7",
-                                            "800dfb5a1982b82b7893e58035e19f414f553fc08cbb1130cfbae302a7b7fee5",
-                                            "7feb22ed6a1139913ebdbfac85513890814e661d94084212972ba0c0a5c8ce27"
-                                        ],
-                                        "threshold": 1
-                                    },
-                                    "snapshot": {
-                                        "keyids": [
-                                            "f7a6872f297634219a80141caa2ec9ae8802098b07b67963272603e36cc19fd8"
-                                        ],
-                                        "threshold": 1
-                                    },
-                                    "targets": {
-                                        "keyids": [
-                                            "f7a6872f297634219a80141caa2ec9ae8802098b07b67963272603e36cc19fd8"
-                                        ],
-                                        "threshold": 1
-                                    },
-                                    "timestamp": {
-                                        "keyids": [
-                                            "f7a6872f297634219a80141caa2ec9ae8802098b07b67963272603e36cc19fd8"
-                                        ],
-                                        "threshold": 1
-                                    }
-                                },
-                                "spec_version": "1.0.30",
-                                "version": 2
-                            }
-                        }
-                    }
-                }
+                "title": "MetadataPostPayload"
             },
             "MetadataPostResponse": {
                 "properties": {
                     "data": {
-                        "$ref": "#/components/schemas/repository_service_tuf_api__metadata__PostData"
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/PostData"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
                     },
                     "message": {
                         "type": "string",
@@ -885,16 +707,10 @@
                 },
                 "type": "object",
                 "required": [
+                    "data",
                     "message"
                 ],
-                "title": "MetadataPostResponse",
-                "example": {
-                    "data": {
-                        "task_id": "7a634b556f784ae88785d36425f9a218",
-                        "last_update": "2022-12-01T12:10:00.578086"
-                    },
-                    "message": "Metadata Update accepted."
-                }
+                "title": "MetadataPostResponse"
             },
             "MetadataSignDeletePayload": {
                 "properties": {
@@ -907,15 +723,19 @@
                 "required": [
                     "role"
                 ],
-                "title": "MetadataSignDeletePayload",
-                "example": {
-                    "role": "root"
-                }
+                "title": "MetadataSignDeletePayload"
             },
             "MetadataSignDeleteResponse": {
                 "properties": {
                     "data": {
-                        "$ref": "#/components/schemas/DeleteData"
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/DeleteData"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
                     },
                     "message": {
                         "type": "string",
@@ -924,21 +744,22 @@
                 },
                 "type": "object",
                 "required": [
+                    "data",
                     "message"
                 ],
-                "title": "MetadataSignDeleteResponse",
-                "example": {
-                    "data": {
-                        "task_id": "7a634b556f784ae88785d36425f9a218",
-                        "last_update": "2022-12-01T12:10:00.578086"
-                    },
-                    "message": "Metadata delete sign accepted."
-                }
+                "title": "MetadataSignDeleteResponse"
             },
             "MetadataSignGetResponse": {
                 "properties": {
                     "data": {
-                        "$ref": "#/components/schemas/SigningData"
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/SigningData"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
                     },
                     "message": {
                         "type": "string",
@@ -947,81 +768,10 @@
                 },
                 "type": "object",
                 "required": [
+                    "data",
                     "message"
                 ],
-                "title": "MetadataSignGetResponse",
-                "example": {
-                    "metadata": {
-                        "root": {
-                            "signatures": [
-                                {
-                                    "keyid": "1cebe343e35f0213f6136758e6c3a8f8e1f9eeb7e47a07d5cb336462ed31dcb7",
-                                    "sig": "96ced044373706250cb0b031161af477acce24cc0a72593c0daa4c76413881ddc4ff520d403dda9733ef12df03653e6cd6e5b2b8017f72df4c79a61f83c49101"
-                                }
-                            ],
-                            "signed": {
-                                "_type": "root",
-                                "version": 1,
-                                "spec_version": "1.0.31",
-                                "expires": "2024-11-20T15:12:56Z",
-                                "consistent_snapshot": true,
-                                "keys": {
-                                    "1cebe343e35f0213f6136758e6c3a8f8e1f9eeb7e47a07d5cb336462ed31dcb7": {
-                                        "keytype": "ed25519",
-                                        "scheme": "ed25519",
-                                        "keyval": {
-                                            "public": "ad1709b3cb419b99c5cd7427d6411522e5a93aec6767453e91af921a73d22a3c"
-                                        },
-                                        "name": "Janis Joplin"
-                                    },
-                                    "800dfb5a1982b82b7893e58035e19f414f553fc08cbb1130cfbae302a7b7fee5": {
-                                        "keytype": "ed25519",
-                                        "scheme": "ed25519",
-                                        "keyval": {
-                                            "public": "7098f769f6ab8502b50f3b58686b8a042d5d3bb75d8b3a48a2fcbc15a0223501"
-                                        },
-                                        "name": "Jimi Hendrix"
-                                    },
-                                    "f7a6872f297634219a80141caa2ec9ae8802098b07b67963272603e36cc19fd8": {
-                                        "keytype": "ed25519",
-                                        "scheme": "ed25519",
-                                        "keyval": {
-                                            "public": "9fe7ddccb75b977a041424a1fdc142e01be4abab918dc4c611fbfe4a3360a9a8"
-                                        },
-                                        "name": "Online Key 1"
-                                    }
-                                },
-                                "roles": {
-                                    "root": {
-                                        "keyids": [
-                                            "1cebe343e35f0213f6136758e6c3a8f8e1f9eeb7e47a07d5cb336462ed31dcb7",
-                                            "800dfb5a1982b82b7893e58035e19f414f553fc08cbb1130cfbae302a7b7fee5"
-                                        ],
-                                        "threshold": 2
-                                    },
-                                    "timestamp": {
-                                        "keyids": [
-                                            "f7a6872f297634219a80141caa2ec9ae8802098b07b67963272603e36cc19fd8"
-                                        ],
-                                        "threshold": 1
-                                    },
-                                    "snapshot": {
-                                        "keyids": [
-                                            "f7a6872f297634219a80141caa2ec9ae8802098b07b67963272603e36cc19fd8"
-                                        ],
-                                        "threshold": 1
-                                    },
-                                    "targets": {
-                                        "keyids": [
-                                            "f7a6872f297634219a80141caa2ec9ae8802098b07b67963272603e36cc19fd8"
-                                        ],
-                                        "threshold": 1
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+                "title": "MetadataSignGetResponse"
             },
             "MetadataSignPostPayload": {
                 "properties": {
@@ -1038,14 +788,7 @@
                     "role",
                     "signature"
                 ],
-                "title": "MetadataSignPostPayload",
-                "example": {
-                    "role": "root",
-                    "signature": {
-                        "keyid": "800dfb5a1982b82b7893e58035e19f414f553fc08cbb1130cfbae302a7b7fee5",
-                        "sig": "1e60e79c909affba4f8051c7b86c861048450b4b32f1b9c106c50203a88877650a897b0c188af0ac0a530f1bccdafbdc2f92d0ee851864a6f24ddea031ef6b02"
-                    }
-                }
+                "title": "MetadataSignPostPayload"
             },
             "MetadataSignature": {
                 "properties": {
@@ -1064,6 +807,32 @@
                     "sig"
                 ],
                 "title": "MetadataSignature"
+            },
+            "PostData": {
+                "properties": {
+                    "task_id": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Task Id"
+                    },
+                    "last_update": {
+                        "type": "string",
+                        "format": "date-time",
+                        "title": "Last Update"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "task_id",
+                    "last_update"
+                ],
+                "title": "PostData"
             },
             "PutData": {
                 "properties": {
@@ -1094,22 +863,19 @@
                 "required": [
                     "settings"
                 ],
-                "title": "PutPayload",
-                "example": {
-                    "settings": {
-                        "expiration": {
-                            "targets": 100,
-                            "snapshot": 50,
-                            "timestamp": 20,
-                            "bins": 5
-                        }
-                    }
-                }
+                "title": "PutPayload"
             },
             "PutResponse": {
                 "properties": {
                     "data": {
-                        "$ref": "#/components/schemas/PutData"
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/PutData"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
                     },
                     "message": {
                         "type": "string",
@@ -1118,16 +884,10 @@
                 },
                 "type": "object",
                 "required": [
+                    "data",
                     "message"
                 ],
-                "title": "PutResponse",
-                "example": {
-                    "data": {
-                        "task_id": "06ee6db3cbab4b26be505352c2f2e2c3",
-                        "last_update": "2022-12-01T12:10:00.578086"
-                    },
-                    "message": "Settings successfully submitted."
-                }
+                "title": "PutResponse"
             },
             "ResponseData": {
                 "properties": {
@@ -1159,15 +919,23 @@
             "RolesData": {
                 "properties": {
                     "root": {
-                        "$ref": "#/components/schemas/TUFMetadata"
+                        "$ref": "#/components/schemas/TUFMetadata-Output"
                     },
                     "trusted_root": {
-                        "$ref": "#/components/schemas/TUFMetadata"
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/TUFMetadata-Output"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
                     }
                 },
                 "type": "object",
                 "required": [
-                    "root"
+                    "root",
+                    "trusted_root"
                 ],
                 "title": "RolesData"
             },
@@ -1224,7 +992,14 @@
                         "title": "Keyval"
                     },
                     "name": {
-                        "type": "string",
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
                         "title": "Name"
                     }
                 },
@@ -1232,11 +1007,12 @@
                 "required": [
                     "keytype",
                     "scheme",
-                    "keyval"
+                    "keyval",
+                    "name"
                 ],
                 "title": "TUFKeys"
             },
-            "TUFMetadata": {
+            "TUFMetadata-Input": {
                 "properties": {
                     "signatures": {
                         "items": {
@@ -1246,7 +1022,27 @@
                         "title": "Signatures"
                     },
                     "signed": {
-                        "$ref": "#/components/schemas/TUFSigned"
+                        "$ref": "#/components/schemas/TUFSigned-Input"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "signatures",
+                    "signed"
+                ],
+                "title": "TUFMetadata"
+            },
+            "TUFMetadata-Output": {
+                "properties": {
+                    "signatures": {
+                        "items": {
+                            "$ref": "#/components/schemas/TUFSignatures"
+                        },
+                        "type": "array",
+                        "title": "Signatures"
+                    },
+                    "signed": {
+                        "$ref": "#/components/schemas/TUFSigned-Output"
                     }
                 },
                 "type": "object",
@@ -1274,11 +1070,11 @@
                 ],
                 "title": "TUFSignatures"
             },
-            "TUFSigned": {
+            "TUFSigned-Input": {
                 "properties": {
-                    "_type": {
+                    "type": {
                         "type": "string",
-                        "title": " Type"
+                        "title": "Type"
                     },
                     "version": {
                         "type": "integer",
@@ -1293,47 +1089,208 @@
                         "title": "Expires"
                     },
                     "keys": {
-                        "additionalProperties": {
-                            "$ref": "#/components/schemas/TUFKeys"
-                        },
-                        "type": "object",
+                        "anyOf": [
+                            {
+                                "additionalProperties": {
+                                    "$ref": "#/components/schemas/TUFKeys"
+                                },
+                                "type": "object"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
                         "title": "Keys"
                     },
                     "consistent_snapshot": {
-                        "type": "boolean",
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
                         "title": "Consistent Snapshot"
                     },
                     "roles": {
-                        "additionalProperties": {
-                            "$ref": "#/components/schemas/TUFSignedRoles"
-                        },
-                        "type": "object",
+                        "anyOf": [
+                            {
+                                "additionalProperties": {
+                                    "$ref": "#/components/schemas/TUFSignedRoles"
+                                },
+                                "type": "object"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
                         "title": "Roles"
                     },
                     "meta": {
-                        "additionalProperties": {
-                            "$ref": "#/components/schemas/TUFSignedMetaFile"
-                        },
-                        "type": "object",
+                        "anyOf": [
+                            {
+                                "additionalProperties": {
+                                    "$ref": "#/components/schemas/TUFSignedMetaFile"
+                                },
+                                "type": "object"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
                         "title": "Meta"
                     },
                     "targets": {
-                        "additionalProperties": {
-                            "type": "string"
-                        },
-                        "type": "object",
+                        "anyOf": [
+                            {
+                                "additionalProperties": {
+                                    "type": "string"
+                                },
+                                "type": "object"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
                         "title": "Targets"
                     },
                     "delegations": {
-                        "$ref": "#/components/schemas/TUFSignedDelegations"
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/TUFSignedDelegations"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
                     }
                 },
+                "additionalProperties": true,
                 "type": "object",
                 "required": [
-                    "_type",
+                    "type",
                     "version",
                     "spec_version",
-                    "expires"
+                    "expires",
+                    "keys",
+                    "consistent_snapshot",
+                    "roles",
+                    "meta",
+                    "targets",
+                    "delegations"
+                ],
+                "title": "TUFSigned"
+            },
+            "TUFSigned-Output": {
+                "properties": {
+                    "type": {
+                        "type": "string",
+                        "title": "Type"
+                    },
+                    "version": {
+                        "type": "integer",
+                        "title": "Version"
+                    },
+                    "spec_version": {
+                        "type": "string",
+                        "title": "Spec Version"
+                    },
+                    "expires": {
+                        "type": "string",
+                        "title": "Expires"
+                    },
+                    "keys": {
+                        "anyOf": [
+                            {
+                                "additionalProperties": {
+                                    "$ref": "#/components/schemas/TUFKeys"
+                                },
+                                "type": "object"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Keys"
+                    },
+                    "consistent_snapshot": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Consistent Snapshot"
+                    },
+                    "roles": {
+                        "anyOf": [
+                            {
+                                "additionalProperties": {
+                                    "$ref": "#/components/schemas/TUFSignedRoles"
+                                },
+                                "type": "object"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Roles"
+                    },
+                    "meta": {
+                        "anyOf": [
+                            {
+                                "additionalProperties": {
+                                    "$ref": "#/components/schemas/TUFSignedMetaFile"
+                                },
+                                "type": "object"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Meta"
+                    },
+                    "targets": {
+                        "anyOf": [
+                            {
+                                "additionalProperties": {
+                                    "type": "string"
+                                },
+                                "type": "object"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Targets"
+                    },
+                    "delegations": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/TUFSignedDelegations"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    }
+                },
+                "additionalProperties": true,
+                "type": "object",
+                "required": [
+                    "type",
+                    "version",
+                    "spec_version",
+                    "expires",
+                    "keys",
+                    "consistent_snapshot",
+                    "roles",
+                    "meta",
+                    "targets",
+                    "delegations"
                 ],
                 "title": "TUFSigned"
             },
@@ -1347,19 +1304,35 @@
                         "title": "Keys"
                     },
                     "roles": {
-                        "items": {
-                            "$ref": "#/components/schemas/TUFSignedDelegationsRoles"
-                        },
-                        "type": "array",
+                        "anyOf": [
+                            {
+                                "items": {
+                                    "$ref": "#/components/schemas/TUFSignedDelegationsRoles"
+                                },
+                                "type": "array"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
                         "title": "Roles"
                     },
                     "succinct_roles": {
-                        "$ref": "#/components/schemas/TUFSignedDelegationsSuccinctRoles"
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/TUFSignedDelegationsSuccinctRoles"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
                     }
                 },
                 "type": "object",
                 "required": [
-                    "keys"
+                    "keys",
+                    "roles",
+                    "succinct_roles"
                 ],
                 "title": "TUFSignedDelegations"
             },
@@ -1385,17 +1358,31 @@
                         "title": "Threshold"
                     },
                     "paths": {
-                        "items": {
-                            "type": "string"
-                        },
-                        "type": "array",
+                        "anyOf": [
+                            {
+                                "items": {
+                                    "type": "string"
+                                },
+                                "type": "array"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
                         "title": "Paths"
                     },
                     "path_hash_prefixes": {
-                        "items": {
-                            "type": "string"
-                        },
-                        "type": "array",
+                        "anyOf": [
+                            {
+                                "items": {
+                                    "type": "string"
+                                },
+                                "type": "array"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
                         "title": "Path Hash Prefixes"
                     }
                 },
@@ -1404,7 +1391,9 @@
                     "name",
                     "terminating",
                     "keyids",
-                    "threshold"
+                    "threshold",
+                    "paths",
+                    "path_hash_prefixes"
                 ],
                 "title": "TUFSignedDelegationsRoles"
             },
@@ -1505,14 +1494,22 @@
                         "description": "The key(s) must be compatible with the algorithm(s) supported by a TUF client"
                     },
                     "custom": {
-                        "type": "object",
+                        "anyOf": [
+                            {
+                                "type": "object"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
                         "title": "Custom"
                     }
                 },
                 "type": "object",
                 "required": [
                     "length",
-                    "hashes"
+                    "hashes",
+                    "custom"
                 ],
                 "title": "TargetsInfo"
             },
@@ -1528,47 +1525,92 @@
                     "sign_metadata",
                     "delete_sign_metadata"
                 ],
-                "title": "TaskName",
-                "description": "An enumeration."
+                "title": "TaskName"
             },
             "TaskResult": {
                 "properties": {
                     "message": {
-                        "type": "string",
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
                         "title": "Message",
                         "description": "Result detail description"
                     },
                     "error": {
-                        "type": "string",
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
                         "title": "Error",
                         "description": "Error message"
                     },
                     "status": {
-                        "type": "boolean",
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
                         "title": "Status",
                         "description": "Task result status. `True` Success | `False` Failure"
                     },
                     "task": {
-                        "allOf": [
+                        "anyOf": [
                             {
                                 "$ref": "#/components/schemas/TaskName"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
                         "description": "Task name by worker"
                     },
                     "last_update": {
-                        "type": "string",
-                        "format": "date-time",
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
                         "title": "Last Update",
                         "description": "Last time task was updated"
                     },
                     "details": {
-                        "type": "object",
+                        "anyOf": [
+                            {
+                                "type": "object"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
                         "title": "Details",
                         "description": "Relevant result details"
                     }
                 },
                 "type": "object",
+                "required": [
+                    "message",
+                    "error",
+                    "status",
+                    "task",
+                    "last_update",
+                    "details"
+                ],
                 "title": "TaskResult"
             },
             "TaskState": {
@@ -1586,8 +1628,7 @@
                     "ERRORED",
                     "RUNNING"
                 ],
-                "title": "TaskState",
-                "description": "An enumeration."
+                "title": "TaskState"
             },
             "TasksData": {
                 "properties": {
@@ -1605,19 +1646,22 @@
                         "description": "The Celery task state.\n\n`PENDING`: Task state is unknown (assumed pending since you know the id).\n\n`RECEIVED`: Task received by a RSTUF Worker (only used in events).\n\n`SUCCESS`: Task succeeded.\n\n`STARTED`: Task started by a RSTUF Worker.\n\n`RUNNING`: Task is running on RSTUF Worker.\n\n`FAILURE`: Task failed (unexpected).\n\n`REVOKED`: Task revoked.\n\n`RETRY`: Task is waiting for retry.\n\n`ERRORED`: Task errored. RSTUF identified an error while processing the task.\n\n`REJECTED`: Task was rejected (only used in events).\n\n`IGNORED`: Task was ignored."
                     },
                     "result": {
-                        "allOf": [
+                        "anyOf": [
                             {
                                 "$ref": "#/components/schemas/TaskResult"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "title": "Result",
                         "description": "Task result if available."
                     }
                 },
                 "type": "object",
                 "required": [
                     "task_id",
-                    "state"
+                    "state",
+                    "result"
                 ],
                 "title": "TasksData"
             },
@@ -1653,24 +1697,6 @@
                     "type"
                 ],
                 "title": "ValidationError"
-            },
-            "repository_service_tuf_api__bootstrap__PostData": {
-                "properties": {
-                    "task_id": {
-                        "type": "string",
-                        "title": "Task Id"
-                    },
-                    "last_update": {
-                        "type": "string",
-                        "format": "date-time",
-                        "title": "Last Update"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "last_update"
-                ],
-                "title": "PostData"
             },
             "repository_service_tuf_api__bootstrap__Settings": {
                 "properties": {
@@ -1708,31 +1734,7 @@
                     "data",
                     "message"
                 ],
-                "title": "Response",
-                "example": {
-                    "data": {
-                        "bootstrap": "82281613dba54b8ea88dc86211c77d0a",
-                        "root_expiration": 365,
-                        "root_threshold": 1,
-                        "root_num_keys": 2,
-                        "targets_expiration": 365,
-                        "targets_threshold": 1,
-                        "targets_num_keys": 1,
-                        "snapshot_expiration": 1,
-                        "snapshot_threshold": 1,
-                        "snapshot_num_keys": 1,
-                        "timestamp_expiration": 1,
-                        "timestamp_threshold": 1,
-                        "timestamp_num_keys": 1,
-                        "bins_expiration": 1,
-                        "bins_threshold": 1,
-                        "bins_num_keys": 1,
-                        "number_of_delegated_bins": 4,
-                        "targets_base_url": "http://www.example.com/repository/",
-                        "targets_online_key": true
-                    },
-                    "message": "Current Settings"
-                }
+                "title": "Response"
             },
             "repository_service_tuf_api__config__Settings": {
                 "properties": {
@@ -1750,48 +1752,37 @@
                 ],
                 "title": "Settings"
             },
-            "repository_service_tuf_api__metadata__PostData": {
-                "properties": {
-                    "task_id": {
-                        "type": "string",
-                        "title": "Task Id"
-                    },
-                    "last_update": {
-                        "type": "string",
-                        "format": "date-time",
-                        "title": "Last Update"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "last_update"
-                ],
-                "title": "PostData"
-            },
             "repository_service_tuf_api__targets__Response": {
                 "properties": {
                     "data": {
-                        "$ref": "#/components/schemas/ResponseData"
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/ResponseData"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
                     },
                     "message": {
-                        "type": "string",
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
                         "title": "Message"
                     }
                 },
                 "type": "object",
+                "required": [
+                    "data",
+                    "message"
+                ],
                 "title": "Response",
-                "description": "Targets Response",
-                "example": {
-                    "data": {
-                        "targets": [
-                            "file1.tar.gz",
-                            "file2.tar.gz"
-                        ],
-                        "task_id": "06ee6db3cbab4b26be505352c2f2e2c3",
-                        "last_update": "2022-12-01T12:10:00.578086"
-                    },
-                    "message": "New Artifact(s) successfully submitted."
-                }
+                "description": "Targets Response"
             },
             "repository_service_tuf_api__tasks__Response": {
                 "properties": {
@@ -1799,35 +1790,23 @@
                         "$ref": "#/components/schemas/TasksData"
                     },
                     "message": {
-                        "type": "string",
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
                         "title": "Message"
                     }
                 },
                 "type": "object",
                 "required": [
-                    "data"
+                    "data",
+                    "message"
                 ],
-                "title": "Response",
-                "example": {
-                    "data": {
-                        "task_id": "33e66671dcc84cdfa2535a1eb030104c",
-                        "state": "SUCCESS",
-                        "result": {
-                            "task": "add_targets",
-                            "last_update": "2023-11-17T09:54:15.762882",
-                            "message": "Target(s) Added",
-                            "details": {
-                                "targets": [
-                                    "file1.tar.gz"
-                                ],
-                                "target_roles": [
-                                    "bins-3"
-                                ]
-                            }
-                        }
-                    },
-                    "message": "Task state."
-                }
+                "title": "Response"
             }
         }
     }
