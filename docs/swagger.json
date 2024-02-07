@@ -1569,9 +1569,6 @@
                     }
                 },
                 "type": "object",
-                "required": [
-                    "message"
-                ],
                 "title": "TaskResult"
             },
             "TaskState": {
@@ -1605,7 +1602,7 @@
                                 "$ref": "#/components/schemas/TaskState"
                             }
                         ],
-                        "description": "The Celery task state. Note: It isn't the task result status.\n\n`PENDING`: Task state is unknown (assumed pending since you know the id).\n\n`RECEIVED`: Task received by a RSTUF Eorker (only used in events).\n\n`SUCCESS`: Task succeeded.\n\n`STARTED`: Task started by a RSTUF Worker.\n\n`RUNNING`: Task is running on RSTUF Worker.\n\n`FAILURE`: Task failed (unexpected).\n\n`REVOKED`: Task revoked.\n\n`RETRY`: Task is waiting for retry.\n\n`ERRORED`: Task errored. RSTUF identified an error while processing the task.\n\n`REJECTED`: Task was rejected (only used in events).\n\n`IGNORED`: Task was ignored."
+                        "description": "The Celery task state. Note: It isn't the task result status.\n\n`PENDING`: Task state is unknown (assumed pending since you know the id).\n\n`RECEIVED`: Task received by a RSTUF Worker (only used in events).\n\n`SUCCESS`: Task succeeded.\n\n`STARTED`: Task started by a RSTUF Worker.\n\n`RUNNING`: Task is running on RSTUF Worker.\n\n`FAILURE`: Task failed (unexpected).\n\n`REVOKED`: Task revoked.\n\n`RETRY`: Task is waiting for retry.\n\n`ERRORED`: Task errored. RSTUF identified an error while processing the task.\n\n`REJECTED`: Task was rejected (only used in events).\n\n`IGNORED`: Task was ignored."
                     },
                     "result": {
                         "allOf": [
@@ -1817,7 +1814,6 @@
                         "state": "SUCCESS",
                         "result": {
                             "task": "add_targets",
-                            "status": true,
                             "last_update": "2023-11-17T09:54:15.762882",
                             "message": "Target(s) Added",
                             "details": {

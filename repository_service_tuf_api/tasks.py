@@ -43,14 +43,15 @@ class GetParameters(BaseModel):
 
 
 class TaskResult(BaseModel):
-    message: str = Field(description="Result detail description")
+    message: Optional[str] = Field(description="Result detail description")
     error: Optional[str] = Field(
         description=(
             "If the task status result is `False` shows an error message"
         )
     )
     status: Optional[bool] = Field(
-        description="Task result status. `True` Success | `False` Failure"
+        description="Task result status. `True` Success | `False` Failure",
+        exclude=True,
     )
     task: Optional[TaskName] = Field(description="Task name by worker")
     last_update: Optional[datetime] = Field(
@@ -68,7 +69,7 @@ class TasksData(BaseModel):
             "The Celery task state. Note: It isn't the task result status.\n\n"
             "`PENDING`: Task state is unknown (assumed pending since you know "
             "the id).\n\n"
-            "`RECEIVED`: Task received by a RSTUF Eorker (only used in "
+            "`RECEIVED`: Task received by a RSTUF Worker (only used in "
             "events).\n\n"
             "`SUCCESS`: Task succeeded.\n\n"
             "`STARTED`: Task started by a RSTUF Worker.\n\n"
@@ -98,7 +99,6 @@ class Response(BaseModel):
                 "state": TaskState.SUCCESS,
                 "result": {
                     "task": TaskName.ADD_TARGETS,
-                    "status": True,
                     "last_update": "2023-11-17T09:54:15.762882",
                     "message": "Target(s) Added",
                     "details": {
@@ -136,16 +136,8 @@ def get(task_id: str) -> Response:
     # and default message as critical failure executing the task.
     if isinstance(task.result, Exception):
         task_result = {
-            "message": "Critical failure executing the task.",
-            "error": str(task.result),
-            "status": False,
+            "message": f"Task failure: {str(task.result)}",
         }
-
-    # There are Celery states without result (i.e. PENDING, RECEIVED, STARTED)
-    # In RSTUF Worker the 'message' key is mandatory, but in case of it still
-    # return a task result without a message we considere it an errored task
-    if task_result is None or task_result.get("message") is None:
-        task_result = {"status": False, "message": "No message available."}
 
     # If the task state is SUCCESS and the task result is False we considere
     # it an errored task.

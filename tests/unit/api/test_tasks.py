@@ -44,7 +44,6 @@ class TestGetTask:
                 "task_id": "test_id",
                 "state": "SUCCESS",
                 "result": {
-                    "status": True,
                     "task": "add_targets",
                     "last_update": "2023-11-17T09:54:15.762882",
                     "message": "Target(s) Added",
@@ -83,9 +82,7 @@ class TestGetTask:
                 "task_id": "test_id",
                 "state": "FAILURE",
                 "result": {
-                    "message": "Critical failure executing the task.",
-                    "error": "Failed to load",
-                    "status": False,
+                    "message": "Task failure: Failed to load",
                 },
             },
             "message": "Task state.",
@@ -122,7 +119,6 @@ class TestGetTask:
                 "task_id": "test_id",
                 "state": "ERRORED",
                 "result": {
-                    "status": False,
                     "task": "sign_metadata",
                     "last_update": "2023-11-17T09:54:15.762882",
                     "message": "Signature Failed",
@@ -157,10 +153,7 @@ class TestGetTask:
             "data": {
                 "task_id": "test_id",
                 "state": "ERRORED",
-                "result": {
-                    "status": False,
-                    "message": "No message available.",
-                },
+                "result": {},
             },
             "message": "Task state.",
         }
@@ -190,10 +183,7 @@ class TestGetTask:
             "data": {
                 "task_id": "test_id",
                 "state": "FAILURE",
-                "result": {
-                    "status": False,
-                    "message": "No message available.",
-                },
+                "result": {},
             },
             "message": "Task state.",
         }
