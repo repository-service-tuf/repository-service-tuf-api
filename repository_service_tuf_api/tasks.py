@@ -5,10 +5,10 @@
 
 import enum
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 from celery import states
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from repository_service_tuf_api import repository_metadata
 
@@ -43,17 +43,23 @@ class GetParameters(BaseModel):
 
 
 class TaskResult(BaseModel):
-    message: Optional[str] = Field(description="Result detail description")
-    error: Optional[str] = Field(description="Error message")
-    status: Optional[bool] = Field(
+    message: str | None = Field(
+        description="Result detail description", default=None
+    )
+    error: str | None = Field(description="Error message", default=None)
+    status: None | bool = Field(
         description="Task result status. `True` Success | `False` Failure",
+        default=None,
     )
-    task: Optional[TaskName] = Field(description="Task name by worker")
-    last_update: Optional[datetime] = Field(
-        description="Last time task was updated"
+    task: TaskName | None = Field(
+        description="Task name by worker", default=None
     )
-    details: Optional[Dict[str, Any]] = Field(
-        description="Relevant result details"
+    last_update: datetime | None = Field(
+        description="Last time task was updated", default=None
+    )
+    details: Dict[str, Any] | None = Field(
+        description="Relevant result details",
+        default=None,
     )
 
 
@@ -78,34 +84,36 @@ class TasksData(BaseModel):
             "`IGNORED`: Task was ignored."
         )
     )
-    result: Optional[TaskResult] = Field(
-        description=("Task result if available.")
+    result: TaskResult | None = Field(
+        description=("Task result if available."),
+        default=None,
     )
 
 
 class Response(BaseModel):
-    data: TasksData
-    message: Optional[str]
-
-    class Config:
-        data_example = {
-            "data": {
-                "task_id": "33e66671dcc84cdfa2535a1eb030104c",
-                "state": TaskState.SUCCESS,
-                "result": {
-                    "task": TaskName.ADD_TARGETS,
-                    "last_update": "2023-11-17T09:54:15.762882",
-                    "message": "Target(s) Added",
-                    "details": {
-                        "targets": ["file1.tar.gz"],
-                        "target_roles": ["bins-3"],
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "data": {
+                    "task_id": "33e66671dcc84cdfa2535a1eb030104c",
+                    "state": TaskState.SUCCESS,
+                    "result": {
+                        "task": TaskName.ADD_TARGETS,
+                        "status": True,
+                        "last_update": "2023-11-17T09:54:15.762882",
+                        "message": "Target(s) Added",
+                        "details": {
+                            "targets": ["file1.tar.gz"],
+                            "target_roles": ["bins-3"],
+                        },
                     },
                 },
-            },
-            "message": "Task state.",
+                "message": "Task state.",
+            }
         }
-
-        schema_extra = {"example": data_example}
+    )
+    data: TasksData
+    message: str | None = None
 
 
 def get(task_id: str) -> Response:

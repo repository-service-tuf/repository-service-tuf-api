@@ -18,7 +18,6 @@ class TestGetTask:
                 "task": "add_targets",
                 "last_update": "2023-11-17T09:54:15.762882",
                 "message": "Target(s) Added",
-                "error": None,
                 "details": {
                     "targets": [
                         "file1.tar.gz",
@@ -101,7 +100,6 @@ class TestGetTask:
                 "last_update": "2023-11-17T09:54:15.762882",
                 "message": "Signature Failed",
                 "error": "No signatures pending for root",
-                "details": None,
             },
         )
         mocked_repository_metadata = pretend.stub(

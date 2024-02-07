@@ -512,10 +512,15 @@
                 },
                 "type": "object",
                 "required": [
-                    "data",
                     "message"
                 ],
-                "title": "BootstrapGetResponse"
+                "title": "BootstrapGetResponse",
+                "example": {
+                    "data": {
+                        "bootstrap": false
+                    },
+                    "message": "System available for bootstrap."
+                }
             },
             "BootstrapPayload": {
                 "properties": {
@@ -539,6 +544,7 @@
                             }
                         ],
                         "title": "Timeout",
+                        "description": "Timeout in seconds",
                         "default": 300
                     }
                 },
@@ -547,7 +553,94 @@
                     "settings",
                     "metadata"
                 ],
-                "title": "BootstrapPayload"
+                "title": "BootstrapPayload",
+                "example": {
+                    "metadata": {
+                        "root": {
+                            "signatures": [
+                                {
+                                    "keyid": "1cebe343e35f0213f6136758e6c3a8f8e1f9eeb7e47a07d5cb336462ed31dcb7",
+                                    "sig": "b3c81b6579442b8672ff460ac36cdb51064109fcfa93f0e72dabbf338f7d0c24e1a91d3696d72d81f60e94b2782ab1bf41e6b8f3e535538216f4379bf30a4302"
+                                },
+                                {
+                                    "keyid": "800dfb5a1982b82b7893e58035e19f414f553fc08cbb1130cfbae302a7b7fee5",
+                                    "sig": "fdfbb1877da404504e8b9c111d87680df5291094dafa01f66bfe6031e470d7c63cc477c1e79210a89e27734758e54fb54adc529918b1211d9dd9971c8bb26c0a"
+                                }
+                            ],
+                            "signed": {
+                                "_type": "root",
+                                "consistent_snapshot": true,
+                                "expires": "2024-02-17T10:55:28Z",
+                                "keys": {
+                                    "1cebe343e35f0213f6136758e6c3a8f8e1f9eeb7e47a07d5cb336462ed31dcb7": {
+                                        "keytype": "ed25519",
+                                        "keyval": {
+                                            "public": "ad1709b3cb419b99c5cd7427d6411522e5a93aec6767453e91af921a73d22a3c"
+                                        },
+                                        "scheme": "ed25519"
+                                    },
+                                    "800dfb5a1982b82b7893e58035e19f414f553fc08cbb1130cfbae302a7b7fee5": {
+                                        "keytype": "ed25519",
+                                        "keyval": {
+                                            "public": "7098f769f6ab8502b50f3b58686b8a042d5d3bb75d8b3a48a2fcbc15a0223501"
+                                        },
+                                        "scheme": "ed25519"
+                                    },
+                                    "f7a6872f297634219a80141caa2ec9ae8802098b07b67963272603e36cc19fd8": {
+                                        "keytype": "ed25519",
+                                        "keyval": {
+                                            "public": "9fe7ddccb75b977a041424a1fdc142e01be4abab918dc4c611fbfe4a3360a9a8"
+                                        },
+                                        "scheme": "ed25519"
+                                    }
+                                },
+                                "roles": {
+                                    "root": {
+                                        "keyids": [
+                                            "1cebe343e35f0213f6136758e6c3a8f8e1f9eeb7e47a07d5cb336462ed31dcb7",
+                                            "800dfb5a1982b82b7893e58035e19f414f553fc08cbb1130cfbae302a7b7fee5"
+                                        ],
+                                        "threshold": 1
+                                    },
+                                    "snapshot": {
+                                        "keyids": [
+                                            "f7a6872f297634219a80141caa2ec9ae8802098b07b67963272603e36cc19fd8"
+                                        ],
+                                        "threshold": 1
+                                    },
+                                    "targets": {
+                                        "keyids": [
+                                            "f7a6872f297634219a80141caa2ec9ae8802098b07b67963272603e36cc19fd8"
+                                        ],
+                                        "threshold": 1
+                                    },
+                                    "timestamp": {
+                                        "keyids": [
+                                            "f7a6872f297634219a80141caa2ec9ae8802098b07b67963272603e36cc19fd8"
+                                        ],
+                                        "threshold": 1
+                                    }
+                                },
+                                "spec_version": "1.0.30",
+                                "version": 1
+                            }
+                        }
+                    },
+                    "settings": {
+                        "expiration": {
+                            "bins": 1,
+                            "root": 365,
+                            "snapshot": 1,
+                            "targets": 365,
+                            "timestamp": 1
+                        },
+                        "services": {
+                            "number_of_delegated_bins": 4,
+                            "targets_base_url": "http://www.example.com/repository/",
+                            "targets_online_key": true
+                        }
+                    }
+                }
             },
             "BootstrapPostResponse": {
                 "properties": {
@@ -568,10 +661,16 @@
                 },
                 "type": "object",
                 "required": [
-                    "data",
                     "message"
                 ],
-                "title": "BootstrapPostResponse"
+                "title": "BootstrapPostResponse",
+                "example": {
+                    "data": {
+                        "last_update": "2022-12-01T12:10:00.578086",
+                        "task_id": "7a634b556f784ae88785d36425f9a218"
+                    },
+                    "message": "Bootstrap accepted."
+                }
             },
             "DeleteData": {
                 "properties": {
@@ -620,7 +719,14 @@
                     "targets"
                 ],
                 "title": "DeletePayload",
-                "description": "DELETE method required Payload."
+                "description": "DELETE method required Payload.",
+                "example": {
+                    "targets": [
+                        "v3.4.1/file-3.4.1.tar.gz",
+                        "config-3.4.1.yaml",
+                        "file1.tar.gz"
+                    ]
+                }
             },
             "GetData": {
                 "properties": {
@@ -653,9 +759,7 @@
                 },
                 "type": "object",
                 "required": [
-                    "bootstrap",
-                    "state",
-                    "id"
+                    "bootstrap"
                 ],
                 "title": "GetData"
             },
@@ -686,7 +790,97 @@
                 "required": [
                     "metadata"
                 ],
-                "title": "MetadataPostPayload"
+                "title": "MetadataPostPayload",
+                "example": {
+                    "metadata": {
+                        "root": {
+                            "signatures": [
+                                {
+                                    "keyid": "1cebe343e35f0213f6136758e6c3a8f8e1f9eeb7e47a07d5cb336462ed31dcb7",
+                                    "sig": "c471d9376651ed68bf5b0ce61bd21ba0bef7c38f293f8a4cfb3d56934e1c2f9106d58a9d57fafdd559d1e66e2581c21755b1ef5a6cdef59c40fcdc7bb158c80b"
+                                },
+                                {
+                                    "keyid": "7feb22ed6a1139913ebdbfac85513890814e661d94084212972ba0c0a5c8ce27",
+                                    "sig": "5558cdf391cc1feaeacf2a25e26b2042e50d286296c2a0c4bc3421788e8e11465b6956c3dc0e7ada29672e3740fa003b518e9d9c2a8411b5b279be94a40f750f"
+                                }
+                            ],
+                            "signed": {
+                                "_type": "root",
+                                "consistent_snapshot": true,
+                                "expires": "2024-04-17T08:51:40Z",
+                                "keys": {
+                                    "1cebe343e35f0213f6136758e6c3a8f8e1f9eeb7e47a07d5cb336462ed31dcb7": {
+                                        "keytype": "ed25519",
+                                        "keyval": {
+                                            "public": "ad1709b3cb419b99c5cd7427d6411522e5a93aec6767453e91af921a73d22a3c"
+                                        },
+                                        "scheme": "ed25519"
+                                    },
+                                    "7feb22ed6a1139913ebdbfac85513890814e661d94084212972ba0c0a5c8ce27": {
+                                        "keytype": "ed25519",
+                                        "keyval": {
+                                            "public": "664d366b6838648405e1e18e9ef5b4e326713b0c0338935e2f715b9f02a05313"
+                                        },
+                                        "scheme": "ed25519"
+                                    },
+                                    "800dfb5a1982b82b7893e58035e19f414f553fc08cbb1130cfbae302a7b7fee5": {
+                                        "keytype": "ed25519",
+                                        "keyval": {
+                                            "public": "7098f769f6ab8502b50f3b58686b8a042d5d3bb75d8b3a48a2fcbc15a0223501"
+                                        },
+                                        "scheme": "ed25519"
+                                    },
+                                    "f7a6872f297634219a80141caa2ec9ae8802098b07b67963272603e36cc19fd8": {
+                                        "keytype": "ed25519",
+                                        "keyval": {
+                                            "public": "9fe7ddccb75b977a041424a1fdc142e01be4abab918dc4c611fbfe4a3360a9a8"
+                                        },
+                                        "scheme": "ed25519"
+                                    }
+                                },
+                                "roles": {
+                                    "root": {
+                                        "keyids": [
+                                            "1cebe343e35f0213f6136758e6c3a8f8e1f9eeb7e47a07d5cb336462ed31dcb7",
+                                            "800dfb5a1982b82b7893e58035e19f414f553fc08cbb1130cfbae302a7b7fee5",
+                                            "7feb22ed6a1139913ebdbfac85513890814e661d94084212972ba0c0a5c8ce27"
+                                        ],
+                                        "threshold": 1
+                                    },
+                                    "snapshot": {
+                                        "keyids": [
+                                            "f7a6872f297634219a80141caa2ec9ae8802098b07b67963272603e36cc19fd8"
+                                        ],
+                                        "threshold": 1
+                                    },
+                                    "targets": {
+                                        "keyids": [
+                                            "f7a6872f297634219a80141caa2ec9ae8802098b07b67963272603e36cc19fd8"
+                                        ],
+                                        "threshold": 1
+                                    },
+                                    "timestamp": {
+                                        "keyids": [
+                                            "f7a6872f297634219a80141caa2ec9ae8802098b07b67963272603e36cc19fd8"
+                                        ],
+                                        "threshold": 1
+                                    }
+                                },
+                                "spec_version": "1.0.30",
+                                "version": 2
+                            }
+                        }
+                    },
+                    "settings": {
+                        "expiration": {
+                            "bins": 1,
+                            "root": 365,
+                            "snapshot": 1,
+                            "targets": 365,
+                            "timestamp": 1
+                        }
+                    }
+                }
             },
             "MetadataPostResponse": {
                 "properties": {
@@ -707,10 +901,15 @@
                 },
                 "type": "object",
                 "required": [
-                    "data",
                     "message"
                 ],
-                "title": "MetadataPostResponse"
+                "title": "MetadataPostResponse",
+                "example": {
+                    "data": {
+                        "last_update": "2022-12-01T12:10:00.578086",
+                        "task_id": "7a634b556f784ae88785d36425f9a218"
+                    }
+                }
             },
             "MetadataSignDeletePayload": {
                 "properties": {
@@ -768,10 +967,81 @@
                 },
                 "type": "object",
                 "required": [
-                    "data",
                     "message"
                 ],
-                "title": "MetadataSignGetResponse"
+                "title": "MetadataSignGetResponse",
+                "example": {
+                    "metadata": {
+                        "root": {
+                            "signatures": [
+                                {
+                                    "keyid": "1cebe343e35f0213f6136758e6c3a8f8e1f9eeb7e47a07d5cb336462ed31dcb7",
+                                    "sig": "96ced044373706250cb0b031161af477acce24cc0a72593c0daa4c76413881ddc4ff520d403dda9733ef12df03653e6cd6e5b2b8017f72df4c79a61f83c49101"
+                                }
+                            ],
+                            "signed": {
+                                "_type": "root",
+                                "consistent_snapshot": true,
+                                "expires": "2024-11-20T15:12:56Z",
+                                "keys": {
+                                    "1cebe343e35f0213f6136758e6c3a8f8e1f9eeb7e47a07d5cb336462ed31dcb7": {
+                                        "keytype": "ed25519",
+                                        "keyval": {
+                                            "public": "ad1709b3cb419b99c5cd7427d6411522e5a93aec6767453e91af921a73d22a3c"
+                                        },
+                                        "name": "Janis Joplin",
+                                        "scheme": "ed25519"
+                                    },
+                                    "800dfb5a1982b82b7893e58035e19f414f553fc08cbb1130cfbae302a7b7fee5": {
+                                        "keytype": "ed25519",
+                                        "keyval": {
+                                            "public": "7098f769f6ab8502b50f3b58686b8a042d5d3bb75d8b3a48a2fcbc15a0223501"
+                                        },
+                                        "name": "Jimi Hendrix",
+                                        "scheme": "ed25519"
+                                    },
+                                    "f7a6872f297634219a80141caa2ec9ae8802098b07b67963272603e36cc19fd8": {
+                                        "keytype": "ed25519",
+                                        "keyval": {
+                                            "public": "9fe7ddccb75b977a041424a1fdc142e01be4abab918dc4c611fbfe4a3360a9a8"
+                                        },
+                                        "name": "Online Key 1",
+                                        "scheme": "ed25519"
+                                    }
+                                },
+                                "roles": {
+                                    "root": {
+                                        "keyids": [
+                                            "1cebe343e35f0213f6136758e6c3a8f8e1f9eeb7e47a07d5cb336462ed31dcb7",
+                                            "800dfb5a1982b82b7893e58035e19f414f553fc08cbb1130cfbae302a7b7fee5"
+                                        ],
+                                        "threshold": 2
+                                    },
+                                    "snapshot": {
+                                        "keyids": [
+                                            "f7a6872f297634219a80141caa2ec9ae8802098b07b67963272603e36cc19fd8"
+                                        ],
+                                        "threshold": 1
+                                    },
+                                    "targets": {
+                                        "keyids": [
+                                            "f7a6872f297634219a80141caa2ec9ae8802098b07b67963272603e36cc19fd8"
+                                        ],
+                                        "threshold": 1
+                                    },
+                                    "timestamp": {
+                                        "keyids": [
+                                            "f7a6872f297634219a80141caa2ec9ae8802098b07b67963272603e36cc19fd8"
+                                        ],
+                                        "threshold": 1
+                                    }
+                                },
+                                "spec_version": "1.0.31",
+                                "version": 1
+                            }
+                        }
+                    }
+                }
             },
             "MetadataSignPostPayload": {
                 "properties": {
@@ -788,7 +1058,14 @@
                     "role",
                     "signature"
                 ],
-                "title": "MetadataSignPostPayload"
+                "title": "MetadataSignPostPayload",
+                "example": {
+                    "role": "root",
+                    "signature": {
+                        "keyid": "800dfb5a1982b82b7893e58035e19f414f553fc08cbb1130cfbae302a7b7fee5",
+                        "sig": "1e60e79c909affba4f8051c7b86c861048450b4b32f1b9c106c50203a88877650a897b0c188af0ac0a530f1bccdafbdc2f92d0ee851864a6f24ddea031ef6b02"
+                    }
+                }
             },
             "MetadataSignature": {
                 "properties": {
@@ -829,7 +1106,6 @@
                 },
                 "type": "object",
                 "required": [
-                    "task_id",
                     "last_update"
                 ],
                 "title": "PostData"
@@ -934,8 +1210,7 @@
                 },
                 "type": "object",
                 "required": [
-                    "root",
-                    "trusted_root"
+                    "root"
                 ],
                 "title": "RolesData"
             },
@@ -947,6 +1222,8 @@
                     },
                     "number_of_delegated_bins": {
                         "type": "integer",
+                        "exclusiveMaximum": 16385.0,
+                        "exclusiveMinimum": 1.0,
                         "title": "Number Of Delegated Bins"
                     },
                     "targets_online_key": {
@@ -1007,8 +1284,7 @@
                 "required": [
                     "keytype",
                     "scheme",
-                    "keyval",
-                    "name"
+                    "keyval"
                 ],
                 "title": "TUFKeys"
             },
@@ -1072,9 +1348,9 @@
             },
             "TUFSigned-Input": {
                 "properties": {
-                    "type": {
+                    "_type": {
                         "type": "string",
-                        "title": "Type"
+                        "title": " Type"
                     },
                     "version": {
                         "type": "integer",
@@ -1169,24 +1445,18 @@
                 "additionalProperties": true,
                 "type": "object",
                 "required": [
-                    "type",
+                    "_type",
                     "version",
                     "spec_version",
-                    "expires",
-                    "keys",
-                    "consistent_snapshot",
-                    "roles",
-                    "meta",
-                    "targets",
-                    "delegations"
+                    "expires"
                 ],
                 "title": "TUFSigned"
             },
             "TUFSigned-Output": {
                 "properties": {
-                    "type": {
+                    "_type": {
                         "type": "string",
-                        "title": "Type"
+                        "title": " Type"
                     },
                     "version": {
                         "type": "integer",
@@ -1281,16 +1551,10 @@
                 "additionalProperties": true,
                 "type": "object",
                 "required": [
-                    "type",
+                    "_type",
                     "version",
                     "spec_version",
-                    "expires",
-                    "keys",
-                    "consistent_snapshot",
-                    "roles",
-                    "meta",
-                    "targets",
-                    "delegations"
+                    "expires"
                 ],
                 "title": "TUFSigned"
             },
@@ -1391,9 +1655,7 @@
                     "name",
                     "terminating",
                     "keyids",
-                    "threshold",
-                    "paths",
-                    "path_hash_prefixes"
+                    "threshold"
                 ],
                 "title": "TUFSignedDelegationsRoles"
             },
@@ -1508,8 +1770,7 @@
                 "type": "object",
                 "required": [
                     "length",
-                    "hashes",
-                    "custom"
+                    "hashes"
                 ],
                 "title": "TargetsInfo"
             },
@@ -1603,14 +1864,6 @@
                     }
                 },
                 "type": "object",
-                "required": [
-                    "message",
-                    "error",
-                    "status",
-                    "task",
-                    "last_update",
-                    "details"
-                ],
                 "title": "TaskResult"
             },
             "TaskState": {
@@ -1660,8 +1913,7 @@
                 "type": "object",
                 "required": [
                     "task_id",
-                    "state",
-                    "result"
+                    "state"
                 ],
                 "title": "TasksData"
             },
@@ -1777,12 +2029,19 @@
                     }
                 },
                 "type": "object",
-                "required": [
-                    "data",
-                    "message"
-                ],
                 "title": "Response",
-                "description": "Targets Response"
+                "description": "Targets Response",
+                "example": {
+                    "data": {
+                        "last_update": "2022-12-01T12:10:00.578086",
+                        "targets": [
+                            "file1.tar.gz",
+                            "file2.tar.gz"
+                        ],
+                        "task_id": "06ee6db3cbab4b26be505352c2f2e2c3"
+                    },
+                    "message": "New Artifact(s) successfully submitted."
+                }
             },
             "repository_service_tuf_api__tasks__Response": {
                 "properties": {
@@ -1803,10 +2062,30 @@
                 },
                 "type": "object",
                 "required": [
-                    "data",
-                    "message"
+                    "data"
                 ],
-                "title": "Response"
+                "title": "Response",
+                "example": {
+                    "data": {
+                        "result": {
+                            "details": {
+                                "target_roles": [
+                                    "bins-3"
+                                ],
+                                "targets": [
+                                    "file1.tar.gz"
+                                ]
+                            },
+                            "last_update": "2023-11-17T09:54:15.762882",
+                            "message": "Target(s) Added",
+                            "status": true,
+                            "task": "add_targets"
+                        },
+                        "state": "SUCCESS",
+                        "task_id": "33e66671dcc84cdfa2535a1eb030104c"
+                    },
+                    "message": "Task state."
+                }
             }
         }
     }
