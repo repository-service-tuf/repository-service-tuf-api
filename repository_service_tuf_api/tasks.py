@@ -44,14 +44,9 @@ class GetParameters(BaseModel):
 
 class TaskResult(BaseModel):
     message: Optional[str] = Field(description="Result detail description")
-    error: Optional[str] = Field(
-        description=(
-            "If the task status result is `False` shows an error message"
-        )
-    )
+    error: Optional[str] = Field(description="Error message")
     status: Optional[bool] = Field(
         description="Task result status. `True` Success | `False` Failure",
-        exclude=True,
     )
     task: Optional[TaskName] = Field(description="Task name by worker")
     last_update: Optional[datetime] = Field(
@@ -66,7 +61,7 @@ class TasksData(BaseModel):
     task_id: str = Field(description="Task ID")
     state: TaskState = Field(
         description=(
-            "The Celery task state. Note: It isn't the task result status.\n\n"
+            "The Celery task state.\n\n"
             "`PENDING`: Task state is unknown (assumed pending since you know "
             "the id).\n\n"
             "`RECEIVED`: Task received by a RSTUF Worker (only used in "
@@ -136,7 +131,7 @@ def get(task_id: str) -> Response:
     # and default message as critical failure executing the task.
     if isinstance(task.result, Exception):
         task_result = {
-            "message": f"Task failure: {str(task.result)}",
+            "message": str(task.result),
         }
 
     # If the task state is SUCCESS and the task result is False we considere

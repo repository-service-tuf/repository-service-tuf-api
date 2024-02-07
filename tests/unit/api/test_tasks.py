@@ -47,6 +47,7 @@ class TestGetTask:
                     "task": "add_targets",
                     "last_update": "2023-11-17T09:54:15.762882",
                     "message": "Target(s) Added",
+                    "status": True,
                     "details": {
                         "targets": [
                             "file1.tar.gz",
@@ -82,7 +83,7 @@ class TestGetTask:
                 "task_id": "test_id",
                 "state": "FAILURE",
                 "result": {
-                    "message": "Task failure: Failed to load",
+                    "message": "Failed to load",
                 },
             },
             "message": "Task state.",
@@ -122,6 +123,7 @@ class TestGetTask:
                     "task": "sign_metadata",
                     "last_update": "2023-11-17T09:54:15.762882",
                     "message": "Signature Failed",
+                    "status": False,
                     "error": "No signatures pending for root",
                 },
             },
