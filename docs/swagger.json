@@ -1277,7 +1277,32 @@
                                 "type": "null"
                             }
                         ],
-                        "title": "Name"
+                        "title": "Name",
+                        "description": "Use x-rstuf-key-name instead. Key Name"
+                    },
+                    "x-rstuf-key-name": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "X-Rstuf-Key-Name",
+                        "description": "Key Name"
+                    },
+                    "x-rstuf-online-key-uri": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "X-Rstuf-Online-Key-Uri",
+                        "description": "Online Key URI"
                     }
                 },
                 "type": "object",
