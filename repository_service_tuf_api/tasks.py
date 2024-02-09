@@ -5,7 +5,7 @@
 
 import enum
 from datetime import datetime
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, Optional
 
 from celery import states
 from pydantic import BaseModel, Field
@@ -42,49 +42,44 @@ class GetParameters(BaseModel):
     task_id: str
 
 
-class TaskDetails(BaseModel):
-    message: str = Field(description="Result detail description")
-    error: Optional[str] = Field(
-        description=(
-            "If the task status result is `False` shows an error message"
-        )
+class TaskResult(BaseModel):
+    message: Optional[str] = Field(description="Result detail description")
+    error: Optional[str] = Field(description="Error message")
+    status: Optional[bool] = Field(
+        description="Task result status. `True` Success | `False` Failure",
+    )
+    task: Optional[TaskName] = Field(description="Task name by worker")
+    last_update: Optional[datetime] = Field(
+        description="Last time task was updated"
     )
     details: Optional[Dict[str, Any]] = Field(
-        description="Any releavant information from task"
+        description="Relevant result details"
     )
-
-
-class TaskResult(BaseModel):
-    status: bool = Field(
-        description="Task result status. `True` Success | `False` Failure"
-    )
-    task: TaskName = Field(description="Task name by worker")
-    last_update: datetime = Field(description="Last time task was updated")
-    details: TaskDetails = Field(description="Relevant result details")
 
 
 class TasksData(BaseModel):
     task_id: str = Field(description="Task ID")
     state: TaskState = Field(
         description=(
-            "The Celery task state. Note: It isn't the task result status.\n\n"
+            "The Celery task state.\n\n"
             "`PENDING`: Task state is unknown (assumed pending since you know "
             "the id).\n\n"
-            "`RECEIVED`: Task received by a worker (only used in events).\n\n"
-            "`STARTED`: Task started by a worker.\n\n"
-            "`RUNNING`: Task is running.\n\n"
+            "`RECEIVED`: Task received by a RSTUF Worker (only used in "
+            "events).\n\n"
             "`SUCCESS`: Task succeeded.\n\n"
-            "`FAILURE`: Task failed.\n\n"
+            "`STARTED`: Task started by a RSTUF Worker.\n\n"
+            "`RUNNING`: Task is running on RSTUF Worker.\n\n"
+            "`FAILURE`: Task failed (unexpected).\n\n"
+            "`REVOKED`: Task revoked.\n\n"
+            "`RETRY`: Task is waiting for retry.\n\n"
             "`ERRORED`: Task errored. RSTUF identified an error while "
             "processing the task.\n\n"
-            "`REVOKED`: Task revoked.\n\n"
             "`REJECTED`: Task was rejected (only used in events).\n\n"
+            "`IGNORED`: Task was ignored."
         )
     )
-    result: Optional[Union[Any, TaskResult]] = Field(
-        description=(
-            "Task result details (state `SUCCESS` uses schema `TaskResult)"
-        )
+    result: Optional[TaskResult] = Field(
+        description=("Task result if available.")
     )
 
 
@@ -99,7 +94,6 @@ class Response(BaseModel):
                 "state": TaskState.SUCCESS,
                 "result": {
                     "task": TaskName.ADD_TARGETS,
-                    "status": True,
                     "last_update": "2023-11-17T09:54:15.762882",
                     "message": "Target(s) Added",
                     "details": {
@@ -133,9 +127,16 @@ def get(task_id: str) -> Response:
     task_state = task.state
     task_result = task.result
 
+    # Celery FAILURE task, we include the task result (exception) as an error
+    # and default message as critical failure executing the task.
     if isinstance(task.result, Exception):
-        task_result = {"message": str(task.result)}
-    elif task_state == TaskState.SUCCESS and not task_result.get(
+        task_result = {
+            "message": str(task.result),
+        }
+
+    # If the task state is SUCCESS and the task result is False we considere
+    # it an errored task.
+    if task_state == TaskState.SUCCESS and not task_result.get(
         "status", False
     ):
         task_state = TaskState.ERRORED
