@@ -44,10 +44,10 @@ class TestGetTask:
                 "task_id": "test_id",
                 "state": "SUCCESS",
                 "result": {
-                    "status": True,
                     "task": "add_targets",
                     "last_update": "2023-11-17T09:54:15.762882",
                     "message": "Target(s) Added",
+                    "status": True,
                     "details": {
                         "targets": [
                             "file1.tar.gz",
@@ -66,7 +66,7 @@ class TestGetTask:
 
     def test_get_result_is_exception(self, test_client, monkeypatch):
         mocked_task_result = pretend.stub(
-            state="SUCCESS", result=ValueError("Failed to load")
+            state="FAILURE", result=ValueError("Failed to load")
         )
         mocked_repository_metadata = pretend.stub(
             AsyncResult=pretend.call_recorder(lambda t: mocked_task_result)
@@ -81,8 +81,10 @@ class TestGetTask:
         assert test_response.json() == {
             "data": {
                 "task_id": "test_id",
-                "state": "SUCCESS",
-                "result": {"message": "Failed to load"},
+                "state": "FAILURE",
+                "result": {
+                    "message": "Failed to load",
+                },
             },
             "message": "Task state.",
         }
@@ -118,10 +120,10 @@ class TestGetTask:
                 "task_id": "test_id",
                 "state": "ERRORED",
                 "result": {
-                    "status": False,
                     "task": "sign_metadata",
                     "last_update": "2023-11-17T09:54:15.762882",
                     "message": "Signature Failed",
+                    "status": False,
                     "error": "No signatures pending for root",
                 },
             },
