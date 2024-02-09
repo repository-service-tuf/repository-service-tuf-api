@@ -54,7 +54,15 @@ class TUFKeys(BaseModel):
     keytype: str
     scheme: str
     keyval: Dict[Literal["public", "private"], str]
-    name: Optional[str]
+    name: Optional[str] = Field(
+        description="Use x-rstuf-key-name instead. Key Name"
+    )
+    x_rstuf_key_name: Optional[str] = Field(
+        alias="x-rstuf-key-name", description="Key Name"
+    )
+    x_rstuf_online_key_uri: Optional[str] = Field(
+        alias="x-rstuf-online-key-uri", description="Online Key URI"
+    )
 
 
 class TUFSignedDelegations(BaseModel):
