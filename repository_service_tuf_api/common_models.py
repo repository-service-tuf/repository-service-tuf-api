@@ -113,7 +113,7 @@ class TUFSigned(BaseModel):
             v.alias or f for f, v in cls.model_fields.items()
         }
 
-        for field_name in list(values.keys()):
+        for field_name in values:
             if field_name not in all_required_field_names:
                 if (
                     not field_name.startswith("x")
