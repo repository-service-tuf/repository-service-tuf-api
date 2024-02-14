@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-fastapi = "~=0.99.1"
+fastapi = "*"
 uvicorn = "*"
 dynaconf = "*"
 celery = "*"

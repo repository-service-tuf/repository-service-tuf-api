@@ -8,10 +8,10 @@ import logging
 import time
 from datetime import datetime
 from threading import Thread
-from typing import Dict, Literal, Optional
+from typing import Dict, Literal
 
 from fastapi import HTTPException, status
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, Field
 
 from repository_service_tuf_api import (
     bootstrap_state,
@@ -26,13 +26,14 @@ from repository_service_tuf_api.common_models import (
     TUFMetadata,
 )
 
+with open("tests/data_examples/bootstrap/payload.json") as f:
+    content = f.read()
+payload_example = json.loads(content)
+
 
 class ServiceSettings(BaseModel):
     targets_base_url: str
-    # We cannot add the limit range
-    # https://github.com/tiangolo/fastapi/discussions/9140
-    # number_of_delegated_bins: int = Field(gt=1, lt=16385)
-    number_of_delegated_bins: int
+    number_of_delegated_bins: int = Field(gt=1, lt=16385)
     targets_online_key: bool
 
 
@@ -42,55 +43,50 @@ class Settings(BaseModel):
 
 
 class BootstrapPayload(BaseModel):
+    model_config = ConfigDict(json_schema_extra={"example": payload_example})
     settings: Settings
     metadata: Dict[Literal[Roles.ROOT.value], TUFMetadata]
-    timeout: Optional[int] = 300
-
-    class Config:
-        with open("tests/data_examples/bootstrap/payload.json") as f:
-            content = f.read()
-        example = json.loads(content)
-        schema_extra = {"example": example}
+    timeout: int | None = Field(default=300, description="Timeout in seconds")
 
 
 class PostData(BaseModel):
-    task_id: Optional[str]
+    task_id: str | None = None
     last_update: datetime
 
 
 class BootstrapPostResponse(BaseModel):
-    data: Optional[PostData]
-    message: str
-
-    class Config:
-        example = {
-            "data": {
-                "task_id": "7a634b556f784ae88785d36425f9a218",
-                "last_update": "2022-12-01T12:10:00.578086",
-            },
-            "message": "Bootstrap accepted.",
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "data": {
+                    "task_id": "7a634b556f784ae88785d36425f9a218",
+                    "last_update": "2022-12-01T12:10:00.578086",
+                },
+                "message": "Bootstrap accepted.",
+            }
         }
-
-        schema_extra = {"example": example}
+    )
+    data: PostData | None = None
+    message: str
 
 
 class GetData(BaseModel):
     bootstrap: bool
-    state: Optional[str]
-    id: Optional[str]
+    state: str | None = None
+    id: str | None = None
 
 
 class BootstrapGetResponse(BaseModel):
-    data: Optional[GetData]
-    message: str
-
-    class Config:
-        example = {
-            "data": {"bootstrap": False},
-            "message": "System available for bootstrap.",
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "data": {"bootstrap": False},
+                "message": "System available for bootstrap.",
+            }
         }
-
-        schema_extra = {"example": example}
+    )
+    data: GetData | None = None
+    message: str
 
 
 def _check_bootstrap_status(task_id, timeout):

@@ -8,7 +8,7 @@ from datetime import datetime
 from typing import Dict, Literal, Optional
 
 from fastapi import HTTPException, status
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from repository_service_tuf_api import (
     bootstrap_state,
@@ -18,38 +18,41 @@ from repository_service_tuf_api import (
 )
 from repository_service_tuf_api.common_models import Roles, TUFMetadata
 
+with open("tests/data_examples/metadata/update-root-payload.json") as f:
+    content = f.read()
+update_payload_example = json.loads(content)
+
+with open("tests/data_examples/bootstrap/das-payload.json") as f:
+    content = f.read()
+das_payload_example = json.loads(content)
+
 
 class MetadataPostPayload(BaseModel):
-    metadata: Dict[Literal[Roles.ROOT.value], TUFMetadata]
+    model_config = ConfigDict(
+        json_schema_extra={"example": update_payload_example}
+    )
 
-    class Config:
-        with open(
-            "tests/data_examples/metadata/update-root-payload.json"
-        ) as f:
-            content = f.read()
-        example = json.loads(content)
-        schema_extra = {"example": example}
+    metadata: Dict[Literal[Roles.ROOT.value], TUFMetadata]
 
 
 class PostData(BaseModel):
-    task_id: Optional[str]
+    task_id: str | None = None
     last_update: datetime
 
 
 class MetadataPostResponse(BaseModel):
-    data: Optional[PostData]
-    message: str
-
-    class Config:
-        example = {
-            "data": {
-                "task_id": "7a634b556f784ae88785d36425f9a218",
-                "last_update": "2022-12-01T12:10:00.578086",
-            },
-            "message": "Metadata Update accepted.",
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "data": {
+                    "task_id": "7a634b556f784ae88785d36425f9a218",
+                    "last_update": "2022-12-01T12:10:00.578086",
+                }
+            }
         }
-
-        schema_extra = {"example": example}
+    )
+    data: PostData | None = None
+    message: str
 
 
 def post_metadata(payload: MetadataPostPayload) -> MetadataPostResponse:
@@ -87,7 +90,7 @@ def post_metadata(payload: MetadataPostPayload) -> MetadataPostResponse:
 
 class RolesData(BaseModel):
     root: TUFMetadata
-    trusted_root: Optional[TUFMetadata]
+    trusted_root: TUFMetadata | None = None
 
 
 class SigningData(BaseModel):
@@ -95,16 +98,15 @@ class SigningData(BaseModel):
 
 
 class MetadataSignGetResponse(BaseModel):
-    data: Optional[SigningData]
-    message: str
-
-    class Config:
-        with open("tests/data_examples/bootstrap/das-payload.json") as f:
-            content = f.read()
-        example = json.loads(content)
-        schema_extra = {
-            "example": {"metadata": {"root": example["metadata"]["root"]}}
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "metadata": {"root": das_payload_example["metadata"]["root"]}
+            }
         }
+    )
+    data: SigningData | None = None
+    message: str
 
 
 def get_metadata_sign() -> MetadataSignGetResponse:
@@ -149,19 +151,18 @@ def get_metadata_sign() -> MetadataSignGetResponse:
 
 
 class MetadataSignPostResponse(BaseModel):
-    data: Optional[PostData]
-    message: str
-
-    class Config:
-        example = {
-            "data": {
-                "task_id": "7a634b556f784ae88785d36425f9a218",
-                "last_update": "2022-12-01T12:10:00.578086",
-            },
-            "message": "Metadata sign accepted.",
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "data": {
+                    "task_id": "7a634b556f784ae88785d36425f9a218",
+                    "last_update": "2022-12-01T12:10:00.578086",
+                }
+            }
         }
-
-        schema_extra = {"example": example}
+    )
+    data: PostData | None = None
+    message: str
 
 
 class MetadataSignature(BaseModel):
@@ -170,11 +171,8 @@ class MetadataSignature(BaseModel):
 
 
 class MetadataSignPostPayload(BaseModel):
-    role: str
-    signature: MetadataSignature
-
-    class Config:
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "role": "root",
                 "signature": {
@@ -190,6 +188,9 @@ class MetadataSignPostPayload(BaseModel):
                 },
             }
         }
+    )
+    role: str
+    signature: MetadataSignature
 
 
 def post_metadata_sign(
@@ -213,7 +214,7 @@ def post_metadata_sign(
     repository_metadata.apply_async(
         kwargs={
             "action": "sign_metadata",
-            "payload": payload.dict(by_alias=True, exclude_none=True),
+            "payload": payload.model_dump(by_alias=True, exclude_none=True),
         },
         task_id=task_id,
         queue="metadata_repository",
