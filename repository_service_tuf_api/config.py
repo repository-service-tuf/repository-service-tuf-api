@@ -51,7 +51,7 @@ class PutResponse(BaseModel):
 
 class Settings(BaseModel):
     # Only online roles can be dict keys
-    expiration: Dict[Roles.online_roles_values(), int]
+    expiration: Dict[str, int]
 
 
 class PutPayload(BaseModel):
