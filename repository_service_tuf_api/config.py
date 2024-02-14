@@ -16,7 +16,6 @@ from repository_service_tuf_api import (
     repository_metadata,
     settings_repository,
 )
-from repository_service_tuf_api.common_models import Roles
 
 with open("tests/data_examples/config/settings.json") as f:
     content = f.read()
