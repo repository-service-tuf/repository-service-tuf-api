@@ -5,9 +5,9 @@
 
 import datetime
 import json
-import pytest
 
 import pretend
+import pytest
 from fastapi import status
 
 BOOTSTRAP_URL = "/api/v1/bootstrap/"
@@ -518,7 +518,6 @@ class TestPostBootstrap:
                 },
             ]
         }
-
 
     def test_post_payload_no_bins_or_delegated_targets(
         self, test_client, monkeypatch
