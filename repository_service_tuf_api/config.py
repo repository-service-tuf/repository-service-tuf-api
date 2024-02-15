@@ -17,14 +17,6 @@ from repository_service_tuf_api import (
     settings_repository,
 )
 
-with open("tests/data_examples/config/settings.json") as f:
-    content = f.read()
-example_settings = json.loads(content)
-
-with open("tests/data_examples/config/update_settings.json") as f:
-    content = f.read()
-example_update_settings = json.loads(content)
-
 
 class PutData(BaseModel):
     task_id: str
@@ -53,10 +45,15 @@ class Settings(BaseModel):
     expiration: Dict[str, int]
 
 
+with open("tests/data_examples/config/update_settings.json") as f:
+    content = f.read()
+put_payload = json.loads(content)
+
+
 class PutPayload(BaseModel):
     model_config = ConfigDict(
         json_schema_extra={
-            "example": example_update_settings,
+            "example": put_payload,
         }
     )
 
@@ -94,6 +91,11 @@ def put(payload: PutPayload):
     return PutResponse(data=data, message="Settings successfully submitted.")
 
 
+with open("tests/data_examples/config/settings.json") as f:
+    content = f.read()
+example_settings = json.loads(content)
+
+
 class GetResponse(BaseModel):
     model_config = ConfigDict(
         json_schema_extra={
@@ -107,7 +109,7 @@ class GetResponse(BaseModel):
     message: str
 
 
-def get():
+def get() -> GetResponse:
     bs_state = bootstrap_state()
     if bs_state.bootstrap is False:
         raise HTTPException(
