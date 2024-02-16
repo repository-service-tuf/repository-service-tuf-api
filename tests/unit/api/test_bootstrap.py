@@ -443,14 +443,18 @@ class TestPostBootstrap:
         assert response.json() == {
             "detail": [
                 {
+                    "input": {},
                     "loc": ["body", "settings"],
-                    "msg": "field required",
-                    "type": "value_error.missing",
+                    "msg": "Field required",
+                    "type": "missing",
+                    "url": "https://errors.pydantic.dev/2.6/v/missing",
                 },
                 {
+                    "input": {},
                     "loc": ["body", "metadata"],
-                    "msg": "field required",
-                    "type": "value_error.missing",
+                    "msg": "Field required",
+                    "type": "missing",
+                    "url": "https://errors.pydantic.dev/2.6/v/missing",
                 },
             ]
         }
@@ -462,20 +466,40 @@ class TestPostBootstrap:
         assert response.json() == {
             "detail": [
                 {
+                    "type": "missing",
                     "loc": ["body", "settings", "expiration"],
-                    "msg": "field required",
-                    "type": "value_error.missing",
+                    "msg": "Field required",
+                    "input": {},
+                    "url": "https://errors.pydantic.dev/2.6/v/missing",
                 },
                 {
+                    "type": "missing",
                     "loc": ["body", "settings", "services"],
-                    "msg": "field required",
-                    "type": "value_error.missing",
+                    "msg": "Field required",
+                    "input": {},
+                    "url": "https://errors.pydantic.dev/2.6/v/missing",
                 },
                 {
-                    "loc": ["body", "metadata", "__key__"],
-                    "msg": "unexpected value; permitted: 'root'",
-                    "type": "value_error.const",
-                    "ctx": {"given": "timestamp", "permitted": ["root"]},
+                    "type": "literal_error",
+                    "loc": ["body", "metadata", "timestamp", "[key]"],
+                    "msg": "Input should be 'root'",
+                    "input": "timestamp",
+                    "ctx": {"expected": "'root'"},
+                    "url": "https://errors.pydantic.dev/2.6/v/literal_error",
+                },
+                {
+                    "type": "missing",
+                    "loc": ["body", "metadata", "timestamp", "signatures"],
+                    "msg": "Field required",
+                    "input": {},
+                    "url": "https://errors.pydantic.dev/2.6/v/missing",
+                },
+                {
+                    "type": "missing",
+                    "loc": ["body", "metadata", "timestamp", "signed"],
+                    "msg": "Field required",
+                    "input": {},
+                    "url": "https://errors.pydantic.dev/2.6/v/missing",
                 },
             ]
         }
