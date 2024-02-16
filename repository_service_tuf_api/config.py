@@ -5,10 +5,10 @@
 
 import json
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 from fastapi import HTTPException, status
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from repository_service_tuf_api import (
     bootstrap_state,
@@ -18,22 +18,26 @@ from repository_service_tuf_api import (
 )
 from repository_service_tuf_api.common_models import Roles
 
+with open("tests/data_examples/config/settings.json") as f:
+    content = f.read()
+example_settings = json.loads(content)
+
+with open("tests/data_examples/config/update_settings.json") as f:
+    content = f.read()
+example_update_settings = json.loads(content)
+
 
 class Response(BaseModel):
-    data: Dict[str, Any]
-    message: str
-
-    class Config:
-        with open("tests/data_examples/config/settings.json") as f:
-            content = f.read()
-        example_settings = json.loads(content)
-
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "data": example_settings,
                 "message": "Current Settings",
             }
         }
+    )
+    data: Dict[str, Any]
+    message: str
 
 
 class PutData(BaseModel):
@@ -42,23 +46,20 @@ class PutData(BaseModel):
 
 
 class PutResponse(BaseModel):
-    data: Optional[PutData]
-    message: str
-
-    class Config:
-        with open("tests/data_examples/config/update_settings.json") as f:
-            content = f.read()
-        example_settings = json.loads(content)
-
-        example = {
-            "data": {
-                "task_id": "06ee6db3cbab4b26be505352c2f2e2c3",
-                "last_update": "2022-12-01T12:10:00.578086",
-            },
-            "message": "Settings successfully submitted.",
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "data": {
+                    "task_id": "06ee6db3cbab4b26be505352c2f2e2c3",
+                    "last_update": "2022-12-01T12:10:00.578086",
+                },
+                "message": "Settings successfully submitted.",
+            }
         }
+    )
 
-        schema_extra = {"example": example}
+    data: PutData | None = None
+    message: str
 
 
 class Settings(BaseModel):
@@ -67,16 +68,13 @@ class Settings(BaseModel):
 
 
 class PutPayload(BaseModel):
-    settings: Settings
-
-    class Config:
-        with open("tests/data_examples/config/update_settings.json") as f:
-            content = f.read()
-        example_settings = json.loads(content)
-
-        schema_extra = {
-            "example": example_settings,
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": example_update_settings,
         }
+    )
+
+    settings: Settings
 
 
 def put(payload: PutPayload):

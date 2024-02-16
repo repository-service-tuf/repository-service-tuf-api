@@ -5,7 +5,7 @@
 
 import json
 from datetime import datetime
-from typing import Dict, Literal, Optional
+from typing import Dict, Literal
 
 from fastapi import HTTPException, status
 from pydantic import BaseModel, ConfigDict
@@ -231,31 +231,29 @@ def post_metadata_sign(
 
 
 class MetadataSignDeletePayload(BaseModel):
+    model_config = ConfigDict(json_schema_extra={"example": {"role": "root"}})
     role: str
-
-    class Config:
-        schema_extra = {"example": {"role": "root"}}
 
 
 class DeleteData(BaseModel):
-    task_id: Optional[str]
+    task_id: str | None = None
     last_update: datetime
 
 
 class MetadataSignDeleteResponse(BaseModel):
-    data: Optional[DeleteData]
-    message: str
-
-    class Config:
-        example = {
-            "data": {
-                "task_id": "7a634b556f784ae88785d36425f9a218",
-                "last_update": "2022-12-01T12:10:00.578086",
-            },
-            "message": "Metadata delete sign accepted.",
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "data": {
+                    "task_id": "7a634b556f784ae88785d36425f9a218",
+                    "last_update": "2022-12-01T12:10:00.578086",
+                },
+                "message": "Metadata delete sign accepted.",
+            }
         }
-
-        schema_extra = {"example": example}
+    )
+    data: DeleteData | None = None
+    message: str
 
 
 def delete_metadata_sign(payload: MetadataSignDeletePayload):

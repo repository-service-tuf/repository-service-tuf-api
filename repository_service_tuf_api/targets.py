@@ -16,6 +16,10 @@ from repository_service_tuf_api import (
     repository_metadata,
 )
 
+with open("tests/data_examples/targets/payload.json") as f:
+    content = f.read()
+add_payload = json.loads(content)
+
 
 class ResponseData(BaseModel):
     targets: List[str]
@@ -66,6 +70,7 @@ class AddPayload(BaseModel):
     POST method required Payload.
     """
 
+    model_config = ConfigDict(json_schema_extra={"example": add_payload})
     targets: List[Targets]
     add_task_id_to_custom: bool = Field(
         default=False,
@@ -74,12 +79,6 @@ class AddPayload(BaseModel):
     publish_targets: bool = Field(
         default=True, description="Whether to publish the targets"
     )
-
-    class Config:
-        with open("tests/data_examples/targets/payload.json") as f:
-            content = f.read()
-        payload = json.loads(content)
-        schema_extra = {"example": payload}
 
 
 class DeletePayload(BaseModel):
