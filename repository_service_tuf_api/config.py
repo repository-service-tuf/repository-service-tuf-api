@@ -27,19 +27,6 @@ with open("tests/data_examples/config/update_settings.json") as f:
 example_update_settings = json.loads(content)
 
 
-class GetResponse(BaseModel):
-    model_config = ConfigDict(
-        json_schema_extra={
-            "example": {
-                "data": example_settings,
-                "message": "Current Settings",
-            }
-        }
-    )
-    data: Dict[str, Any]
-    message: str
-
-
 class PutData(BaseModel):
     task_id: str
     last_update: datetime
@@ -106,6 +93,19 @@ def put(payload: PutPayload):
     }
 
     return PutResponse(data=data, message="Settings successfully submitted.")
+
+
+class GetResponse(BaseModel):
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "data": example_settings,
+                "message": "Current Settings",
+            }
+        }
+    )
+    data: Dict[str, Any]
+    message: str
 
 
 def get():
