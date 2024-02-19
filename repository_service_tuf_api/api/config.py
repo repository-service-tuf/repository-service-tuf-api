@@ -34,7 +34,7 @@ def put(payload: config.PutPayload):
     "/",
     summary="List settings.",
     description="Returns the configuration settings",
-    response_model=config.Response,
+    response_model=config.GetResponse,
     response_model_exclude_none=True,
 )
 def get():

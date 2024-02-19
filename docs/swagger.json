@@ -88,7 +88,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/repository_service_tuf_api__config__Response"
+                                    "$ref": "#/components/schemas/GetResponse"
                                 }
                             }
                         }
@@ -796,6 +796,48 @@
                     "bootstrap"
                 ],
                 "title": "GetData"
+            },
+            "GetResponse": {
+                "properties": {
+                    "data": {
+                        "type": "object",
+                        "title": "Data"
+                    },
+                    "message": {
+                        "type": "string",
+                        "title": "Message"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "data",
+                    "message"
+                ],
+                "title": "GetResponse",
+                "example": {
+                    "data": {
+                        "bins_expiration": 1,
+                        "bins_num_keys": 1,
+                        "bins_threshold": 1,
+                        "bootstrap": "82281613dba54b8ea88dc86211c77d0a",
+                        "number_of_delegated_bins": 4,
+                        "root_expiration": 365,
+                        "root_num_keys": 2,
+                        "root_threshold": 1,
+                        "snapshot_expiration": 1,
+                        "snapshot_num_keys": 1,
+                        "snapshot_threshold": 1,
+                        "targets_base_url": "http://www.example.com/repository/",
+                        "targets_expiration": 365,
+                        "targets_num_keys": 1,
+                        "targets_online_key": true,
+                        "targets_threshold": 1,
+                        "timestamp_expiration": 1,
+                        "timestamp_num_keys": 1,
+                        "timestamp_threshold": 1
+                    },
+                    "message": "Current Settings"
+                }
             },
             "HTTPValidationError": {
                 "properties": {
@@ -2053,48 +2095,6 @@
                     "services"
                 ],
                 "title": "Settings"
-            },
-            "repository_service_tuf_api__config__Response": {
-                "properties": {
-                    "data": {
-                        "type": "object",
-                        "title": "Data"
-                    },
-                    "message": {
-                        "type": "string",
-                        "title": "Message"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "data",
-                    "message"
-                ],
-                "title": "Response",
-                "example": {
-                    "data": {
-                        "bins_expiration": 1,
-                        "bins_num_keys": 1,
-                        "bins_threshold": 1,
-                        "bootstrap": "82281613dba54b8ea88dc86211c77d0a",
-                        "number_of_delegated_bins": 4,
-                        "root_expiration": 365,
-                        "root_num_keys": 2,
-                        "root_threshold": 1,
-                        "snapshot_expiration": 1,
-                        "snapshot_num_keys": 1,
-                        "snapshot_threshold": 1,
-                        "targets_base_url": "http://www.example.com/repository/",
-                        "targets_expiration": 365,
-                        "targets_num_keys": 1,
-                        "targets_online_key": true,
-                        "targets_threshold": 1,
-                        "timestamp_expiration": 1,
-                        "timestamp_num_keys": 1,
-                        "timestamp_threshold": 1
-                    },
-                    "message": "Current Settings"
-                }
             },
             "repository_service_tuf_api__config__Settings": {
                 "properties": {

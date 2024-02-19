@@ -27,7 +27,7 @@ with open("tests/data_examples/config/update_settings.json") as f:
 example_update_settings = json.loads(content)
 
 
-class Response(BaseModel):
+class GetResponse(BaseModel):
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
@@ -133,4 +133,4 @@ def get():
 
     current_settings = {**lower_case_settings}
 
-    return Response(data=current_settings, message="Current Settings")
+    return GetResponse(data=current_settings, message="Current Settings")
