@@ -1,7 +1,7 @@
 -i https://pypi.org/simple
 amqp==5.2.0; python_version >= '3.6'
 annotated-types==0.6.0; python_version >= '3.8'
-anyio==4.2.0; python_version >= '3.8'
+anyio==4.3.0; python_version >= '3.8'
 async-timeout==4.0.3; python_full_version <= '3.11.2'
 billiard==4.2.0; python_version >= '3.7'
 celery==5.3.6; python_version >= '3.8'
