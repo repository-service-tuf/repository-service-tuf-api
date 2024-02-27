@@ -528,6 +528,27 @@
                     ]
                 }
             },
+            "BinsRole": {
+                "properties": {
+                    "expiration": {
+                        "type": "integer",
+                        "exclusiveMinimum": 0.0,
+                        "title": "Expiration"
+                    },
+                    "number_of_delegated_bins": {
+                        "type": "integer",
+                        "exclusiveMaximum": 16385.0,
+                        "exclusiveMinimum": 1.0,
+                        "title": "Number Of Delegated Bins"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "expiration",
+                    "number_of_delegated_bins"
+                ],
+                "title": "BinsRole"
+            },
             "BootstrapGetResponse": {
                 "properties": {
                     "data": {
@@ -662,17 +683,23 @@
                         }
                     },
                     "settings": {
-                        "expiration": {
-                            "bins": 1,
-                            "root": 365,
-                            "snapshot": 1,
-                            "targets": 365,
-                            "timestamp": 1
-                        },
-                        "services": {
-                            "number_of_delegated_bins": 4,
-                            "targets_base_url": "http://www.example.com/repository/",
-                            "targets_online_key": true
+                        "roles": {
+                            "bins": {
+                                "expiration": 30,
+                                "number_of_delegated_bins": 4
+                            },
+                            "root": {
+                                "expiration": 365
+                            },
+                            "snapshot": {
+                                "expiration": 1
+                            },
+                            "targets": {
+                                "expiration": 365
+                            },
+                            "timestamp": {
+                                "expiration": 1
+                            }
                         }
                     }
                 }
@@ -706,6 +733,29 @@
                     },
                     "message": "Bootstrap accepted."
                 }
+            },
+            "DelegatedRole": {
+                "properties": {
+                    "expiration": {
+                        "type": "integer",
+                        "exclusiveMinimum": 0.0,
+                        "title": "Expiration"
+                    },
+                    "path_patterns": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "minItems": 1,
+                        "title": "Path Patterns"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "expiration",
+                    "path_patterns"
+                ],
+                "title": "DelegatedRole"
             },
             "DeleteData": {
                 "properties": {
@@ -827,7 +877,6 @@
                         "snapshot_expiration": 1,
                         "snapshot_num_keys": 1,
                         "snapshot_threshold": 1,
-                        "targets_base_url": "http://www.example.com/repository/",
                         "targets_expiration": 365,
                         "targets_num_keys": 1,
                         "targets_online_key": true,
@@ -1293,7 +1342,69 @@
                 ],
                 "title": "ResponseData"
             },
-            "RolesData": {
+            "Role": {
+                "properties": {
+                    "expiration": {
+                        "type": "integer",
+                        "exclusiveMinimum": 0.0,
+                        "title": "Expiration"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "expiration"
+                ],
+                "title": "Role"
+            },
+            "RolesData-Input": {
+                "properties": {
+                    "root": {
+                        "$ref": "#/components/schemas/Role"
+                    },
+                    "targets": {
+                        "$ref": "#/components/schemas/Role"
+                    },
+                    "snapshot": {
+                        "$ref": "#/components/schemas/Role"
+                    },
+                    "timestamp": {
+                        "$ref": "#/components/schemas/Role"
+                    },
+                    "bins": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/BinsRole"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "delegated_roles": {
+                        "anyOf": [
+                            {
+                                "additionalProperties": {
+                                    "$ref": "#/components/schemas/DelegatedRole"
+                                },
+                                "type": "object"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Delegated Roles"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "root",
+                    "targets",
+                    "snapshot",
+                    "timestamp"
+                ],
+                "title": "RolesData"
+            },
+            "RolesData-Output": {
                 "properties": {
                     "root": {
                         "$ref": "#/components/schemas/TUFMetadata-Output"
@@ -1315,35 +1426,10 @@
                 ],
                 "title": "RolesData"
             },
-            "ServiceSettings": {
-                "properties": {
-                    "targets_base_url": {
-                        "type": "string",
-                        "title": "Targets Base Url"
-                    },
-                    "number_of_delegated_bins": {
-                        "type": "integer",
-                        "exclusiveMaximum": 16385.0,
-                        "exclusiveMinimum": 1.0,
-                        "title": "Number Of Delegated Bins"
-                    },
-                    "targets_online_key": {
-                        "type": "boolean",
-                        "title": "Targets Online Key"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "targets_base_url",
-                    "number_of_delegated_bins",
-                    "targets_online_key"
-                ],
-                "title": "ServiceSettings"
-            },
             "SigningData": {
                 "properties": {
                     "metadata": {
-                        "$ref": "#/components/schemas/RolesData"
+                        "$ref": "#/components/schemas/RolesData-Output"
                     }
                 },
                 "type": "object",
@@ -2078,21 +2164,13 @@
             },
             "repository_service_tuf_api__bootstrap__Settings": {
                 "properties": {
-                    "expiration": {
-                        "additionalProperties": {
-                            "type": "integer"
-                        },
-                        "type": "object",
-                        "title": "Expiration"
-                    },
-                    "services": {
-                        "$ref": "#/components/schemas/ServiceSettings"
+                    "roles": {
+                        "$ref": "#/components/schemas/RolesData-Input"
                     }
                 },
                 "type": "object",
                 "required": [
-                    "expiration",
-                    "services"
+                    "roles"
                 ],
                 "title": "Settings"
             },
