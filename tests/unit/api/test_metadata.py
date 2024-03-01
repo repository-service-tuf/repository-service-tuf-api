@@ -172,7 +172,7 @@ class TestGetMetadataSign:
             "repository_service_tuf_api.metadata.bootstrap_state",
             mocked_bootstrap_state,
         )
-        with open("tests/data_examples/bootstrap/payload.json") as f:
+        with open("tests/data_examples/bootstrap/payload_bins.json") as f:
             md_content = f.read()
         metadata_data = json.loads(md_content)
         fake_metadata = pretend.stub(
@@ -220,7 +220,7 @@ class TestGetMetadataSign:
             "repository_service_tuf_api.metadata.bootstrap_state",
             mocked_bootstrap_state,
         )
-        with open("tests/data_examples/bootstrap/payload.json") as f:
+        with open("tests/data_examples/bootstrap/payload_bins.json") as f:
             md_content = f.read()
 
         metadata_data = json.loads(md_content)
