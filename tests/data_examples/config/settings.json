@@ -16,6 +16,5 @@
     "bins_threshold": 1,
     "bins_num_keys": 1,
     "number_of_delegated_bins": 4,
-    "targets_base_url": "http://www.example.com/repository/",
     "targets_online_key": true
 }

@@ -8,7 +8,7 @@ import logging
 import time
 from datetime import datetime
 from threading import Thread
-from typing import Dict, Literal
+from typing import Dict, Literal, Optional
 
 from fastapi import HTTPException, status
 from pydantic import BaseModel, ConfigDict, Field
@@ -26,20 +26,29 @@ from repository_service_tuf_api.common_models import (
     TUFMetadata,
 )
 
-with open("tests/data_examples/bootstrap/payload.json") as f:
+with open("tests/data_examples/bootstrap/payload_bins.json") as f:
     content = f.read()
 payload_example = json.loads(content)
 
 
-class ServiceSettings(BaseModel):
-    targets_base_url: str
+class Role(BaseModel):
+    expiration: int = Field(gt=0)
+
+
+class BinsRole(Role):
     number_of_delegated_bins: int = Field(gt=1, lt=16385)
-    targets_online_key: bool
+
+
+class RolesData(BaseModel):
+    root: Role
+    targets: Role
+    snapshot: Role
+    timestamp: Role
+    bins: Optional[BinsRole] = Field(default=None)
 
 
 class Settings(BaseModel):
-    expiration: Dict[Roles.values(), int]
-    services: ServiceSettings
+    roles: RolesData
 
 
 class BootstrapPayload(BaseModel):

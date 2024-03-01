@@ -97,7 +97,7 @@ class TestGetBootstrap:
 
 
 class TestPostBootstrap:
-    def test_post_bootstrap(self, test_client, monkeypatch):
+    def test_post_bootstrap_bins_delegation(self, test_client, monkeypatch):
         mocked_bootstrap_state = pretend.call_recorder(
             lambda *a: pretend.stub(
                 bootstrap=False, state="finished", task_id="task_id"
@@ -137,7 +137,7 @@ class TestPostBootstrap:
             "repository_service_tuf_api.bootstrap.datetime", fake_datetime
         )
 
-        with open("tests/data_examples/bootstrap/payload.json") as f:
+        with open("tests/data_examples/bootstrap/payload_bins.json") as f:
             f_data = f.read()
         payload = json.loads(f_data)
 
@@ -195,7 +195,7 @@ class TestPostBootstrap:
             "repository_service_tuf_api.bootstrap.datetime", fake_datetime
         )
 
-        with open("tests/data_examples/bootstrap/payload.json") as f:
+        with open("tests/data_examples/bootstrap/payload_bins.json") as f:
             f_data = f.read()
         payload = json.loads(f_data)
         payload["metadata"]["root"]["signed"]["x-v-n-url"] = "http://url.com"
@@ -242,7 +242,7 @@ class TestPostBootstrap:
             lambda *a: None,
         )
 
-        with open("tests/data_examples/bootstrap/payload.json") as f:
+        with open("tests/data_examples/bootstrap/payload_bins.json") as f:
             f_data = f.read()
         payload = json.loads(f_data)
         payload["metadata"]["root"]["signed"]["x-url"] = "http://example.com"
@@ -285,7 +285,7 @@ class TestPostBootstrap:
             lambda *a: None,
         )
 
-        with open("tests/data_examples/bootstrap/payload.json") as f:
+        with open("tests/data_examples/bootstrap/payload_bins.json") as f:
             f_data = f.read()
         payload = json.loads(f_data)
         payload["metadata"]["root"]["signed"]["vendor-url"] = "http://url.com"
@@ -339,7 +339,7 @@ class TestPostBootstrap:
             "repository_service_tuf_api.bootstrap.datetime", fake_datetime
         )
 
-        with open("tests/data_examples/bootstrap/payload.json") as f:
+        with open("tests/data_examples/bootstrap/payload_bins.json") as f:
             f_data = f.read()
         payload = json.loads(f_data)
         payload["timeout"] = 600
@@ -368,7 +368,7 @@ class TestPostBootstrap:
             "repository_service_tuf_api.bootstrap.bootstrap_state",
             mocked_bootstrap_state,
         )
-        with open("tests/data_examples/bootstrap/payload.json") as f:
+        with open("tests/data_examples/bootstrap/payload_bins.json") as f:
             f_data = f.read()
 
         payload = json.loads(f_data)
@@ -395,7 +395,7 @@ class TestPostBootstrap:
             "repository_service_tuf_api.bootstrap.bootstrap_state",
             mocked_bootstrap_state,
         )
-        with open("tests/data_examples/bootstrap/payload.json") as f:
+        with open("tests/data_examples/bootstrap/payload_bins.json") as f:
             f_data = f.read()
 
         payload = json.loads(f_data)
@@ -420,7 +420,7 @@ class TestPostBootstrap:
             "repository_service_tuf_api.bootstrap.bootstrap_state",
             mocked_bootstrap_state,
         )
-        with open("tests/data_examples/bootstrap/payload.json") as f:
+        with open("tests/data_examples/bootstrap/payload_bins.json") as f:
             f_data = f.read()
 
         payload = json.loads(f_data)
@@ -454,51 +454,6 @@ class TestPostBootstrap:
                     "loc": ["body", "metadata"],
                     "msg": "Field required",
                     "type": "missing",
-                    "url": "https://errors.pydantic.dev/2.6/v/missing",
-                },
-            ]
-        }
-
-    def test_post_payload_incorrect_md_format(self, test_client):
-        payload = {"settings": {}, "metadata": {"timestamp": {}}}
-        response = test_client.post(BOOTSTRAP_URL, json=payload)
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
-        assert response.json() == {
-            "detail": [
-                {
-                    "type": "missing",
-                    "loc": ["body", "settings", "expiration"],
-                    "msg": "Field required",
-                    "input": {},
-                    "url": "https://errors.pydantic.dev/2.6/v/missing",
-                },
-                {
-                    "type": "missing",
-                    "loc": ["body", "settings", "services"],
-                    "msg": "Field required",
-                    "input": {},
-                    "url": "https://errors.pydantic.dev/2.6/v/missing",
-                },
-                {
-                    "type": "literal_error",
-                    "loc": ["body", "metadata", "timestamp", "[key]"],
-                    "msg": "Input should be 'root'",
-                    "input": "timestamp",
-                    "ctx": {"expected": "'root'"},
-                    "url": "https://errors.pydantic.dev/2.6/v/literal_error",
-                },
-                {
-                    "type": "missing",
-                    "loc": ["body", "metadata", "timestamp", "signatures"],
-                    "msg": "Field required",
-                    "input": {},
-                    "url": "https://errors.pydantic.dev/2.6/v/missing",
-                },
-                {
-                    "type": "missing",
-                    "loc": ["body", "metadata", "timestamp", "signed"],
-                    "msg": "Field required",
-                    "input": {},
                     "url": "https://errors.pydantic.dev/2.6/v/missing",
                 },
             ]
