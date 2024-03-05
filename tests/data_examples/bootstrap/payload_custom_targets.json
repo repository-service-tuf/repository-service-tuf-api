@@ -1,29 +1,29 @@
 {
-    "settings": {
-        "roles": {
-          "root": {
-              "expiration": 365
+  "settings": {
+      "roles": {
+        "root": {
+            "expiration": 365
+        },
+        "targets": {
+            "expiration": 365
+        },
+        "snapshot": {
+            "expiration": 1
+        },
+        "timestamp": {
+            "expiration": 1
+        },
+        "delegated_roles": {
+          "foo": {
+            "expiration": 30,
+            "path_patterns": ["project/f"]
           },
-          "targets": {
-              "expiration": 365
-          },
-          "snapshot": {
-              "expiration": 1
-          },
-          "timestamp": {
-              "expiration": 1
-          },
-          "delegated_roles": {
-            "foo": {
-              "expiration": 30,
-              "path_patterns": ["project/f"]
-            },
-            "bar": {
-              "expiration": 60,
-              "path_patterns": ["project/b"]
-            }
+          "bar": {
+            "expiration": 60,
+            "path_patterns": ["project/b"]
           }
         }
+      }
     },
     "metadata": {
       "root": {
