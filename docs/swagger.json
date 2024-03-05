@@ -3,7 +3,7 @@
     "info": {
         "title": "Repository Service for TUF API",
         "description": "Repository Service for TUF Rest API",
-        "version": "0.11.1b1"
+        "version": "0.12.0b1"
     },
     "paths": {
         "/api/v1/bootstrap/": {
