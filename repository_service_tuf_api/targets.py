@@ -5,16 +5,20 @@
 
 import json
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 from fastapi import HTTPException, status
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from repository_service_tuf_api import (
     bootstrap_state,
     get_task_id,
     repository_metadata,
 )
+
+with open("tests/data_examples/targets/payload.json") as f:
+    content = f.read()
+add_payload = json.loads(content)
 
 
 class ResponseData(BaseModel):
@@ -28,19 +32,21 @@ class Response(BaseModel):
     Targets Response
     """
 
-    data: Optional[ResponseData]
-    message: Optional[str]
-
-    class Config:
-        data_example = {
-            "data": {
-                "targets": ["file1.tar.gz", "file2.tar.gz"],
-                "task_id": "06ee6db3cbab4b26be505352c2f2e2c3",
-                "last_update": "2022-12-01T12:10:00.578086",
-            },
-            "message": "New Artifact(s) successfully submitted.",
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "data": {
+                    "targets": ["file1.tar.gz", "file2.tar.gz"],
+                    "task_id": "06ee6db3cbab4b26be505352c2f2e2c3",
+                    "last_update": "2022-12-01T12:10:00.578086",
+                },
+                "message": "New Artifact(s) successfully submitted.",
+            }
         }
-        schema_extra = {"example": data_example}
+    )
+
+    data: ResponseData | None = None
+    message: str | None = None
 
 
 class TargetsInfo(BaseModel):
@@ -51,7 +57,7 @@ class TargetsInfo(BaseModel):
             "a TUF client"
         )
     )
-    custom: Optional[Dict[str, Any]]
+    custom: Dict[str, Any] | None = None
 
 
 class Targets(BaseModel):
@@ -64,6 +70,7 @@ class AddPayload(BaseModel):
     POST method required Payload.
     """
 
+    model_config = ConfigDict(json_schema_extra={"example": add_payload})
     targets: List[Targets]
     add_task_id_to_custom: bool = Field(
         default=False,
@@ -73,32 +80,27 @@ class AddPayload(BaseModel):
         default=True, description="Whether to publish the targets"
     )
 
-    class Config:
-        with open("tests/data_examples/targets/payload.json") as f:
-            content = f.read()
-        payload = json.loads(content)
-        schema_extra = {"example": payload}
-
 
 class DeletePayload(BaseModel):
     """
     DELETE method required Payload.
     """
 
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "targets": [
+                    "v3.4.1/file-3.4.1.tar.gz",
+                    "config-3.4.1.yaml",
+                    "file1.tar.gz",
+                ]
+            }
+        }
+    )
     targets: List[str]
     publish_targets: bool = Field(
         default=True, description="Whether to publish the targets changes"
     )
-
-    class Config:
-        payload = {
-            "targets": [
-                "v3.4.1/file-3.4.1.tar.gz",
-                "config-3.4.1.yaml",
-                "file1.tar.gz",
-            ]
-        }
-        schema_extra = {"example": payload}
 
 
 def post(payload: AddPayload) -> Response:

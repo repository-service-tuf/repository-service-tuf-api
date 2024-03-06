@@ -5,10 +5,10 @@
 
 import enum
 from datetime import datetime
-from typing import Any, Optional, Union
+from typing import Any, Dict
 
 from celery import states
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from repository_service_tuf_api import repository_metadata
 
@@ -23,6 +23,7 @@ class TaskState(str, enum.Enum):
     REJECTED = states.REJECTED
     RETRY = states.RETRY
     IGNORED = states.IGNORED
+    ERRORED = "ERRORED"
     RUNNING = "RUNNING"  # custom state used when a task is RUNNING in RSTUF
 
 
@@ -41,68 +42,78 @@ class GetParameters(BaseModel):
     task_id: str
 
 
-class TaskDetails(BaseModel):
-    message: str = Field(description="Result detail description")
-    error: Optional[str] = Field(
-        description=(
-            "If the task status result is `False` shows an error message"
-        )
-    )
-    any: Any = Field(description="Any releavant information from task")
-
-
 class TaskResult(BaseModel):
-    status: bool = Field(
-        description="Task result status. `True` Success | `False` Failure"
+    message: str | None = Field(
+        description="Result detail description", default=None
     )
-    task: TaskName = Field(description="Task name by worker")
-    last_update: datetime = Field(description="Last time task was updated")
-    details: TaskDetails = Field(description="Relevant result details")
+    error: str | None = Field(description="Error message", default=None)
+    status: None | bool = Field(
+        description="Task result status. `True` Success | `False` Failure",
+        default=None,
+    )
+    task: TaskName | None = Field(
+        description="Task name by worker", default=None
+    )
+    last_update: datetime | None = Field(
+        description="Last time task was updated", default=None
+    )
+    details: Dict[str, Any] | None = Field(
+        description="Relevant result details",
+        default=None,
+    )
 
 
 class TasksData(BaseModel):
     task_id: str = Field(description="Task ID")
     state: TaskState = Field(
         description=(
-            "The Celery task state. Note: It isn't the task result status.\n\n"
+            "The Celery task state.\n\n"
             "`PENDING`: Task state is unknown (assumed pending since you know "
             "the id).\n\n"
-            "`RECEIVED`: Task received by a worker (only used in events).\n\n"
-            "`STARTED`: Task started by a worker.\n\n"
-            "`RUNNING`: Task is running.\n\n"
+            "`RECEIVED`: Task received by a RSTUF Worker (only used in "
+            "events).\n\n"
             "`SUCCESS`: Task succeeded.\n\n"
-            "`FAILURE`: Task failed.\n\n"
+            "`STARTED`: Task started by a RSTUF Worker.\n\n"
+            "`RUNNING`: Task is running on RSTUF Worker.\n\n"
+            "`FAILURE`: Task failed (unexpected).\n\n"
             "`REVOKED`: Task revoked.\n\n"
+            "`RETRY`: Task is waiting for retry.\n\n"
+            "`ERRORED`: Task errored. RSTUF identified an error while "
+            "processing the task.\n\n"
             "`REJECTED`: Task was rejected (only used in events).\n\n"
+            "`IGNORED`: Task was ignored."
         )
     )
-    result: Optional[Union[Any, TaskResult]] = Field(
-        description=(
-            "Task result details (state `SUCCESS` uses schema `TaskResult)"
-        )
+    result: TaskResult | None = Field(
+        description=("Task result if available."),
+        default=None,
     )
 
 
 class Response(BaseModel):
-    data: TasksData
-    message: Optional[str]
-
-    class Config:
-        data_example = {
-            "data": {
-                "task_id": "33e66671dcc84cdfa2535a1eb030104c",
-                "state": TaskState.SUCCESS,
-                "result": {
-                    "status": True,
-                    "task": TaskName.ADD_TARGETS,
-                    "last_update": "2023-11-17T09:54:15.762882",
-                    "details": {"message": "Target(s) Added"},
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "data": {
+                    "task_id": "33e66671dcc84cdfa2535a1eb030104c",
+                    "state": TaskState.SUCCESS,
+                    "result": {
+                        "task": TaskName.ADD_TARGETS,
+                        "status": True,
+                        "last_update": "2023-11-17T09:54:15.762882",
+                        "message": "Target(s) Added",
+                        "details": {
+                            "targets": ["file1.tar.gz"],
+                            "target_roles": ["bins-3"],
+                        },
+                    },
                 },
-            },
-            "message": "Task state.",
+                "message": "Task state.",
+            }
         }
-
-        schema_extra = {"example": data_example}
+    )
+    data: TasksData
+    message: str | None = None
 
 
 def get(task_id: str) -> Response:
@@ -120,12 +131,25 @@ def get(task_id: str) -> Response:
         ``Response`` as BaseModel from pydantic
     """
     task = repository_metadata.AsyncResult(task_id)
+
+    task_state = task.state
+    task_result = task.result
+
+    # Celery FAILURE task, we include the task result (exception) as an error
+    # and default message as critical failure executing the task.
     if isinstance(task.result, Exception):
-        task_result = str(task.result)
-    else:
-        task_result = task.result
+        task_result = {
+            "message": str(task.result),
+        }
+
+    # If the task state is SUCCESS and the task result is False we considere
+    # it an errored task.
+    if task_state == TaskState.SUCCESS and not task_result.get(
+        "status", False
+    ):
+        task_state = TaskState.ERRORED
 
     return Response(
-        data=TasksData(task_id=task_id, state=task.state, result=task_result),
+        data=TasksData(task_id=task_id, state=task_state, result=task_result),
         message="Task state.",
     )

@@ -76,7 +76,7 @@ class TestPostMetadata:
         payload = json.loads(f_data)
         response = test_client.post(METADATA_URL, json=payload)
 
-        assert response.status_code == status.HTTP_200_OK
+        assert response.status_code == status.HTTP_200_OK, response.text
         assert response.url == f"{test_client.base_url}{METADATA_URL}"
         assert response.json() == {
             "detail": {
@@ -122,23 +122,45 @@ class TestPostMetadata:
         assert response.json() == {
             "detail": [
                 {
+                    "type": "missing",
                     "loc": ["body", "metadata"],
-                    "msg": "field required",
-                    "type": "value_error.missing",
-                },
+                    "msg": "Field required",
+                    "input": {},
+                    "url": "https://errors.pydantic.dev/2.6/v/missing",
+                }
             ]
         }
 
-    def test_post_payload_incorrect_md_format(self, test_client):
+    def test_post_payload_incorrect_metadata_format(self, test_client):
         payload = {"metadata": {"timestamp": {}}}
         response = test_client.post(METADATA_URL, json=payload)
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
         assert {
-            "loc": ["body", "metadata", "__key__"],
-            "msg": "unexpected value; permitted: 'root'",
-            "type": "value_error.const",
-            "ctx": {"given": "timestamp", "permitted": ["root"]},
-        } in response.json()["detail"]
+            "detail": [
+                {
+                    "type": "literal_error",
+                    "loc": ["body", "metadata", "timestamp", "[key]"],
+                    "msg": "Input should be 'root'",
+                    "input": "timestamp",
+                    "ctx": {"expected": "'root'"},
+                    "url": "https://errors.pydantic.dev/2.6/v/literal_error",
+                },
+                {
+                    "type": "missing",
+                    "loc": ["body", "metadata", "timestamp", "signatures"],
+                    "msg": "Field required",
+                    "input": {},
+                    "url": "https://errors.pydantic.dev/2.6/v/missing",
+                },
+                {
+                    "type": "missing",
+                    "loc": ["body", "metadata", "timestamp", "signed"],
+                    "msg": "Field required",
+                    "input": {},
+                    "url": "https://errors.pydantic.dev/2.6/v/missing",
+                },
+            ]
+        } == response.json()
 
 
 class TestGetMetadataSign:
@@ -150,7 +172,7 @@ class TestGetMetadataSign:
             "repository_service_tuf_api.metadata.bootstrap_state",
             mocked_bootstrap_state,
         )
-        with open("tests/data_examples/bootstrap/payload.json") as f:
+        with open("tests/data_examples/bootstrap/payload_bins.json") as f:
             md_content = f.read()
         metadata_data = json.loads(md_content)
         fake_metadata = pretend.stub(
@@ -198,7 +220,7 @@ class TestGetMetadataSign:
             "repository_service_tuf_api.metadata.bootstrap_state",
             mocked_bootstrap_state,
         )
-        with open("tests/data_examples/bootstrap/payload.json") as f:
+        with open("tests/data_examples/bootstrap/payload_bins.json") as f:
             md_content = f.read()
 
         metadata_data = json.loads(md_content)

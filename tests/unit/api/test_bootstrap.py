@@ -97,7 +97,7 @@ class TestGetBootstrap:
 
 
 class TestPostBootstrap:
-    def test_post_bootstrap(self, test_client, monkeypatch):
+    def test_post_bootstrap_bins_delegation(self, test_client, monkeypatch):
         mocked_bootstrap_state = pretend.call_recorder(
             lambda *a: pretend.stub(
                 bootstrap=False, state="finished", task_id="task_id"
@@ -137,7 +137,7 @@ class TestPostBootstrap:
             "repository_service_tuf_api.bootstrap.datetime", fake_datetime
         )
 
-        with open("tests/data_examples/bootstrap/payload.json") as f:
+        with open("tests/data_examples/bootstrap/payload_bins.json") as f:
             f_data = f.read()
         payload = json.loads(f_data)
 
@@ -154,6 +154,150 @@ class TestPostBootstrap:
         assert mocked__check_bootstrap_status.calls == [
             pretend.call(task_id="123", timeout=300)
         ]
+
+    def test_post_bootstrap_unrecognized_field(self, test_client, monkeypatch):
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda *a: pretend.stub(
+                bootstrap=False, state="finished", task_id="task_id"
+            )
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.bootstrap.bootstrap_state",
+            mocked_bootstrap_state,
+        )
+        mocked_async_result = pretend.stub(state="SUCCESS")
+        mocked_repository_metadata = pretend.stub(
+            apply_async=pretend.call_recorder(lambda *a, **kw: None),
+            AsyncResult=pretend.call_recorder(lambda *a: mocked_async_result),
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.bootstrap.repository_metadata",
+            mocked_repository_metadata,
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.bootstrap.get_task_id", lambda: "123"
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.bootstrap.pre_lock_bootstrap",
+            lambda *a: None,
+        )
+        mocked__check_bootstrap_status = pretend.call_recorder(lambda *a: None)
+        monkeypatch.setattr(
+            "repository_service_tuf_api.bootstrap._check_bootstrap_status",
+            mocked__check_bootstrap_status,
+        )
+
+        fake_time = datetime.datetime(2019, 6, 16, 9, 5, 1)
+        fake_datetime = pretend.stub(
+            now=pretend.call_recorder(lambda: fake_time)
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.bootstrap.datetime", fake_datetime
+        )
+
+        with open("tests/data_examples/bootstrap/payload_bins.json") as f:
+            f_data = f.read()
+        payload = json.loads(f_data)
+        payload["metadata"]["root"]["signed"]["x-v-n-url"] = "http://url.com"
+        response = test_client.post(BOOTSTRAP_URL, json=payload)
+
+        assert fake_datetime.now.calls == [pretend.call()]
+        assert response.status_code == status.HTTP_202_ACCEPTED
+        assert response.url == f"{test_client.base_url}{BOOTSTRAP_URL}"
+        assert response.json() == {
+            "message": "Bootstrap accepted.",
+            "data": {"task_id": "123", "last_update": "2019-06-16T09:05:01"},
+        }
+        assert mocked_bootstrap_state.calls == [pretend.call()]
+        assert mocked__check_bootstrap_status.calls == [
+            pretend.call(task_id="123", timeout=300)
+        ]
+
+    def test_post_bootstrap_unrecognized_field_invalid(
+        self, test_client, monkeypatch
+    ):
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda *a: pretend.stub(
+                bootstrap=False, state="finished", task_id="task_id"
+            )
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.bootstrap.bootstrap_state",
+            mocked_bootstrap_state,
+        )
+        mocked_async_result = pretend.stub(state="SUCCESS")
+        mocked_repository_metadata = pretend.stub(
+            apply_async=pretend.call_recorder(lambda *a, **kw: None),
+            AsyncResult=pretend.call_recorder(lambda *a: mocked_async_result),
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.bootstrap.repository_metadata",
+            mocked_repository_metadata,
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.bootstrap.get_task_id", lambda: "123"
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.bootstrap.pre_lock_bootstrap",
+            lambda *a: None,
+        )
+
+        with open("tests/data_examples/bootstrap/payload_bins.json") as f:
+            f_data = f.read()
+        payload = json.loads(f_data)
+        payload["metadata"]["root"]["signed"]["x-url"] = "http://example.com"
+
+        response = test_client.post(BOOTSTRAP_URL, json=payload)
+
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.url == f"{test_client.base_url}{BOOTSTRAP_URL}"
+        assert (
+            "unrecognized_field must use format x-<vendor>-<name>"
+            in response.text
+        )
+
+    def test_post_bootstrap_unrecognized_field_must_start_with_x(
+        self, test_client, monkeypatch
+    ):
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda *a: pretend.stub(
+                bootstrap=False, state="finished", task_id="task_id"
+            )
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.bootstrap.bootstrap_state",
+            mocked_bootstrap_state,
+        )
+        mocked_async_result = pretend.stub(state="SUCCESS")
+        mocked_repository_metadata = pretend.stub(
+            apply_async=pretend.call_recorder(lambda *a, **kw: None),
+            AsyncResult=pretend.call_recorder(lambda *a: mocked_async_result),
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.bootstrap.repository_metadata",
+            mocked_repository_metadata,
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.bootstrap.get_task_id", lambda: "123"
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.bootstrap.pre_lock_bootstrap",
+            lambda *a: None,
+        )
+
+        with open("tests/data_examples/bootstrap/payload_bins.json") as f:
+            f_data = f.read()
+        payload = json.loads(f_data)
+        payload["metadata"]["root"]["signed"]["vendor-url"] = "http://url.com"
+
+        response = test_client.post(BOOTSTRAP_URL, json=payload)
+
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.url == f"{test_client.base_url}{BOOTSTRAP_URL}"
+        assert (
+            "unrecognized_field must use format x-<vendor>-<name>"
+            in response.text
+        )
 
     def test_post_bootstrap_custom_timeout(self, test_client, monkeypatch):
         mocked_bootstrap_state = pretend.call_recorder(
@@ -195,7 +339,7 @@ class TestPostBootstrap:
             "repository_service_tuf_api.bootstrap.datetime", fake_datetime
         )
 
-        with open("tests/data_examples/bootstrap/payload.json") as f:
+        with open("tests/data_examples/bootstrap/payload_bins.json") as f:
             f_data = f.read()
         payload = json.loads(f_data)
         payload["timeout"] = 600
@@ -224,7 +368,7 @@ class TestPostBootstrap:
             "repository_service_tuf_api.bootstrap.bootstrap_state",
             mocked_bootstrap_state,
         )
-        with open("tests/data_examples/bootstrap/payload.json") as f:
+        with open("tests/data_examples/bootstrap/payload_bins.json") as f:
             f_data = f.read()
 
         payload = json.loads(f_data)
@@ -251,7 +395,7 @@ class TestPostBootstrap:
             "repository_service_tuf_api.bootstrap.bootstrap_state",
             mocked_bootstrap_state,
         )
-        with open("tests/data_examples/bootstrap/payload.json") as f:
+        with open("tests/data_examples/bootstrap/payload_bins.json") as f:
             f_data = f.read()
 
         payload = json.loads(f_data)
@@ -276,7 +420,7 @@ class TestPostBootstrap:
             "repository_service_tuf_api.bootstrap.bootstrap_state",
             mocked_bootstrap_state,
         )
-        with open("tests/data_examples/bootstrap/payload.json") as f:
+        with open("tests/data_examples/bootstrap/payload_bins.json") as f:
             f_data = f.read()
 
         payload = json.loads(f_data)
@@ -299,39 +443,18 @@ class TestPostBootstrap:
         assert response.json() == {
             "detail": [
                 {
+                    "input": {},
                     "loc": ["body", "settings"],
-                    "msg": "field required",
-                    "type": "value_error.missing",
+                    "msg": "Field required",
+                    "type": "missing",
+                    "url": "https://errors.pydantic.dev/2.6/v/missing",
                 },
                 {
+                    "input": {},
                     "loc": ["body", "metadata"],
-                    "msg": "field required",
-                    "type": "value_error.missing",
-                },
-            ]
-        }
-
-    def test_post_payload_incorrect_md_format(self, test_client):
-        payload = {"settings": {}, "metadata": {"timestamp": {}}}
-        response = test_client.post(BOOTSTRAP_URL, json=payload)
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
-        assert response.json() == {
-            "detail": [
-                {
-                    "loc": ["body", "settings", "expiration"],
-                    "msg": "field required",
-                    "type": "value_error.missing",
-                },
-                {
-                    "loc": ["body", "settings", "services"],
-                    "msg": "field required",
-                    "type": "value_error.missing",
-                },
-                {
-                    "loc": ["body", "metadata", "__key__"],
-                    "msg": "unexpected value; permitted: 'root'",
-                    "type": "value_error.const",
-                    "ctx": {"given": "timestamp", "permitted": ["root"]},
+                    "msg": "Field required",
+                    "type": "missing",
+                    "url": "https://errors.pydantic.dev/2.6/v/missing",
                 },
             ]
         }

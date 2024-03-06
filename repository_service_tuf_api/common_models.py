@@ -1,12 +1,12 @@
-# SPDX-FileCopyrightText: 2023 Repository Service for TUF Contributors
+# SPDX-FileCopyrightText: 2023-2024 Repository Service for TUF Contributors
 # SPDX-FileCopyrightText: 2022-2023 VMware Inc
 #
 # SPDX-License-Identifier: MIT
 
 from enum import Enum
-from typing import Dict, List, Literal, Optional
+from typing import Any, Dict, List, Literal, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class Roles(Enum):
@@ -27,8 +27,12 @@ class Roles(Enum):
 
 class BaseErrorResponse(BaseModel):
     error: str = Field(description="Error message")
-    details: Optional[Dict[str, str]] = Field(description="Error details")
-    code: Optional[int] = Field(description="Error code if available")
+    details: Dict[str, str] | None = Field(
+        description="Error details", default=None
+    )
+    code: int | None = Field(
+        description="Error code if available", default=None
+    )
 
 
 class TUFSignedDelegationsRoles(BaseModel):
@@ -36,8 +40,8 @@ class TUFSignedDelegationsRoles(BaseModel):
     terminating: bool
     keyids: List[str]
     threshold: int
-    paths: Optional[List[str]]
-    path_hash_prefixes: Optional[List[str]]
+    paths: List[str] | None = None
+    path_hash_prefixes: List[str] | None = None
 
 
 class TUFSignedDelegationsSuccinctRoles(BaseModel):
@@ -53,14 +57,25 @@ class TUFSignedDelegationsSuccinctRoles(BaseModel):
 class TUFKeys(BaseModel):
     keytype: str
     scheme: str
-    keyval: Dict[Literal["public", "private"], str]
-    name: Optional[str]
+    keyval: Dict[Literal["public"], str]
+    name: str | None = Field(
+        description="Use x-rstuf-key-name instead. Key Name",
+        default=None,
+    )
+    x_rstuf_key_name: str | None = Field(
+        alias="x-rstuf-key-name", description="Key Name", default=None
+    )
+    x_rstuf_online_key_uri: Optional[str] = Field(
+        alias="x-rstuf-online-key-uri",
+        description="Online Key URI",
+        default=None,
+    )
 
 
 class TUFSignedDelegations(BaseModel):
     keys: Dict[str, TUFKeys]
-    roles: Optional[List[TUFSignedDelegationsRoles]]
-    succinct_roles: Optional[TUFSignedDelegationsSuccinctRoles]
+    roles: List[TUFSignedDelegationsRoles] | None
+    succinct_roles: TUFSignedDelegationsSuccinctRoles | None
 
 
 class TUFSignedMetaFile(BaseModel):
@@ -73,19 +88,42 @@ class TUFSignedRoles(BaseModel):
 
 
 class TUFSigned(BaseModel):
-    type: str
+    model_config = ConfigDict(
+        extra="allow",
+    )
+
+    type: str = Field(alias="_type")
     version: int
     spec_version: str
     expires: str
-    keys: Optional[Dict[str, TUFKeys]]
-    consistent_snapshot: Optional[bool]
-    roles: Optional[Dict[Roles.values(), TUFSignedRoles]]
-    meta: Optional[Dict[str, TUFSignedMetaFile]]
-    targets: Optional[Dict[str, str]]
-    delegations: Optional[TUFSignedDelegations]
+    keys: Dict[str, TUFKeys] | None = None
+    consistent_snapshot: bool | None = None
+    roles: Dict[Roles.values(), TUFSignedRoles] | None = None
+    meta: Dict[str, TUFSignedMetaFile] | None = None
+    targets: Dict[str, str] | None = None
+    delegations: TUFSignedDelegations | None = None
 
-    class Config:
-        fields = {"type": "_type"}
+    # Custom Validator for the extra fields (TUF unrecognized_fields)
+    @model_validator(mode="before")
+    @classmethod
+    def validate_unrecognized_fields(
+        cls, values: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        all_required_field_names = {
+            v.alias or f for f, v in cls.model_fields.items()
+        }
+
+        for field_name in values:
+            if field_name not in all_required_field_names:
+                if (
+                    not field_name.startswith("x")
+                    or len(field_name.split("-")) < 3
+                ):
+                    raise ValueError(
+                        f"Invalid: `{field_name}` field name, "
+                        "unrecognized_field must use format x-<vendor>-<name>"
+                    )
+        return values
 
 
 class TUFSignatures(BaseModel):
