@@ -1,16 +1,22 @@
 {
   "settings": {
-    "expiration": {
-      "root": 365,
-      "targets": 365,
-      "snapshot": 1,
-      "timestamp": 1,
-      "bins": 1
-    },
-    "services": {
-      "number_of_delegated_bins": 4,
-      "targets_base_url": "f/",
-      "targets_online_key": true
+    "roles": {
+      "root": {
+          "expiration": 365
+      },
+      "targets": {
+          "expiration": 365
+      },
+      "snapshot": {
+          "expiration": 1
+      },
+      "timestamp": {
+          "expiration": 1
+      },
+      "bins": {
+        "expiration": 30,
+        "number_of_delegated_bins": 4
+      }
     }
   },
   "metadata": {
