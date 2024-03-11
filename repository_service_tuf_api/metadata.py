@@ -89,7 +89,7 @@ def post_metadata(payload: MetadataPostPayload) -> MetadataPostResponse:
     return MetadataPostResponse(data=data, message=message)
 
 
-class MetadataPutPayload(BaseModel):
+class MetadataOnlinePostPayload(BaseModel):
     roles: List[Roles.online_roles_values()]
 
     class Config:
@@ -98,7 +98,7 @@ class MetadataPutPayload(BaseModel):
         schema_extra = {"example": example}
 
 
-class MetadataPutResponse(BaseModel):
+class MetadataOnlinePostResponse(BaseModel):
     data: Optional[ResponseData]
     message: str
 
@@ -114,7 +114,9 @@ class MetadataPutResponse(BaseModel):
         schema_extra = {"example": example}
 
 
-def put_metadata(payload: MetadataPutPayload) -> MetadataPutResponse:
+def post_metadata_online(
+    payload: MetadataOnlinePostPayload
+) -> MetadataOnlinePostResponse:
     bs_state = bootstrap_state()
     if bs_state.bootstrap is False:
         raise HTTPException(
@@ -159,7 +161,7 @@ def put_metadata(payload: MetadataPutPayload) -> MetadataPutResponse:
         "task_id": task_id,
         "last_update": datetime.now(),
     }
-    return MetadataPutResponse(data=data, message=message)
+    return MetadataOnlinePostResponse(data=data, message=message)
 
 
 class RolesData(BaseModel):
