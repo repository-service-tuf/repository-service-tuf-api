@@ -9,6 +9,7 @@ from typing import Dict, List, Literal
 
 from fastapi import HTTPException, status
 from pydantic import BaseModel, ConfigDict
+from typing import List, Optional
 
 from repository_service_tuf_api import (
     bootstrap_state,
@@ -35,7 +36,7 @@ class MetadataPostPayload(BaseModel):
     metadata: Dict[Literal[Roles.ROOT.value], TUFMetadata]
 
 
-class PostData(BaseModel):
+class ResponseData(BaseModel):
     task_id: str | None = None
     last_update: datetime
 
@@ -51,7 +52,7 @@ class MetadataPostResponse(BaseModel):
             }
         }
     )
-    data: PostData | None = None
+    data: ResponseData | None = None
     message: str
 
 
@@ -98,7 +99,7 @@ class MetadataPutPayload(BaseModel):
 
 
 class MetadataPutResponse(BaseModel):
-    data: Optional[TaskData]
+    data: Optional[ResponseData]
     message: str
 
     class Config:
@@ -234,7 +235,7 @@ class MetadataSignPostResponse(BaseModel):
             }
         }
     )
-    data: PostData | None = None
+    data: ResponseData | None = None
     message: str
 
 
@@ -308,11 +309,6 @@ class MetadataSignDeletePayload(BaseModel):
     role: str
 
 
-class DeleteData(BaseModel):
-    task_id: str | None = None
-    last_update: datetime
-
-
 class MetadataSignDeleteResponse(BaseModel):
     model_config = ConfigDict(
         json_schema_extra={
@@ -325,7 +321,7 @@ class MetadataSignDeleteResponse(BaseModel):
             }
         }
     )
-    data: DeleteData | None = None
+    data: ResponseData | None = None
     message: str
 
 
