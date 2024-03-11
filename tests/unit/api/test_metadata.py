@@ -13,6 +13,7 @@ from fastapi import status
 import repository_service_tuf_api.common_models as common_models
 
 METADATA_URL = "/api/v1/metadata/"
+METADATA_ONLINE_URL = "/api/v1/metadata/online"
 SIGN_URL = "/api/v1/metadata/sign/"
 DELETE_SIGN_URL = "/api/v1/metadata/sign/delete"
 
@@ -165,8 +166,8 @@ class TestPostMetadata:
         } == response.json()
 
 
-class TestPutMetadata:
-    def test_put_metadata(self, test_client, monkeypatch):
+class TestPostMetadataOnline:
+    def test_post_metadata_online(self, test_client, monkeypatch):
         mocked_bootstrap_state = pretend.call_recorder(
             lambda: pretend.stub(bootstrap=True, state="ab123")
         )
@@ -204,7 +205,7 @@ class TestPutMetadata:
         )
         payload = {"roles": ["snapshot", "targets"]}
 
-        response = test_client.put(METADATA_URL, json=payload)
+        response = test_client.post(METADATA_ONLINE_URL, json=payload)
         assert response.status_code == status.HTTP_202_ACCEPTED, response.text
         assert response.json() == {
             "data": {
@@ -232,7 +233,9 @@ class TestPutMetadata:
         ]
         assert fake_datetime.now.calls == [pretend.call()]
 
-    def test_put_metadata_empty_payload(self, test_client, monkeypatch):
+    def test_post_metadata_online_empty_payload(
+        self, test_client, monkeypatch
+    ):
         mocked_bootstrap_state = pretend.call_recorder(
             lambda: pretend.stub(bootstrap=True, state="ab123")
         )
@@ -270,7 +273,7 @@ class TestPutMetadata:
         )
         payload = {"roles": []}
 
-        response = test_client.put(METADATA_URL, json=payload)
+        response = test_client.post(METADATA_ONLINE_URL, json=payload)
         assert response.status_code == status.HTTP_202_ACCEPTED, response.text
         assert response.json() == {
             "data": {
@@ -299,7 +302,9 @@ class TestPutMetadata:
         ]
         assert fake_datetime.now.calls == [pretend.call()]
 
-    def test_put_metadata_bootstrap_not_ready(self, test_client, monkeypatch):
+    def test_post_metadata_online_bootstrap_not_ready(
+        self, test_client, monkeypatch
+    ):
         mocked_bootstrap_state = pretend.call_recorder(
             lambda: pretend.stub(bootstrap=False, state="signing-")
         )
@@ -309,7 +314,7 @@ class TestPutMetadata:
             mocked_bootstrap_state,
         )
 
-        response = test_client.put(METADATA_URL, json=payload)
+        response = test_client.post(METADATA_ONLINE_URL, json=payload)
         assert response.status_code == status.HTTP_200_OK, response.text
         assert response.json() == {
             "detail": {
@@ -319,7 +324,7 @@ class TestPutMetadata:
         }
         assert mocked_bootstrap_state.calls == [pretend.call()]
 
-    def test_put_metadata_targets_offline_role_cannot_update(
+    def test_post_metadata_online_targets_offline_role_cannot_update(
         self, test_client, monkeypatch
     ):
         mocked_bootstrap_state = pretend.call_recorder(
@@ -339,7 +344,7 @@ class TestPutMetadata:
         )
         payload = {"roles": ["snapshot", "targets"]}
 
-        response = test_client.put(METADATA_URL, json=payload)
+        response = test_client.post(METADATA_ONLINE_URL, json=payload)
         assert response.status_code == status.HTTP_200_OK, response.text
         err_msg = "Targets is an offline role - use other endpoint to update"
         assert response.json() == {

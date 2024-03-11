@@ -143,49 +143,6 @@
             }
         },
         "/api/v1/metadata/": {
-            "put": {
-                "tags": [
-                    "Metadata"
-                ],
-                "summary": "Force a new version of online metadata role(s).",
-                "description": "Force a new version of online metadata role(s). If the roles list is empty all roles will be updated. The new metadata version(s) will have extended expiration which will equal to: today + ROLE_NAME_EXPIRATION number of days, where ROLE_NAME_EXPIRATION is a tuf repository setting. Note: depending on which metadata role you want to update other online roles will likely be updated as well otherwise consistency will be lost.",
-                "operationId": "put_api_v1_metadata__put",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/MetadataPutPayload"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "202": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/MetadataPutResponse"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not found"
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
             "post": {
                 "tags": [
                     "Metadata"
@@ -210,6 +167,51 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/MetadataPostResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/metadata/online": {
+            "post": {
+                "tags": [
+                    "Metadata"
+                ],
+                "summary": "Force a new version of online metadata role(s).",
+                "description": "Force a new version of online metadata role(s). If the roles list is empty all roles will be updated. The new metadata version(s) will have extended expiration which will equal to: today + ROLE_NAME_EXPIRATION number of days, where ROLE_NAME_EXPIRATION is a tuf repository setting. Note: depending on which metadata role you want to update other online roles will likely be updated as well otherwise consistency will be lost.",
+                "operationId": "post_api_v1_metadata_online_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/MetadataOnlinePostPayload"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "202": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MetadataOnlinePostResponse"
                                 }
                             }
                         }
@@ -777,31 +779,6 @@
                     "message": "Bootstrap accepted."
                 }
             },
-            "DeleteData": {
-                "properties": {
-                    "task_id": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Task Id"
-                    },
-                    "last_update": {
-                        "type": "string",
-                        "format": "date-time",
-                        "title": "Last Update"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "last_update"
-                ],
-                "title": "DeleteData"
-            },
             "DeletePayload": {
                 "properties": {
                     "targets": {
@@ -921,6 +898,52 @@
                 "type": "object",
                 "title": "HTTPValidationError"
             },
+            "MetadataOnlinePostPayload": {
+                "properties": {
+                    "roles": {
+                        "items": {
+                            "type": "string",
+                            "enum": [
+                                "targets",
+                                "snapshot",
+                                "timestamp",
+                                "bins"
+                            ]
+                        },
+                        "type": "array",
+                        "title": "Roles"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "roles"
+                ],
+                "title": "MetadataOnlinePostPayload"
+            },
+            "MetadataOnlinePostResponse": {
+                "properties": {
+                    "data": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/repository_service_tuf_api__metadata__ResponseData"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "message": {
+                        "type": "string",
+                        "title": "Message"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "data",
+                    "message"
+                ],
+                "title": "MetadataOnlinePostResponse"
+            },
             "MetadataPostPayload": {
                 "properties": {
                     "metadata": {
@@ -1032,7 +1055,7 @@
                     "data": {
                         "anyOf": [
                             {
-                                "$ref": "#/components/schemas/PostData"
+                                "$ref": "#/components/schemas/repository_service_tuf_api__metadata__ResponseData"
                             },
                             {
                                 "type": "null"
@@ -1056,57 +1079,6 @@
                     }
                 }
             },
-            "MetadataPutPayload": {
-                "properties": {
-                    "roles": {
-                        "items": {
-                            "type": "string",
-                            "enum": [
-                                "targets",
-                                "snapshot",
-                                "timestamp",
-                                "bins"
-                            ]
-                        },
-                        "type": "array",
-                        "title": "Roles"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "roles"
-                ],
-                "title": "MetadataPutPayload",
-                "example": {
-                    "roles": [
-                        "targets",
-                        "snapshot"
-                    ]
-                }
-            },
-            "MetadataPutResponse": {
-                "properties": {
-                    "data": {
-                        "$ref": "#/components/schemas/TaskData"
-                    },
-                    "message": {
-                        "type": "string",
-                        "title": "Message"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "message"
-                ],
-                "title": "MetadataPutResponse",
-                "example": {
-                    "data": {
-                        "task_id": "7a634b556f784ae88785d36425f9a218",
-                        "last_update": "2022-12-01T12:10:00.578086"
-                    },
-                    "message": "Force new online metadata accepted."
-                }
-            },
             "MetadataSignDeletePayload": {
                 "properties": {
                     "role": {
@@ -1128,7 +1100,7 @@
                     "data": {
                         "anyOf": [
                             {
-                                "$ref": "#/components/schemas/DeleteData"
+                                "$ref": "#/components/schemas/repository_service_tuf_api__metadata__ResponseData"
                             },
                             {
                                 "type": "null"
@@ -1385,33 +1357,6 @@
                     },
                     "message": "Settings successfully submitted."
                 }
-            },
-            "ResponseData": {
-                "properties": {
-                    "targets": {
-                        "items": {
-                            "type": "string"
-                        },
-                        "type": "array",
-                        "title": "Targets"
-                    },
-                    "task_id": {
-                        "type": "string",
-                        "title": "Task Id"
-                    },
-                    "last_update": {
-                        "type": "string",
-                        "format": "date-time",
-                        "title": "Last Update"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "targets",
-                    "task_id",
-                    "last_update"
-                ],
-                "title": "ResponseData"
             },
             "Role": {
                 "properties": {
@@ -1932,6 +1877,8 @@
                 "properties": {
                     "bit_length": {
                         "type": "integer",
+                        "exclusiveMaximum": 15.0,
+                        "exclusiveMinimum": 0.0,
                         "title": "Bit Length"
                     },
                     "name_prefix": {
@@ -2247,12 +2194,37 @@
                 ],
                 "title": "Settings"
             },
+            "repository_service_tuf_api__metadata__ResponseData": {
+                "properties": {
+                    "task_id": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Task Id"
+                    },
+                    "last_update": {
+                        "type": "string",
+                        "format": "date-time",
+                        "title": "Last Update"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "last_update"
+                ],
+                "title": "ResponseData"
+            },
             "repository_service_tuf_api__targets__Response": {
                 "properties": {
                     "data": {
                         "anyOf": [
                             {
-                                "$ref": "#/components/schemas/ResponseData"
+                                "$ref": "#/components/schemas/repository_service_tuf_api__targets__ResponseData"
                             },
                             {
                                 "type": "null"
@@ -2285,6 +2257,33 @@
                     },
                     "message": "New Artifact(s) successfully submitted."
                 }
+            },
+            "repository_service_tuf_api__targets__ResponseData": {
+                "properties": {
+                    "targets": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "title": "Targets"
+                    },
+                    "task_id": {
+                        "type": "string",
+                        "title": "Task Id"
+                    },
+                    "last_update": {
+                        "type": "string",
+                        "format": "date-time",
+                        "title": "Last Update"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "targets",
+                    "task_id",
+                    "last_update"
+                ],
+                "title": "ResponseData"
             },
             "repository_service_tuf_api__tasks__Response": {
                 "properties": {
