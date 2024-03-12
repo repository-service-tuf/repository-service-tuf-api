@@ -8,6 +8,8 @@ from typing import Any, Dict, List, Literal, Optional
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from repository_service_tuf_api import settings_repository
+
 
 class Roles(Enum):
     ROOT = "root"
@@ -17,12 +19,28 @@ class Roles(Enum):
     BINS = "bins"
 
     @staticmethod
+    def is_role(input: Any) -> bool:
+        if not isinstance(input, str):
+            return False
+
+        return any(input == role.value for role in Roles)
+
+    @staticmethod
+    def all_str() -> str:
+        return "root, targets, snapshot, timestamp and bins"
+
+    @staticmethod
     def values() -> List[str]:
         return Literal["root", "targets", "snapshot", "timestamp", "bins"]
 
     @staticmethod
     def online_roles_values() -> List[str]:
-        return Literal["targets", "snapshot", "timestamp", "bins"]
+        online_roles = Literal["targets", "snapshot", "timestamp", "bins"]
+        settings_repository.reload()
+        if not settings_repository.get_fresh("TARGETS_ONLINE_KEY", True):
+            online_roles = Literal["snapshot", "timestamp", "bins"]
+
+        return online_roles
 
 
 class BaseErrorResponse(BaseModel):
@@ -45,10 +63,7 @@ class TUFSignedDelegationsRoles(BaseModel):
 
 
 class TUFSignedDelegationsSuccinctRoles(BaseModel):
-    # We cannot add the limit range
-    # https://github.com/tiangolo/fastapi/discussions/9140
-    # bit_length: int = Field(gt=0, lt=15)
-    bit_length: int
+    bit_length: int = Field(gt=0, lt=15)
     name_prefix: str
     keyids: List[str]
     threshold: int

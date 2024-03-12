@@ -5,7 +5,7 @@
 
 import json
 from datetime import datetime
-from typing import Dict, Literal
+from typing import Dict, List, Literal, Optional
 
 from fastapi import HTTPException, status
 from pydantic import BaseModel, ConfigDict
@@ -35,7 +35,7 @@ class MetadataPostPayload(BaseModel):
     metadata: Dict[Literal[Roles.ROOT.value], TUFMetadata]
 
 
-class PostData(BaseModel):
+class ResponseData(BaseModel):
     task_id: str | None = None
     last_update: datetime
 
@@ -51,7 +51,7 @@ class MetadataPostResponse(BaseModel):
             }
         }
     )
-    data: PostData | None = None
+    data: ResponseData | None = None
     message: str
 
 
@@ -86,6 +86,95 @@ def post_metadata(payload: MetadataPostPayload) -> MetadataPostResponse:
         "last_update": datetime.now(),
     }
     return MetadataPostResponse(data=data, message=message)
+
+
+class MetadataOnlinePostPayload(BaseModel):
+    roles: List[str]
+
+    model_config = ConfigDict(
+        json_schema_extra={"example": {"roles": ["targets", "snapshot"]}}
+    )
+
+
+class MetadataOnlinePostResponse(BaseModel):
+    data: Optional[ResponseData]
+    message: str
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "data": {
+                    "task_id": "7a634b556f784ae88785d36425f9a218",
+                    "last_update": "2022-12-01T12:10:00.578086",
+                },
+                "message": "Force new online metadata accepted.",
+            }
+        }
+    )
+
+
+def post_metadata_online(
+    payload: MetadataOnlinePostPayload,
+) -> MetadataOnlinePostResponse:
+    bs_state = bootstrap_state()
+    if bs_state.bootstrap is False:
+        raise HTTPException(
+            status.HTTP_200_OK,
+            detail={
+                "message": "Task not accepted.",
+                "error": (
+                    f"Requires bootstrap finished. State: {bs_state.state}"
+                ),
+            },
+        )
+
+    settings_repository.reload()
+    if not settings_repository.get_fresh("TARGETS_ONLINE_KEY"):
+        raise HTTPException(
+            status.HTTP_200_OK,
+            detail={
+                "message": "Task not accepted.",
+                "error": (
+                    "Targets is an offline role - use other endpoint to update"
+                ),
+            },
+        )
+    settings_repository.reload()
+    if settings_repository.get_fresh("NUMBER_OF_DELEGATED_BINS"):
+        # This indicates succinct hash bins are used
+        if any(not Roles.is_role(role) for role in payload):
+            raise HTTPException(
+                status.HTTP_200_OK,
+                detail={
+                    "message": "Task not accepted.",
+                    "error": (
+                        "Hash bin delegation is used and only "
+                        f"{Roles.all_str()} roles can be bumped"
+                    ),
+                },
+            )
+
+    # If no roles are provided, then bump all.
+    if len(payload.roles) == 0:
+        payload.roles = Roles.online_roles_values()
+
+    task_id = get_task_id()
+    repository_metadata.apply_async(
+        kwargs={
+            "action": "force_online_metadata_update",
+            "payload": payload.dict(by_alias=True, exclude_none=True),
+        },
+        task_id=task_id,
+        queue="metadata_repository",
+        acks_late=True,
+    )
+
+    message = "Force online metadata update accepted."
+    data = {
+        "task_id": task_id,
+        "last_update": datetime.now(),
+    }
+    return MetadataOnlinePostResponse(data=data, message=message)
 
 
 class RolesData(BaseModel):
@@ -161,7 +250,7 @@ class MetadataSignPostResponse(BaseModel):
             }
         }
     )
-    data: PostData | None = None
+    data: ResponseData | None = None
     message: str
 
 
@@ -235,11 +324,6 @@ class MetadataSignDeletePayload(BaseModel):
     role: str
 
 
-class DeleteData(BaseModel):
-    task_id: str | None = None
-    last_update: datetime
-
-
 class MetadataSignDeleteResponse(BaseModel):
     model_config = ConfigDict(
         json_schema_extra={
@@ -252,7 +336,7 @@ class MetadataSignDeleteResponse(BaseModel):
             }
         }
     )
-    data: DeleteData | None = None
+    data: ResponseData | None = None
     message: str
 
 
