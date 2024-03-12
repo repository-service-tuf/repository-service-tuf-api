@@ -194,7 +194,7 @@
                 ],
                 "summary": "Force a new version of online metadata role(s).",
                 "description": "Force a new version of online metadata role(s). If the roles list is empty all roles will be updated. The new metadata version(s) will have extended expiration which will equal to: today + ROLE_NAME_EXPIRATION number of days, where ROLE_NAME_EXPIRATION is a tuf repository setting. Note: depending on which metadata role you want to update other online roles will likely be updated as well otherwise consistency will be lost.",
-                "operationId": "post_api_v1_metadata_online_post",
+                "operationId": "post_online_api_v1_metadata_online_post",
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -975,13 +975,7 @@
                 "properties": {
                     "roles": {
                         "items": {
-                            "type": "string",
-                            "enum": [
-                                "targets",
-                                "snapshot",
-                                "timestamp",
-                                "bins"
-                            ]
+                            "type": "string"
                         },
                         "type": "array",
                         "title": "Roles"
@@ -991,7 +985,13 @@
                 "required": [
                     "roles"
                 ],
-                "title": "MetadataOnlinePostPayload"
+                "title": "MetadataOnlinePostPayload",
+                "example": {
+                    "roles": [
+                        "targets",
+                        "snapshot"
+                    ]
+                }
             },
             "MetadataOnlinePostResponse": {
                 "properties": {
@@ -1015,7 +1015,14 @@
                     "data",
                     "message"
                 ],
-                "title": "MetadataOnlinePostResponse"
+                "title": "MetadataOnlinePostResponse",
+                "example": {
+                    "data": {
+                        "last_update": "2022-12-01T12:10:00.578086",
+                        "task_id": "7a634b556f784ae88785d36425f9a218"
+                    },
+                    "message": "Force new online metadata accepted."
+                }
             },
             "MetadataPostPayload": {
                 "properties": {
