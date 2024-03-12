@@ -164,9 +164,16 @@ class TestPostMetadataOnline:
             "repository_service_tuf_api.metadata.bootstrap_state",
             mocked_bootstrap_state,
         )
+
+        def fake_get_fresh(setting: str) -> bool:
+            if setting == "TARGETS_ONLINE_KEY":
+                return True
+            elif setting == "NUMBER_OF_DELEGATED_BINS":
+                return False
+
         mocked_settings_repository = pretend.stub(
             reload=pretend.call_recorder(lambda: None),
-            get_fresh=pretend.call_recorder(lambda a: True),
+            get_fresh=pretend.call_recorder(lambda a: fake_get_fresh(a)),
         )
         monkeypatch.setattr(
             "repository_service_tuf_api.metadata.settings_repository",
@@ -204,9 +211,13 @@ class TestPostMetadataOnline:
             "message": "Force online metadata update accepted.",
         }
         assert mocked_bootstrap_state.calls == [pretend.call()]
-        assert mocked_settings_repository.reload.calls == [pretend.call()]
+        assert mocked_settings_repository.reload.calls == [
+            pretend.call(),
+            pretend.call(),
+        ]
         assert mocked_settings_repository.get_fresh.calls == [
-            pretend.call("TARGETS_ONLINE_KEY")
+            pretend.call("TARGETS_ONLINE_KEY"),
+            pretend.call("NUMBER_OF_DELEGATED_BINS"),
         ]
         assert fake_get_task_id.calls == [pretend.call()]
         assert fake_repository_metadata.apply_async.calls == [
@@ -232,9 +243,16 @@ class TestPostMetadataOnline:
             "repository_service_tuf_api.metadata.bootstrap_state",
             mocked_bootstrap_state,
         )
+
+        def fake_get_fresh(setting: str) -> bool:
+            if setting == "TARGETS_ONLINE_KEY":
+                return True
+            elif setting == "NUMBER_OF_DELEGATED_BINS":
+                return False
+
         mocked_settings_repository = pretend.stub(
             reload=pretend.call_recorder(lambda: None),
-            get_fresh=pretend.call_recorder(lambda a: True),
+            get_fresh=pretend.call_recorder(lambda a: fake_get_fresh(a)),
         )
         monkeypatch.setattr(
             "repository_service_tuf_api.metadata.settings_repository",
@@ -272,9 +290,13 @@ class TestPostMetadataOnline:
             "message": "Force online metadata update accepted.",
         }
         assert mocked_bootstrap_state.calls == [pretend.call()]
-        assert mocked_settings_repository.reload.calls == [pretend.call()]
+        assert mocked_settings_repository.reload.calls == [
+            pretend.call(),
+            pretend.call(),
+        ]
         assert mocked_settings_repository.get_fresh.calls == [
-            pretend.call("TARGETS_ONLINE_KEY")
+            pretend.call("TARGETS_ONLINE_KEY"),
+            pretend.call("NUMBER_OF_DELEGATED_BINS"),
         ]
         assert fake_get_task_id.calls == [pretend.call()]
         expected_payload = {"roles": common_models.Roles.online_roles_values()}
@@ -346,6 +368,48 @@ class TestPostMetadataOnline:
         assert mocked_settings_repository.reload.calls == [pretend.call()]
         assert mocked_settings_repository.get_fresh.calls == [
             pretend.call("TARGETS_ONLINE_KEY")
+        ]
+
+    def test_post_metadata_online_bins_used_bad_payload(
+        self, test_client, monkeypatch
+    ):
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda: pretend.stub(bootstrap=True, state="ab123")
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.metadata.bootstrap_state",
+            mocked_bootstrap_state,
+        )
+        mocked_settings_repository = pretend.stub(
+            reload=pretend.call_recorder(lambda: None),
+            get_fresh=pretend.call_recorder(lambda a: True),
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.metadata.settings_repository",
+            mocked_settings_repository,
+        )
+        payload = {"roles": ["snapshot", "targets", "abcsdaw"]}
+
+        response = test_client.post(METADATA_ONLINE_URL, json=payload)
+        assert response.status_code == status.HTTP_200_OK, response.text
+        roles = common_models.Roles.all_str()
+        err_msg = (
+            f"Hash bin delegation is used and only {roles} roles can be bumped"
+        )
+        assert response.json() == {
+            "detail": {
+                "message": "Task not accepted.",
+                "error": err_msg,
+            },
+        }
+        assert mocked_bootstrap_state.calls == [pretend.call()]
+        assert mocked_settings_repository.reload.calls == [
+            pretend.call(),
+            pretend.call(),
+        ]
+        assert mocked_settings_repository.get_fresh.calls == [
+            pretend.call("TARGETS_ONLINE_KEY"),
+            pretend.call("NUMBER_OF_DELEGATED_BINS"),
         ]
 
 

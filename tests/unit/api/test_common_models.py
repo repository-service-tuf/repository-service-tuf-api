@@ -41,3 +41,18 @@ class TestRoles:
         assert mocked_settings_repository.get_fresh.calls == [
             pretend.call("TARGETS_ONLINE_KEY", True)
         ]
+
+    def test_is_role_true_all_roles(self):
+        all = ["root", "targets", "snapshot", "timestamp", "bins"]
+        for role in all:
+            assert common_models.Roles.is_role(role) is True
+
+    def test_is_role_false_str(self):
+        all_roles = ["root1", "1root", "root.json", "f", "bin", "bin0", ""]
+        for role in all_roles:
+            assert common_models.Roles.is_role(role) is False
+
+    def test_is_role_false_other_input(self):
+        all_roles = [1, None, True, [], {}]
+        for role in all_roles:
+            assert common_models.Roles.is_role(role) is False

@@ -5,11 +5,10 @@
 
 import json
 from datetime import datetime, timezone
-from typing import Dict, List, Literal
+from typing import Dict, List, Literal, Optional
 
 from fastapi import HTTPException, status
 from pydantic import BaseModel, ConfigDict
-from typing import List, Optional
 
 from repository_service_tuf_api import (
     bootstrap_state,
@@ -90,12 +89,10 @@ def post_metadata(payload: MetadataPostPayload) -> MetadataPostResponse:
 
 
 class MetadataOnlinePostPayload(BaseModel):
-    roles: List[Roles.online_roles_values()]
+    roles: List[str]
 
     model_config = ConfigDict(
-        json_schema_extra={
-            "example": {"roles": ["targets", "snapshot"]}
-        }
+        json_schema_extra={"example": {"roles": ["targets", "snapshot"]}}
     )
 
 
@@ -117,7 +114,7 @@ class MetadataOnlinePostResponse(BaseModel):
 
 
 def post_metadata_online(
-    payload: MetadataOnlinePostPayload
+    payload: MetadataOnlinePostPayload,
 ) -> MetadataOnlinePostResponse:
     bs_state = bootstrap_state()
     if bs_state.bootstrap is False:
@@ -142,6 +139,20 @@ def post_metadata_online(
                 ),
             },
         )
+    settings_repository.reload()
+    if settings_repository.get_fresh("NUMBER_OF_DELEGATED_BINS"):
+        # This indicates succinct hash bins are used
+        if any(not Roles.is_role(role) for role in payload):
+            raise HTTPException(
+                status.HTTP_200_OK,
+                detail={
+                    "message": "Task not accepted.",
+                    "error": (
+                        "Hash bin delegation is used and only "
+                        f"{Roles.all_str()} roles can be bumped"
+                    ),
+                },
+            )
 
     # If no roles are provided, then bump all.
     if len(payload.roles) == 0:
