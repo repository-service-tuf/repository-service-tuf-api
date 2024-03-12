@@ -19,6 +19,17 @@ class Roles(Enum):
     BINS = "bins"
 
     @staticmethod
+    def is_role(input: Any) -> bool:
+        if not isinstance(input, str):
+            return False
+
+        return any(input == role.value for role in Roles)
+
+    @staticmethod
+    def all_str() -> str:
+        return "root, targets, snapshot, timestamp and bins"
+
+    @staticmethod
     def values() -> List[str]:
         return Literal["root", "targets", "snapshot", "timestamp", "bins"]
 
