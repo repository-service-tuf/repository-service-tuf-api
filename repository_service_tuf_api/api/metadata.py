@@ -47,7 +47,7 @@ def post(payload: metadata.MetadataPostPayload):
     response_model_exclude_none=True,
     status_code=status.HTTP_202_ACCEPTED,
 )
-def post(payload: metadata.MetadataOnlinePostPayload):
+def post_online(payload: metadata.MetadataOnlinePostPayload):
     return metadata.post_metadata_online(payload)
 
 
