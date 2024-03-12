@@ -92,26 +92,28 @@ def post_metadata(payload: MetadataPostPayload) -> MetadataPostResponse:
 class MetadataOnlinePostPayload(BaseModel):
     roles: List[Roles.online_roles_values()]
 
-    class Config:
-        example = {"roles": ["targets", "snapshot"]}
-
-        schema_extra = {"example": example}
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {"roles": ["targets", "snapshot"]}
+        }
+    )
 
 
 class MetadataOnlinePostResponse(BaseModel):
     data: Optional[ResponseData]
     message: str
 
-    class Config:
-        example = {
-            "data": {
-                "task_id": "7a634b556f784ae88785d36425f9a218",
-                "last_update": "2022-12-01T12:10:00.578086",
-            },
-            "message": "Force new online metadata accepted.",
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "data": {
+                    "task_id": "7a634b556f784ae88785d36425f9a218",
+                    "last_update": "2022-12-01T12:10:00.578086",
+                },
+                "message": "Force new online metadata accepted.",
+            }
         }
-
-        schema_extra = {"example": example}
+    )
 
 
 def post_metadata_online(
