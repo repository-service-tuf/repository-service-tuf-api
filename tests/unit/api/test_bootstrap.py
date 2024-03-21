@@ -7,6 +7,7 @@ import datetime
 import json
 
 import pretend
+import pytest
 from fastapi import status
 
 BOOTSTRAP_URL = "/api/v1/bootstrap/"
@@ -138,6 +139,65 @@ class TestPostBootstrap:
         )
 
         with open("tests/data_examples/bootstrap/payload_bins.json") as f:
+            f_data = f.read()
+        payload = json.loads(f_data)
+
+        response = test_client.post(BOOTSTRAP_URL, json=payload)
+
+        assert fake_datetime.now.calls == [pretend.call()]
+        assert response.status_code == status.HTTP_202_ACCEPTED
+        assert response.url == f"{test_client.base_url}{BOOTSTRAP_URL}"
+        assert response.json() == {
+            "message": "Bootstrap accepted.",
+            "data": {"task_id": "123", "last_update": "2019-06-16T09:05:01"},
+        }
+        assert mocked_bootstrap_state.calls == [pretend.call()]
+        assert mocked__check_bootstrap_status.calls == [
+            pretend.call(task_id="123", timeout=300)
+        ]
+
+    def test_post_bootstrap_custom_delegation(self, test_client, monkeypatch):
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda *a: pretend.stub(
+                bootstrap=False, state="finished", task_id="task_id"
+            )
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.bootstrap.bootstrap_state",
+            mocked_bootstrap_state,
+        )
+        mocked_async_result = pretend.stub(state="SUCCESS")
+        mocked_repository_metadata = pretend.stub(
+            apply_async=pretend.call_recorder(lambda *a, **kw: None),
+            AsyncResult=pretend.call_recorder(lambda *a: mocked_async_result),
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.bootstrap.repository_metadata",
+            mocked_repository_metadata,
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.bootstrap.get_task_id", lambda: "123"
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.bootstrap.pre_lock_bootstrap",
+            lambda *a: None,
+        )
+        mocked__check_bootstrap_status = pretend.call_recorder(lambda *a: None)
+        monkeypatch.setattr(
+            "repository_service_tuf_api.bootstrap._check_bootstrap_status",
+            mocked__check_bootstrap_status,
+        )
+
+        fake_time = datetime.datetime(2019, 6, 16, 9, 5, 1)
+        fake_datetime = pretend.stub(
+            now=pretend.call_recorder(lambda: fake_time)
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.bootstrap.datetime", fake_datetime
+        )
+
+        path = "tests/data_examples/bootstrap/payload_custom_targets.json"
+        with open(path) as f:
             f_data = f.read()
         payload = json.loads(f_data)
 
@@ -458,3 +518,84 @@ class TestPostBootstrap:
                 },
             ]
         }
+
+    def test_post_payload_no_bins_or_delegated_targets(
+        self, test_client, monkeypatch
+    ):
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda *a: pretend.stub(
+                bootstrap=False, state="finished", task_id="task_id"
+            )
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.bootstrap.bootstrap_state",
+            mocked_bootstrap_state,
+        )
+        with open("tests/data_examples/bootstrap/payload_bins.json") as f:
+            f_data = f.read()
+
+        payload = json.loads(f_data)
+        del payload["settings"]["roles"]["bins"]
+        response = test_client.post(BOOTSTRAP_URL, json=payload)
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.url == f"{test_client.base_url}{BOOTSTRAP_URL}"
+        err_msg = "Exactly one of 'bins' and 'delegated_roles' must be set"
+        assert err_msg in response.text
+
+    @pytest.mark.parametrize("name", ["bad*", "|bad", ".bad", "/", "\\"])
+    def test_post_payload_bad_delegated_role_names(
+        self, test_client, monkeypatch, name
+    ):
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda *a: pretend.stub(
+                bootstrap=False, state="finished", task_id="task_id"
+            )
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.bootstrap.bootstrap_state",
+            mocked_bootstrap_state,
+        )
+        path = "tests/data_examples/bootstrap/payload_custom_targets.json"
+        with open(path) as f:
+            f_data = f.read()
+
+        payload = json.loads(f_data)
+        payload["settings"]["roles"]["delegated_roles"] = {
+            name: {"expiration": 30, "path_prefixes": ["project/f"]},
+        }
+        response = test_client.post(BOOTSTRAP_URL, json=payload)
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.url == f"{test_client.base_url}{BOOTSTRAP_URL}"
+        err_msg_1 = "Delegated custom target name"
+        err_msg_2 = "not allowed"
+        err_msg_3 = " Only a-z, A-Z, 0-9, - and _ characters can be used"
+        assert err_msg_1 in response.text
+        assert err_msg_2 in response.text
+        assert err_msg_3 in response.text
+
+    def test_post_payload_delegated_role_with_empty_path_pattern(
+        self, test_client, monkeypatch
+    ):
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda *a: pretend.stub(
+                bootstrap=False, state="finished", task_id="task_id"
+            )
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.bootstrap.bootstrap_state",
+            mocked_bootstrap_state,
+        )
+        path = "tests/data_examples/bootstrap/payload_custom_targets.json"
+        with open(path) as f:
+            f_data = f.read()
+
+        payload = json.loads(f_data)
+        payload["settings"]["roles"]["delegated_roles"]["foo"] = {
+            "expiration": 30,
+            "path_patterns": [""],
+        }
+        response = test_client.post(BOOTSTRAP_URL, json=payload)
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.url == f"{test_client.base_url}{BOOTSTRAP_URL}"
+        err_msg = "No empty strings are allowed as path patterns"
+        assert err_msg in response.text

@@ -5,13 +5,14 @@
 
 import json
 import logging
+import re
 import time
 from datetime import datetime
 from threading import Thread
-from typing import Dict, Literal, Optional
+from typing import Any, Dict, List, Optional
 
 from fastapi import HTTPException, status
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from repository_service_tuf_api import (
     bootstrap_state,
@@ -22,9 +23,12 @@ from repository_service_tuf_api import (
 )
 from repository_service_tuf_api.common_models import (
     BaseErrorResponse,
-    Roles,
     TUFMetadata,
 )
+
+# Pattern of allowed names to be used by custom target delegated roles
+DELEGATED_NAMES_PATTERN = "[a-zA-Z0-9_-]+"
+
 
 with open("tests/data_examples/bootstrap/payload_bins.json") as f:
     content = f.read()
@@ -39,12 +43,61 @@ class BinsRole(Role):
     number_of_delegated_bins: int = Field(gt=1, lt=16385)
 
 
+class DelegatedRole(Role):
+    # Note: No validation is required for path_patterns as these patterns are
+    # only used to distribute artifacts. No files are created based on them.
+    path_patterns: List[str] = Field(min_length=1)
+
+    @model_validator(mode="before")
+    @classmethod
+    def validate_path_patterns(cls, values: Dict[str, Any]):
+        path_patterns = values.get("path_patterns")
+        if any(len(pattern) < 1 for pattern in path_patterns):
+            raise ValueError("No empty strings are allowed as path patterns")
+
+        return values
+
+
 class RolesData(BaseModel):
     root: Role
     targets: Role
     snapshot: Role
     timestamp: Role
     bins: Optional[BinsRole] = Field(default=None)
+    delegated_roles: Optional[Dict[str, DelegatedRole]] = Field(default=None)
+
+    @model_validator(mode="before")
+    @classmethod
+    def validate_delegations(cls, values: Dict[str, Any]) -> Dict[str, Any]:
+        bins = values.get("bins")
+        delegated_roles = values.get("delegated_roles")
+        if (bins is None and delegated_roles is None) or (
+            bins is not None and delegated_roles is not None
+        ):
+            err_msg = "Exactly one of 'bins' and 'delegated_roles' must be set"
+            raise ValueError(err_msg)
+
+        return values
+
+    @model_validator(mode="before")
+    @classmethod
+    def validate_delegated_roles_names(
+        cls, values: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        # Validation of custom target delegated names is required as otherwise
+        # an attacker can use a custom target name to point to a specific place
+        # in a file system and override a file or cause unexpected behavior.
+        delegated_roles = values.get("delegated_roles")
+        if delegated_roles is not None:
+            # The keys of the delegated_roles dict are the names of the roles.
+            for role_name in delegated_roles.keys():
+                if re.fullmatch(DELEGATED_NAMES_PATTERN, role_name) is None:
+                    raise ValueError(
+                        f"Delegated custom target name {role_name} not allowed"
+                        " Only a-z, A-Z, 0-9, - and _ characters can be used"
+                    )
+
+        return values
 
 
 class Settings(BaseModel):
@@ -54,7 +107,7 @@ class Settings(BaseModel):
 class BootstrapPayload(BaseModel):
     model_config = ConfigDict(json_schema_extra={"example": payload_example})
     settings: Settings
-    metadata: Dict[Literal[Roles.ROOT.value], TUFMetadata]
+    metadata: Dict[str, TUFMetadata]
     timeout: int | None = Field(default=300, description="Timeout in seconds")
 
 
