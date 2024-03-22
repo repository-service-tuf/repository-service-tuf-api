@@ -3,7 +3,7 @@
     "info": {
         "title": "Repository Service for TUF API",
         "description": "Repository Service for TUF Rest API",
-        "version": "0.12.0b1"
+        "version": "0.13.0b1"
     },
     "paths": {
         "/api/v1/bootstrap/": {
@@ -734,6 +734,29 @@
                     "message": "Bootstrap accepted."
                 }
             },
+            "DelegatedRole": {
+                "properties": {
+                    "expiration": {
+                        "type": "integer",
+                        "exclusiveMinimum": 0.0,
+                        "title": "Expiration"
+                    },
+                    "path_patterns": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "minItems": 1,
+                        "title": "Path Patterns"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "expiration",
+                    "path_patterns"
+                ],
+                "title": "DelegatedRole"
+            },
             "DeleteData": {
                 "properties": {
                     "task_id": {
@@ -1356,6 +1379,20 @@
                                 "type": "null"
                             }
                         ]
+                    },
+                    "delegated_roles": {
+                        "anyOf": [
+                            {
+                                "additionalProperties": {
+                                    "$ref": "#/components/schemas/DelegatedRole"
+                                },
+                                "type": "object"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Delegated Roles"
                     }
                 },
                 "type": "object",

@@ -16,10 +16,6 @@ from repository_service_tuf_api import (
     repository_metadata,
 )
 
-with open("tests/data_examples/targets/payload.json") as f:
-    content = f.read()
-add_payload = json.loads(content)
-
 
 class ResponseData(BaseModel):
     targets: List[str]
@@ -63,6 +59,11 @@ class TargetsInfo(BaseModel):
 class Targets(BaseModel):
     info: TargetsInfo
     path: str
+
+
+with open("tests/data_examples/targets/payload.json") as f:
+    content = f.read()
+add_payload = json.loads(content)
 
 
 class AddPayload(BaseModel):

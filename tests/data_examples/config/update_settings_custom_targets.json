@@ -1,0 +1,11 @@
+{
+  "settings": {
+    "expiration": {
+      "targets": 100,
+      "snapshot": 50,
+      "timestamp": 20,
+      "foo": 1,
+      "bar": 300
+    }
+  }
+}
