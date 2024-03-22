@@ -20,10 +20,6 @@ class Roles(Enum):
     def values() -> List[str]:
         return Literal["root", "targets", "snapshot", "timestamp", "bins"]
 
-    @staticmethod
-    def online_roles_values() -> List[str]:
-        return Literal["targets", "snapshot", "timestamp", "bins"]
-
 
 class BaseErrorResponse(BaseModel):
     error: str = Field(description="Error message")

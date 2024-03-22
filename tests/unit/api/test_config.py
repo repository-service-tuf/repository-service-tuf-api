@@ -65,6 +65,59 @@ class TestPutSettings:
             )
         ]
 
+    def test_put_settings_with_custom_targets(self, test_client, monkeypatch):
+        path = "tests/data_examples/config/update_settings_custom_targets.json"
+        with open(path) as f:
+            f_data = f.read()
+
+        payload = json.loads(f_data)
+
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda *a: pretend.stub(bootstrap=True)
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.config.bootstrap_state",
+            mocked_bootstrap_state,
+        )
+        mocked_get_task_id = pretend.call_recorder(lambda: "task-id")
+        monkeypatch.setattr(
+            "repository_service_tuf_api.config.get_task_id", mocked_get_task_id
+        )
+        mocked_repository_metadata = pretend.stub(
+            apply_async=pretend.call_recorder(lambda **kw: None)
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.config.repository_metadata",
+            mocked_repository_metadata,
+        )
+        fake_time = datetime.datetime(2019, 6, 16, 9, 5, 1)
+        fake_datetime = pretend.stub(
+            now=pretend.call_recorder(lambda: fake_time)
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.config.datetime", fake_datetime
+        )
+        response = test_client.put(URL, json=payload)
+        assert fake_datetime.now.calls == [pretend.call()]
+        assert response.status_code == status.HTTP_202_ACCEPTED
+        assert response.json() == {
+            "data": {
+                "task_id": "task-id",
+                "last_update": "2019-06-16T09:05:01",
+            },
+            "message": "Settings successfully submitted.",
+        }
+        assert mocked_bootstrap_state.calls == [pretend.call()]
+        assert mocked_get_task_id.calls == [pretend.call()]
+        assert mocked_repository_metadata.apply_async.calls == [
+            pretend.call(
+                kwargs={"action": "update_settings", "payload": payload},
+                task_id="task-id",
+                queue="metadata_repository",
+                acks_late=True,
+            )
+        ]
+
     def test_put_settings_without_bootstrap(self, test_client, monkeypatch):
         with open("tests/data_examples/config/update_settings.json") as f:
             f_data = f.read()
