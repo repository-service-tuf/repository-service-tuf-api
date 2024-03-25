@@ -14,9 +14,9 @@ ARTIFACTS_DELETE_URL = "/api/v1/artifacts/delete"
 ARTIFACTS_POST_URL = "/api/v1/artifacts/publish/"
 
 
-class TestPostTargets:
+class TestPostArtifacts:
     def test_post(self, monkeypatch, test_client):
-        with open("tests/data_examples/targets/payload.json") as f:
+        with open("tests/data_examples/artifacts/add_payload.json") as f:
             f_data = f.read()
 
         payload = json.loads(f_data)
@@ -25,19 +25,19 @@ class TestPostTargets:
             lambda *a: pretend.stub(bootstrap=True)
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.targets.bootstrap_state",
+            "repository_service_tuf_api.artifacts.bootstrap_state",
             mocked_bootstrap_state,
         )
         mocked_repository_metadata = pretend.stub(
             apply_async=pretend.call_recorder(lambda **kw: None)
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.targets.repository_metadata",
+            "repository_service_tuf_api.artifacts.repository_metadata",
             mocked_repository_metadata,
         )
         fake_task_id = uuid4().hex
         monkeypatch.setattr(
-            "repository_service_tuf_api.targets.get_task_id",
+            "repository_service_tuf_api.artifacts.get_task_id",
             lambda: fake_task_id,
         )
         fake_time = datetime.datetime(2019, 6, 16, 9, 5, 1)
@@ -45,13 +45,13 @@ class TestPostTargets:
             now=pretend.call_recorder(lambda: fake_time)
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.targets.datetime", fake_datetime
+            "repository_service_tuf_api.artifacts.datetime", fake_datetime
         )
         response = test_client.post(ARTIFACTS_URL, json=payload)
         assert response.status_code == status.HTTP_202_ACCEPTED
         assert response.json() == {
             "data": {
-                "targets": ["file1.tar.gz", "file2.tar.gz", "file3.tar.gz"],
+                "artifacts": ["file1.tar.gz", "file2.tar.gz", "file3.tar.gz"],
                 "task_id": fake_task_id,
                 "last_update": "2019-06-16T09:05:01",
             },
@@ -61,10 +61,10 @@ class TestPostTargets:
         assert mocked_repository_metadata.apply_async.calls == [
             pretend.call(
                 kwargs={
-                    "action": "add_targets",
+                    "action": "add_artifacts",
                     "payload": {
                         **payload,
-                        "publish_targets": True,
+                        "publish_artifacts": True,
                         "add_task_id_to_custom": False,
                     },
                 },
@@ -75,7 +75,7 @@ class TestPostTargets:
         ]
 
     def test_post_with_add_task_id_to_custom(self, monkeypatch, test_client):
-        with open("tests/data_examples/targets/payload.json") as f:
+        with open("tests/data_examples/artifacts/add_payload.json") as f:
             f_data = f.read()
 
         payload = json.loads(f_data)
@@ -84,19 +84,19 @@ class TestPostTargets:
             lambda *a: pretend.stub(bootstrap=True)
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.targets.bootstrap_state",
+            "repository_service_tuf_api.artifacts.bootstrap_state",
             mocked_bootstrap_state,
         )
         mocked_repository_metadata = pretend.stub(
             apply_async=pretend.call_recorder(lambda **kw: None)
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.targets.repository_metadata",
+            "repository_service_tuf_api.artifacts.repository_metadata",
             mocked_repository_metadata,
         )
         fake_task_id = uuid4().hex
         monkeypatch.setattr(
-            "repository_service_tuf_api.targets.get_task_id",
+            "repository_service_tuf_api.artifacts.get_task_id",
             lambda: fake_task_id,
         )
         fake_time = datetime.datetime(2019, 6, 16, 9, 5, 1)
@@ -104,7 +104,7 @@ class TestPostTargets:
             now=pretend.call_recorder(lambda: fake_time)
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.targets.datetime", fake_datetime
+            "repository_service_tuf_api.artifacts.datetime", fake_datetime
         )
 
         # enable to add task id to custom metadata field
@@ -114,7 +114,7 @@ class TestPostTargets:
         assert response.status_code == status.HTTP_202_ACCEPTED
         assert response.json() == {
             "data": {
-                "targets": ["file1.tar.gz", "file2.tar.gz", "file3.tar.gz"],
+                "artifacts": ["file1.tar.gz", "file2.tar.gz", "file3.tar.gz"],
                 "task_id": fake_task_id,
                 "last_update": "2019-06-16T09:05:01",
             },
@@ -122,24 +122,24 @@ class TestPostTargets:
         }
 
         # Add task_id info into custom as it will be done in the post function
-        for target in payload["targets"]:
-            if target["info"].get("custom") is None:
-                target["info"]["custom"] = {}
+        for artifact in payload["artifacts"]:
+            if artifact["info"].get("custom") is None:
+                artifact["info"]["custom"] = {}
 
             # Add task_id info in custom while keeping the old custom
-            target["info"]["custom"] = {
+            artifact["info"]["custom"] = {
                 "added_by_task_id": fake_task_id,
-                **target["info"]["custom"],
+                **artifact["info"]["custom"],
             }
 
         assert mocked_bootstrap_state.calls == [pretend.call()]
         assert mocked_repository_metadata.apply_async.calls == [
             pretend.call(
                 kwargs={
-                    "action": "add_targets",
+                    "action": "add_artifacts",
                     "payload": {
                         **payload,
-                        "publish_targets": True,
+                        "publish_artifacts": True,
                     },
                 },
                 task_id=fake_task_id,
@@ -148,25 +148,25 @@ class TestPostTargets:
             )
         ]
 
-    def test_post_publish_targets_false(self, monkeypatch, test_client):
-        with open("tests/data_examples/targets/payload.json") as f:
+    def test_post_publish_artifacts_false(self, monkeypatch, test_client):
+        with open("tests/data_examples/artifacts/add_payload.json") as f:
             f_data = f.read()
 
         payload = json.loads(f_data)
 
-        # Disable publish_targets
-        payload["publish_targets"] = False
+        # Disable publish_artifacts
+        payload["publish_artifacts"] = False
 
         mocked_bootstrap_state = pretend.call_recorder(
             lambda *a: pretend.stub(bootstrap=True)
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.targets.bootstrap_state",
+            "repository_service_tuf_api.artifacts.bootstrap_state",
             mocked_bootstrap_state,
         )
         fake_task_id = uuid4().hex
         monkeypatch.setattr(
-            "repository_service_tuf_api.targets.get_task_id",
+            "repository_service_tuf_api.artifacts.get_task_id",
             lambda: fake_task_id,
         )
         fake_time = datetime.datetime(2019, 6, 16, 9, 5, 1)
@@ -174,13 +174,13 @@ class TestPostTargets:
             now=pretend.call_recorder(lambda: fake_time)
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.targets.datetime", fake_datetime
+            "repository_service_tuf_api.artifacts.datetime", fake_datetime
         )
         mocked_repository_metadata = pretend.stub(
             apply_async=pretend.call_recorder(lambda **kw: None)
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.targets.repository_metadata",
+            "repository_service_tuf_api.artifacts.repository_metadata",
             mocked_repository_metadata,
         )
         response = test_client.post(ARTIFACTS_URL, json=payload)
@@ -191,7 +191,7 @@ class TestPostTargets:
         )
         assert response.json() == {
             "data": {
-                "targets": ["file1.tar.gz", "file2.tar.gz", "file3.tar.gz"],
+                "artifacts": ["file1.tar.gz", "file2.tar.gz", "file3.tar.gz"],
                 "task_id": fake_task_id,
                 "last_update": "2019-06-16T09:05:01",
             },
@@ -201,7 +201,7 @@ class TestPostTargets:
         assert mocked_repository_metadata.apply_async.calls == [
             pretend.call(
                 kwargs={
-                    "action": "add_targets",
+                    "action": "add_artifacts",
                     "payload": {**payload, "add_task_id_to_custom": False},
                 },
                 task_id=fake_task_id,
@@ -211,14 +211,14 @@ class TestPostTargets:
         ]
 
     def test_post_without_bootstrap(self, monkeypatch, test_client):
-        with open("tests/data_examples/targets/payload.json") as f:
+        with open("tests/data_examples/artifacts/add_payload.json") as f:
             f_data = f.read()
 
         mocked_bootstrap_state = pretend.call_recorder(
             lambda *a: pretend.stub(bootstrap=False, state=None)
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.targets.bootstrap_state",
+            "repository_service_tuf_api.artifacts.bootstrap_state",
             mocked_bootstrap_state,
         )
 
@@ -237,14 +237,14 @@ class TestPostTargets:
     def test_post_with_bootstrap_intermediate_state(
         self, monkeypatch, test_client
     ):
-        with open("tests/data_examples/targets/payload.json") as f:
+        with open("tests/data_examples/artifacts/add_payload.json") as f:
             f_data = f.read()
 
         mocked_bootstrap_state = pretend.call_recorder(
             lambda *a: pretend.stub(bootstrap=False, state="signing")
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.targets.bootstrap_state",
+            "repository_service_tuf_api.artifacts.bootstrap_state",
             mocked_bootstrap_state,
         )
 
@@ -262,7 +262,7 @@ class TestPostTargets:
 
     def test_post_missing_required_field(self, test_client):
         payload = {
-            "targets": [
+            "artifacts": [
                 {
                     "info": {
                         "length": 11342,
@@ -276,29 +276,29 @@ class TestPostTargets:
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
 
-class TestPostTargetsDelete:
+class TestPostArtifactsDelete:
     def test_post_delete(self, monkeypatch, test_client):
         payload = {
-            "targets": ["file-v1.0.0_i683.tar.gz", "v0.4.1/file.tar.gz"],
+            "artifacts": ["file-v1.0.0_i683.tar.gz", "v0.4.1/file.tar.gz"],
         }
 
         mocked_bootstrap_state = pretend.call_recorder(
             lambda *a: pretend.stub(bootstrap=True)
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.targets.bootstrap_state",
+            "repository_service_tuf_api.artifacts.bootstrap_state",
             mocked_bootstrap_state,
         )
         mocked_repository_metadata = pretend.stub(
             apply_async=pretend.call_recorder(lambda **kw: None)
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.targets.repository_metadata",
+            "repository_service_tuf_api.artifacts.repository_metadata",
             mocked_repository_metadata,
         )
         fake_task_id = uuid4().hex
         monkeypatch.setattr(
-            "repository_service_tuf_api.targets.get_task_id",
+            "repository_service_tuf_api.artifacts.get_task_id",
             lambda: fake_task_id,
         )
         fake_time = datetime.datetime(2019, 6, 16, 9, 5, 1)
@@ -306,7 +306,7 @@ class TestPostTargetsDelete:
             now=pretend.call_recorder(lambda: fake_time)
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.targets.datetime", fake_datetime
+            "repository_service_tuf_api.artifacts.datetime", fake_datetime
         )
 
         response = test_client.post(ARTIFACTS_DELETE_URL, json=payload)
@@ -315,7 +315,7 @@ class TestPostTargetsDelete:
         assert response.status_code == status.HTTP_202_ACCEPTED
         assert response.json() == {
             "data": {
-                "targets": ["file-v1.0.0_i683.tar.gz", "v0.4.1/file.tar.gz"],
+                "artifacts": ["file-v1.0.0_i683.tar.gz", "v0.4.1/file.tar.gz"],
                 "task_id": fake_task_id,
                 "last_update": "2019-06-16T09:05:01",
             },
@@ -325,8 +325,8 @@ class TestPostTargetsDelete:
         assert mocked_repository_metadata.apply_async.calls == [
             pretend.call(
                 kwargs={
-                    "action": "remove_targets",
-                    "payload": {**payload, "publish_targets": True},
+                    "action": "remove_artifacts",
+                    "payload": {**payload, "publish_artifacts": True},
                 },
                 task_id=fake_task_id,
                 queue="metadata_repository",
@@ -334,29 +334,31 @@ class TestPostTargetsDelete:
             )
         ]
 
-    def test_post_publish_targets_delete_false(self, monkeypatch, test_client):
+    def test_post_publish_artifacts_delete_false(
+        self, monkeypatch, test_client
+    ):
         payload = {
-            "targets": ["file-v1.0.0_i683.tar.gz", "v0.4.1/file.tar.gz"],
-            "publish_targets": False,
+            "artifacts": ["file-v1.0.0_i683.tar.gz", "v0.4.1/file.tar.gz"],
+            "publish_artifacts": False,
         }
 
         mocked_bootstrap_state = pretend.call_recorder(
             lambda *a: pretend.stub(bootstrap=True)
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.targets.bootstrap_state",
+            "repository_service_tuf_api.artifacts.bootstrap_state",
             mocked_bootstrap_state,
         )
         mocked_repository_metadata = pretend.stub(
             apply_async=pretend.call_recorder(lambda **kw: None)
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.targets.repository_metadata",
+            "repository_service_tuf_api.artifacts.repository_metadata",
             mocked_repository_metadata,
         )
         fake_task_id = uuid4().hex
         monkeypatch.setattr(
-            "repository_service_tuf_api.targets.get_task_id",
+            "repository_service_tuf_api.artifacts.get_task_id",
             lambda: fake_task_id,
         )
         fake_time = datetime.datetime(2019, 6, 16, 9, 5, 1)
@@ -364,7 +366,7 @@ class TestPostTargetsDelete:
             now=pretend.call_recorder(lambda: fake_time)
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.targets.datetime", fake_datetime
+            "repository_service_tuf_api.artifacts.datetime", fake_datetime
         )
 
         response = test_client.post(ARTIFACTS_DELETE_URL, json=payload)
@@ -376,7 +378,7 @@ class TestPostTargetsDelete:
         )
         assert response.json() == {
             "data": {
-                "targets": ["file-v1.0.0_i683.tar.gz", "v0.4.1/file.tar.gz"],
+                "artifacts": ["file-v1.0.0_i683.tar.gz", "v0.4.1/file.tar.gz"],
                 "task_id": fake_task_id,
                 "last_update": "2019-06-16T09:05:01",
             },
@@ -386,7 +388,7 @@ class TestPostTargetsDelete:
         assert mocked_repository_metadata.apply_async.calls == [
             pretend.call(
                 kwargs={
-                    "action": "remove_targets",
+                    "action": "remove_artifacts",
                     "payload": payload,
                 },
                 task_id=fake_task_id,
@@ -397,13 +399,13 @@ class TestPostTargetsDelete:
 
     def test_post_without_bootstrap_delete(self, monkeypatch, test_client):
         payload = {
-            "targets": ["file-v1.0.0_i683.tar.gz", "v0.4.1/file.tar.gz"]
+            "artifacts": ["file-v1.0.0_i683.tar.gz", "v0.4.1/file.tar.gz"]
         }
         mocked_bootstrap_state = pretend.call_recorder(
             lambda *a: pretend.stub(bootstrap=False, state=None)
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.targets.bootstrap_state",
+            "repository_service_tuf_api.artifacts.bootstrap_state",
             mocked_bootstrap_state,
         )
         response = test_client.post(ARTIFACTS_DELETE_URL, json=payload)
@@ -421,13 +423,13 @@ class TestPostTargetsDelete:
         self, monkeypatch, test_client
     ):
         payload = {
-            "targets": ["file-v1.0.0_i683.tar.gz", "v0.4.1/file.tar.gz"]
+            "artifacts": ["file-v1.0.0_i683.tar.gz", "v0.4.1/file.tar.gz"]
         }
         mocked_bootstrap_state = pretend.call_recorder(
             lambda *a: pretend.stub(bootstrap=False, state="signing")
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.targets.bootstrap_state",
+            "repository_service_tuf_api.artifacts.bootstrap_state",
             mocked_bootstrap_state,
         )
         response = test_client.post(ARTIFACTS_DELETE_URL, json=payload)
@@ -448,18 +450,18 @@ class TestPostTargetsDelete:
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
 
-class TestPostTargetsPublish:
+class TestPostArtifactsPublish:
     def test_post_publish(self, monkeypatch, test_client):
         mocked_repository_metadata = pretend.stub(
             apply_async=pretend.call_recorder(lambda **kw: None)
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.targets.repository_metadata",
+            "repository_service_tuf_api.artifacts.repository_metadata",
             mocked_repository_metadata,
         )
         fake_task_id = uuid4().hex
         monkeypatch.setattr(
-            "repository_service_tuf_api.targets.get_task_id",
+            "repository_service_tuf_api.artifacts.get_task_id",
             lambda: fake_task_id,
         )
         fake_time = datetime.datetime(2019, 6, 16, 9, 5, 1)
@@ -467,22 +469,22 @@ class TestPostTargetsPublish:
             now=pretend.call_recorder(lambda: fake_time)
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.targets.datetime", fake_datetime
+            "repository_service_tuf_api.artifacts.datetime", fake_datetime
         )
         response = test_client.post(ARTIFACTS_POST_URL)
         assert response.status_code == status.HTTP_202_ACCEPTED
         assert response.json() == {
             "data": {
-                "targets": [],
+                "artifacts": [],
                 "task_id": fake_task_id,
                 "last_update": "2019-06-16T09:05:01",
             },
-            "message": "Publish targets successfully submitted.",
+            "message": "Publish artifacts successfully submitted.",
         }
         assert mocked_repository_metadata.apply_async.calls == [
             pretend.call(
                 kwargs={
-                    "action": "publish_targets",
+                    "action": "publish_artifacts",
                     "payload": None,
                 },
                 task_id=fake_task_id,

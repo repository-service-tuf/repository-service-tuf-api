@@ -15,10 +15,10 @@ from repository_service_tuf_api import (
     settings,
     settings_repository,
 )
+from repository_service_tuf_api.api.artifacts import router as artifacts_v1
 from repository_service_tuf_api.api.bootstrap import router as bootstrap_v1
 from repository_service_tuf_api.api.config import router as config_v1
 from repository_service_tuf_api.api.metadata import router as metadata_v1
-from repository_service_tuf_api.api.targets import router as targets_v1
 from repository_service_tuf_api.api.tasks import router as tasks_v1
 
 TITLE = "Repository Service for TUF API"
@@ -60,7 +60,7 @@ v1_endpoints = [
     bootstrap_v1,
     config_v1,
     metadata_v1,
-    targets_v1,
+    artifacts_v1,
     tasks_v1,
 ]
 
