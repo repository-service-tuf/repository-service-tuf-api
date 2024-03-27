@@ -15,15 +15,16 @@ class TestGetTask:
             state="SUCCESS",
             result={
                 "status": True,
-                "task": "add_targets",
+                "task": "add_artifacts",
                 "last_update": "2023-11-17T09:54:15.762882",
-                "message": "Target(s) Added",
+                "message": "Artifact(s) Added",
                 "details": {
-                    "targets": [
+                    "added_artifacts": [
                         "file1.tar.gz",
                         "file2.tar.gz",
                         "file3.tar.gz",
                     ],
+                    "invalid_paths": [],
                     "target_roles": ["bins-3", "bins-2"],
                 },
             },
@@ -43,16 +44,17 @@ class TestGetTask:
                 "task_id": "test_id",
                 "state": "SUCCESS",
                 "result": {
-                    "task": "add_targets",
+                    "task": "add_artifacts",
                     "last_update": "2023-11-17T09:54:15.762882",
-                    "message": "Target(s) Added",
+                    "message": "Artifact(s) Added",
                     "status": True,
                     "details": {
-                        "targets": [
+                        "added_artifacts": [
                             "file1.tar.gz",
                             "file2.tar.gz",
                             "file3.tar.gz",
                         ],
+                        "invalid_paths": [],
                         "target_roles": ["bins-3", "bins-2"],
                     },
                 },
