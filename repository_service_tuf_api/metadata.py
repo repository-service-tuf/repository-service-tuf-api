@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: MIT
 
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, Literal
 
 from fastapi import HTTPException, status
@@ -83,7 +83,7 @@ def post_metadata(payload: MetadataPostPayload) -> MetadataPostResponse:
     message = "Metadata update accepted."
     data = {
         "task_id": task_id,
-        "last_update": datetime.now(),
+        "last_update": datetime.now(timezone.utc),
     }
     return MetadataPostResponse(data=data, message=message)
 
@@ -224,7 +224,7 @@ def post_metadata_sign(
     message = "Metadata sign accepted."
     data = {
         "task_id": task_id,
-        "last_update": datetime.now(),
+        "last_update": datetime.now(timezone.utc),
     }
 
     return MetadataPostResponse(data=data, message=message)
@@ -283,7 +283,7 @@ def delete_metadata_sign(payload: MetadataSignDeletePayload):
     message = "Metadata sign delete accepted."
     data = {
         "task_id": task_id,
-        "last_update": datetime.now(),
+        "last_update": datetime.now(timezone.utc),
     }
 
     return MetadataSignDeleteResponse(data=data, message=message)

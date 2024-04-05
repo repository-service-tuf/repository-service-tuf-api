@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: MIT
 
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List
 
 from fastapi import HTTPException, status
@@ -201,7 +201,7 @@ def post(payload: AddPayload) -> ResponsePostAdd:
     data = {
         "artifacts": [artifact.path for artifact in payload.artifacts],
         "task_id": task_id,
-        "last_update": datetime.now(),
+        "last_update": datetime.now(timezone.utc),
     }
     return ResponsePostAdd(data=data, message=message)
 
@@ -239,7 +239,7 @@ def delete(payload: DeletePayload) -> ResponsePostDelete:
     data = {
         "artifacts": payload.artifacts,
         "task_id": task_id,
-        "last_update": datetime.now(),
+        "last_update": datetime.now(timezone.utc),
     }
 
     message = "Remove Artifact(s) successfully submitted."
@@ -263,7 +263,7 @@ def post_publish_artifacts() -> ResponsePostPublish:
     data = {
         "artifacts": [],
         "task_id": task_id,
-        "last_update": datetime.now(),
+        "last_update": datetime.now(timezone.utc),
     }
 
     return ResponsePostPublish(
