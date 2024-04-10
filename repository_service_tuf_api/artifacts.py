@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: MIT
 
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List
 
 from fastapi import HTTPException, status
@@ -18,21 +18,21 @@ from repository_service_tuf_api import (
 
 
 class ResponseData(BaseModel):
-    targets: List[str]
+    artifacts: List[str]
     task_id: str
     last_update: datetime
 
 
-class Response(BaseModel):
+class ResponsePostAdd(BaseModel):
     """
-    Targets Response
+    Artifacts post new artifacts response
     """
 
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
                 "data": {
-                    "targets": ["file1.tar.gz", "file2.tar.gz"],
+                    "artifacts": ["file1.tar.gz", "file2.tar.gz"],
                     "task_id": "06ee6db3cbab4b26be505352c2f2e2c3",
                     "last_update": "2022-12-01T12:10:00.578086",
                 },
@@ -45,7 +45,51 @@ class Response(BaseModel):
     message: str | None = None
 
 
-class TargetsInfo(BaseModel):
+class ResponsePostDelete(BaseModel):
+    """
+    Artifacts post remove artifacts response
+    """
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "data": {
+                    "artifacts": ["file1.tar.gz", "file2.tar.gz"],
+                    "task_id": "06ee6db3cbab4b26be505352c2f2e2c3",
+                    "last_update": "2022-12-01T12:10:00.578086",
+                },
+                "message": "Remove Artifact(s) successfully submitted.",
+            }
+        }
+    )
+
+    data: ResponseData | None = None
+    message: str | None = None
+
+
+class ResponsePostPublish(BaseModel):
+    """
+    Artifacts post publish artifacts response
+    """
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "data": {
+                    "artifacts": [],
+                    "task_id": "06ee6db3cbab4b26be505352c2f2e2c3",
+                    "last_update": "2022-12-01T12:10:00.578086",
+                },
+                "message": "Publish artifacts successfully submitted.",
+            }
+        }
+    )
+
+    data: ResponseData | None = None
+    message: str | None = None
+
+
+class ArtifactInfo(BaseModel):
     length: int
     hashes: Dict[str, str] = Field(
         description=(
@@ -56,12 +100,12 @@ class TargetsInfo(BaseModel):
     custom: Dict[str, Any] | None = None
 
 
-class Targets(BaseModel):
-    info: TargetsInfo
+class Artifact(BaseModel):
+    info: ArtifactInfo
     path: str
 
 
-with open("tests/data_examples/targets/payload.json") as f:
+with open("tests/data_examples/artifacts/add_payload.json") as f:
     content = f.read()
 add_payload = json.loads(content)
 
@@ -72,13 +116,13 @@ class AddPayload(BaseModel):
     """
 
     model_config = ConfigDict(json_schema_extra={"example": add_payload})
-    targets: List[Targets]
+    artifacts: List[Artifact]
     add_task_id_to_custom: bool = Field(
         default=False,
         description="Whether to add the id of the task in custom",
     )
-    publish_targets: bool = Field(
-        default=True, description="Whether to publish the targets"
+    publish_artifacts: bool = Field(
+        default=True, description="Whether to publish the artifacts"
     )
 
 
@@ -90,7 +134,7 @@ class DeletePayload(BaseModel):
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
-                "targets": [
+                "artifacts": [
                     "v3.4.1/file-3.4.1.tar.gz",
                     "config-3.4.1.yaml",
                     "file1.tar.gz",
@@ -98,15 +142,15 @@ class DeletePayload(BaseModel):
             }
         }
     )
-    targets: List[str]
-    publish_targets: bool = Field(
-        default=True, description="Whether to publish the targets changes"
+    artifacts: List[str]
+    publish_artifacts: bool = Field(
+        default=True, description="Whether to publish the artifacts changes"
     )
 
 
-def post(payload: AddPayload) -> Response:
+def post(payload: AddPayload) -> ResponsePostAdd:
     """
-    Post new targets.
+    Post new artifact(s)s.
     It will send a new task with the validated payload to the
     ``metadata_repository`` broker queue.
     It generates a new task id, syncs with the Redis server, and posts the new
@@ -126,23 +170,23 @@ def post(payload: AddPayload) -> Response:
 
     task_id = get_task_id()
     if payload.add_task_id_to_custom is True:
-        new_targets: List[Targets] = []
-        for target in payload.targets:
-            if target.info.custom:
-                target.info.custom = {
+        new_artifacts: List[Artifact] = []
+        for artifact in payload.artifacts:
+            if artifact.info.custom:
+                artifact.info.custom = {
                     "added_by_task_id": task_id,
-                    **target.info.custom,
+                    **artifact.info.custom,
                 }
             else:
-                target.info.custom = {"added_by_task_id": task_id}
+                artifact.info.custom = {"added_by_task_id": task_id}
 
-            new_targets.append(target)
+            new_artifacts.append(artifact)
 
-        payload.targets = new_targets
+        payload.artifacts = new_artifacts
 
     repository_metadata.apply_async(
         kwargs={
-            "action": "add_targets",
+            "action": "add_artifacts",
             "payload": payload.dict(by_alias=True, exclude_none=True),
         },
         task_id=task_id,
@@ -151,20 +195,20 @@ def post(payload: AddPayload) -> Response:
     )
 
     message = "New Artifact(s) successfully submitted."
-    if payload.publish_targets is False:
+    if payload.publish_artifacts is False:
         message += " Publishing will be skipped."
 
     data = {
-        "targets": [target.path for target in payload.targets],
+        "artifacts": [artifact.path for artifact in payload.artifacts],
         "task_id": task_id,
-        "last_update": datetime.now(),
+        "last_update": datetime.now(timezone.utc),
     }
-    return Response(data=data, message=message)
+    return ResponsePostAdd(data=data, message=message)
 
 
-def delete(payload: DeletePayload) -> Response:
+def delete(payload: DeletePayload) -> ResponsePostDelete:
     """
-    Delete new targets.
+    Delete new artifacts.
     It will send a new task with the validated payload to the
     ``metadata_repository`` broker queue.
     It generates a new task id, syncs with the Redis server, and posts the new
@@ -185,7 +229,7 @@ def delete(payload: DeletePayload) -> Response:
     task_id = get_task_id()
     repository_metadata.apply_async(
         kwargs={
-            "action": "remove_targets",
+            "action": "remove_artifacts",
             "payload": payload.dict(by_alias=True, exclude_none=True),
         },
         task_id=task_id,
@@ -193,22 +237,22 @@ def delete(payload: DeletePayload) -> Response:
         acks_late=True,
     )
     data = {
-        "targets": payload.targets,
+        "artifacts": payload.artifacts,
         "task_id": task_id,
-        "last_update": datetime.now(),
+        "last_update": datetime.now(timezone.utc),
     }
 
     message = "Remove Artifact(s) successfully submitted."
-    if payload.publish_targets is False:
+    if payload.publish_artifacts is False:
         message += " Publishing will be skipped."
-    return Response(data=data, message=message)
+    return ResponsePostDelete(data=data, message=message)
 
 
-def post_publish_targets() -> Response:
+def post_publish_artifacts() -> ResponsePostPublish:
     task_id = get_task_id()
     repository_metadata.apply_async(
         kwargs={
-            "action": "publish_targets",
+            "action": "publish_artifacts",
             "payload": None,
         },
         task_id=task_id,
@@ -217,11 +261,11 @@ def post_publish_targets() -> Response:
     )
 
     data = {
-        "targets": [],
+        "artifacts": [],
         "task_id": task_id,
-        "last_update": datetime.now(),
+        "last_update": datetime.now(timezone.utc),
     }
 
-    return Response(
-        data=data, message="Publish targets successfully submitted."
+    return ResponsePostPublish(
+        data=data, message="Publish artifacts successfully submitted."
     )

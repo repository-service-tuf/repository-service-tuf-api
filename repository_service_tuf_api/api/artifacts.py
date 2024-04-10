@@ -5,12 +5,7 @@
 
 from fastapi import APIRouter, status
 
-from repository_service_tuf_api import targets
-
-deprecation_warning = (
-    " Deprecation Warning: this endpoint will removed in v1.0.0, "
-    "use `/api/v1/artifacts`"
-)
+from repository_service_tuf_api import artifacts
 
 router = APIRouter(
     prefix="/artifacts",
@@ -27,12 +22,12 @@ router = APIRouter(
         "Use the task ID to retrieve the task status in the endpoint "
         "/api/v1/task."
     ),
-    response_model=targets.Response,
+    response_model=artifacts.ResponsePostAdd,
     response_model_exclude_none=True,
     status_code=status.HTTP_202_ACCEPTED,
 )
-def post(payload: targets.AddPayload):
-    response = targets.post(payload)
+def post(payload: artifacts.AddPayload) -> artifacts.ResponsePostAdd:
+    response = artifacts.post(payload)
 
     return response
 
@@ -46,12 +41,14 @@ def post(payload: targets.AddPayload):
         "Use the task ID to retrieve the task status in the endpoint "
         "/api/v1/task."
     ),
-    response_model=targets.Response,
+    response_model=artifacts.ResponsePostDelete,
     response_model_exclude_none=True,
     status_code=status.HTTP_202_ACCEPTED,
 )
-def post_delete(payload: targets.DeletePayload):
-    response = targets.delete(payload)
+def post_delete(
+    payload: artifacts.DeletePayload,
+) -> artifacts.ResponsePostDelete:
+    response = artifacts.delete(payload)
 
     return response
 
@@ -65,11 +62,11 @@ def post_delete(payload: targets.DeletePayload):
         "Use the task ID to retrieve the task status in the endpoint "
         "/api/v1/task."
     ),
-    response_model=targets.Response,
+    response_model=artifacts.ResponsePostPublish,
     response_model_exclude_none=True,
     status_code=status.HTTP_202_ACCEPTED,
 )
-def post_publish_targets():
-    response = targets.post_publish_targets()
+def post_publish_artifacts() -> artifacts.ResponsePostPublish:
+    response = artifacts.post_publish_artifacts()
 
     return response

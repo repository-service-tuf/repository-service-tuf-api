@@ -7,6 +7,7 @@ import pretend
 from fastapi import status
 
 TASK_URL = "/api/v1/task/"
+MOCK_PATH = "repository_service_tuf_api.tasks"
 
 
 class TestGetTask:
@@ -15,15 +16,16 @@ class TestGetTask:
             state="SUCCESS",
             result={
                 "status": True,
-                "task": "add_targets",
+                "task": "add_artifacts",
                 "last_update": "2023-11-17T09:54:15.762882",
-                "message": "Target(s) Added",
+                "message": "Artifact(s) Added",
                 "details": {
-                    "targets": [
+                    "added_artifacts": [
                         "file1.tar.gz",
                         "file2.tar.gz",
                         "file3.tar.gz",
                     ],
+                    "invalid_paths": [],
                     "target_roles": ["bins-3", "bins-2"],
                 },
             },
@@ -32,8 +34,7 @@ class TestGetTask:
             AsyncResult=pretend.call_recorder(lambda t: mocked_task_result)
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.tasks.repository_metadata",
-            mocked_repository_metadata,
+            f"{MOCK_PATH}.repository_metadata", mocked_repository_metadata
         )
 
         test_response = test_client.get(f"{TASK_URL}?task_id=test_id")
@@ -43,16 +44,17 @@ class TestGetTask:
                 "task_id": "test_id",
                 "state": "SUCCESS",
                 "result": {
-                    "task": "add_targets",
+                    "task": "add_artifacts",
                     "last_update": "2023-11-17T09:54:15.762882",
-                    "message": "Target(s) Added",
+                    "message": "Artifact(s) Added",
                     "status": True,
                     "details": {
-                        "targets": [
+                        "added_artifacts": [
                             "file1.tar.gz",
                             "file2.tar.gz",
                             "file3.tar.gz",
                         ],
+                        "invalid_paths": [],
                         "target_roles": ["bins-3", "bins-2"],
                     },
                 },
@@ -71,8 +73,7 @@ class TestGetTask:
             AsyncResult=pretend.call_recorder(lambda t: mocked_task_result)
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.tasks.repository_metadata",
-            mocked_repository_metadata,
+            f"{MOCK_PATH}.repository_metadata", mocked_repository_metadata
         )
 
         test_response = test_client.get(f"{TASK_URL}?task_id=test_id")
@@ -106,8 +107,7 @@ class TestGetTask:
             AsyncResult=pretend.call_recorder(lambda t: mocked_task_result)
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.tasks.repository_metadata",
-            mocked_repository_metadata,
+            f"{MOCK_PATH}.repository_metadata", mocked_repository_metadata
         )
 
         test_response = test_client.get(f"{TASK_URL}?task_id=test_id")
@@ -142,8 +142,7 @@ class TestGetTask:
             AsyncResult=pretend.call_recorder(lambda t: mocked_task_result)
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.tasks.repository_metadata",
-            mocked_repository_metadata,
+            f"{MOCK_PATH}.repository_metadata", mocked_repository_metadata
         )
 
         test_response = test_client.get(f"{TASK_URL}?task_id=test_id")
@@ -172,8 +171,7 @@ class TestGetTask:
             AsyncResult=pretend.call_recorder(lambda t: mocked_task_result)
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.tasks.repository_metadata",
-            mocked_repository_metadata,
+            f"{MOCK_PATH}.repository_metadata", mocked_repository_metadata
         )
 
         test_response = test_client.get(f"{TASK_URL}?task_id=test_id")

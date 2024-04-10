@@ -7,7 +7,7 @@ import json
 import logging
 import re
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 from threading import Thread
 from typing import Any, Dict, List, Optional
 
@@ -233,7 +233,7 @@ def post_bootstrap(payload: BootstrapPayload) -> BootstrapPostResponse:
 
     data = {
         "task_id": task_id,
-        "last_update": datetime.now(),
+        "last_update": datetime.now(timezone.utc),
     }
 
     return BootstrapPostResponse(

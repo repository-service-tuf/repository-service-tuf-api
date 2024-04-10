@@ -3,7 +3,7 @@
     "info": {
         "title": "Repository Service for TUF API",
         "description": "Repository Service for TUF Rest API",
-        "version": "0.12.0b1"
+        "version": "0.13.0b1"
     },
     "paths": {
         "/api/v1/bootstrap/": {
@@ -324,7 +324,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/repository_service_tuf_api__targets__Response"
+                                    "$ref": "#/components/schemas/ResponsePostAdd"
                                 }
                             }
                         }
@@ -369,7 +369,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/repository_service_tuf_api__targets__Response"
+                                    "$ref": "#/components/schemas/ResponsePostDelete"
                                 }
                             }
                         }
@@ -397,14 +397,14 @@
                 ],
                 "summary": "Post a task to publish artifacts.",
                 "description": "Submit an asynchronous task to publish artifacts not yet published from the RSTUF Database. Use the task ID to retrieve the task status in the endpoint /api/v1/task.",
-                "operationId": "post_publish_targets_api_v1_artifacts_publish__post",
+                "operationId": "post_publish_artifacts_api_v1_artifacts_publish__post",
                 "responses": {
                     "202": {
                         "description": "Successful Response",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/repository_service_tuf_api__targets__Response"
+                                    "$ref": "#/components/schemas/ResponsePostPublish"
                                 }
                             }
                         }
@@ -440,7 +440,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/repository_service_tuf_api__tasks__Response"
+                                    "$ref": "#/components/schemas/Response"
                                 }
                             }
                         }
@@ -466,12 +466,12 @@
         "schemas": {
             "AddPayload": {
                 "properties": {
-                    "targets": {
+                    "artifacts": {
                         "items": {
-                            "$ref": "#/components/schemas/Targets"
+                            "$ref": "#/components/schemas/Artifact"
                         },
                         "type": "array",
-                        "title": "Targets"
+                        "title": "Artifacts"
                     },
                     "add_task_id_to_custom": {
                         "type": "boolean",
@@ -479,21 +479,21 @@
                         "description": "Whether to add the id of the task in custom",
                         "default": false
                     },
-                    "publish_targets": {
+                    "publish_artifacts": {
                         "type": "boolean",
-                        "title": "Publish Targets",
-                        "description": "Whether to publish the targets",
+                        "title": "Publish Artifacts",
+                        "description": "Whether to publish the artifacts",
                         "default": true
                     }
                 },
                 "type": "object",
                 "required": [
-                    "targets"
+                    "artifacts"
                 ],
                 "title": "AddPayload",
                 "description": "POST method required Payload.",
                 "example": {
-                    "targets": [
+                    "artifacts": [
                         {
                             "info": {
                                 "custom": {
@@ -527,6 +527,56 @@
                         }
                     ]
                 }
+            },
+            "Artifact": {
+                "properties": {
+                    "info": {
+                        "$ref": "#/components/schemas/ArtifactInfo"
+                    },
+                    "path": {
+                        "type": "string",
+                        "title": "Path"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "info",
+                    "path"
+                ],
+                "title": "Artifact"
+            },
+            "ArtifactInfo": {
+                "properties": {
+                    "length": {
+                        "type": "integer",
+                        "title": "Length"
+                    },
+                    "hashes": {
+                        "additionalProperties": {
+                            "type": "string"
+                        },
+                        "type": "object",
+                        "title": "Hashes",
+                        "description": "The key(s) must be compatible with the algorithm(s) supported by a TUF client"
+                    },
+                    "custom": {
+                        "anyOf": [
+                            {
+                                "type": "object"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Custom"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "length",
+                    "hashes"
+                ],
+                "title": "ArtifactInfo"
             },
             "BinsRole": {
                 "properties": {
@@ -784,28 +834,28 @@
             },
             "DeletePayload": {
                 "properties": {
-                    "targets": {
+                    "artifacts": {
                         "items": {
                             "type": "string"
                         },
                         "type": "array",
-                        "title": "Targets"
+                        "title": "Artifacts"
                     },
-                    "publish_targets": {
+                    "publish_artifacts": {
                         "type": "boolean",
-                        "title": "Publish Targets",
-                        "description": "Whether to publish the targets changes",
+                        "title": "Publish Artifacts",
+                        "description": "Whether to publish the artifacts changes",
                         "default": true
                     }
                 },
                 "type": "object",
                 "required": [
-                    "targets"
+                    "artifacts"
                 ],
                 "title": "DeletePayload",
                 "description": "DELETE method required Payload.",
                 "example": {
-                    "targets": [
+                    "artifacts": [
                         "v3.4.1/file-3.4.1.tar.gz",
                         "config-3.4.1.yaml",
                         "file1.tar.gz"
@@ -1315,14 +1365,61 @@
                     "message": "Settings successfully submitted."
                 }
             },
+            "Response": {
+                "properties": {
+                    "data": {
+                        "$ref": "#/components/schemas/TasksData"
+                    },
+                    "message": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Message"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "data"
+                ],
+                "title": "Response",
+                "example": {
+                    "data": {
+                        "result": {
+                            "details": {
+                                "added_artifacts": [
+                                    "file1.tar.gz"
+                                ],
+                                "invalid_paths": [
+                                    "invalid_file.tar.gz"
+                                ],
+                                "target_roles": [
+                                    "bins-3"
+                                ]
+                            },
+                            "last_update": "2023-11-17T09:54:15.762882",
+                            "message": "Artifact(s) Added",
+                            "status": true,
+                            "task": "add_artifacts"
+                        },
+                        "state": "SUCCESS",
+                        "task_id": "33e66671dcc84cdfa2535a1eb030104c"
+                    },
+                    "message": "Task state."
+                }
+            },
             "ResponseData": {
                 "properties": {
-                    "targets": {
+                    "artifacts": {
                         "items": {
                             "type": "string"
                         },
                         "type": "array",
-                        "title": "Targets"
+                        "title": "Artifacts"
                     },
                     "task_id": {
                         "type": "string",
@@ -1336,11 +1433,125 @@
                 },
                 "type": "object",
                 "required": [
-                    "targets",
+                    "artifacts",
                     "task_id",
                     "last_update"
                 ],
                 "title": "ResponseData"
+            },
+            "ResponsePostAdd": {
+                "properties": {
+                    "data": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/ResponseData"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "message": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Message"
+                    }
+                },
+                "type": "object",
+                "title": "ResponsePostAdd",
+                "description": "Artifacts post new artifacts response",
+                "example": {
+                    "data": {
+                        "artifacts": [
+                            "file1.tar.gz",
+                            "file2.tar.gz"
+                        ],
+                        "last_update": "2022-12-01T12:10:00.578086",
+                        "task_id": "06ee6db3cbab4b26be505352c2f2e2c3"
+                    },
+                    "message": "New Artifact(s) successfully submitted."
+                }
+            },
+            "ResponsePostDelete": {
+                "properties": {
+                    "data": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/ResponseData"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "message": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Message"
+                    }
+                },
+                "type": "object",
+                "title": "ResponsePostDelete",
+                "description": "Artifacts post remove artifacts response",
+                "example": {
+                    "data": {
+                        "artifacts": [
+                            "file1.tar.gz",
+                            "file2.tar.gz"
+                        ],
+                        "last_update": "2022-12-01T12:10:00.578086",
+                        "task_id": "06ee6db3cbab4b26be505352c2f2e2c3"
+                    },
+                    "message": "Remove Artifact(s) successfully submitted."
+                }
+            },
+            "ResponsePostPublish": {
+                "properties": {
+                    "data": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/ResponseData"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "message": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Message"
+                    }
+                },
+                "type": "object",
+                "title": "ResponsePostPublish",
+                "description": "Artifacts post publish artifacts response",
+                "example": {
+                    "data": {
+                        "artifacts": [],
+                        "last_update": "2022-12-01T12:10:00.578086",
+                        "task_id": "06ee6db3cbab4b26be505352c2f2e2c3"
+                    },
+                    "message": "Publish artifacts successfully submitted."
+                }
             },
             "Role": {
                 "properties": {
@@ -1936,64 +2147,14 @@
                 ],
                 "title": "TUFSignedRoles"
             },
-            "Targets": {
-                "properties": {
-                    "info": {
-                        "$ref": "#/components/schemas/TargetsInfo"
-                    },
-                    "path": {
-                        "type": "string",
-                        "title": "Path"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "info",
-                    "path"
-                ],
-                "title": "Targets"
-            },
-            "TargetsInfo": {
-                "properties": {
-                    "length": {
-                        "type": "integer",
-                        "title": "Length"
-                    },
-                    "hashes": {
-                        "additionalProperties": {
-                            "type": "string"
-                        },
-                        "type": "object",
-                        "title": "Hashes",
-                        "description": "The key(s) must be compatible with the algorithm(s) supported by a TUF client"
-                    },
-                    "custom": {
-                        "anyOf": [
-                            {
-                                "type": "object"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Custom"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "length",
-                    "hashes"
-                ],
-                "title": "TargetsInfo"
-            },
             "TaskName": {
                 "type": "string",
                 "enum": [
-                    "add_targets",
-                    "remove_targets",
+                    "add_artifacts",
+                    "remove_artifacts",
                     "bootstrap",
                     "update_settings",
-                    "publish_targets",
+                    "publish_artifacts",
                     "metadata_update",
                     "sign_metadata",
                     "delete_sign_metadata"
@@ -2189,89 +2350,6 @@
                     "expiration"
                 ],
                 "title": "Settings"
-            },
-            "repository_service_tuf_api__targets__Response": {
-                "properties": {
-                    "data": {
-                        "anyOf": [
-                            {
-                                "$ref": "#/components/schemas/ResponseData"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ]
-                    },
-                    "message": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Message"
-                    }
-                },
-                "type": "object",
-                "title": "Response",
-                "description": "Targets Response",
-                "example": {
-                    "data": {
-                        "last_update": "2022-12-01T12:10:00.578086",
-                        "targets": [
-                            "file1.tar.gz",
-                            "file2.tar.gz"
-                        ],
-                        "task_id": "06ee6db3cbab4b26be505352c2f2e2c3"
-                    },
-                    "message": "New Artifact(s) successfully submitted."
-                }
-            },
-            "repository_service_tuf_api__tasks__Response": {
-                "properties": {
-                    "data": {
-                        "$ref": "#/components/schemas/TasksData"
-                    },
-                    "message": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Message"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "data"
-                ],
-                "title": "Response",
-                "example": {
-                    "data": {
-                        "result": {
-                            "details": {
-                                "target_roles": [
-                                    "bins-3"
-                                ],
-                                "targets": [
-                                    "file1.tar.gz"
-                                ]
-                            },
-                            "last_update": "2023-11-17T09:54:15.762882",
-                            "message": "Target(s) Added",
-                            "status": true,
-                            "task": "add_targets"
-                        },
-                        "state": "SUCCESS",
-                        "task_id": "33e66671dcc84cdfa2535a1eb030104c"
-                    },
-                    "message": "Task state."
-                }
             }
         }
     }

@@ -28,11 +28,11 @@ class TaskState(str, enum.Enum):
 
 
 class TaskName(str, enum.Enum):
-    ADD_TARGETS = "add_targets"
-    REMOVE_TARGETS = "remove_targets"
+    ADD_ARTIFACTS = "add_artifacts"
+    REMOVE_ARTIFACTS = "remove_artifacts"
     BOOTSTRAP = "bootstrap"
     UPDATE_SETTINGS = "update_settings"
-    PUBLISH_TARGETS = "publish_targets"
+    PUBLISH_ARTIFACTS = "publish_artifacts"
     METADATA_UPDATE = "metadata_update"
     SIGN_METADATA = "sign_metadata"
     DELETE_SIGN_METADATA = "delete_sign_metadata"
@@ -98,12 +98,13 @@ class Response(BaseModel):
                     "task_id": "33e66671dcc84cdfa2535a1eb030104c",
                     "state": TaskState.SUCCESS,
                     "result": {
-                        "task": TaskName.ADD_TARGETS,
+                        "task": TaskName.ADD_ARTIFACTS,
                         "status": True,
                         "last_update": "2023-11-17T09:54:15.762882",
-                        "message": "Target(s) Added",
+                        "message": "Artifact(s) Added",
                         "details": {
-                            "targets": ["file1.tar.gz"],
+                            "added_artifacts": ["file1.tar.gz"],
+                            "invalid_paths": ["invalid_file.tar.gz"],
                             "target_roles": ["bins-3"],
                         },
                     },

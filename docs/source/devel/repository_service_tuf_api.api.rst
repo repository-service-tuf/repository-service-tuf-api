@@ -4,6 +4,14 @@ repository\_service\_tuf\_api.api package
 Submodules
 ----------
 
+repository\_service\_tuf\_api.api.artifacts module
+--------------------------------------------------
+
+.. automodule:: repository_service_tuf_api.api.artifacts
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 repository\_service\_tuf\_api.api.bootstrap module
 --------------------------------------------------
 
@@ -24,14 +32,6 @@ repository\_service\_tuf\_api.api.metadata module
 -------------------------------------------------
 
 .. automodule:: repository_service_tuf_api.api.metadata
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-repository\_service\_tuf\_api.api.targets module
-------------------------------------------------
-
-.. automodule:: repository_service_tuf_api.api.targets
    :members:
    :undoc-members:
    :show-inheritance:
