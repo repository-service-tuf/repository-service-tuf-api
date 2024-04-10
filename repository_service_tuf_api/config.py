@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: MIT
 
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict
 
 from fastapi import HTTPException, status
@@ -85,7 +85,7 @@ def put(payload: PutPayload):
 
     data = {
         "task_id": task_id,
-        "last_update": datetime.now(),
+        "last_update": datetime.now(timezone.utc),
     }
 
     return PutResponse(data=data, message="Settings successfully submitted.")

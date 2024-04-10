@@ -2,8 +2,8 @@
 # SPDX-FileCopyrightText: 2022-2023 VMware Inc
 #
 # SPDX-License-Identifier: MIT
-import datetime
 import json
+from datetime import timezone
 from uuid import uuid4
 
 import pretend
@@ -12,10 +12,11 @@ from fastapi import status
 ARTIFACTS_URL = "/api/v1/artifacts/"
 ARTIFACTS_DELETE_URL = "/api/v1/artifacts/delete"
 ARTIFACTS_POST_URL = "/api/v1/artifacts/publish/"
+MOCK_PATH = "repository_service_tuf_api.artifacts"
 
 
 class TestPostArtifacts:
-    def test_post(self, monkeypatch, test_client):
+    def test_post(self, monkeypatch, test_client, fake_datetime):
         with open("tests/data_examples/artifacts/add_payload.json") as f:
             f_data = f.read()
 
@@ -25,35 +26,25 @@ class TestPostArtifacts:
             lambda *a: pretend.stub(bootstrap=True)
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.artifacts.bootstrap_state",
-            mocked_bootstrap_state,
+            f"{MOCK_PATH}.bootstrap_state", mocked_bootstrap_state
         )
         mocked_repository_metadata = pretend.stub(
             apply_async=pretend.call_recorder(lambda **kw: None)
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.artifacts.repository_metadata",
-            mocked_repository_metadata,
+            f"{MOCK_PATH}.repository_metadata", mocked_repository_metadata
         )
         fake_task_id = uuid4().hex
-        monkeypatch.setattr(
-            "repository_service_tuf_api.artifacts.get_task_id",
-            lambda: fake_task_id,
-        )
-        fake_time = datetime.datetime(2019, 6, 16, 9, 5, 1)
-        fake_datetime = pretend.stub(
-            now=pretend.call_recorder(lambda: fake_time)
-        )
-        monkeypatch.setattr(
-            "repository_service_tuf_api.artifacts.datetime", fake_datetime
-        )
+        monkeypatch.setattr(f"{MOCK_PATH}.get_task_id", lambda: fake_task_id)
+        monkeypatch.setattr(f"{MOCK_PATH}.datetime", fake_datetime)
+
         response = test_client.post(ARTIFACTS_URL, json=payload)
         assert response.status_code == status.HTTP_202_ACCEPTED
         assert response.json() == {
             "data": {
                 "artifacts": ["file1.tar.gz", "file2.tar.gz", "file3.tar.gz"],
                 "task_id": fake_task_id,
-                "last_update": "2019-06-16T09:05:01",
+                "last_update": "2019-06-16T09:05:01Z",
             },
             "message": "New Artifact(s) successfully submitted.",
         }
@@ -74,7 +65,9 @@ class TestPostArtifacts:
             )
         ]
 
-    def test_post_with_add_task_id_to_custom(self, monkeypatch, test_client):
+    def test_post_with_add_task_id_to_custom(
+        self, monkeypatch, test_client, fake_datetime
+    ):
         with open("tests/data_examples/artifacts/add_payload.json") as f:
             f_data = f.read()
 
@@ -84,28 +77,17 @@ class TestPostArtifacts:
             lambda *a: pretend.stub(bootstrap=True)
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.artifacts.bootstrap_state",
-            mocked_bootstrap_state,
+            f"{MOCK_PATH}.bootstrap_state", mocked_bootstrap_state
         )
         mocked_repository_metadata = pretend.stub(
             apply_async=pretend.call_recorder(lambda **kw: None)
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.artifacts.repository_metadata",
-            mocked_repository_metadata,
+            f"{MOCK_PATH}.repository_metadata", mocked_repository_metadata
         )
         fake_task_id = uuid4().hex
-        monkeypatch.setattr(
-            "repository_service_tuf_api.artifacts.get_task_id",
-            lambda: fake_task_id,
-        )
-        fake_time = datetime.datetime(2019, 6, 16, 9, 5, 1)
-        fake_datetime = pretend.stub(
-            now=pretend.call_recorder(lambda: fake_time)
-        )
-        monkeypatch.setattr(
-            "repository_service_tuf_api.artifacts.datetime", fake_datetime
-        )
+        monkeypatch.setattr(f"{MOCK_PATH}.get_task_id", lambda: fake_task_id)
+        monkeypatch.setattr(f"{MOCK_PATH}.datetime", fake_datetime)
 
         # enable to add task id to custom metadata field
         payload["add_task_id_to_custom"] = True
@@ -116,7 +98,7 @@ class TestPostArtifacts:
             "data": {
                 "artifacts": ["file1.tar.gz", "file2.tar.gz", "file3.tar.gz"],
                 "task_id": fake_task_id,
-                "last_update": "2019-06-16T09:05:01",
+                "last_update": "2019-06-16T09:05:01Z",
             },
             "message": "New Artifact(s) successfully submitted.",
         }
@@ -148,7 +130,9 @@ class TestPostArtifacts:
             )
         ]
 
-    def test_post_publish_artifacts_false(self, monkeypatch, test_client):
+    def test_post_publish_artifacts_false(
+        self, monkeypatch, test_client, fake_datetime
+    ):
         with open("tests/data_examples/artifacts/add_payload.json") as f:
             f_data = f.read()
 
@@ -161,27 +145,16 @@ class TestPostArtifacts:
             lambda *a: pretend.stub(bootstrap=True)
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.artifacts.bootstrap_state",
-            mocked_bootstrap_state,
+            f"{MOCK_PATH}.bootstrap_state", mocked_bootstrap_state
         )
         fake_task_id = uuid4().hex
-        monkeypatch.setattr(
-            "repository_service_tuf_api.artifacts.get_task_id",
-            lambda: fake_task_id,
-        )
-        fake_time = datetime.datetime(2019, 6, 16, 9, 5, 1)
-        fake_datetime = pretend.stub(
-            now=pretend.call_recorder(lambda: fake_time)
-        )
-        monkeypatch.setattr(
-            "repository_service_tuf_api.artifacts.datetime", fake_datetime
-        )
+        monkeypatch.setattr(f"{MOCK_PATH}.get_task_id", lambda: fake_task_id)
+        monkeypatch.setattr(f"{MOCK_PATH}.datetime", fake_datetime)
         mocked_repository_metadata = pretend.stub(
             apply_async=pretend.call_recorder(lambda **kw: None)
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.artifacts.repository_metadata",
-            mocked_repository_metadata,
+            f"{MOCK_PATH}.repository_metadata", mocked_repository_metadata
         )
         response = test_client.post(ARTIFACTS_URL, json=payload)
         assert response.status_code == status.HTTP_202_ACCEPTED
@@ -193,7 +166,7 @@ class TestPostArtifacts:
             "data": {
                 "artifacts": ["file1.tar.gz", "file2.tar.gz", "file3.tar.gz"],
                 "task_id": fake_task_id,
-                "last_update": "2019-06-16T09:05:01",
+                "last_update": "2019-06-16T09:05:01Z",
             },
             "message": msg,
         }
@@ -218,8 +191,7 @@ class TestPostArtifacts:
             lambda *a: pretend.stub(bootstrap=False, state=None)
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.artifacts.bootstrap_state",
-            mocked_bootstrap_state,
+            f"{MOCK_PATH}.bootstrap_state", mocked_bootstrap_state
         )
 
         payload = json.loads(f_data)
@@ -244,8 +216,7 @@ class TestPostArtifacts:
             lambda *a: pretend.stub(bootstrap=False, state="signing")
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.artifacts.bootstrap_state",
-            mocked_bootstrap_state,
+            f"{MOCK_PATH}.bootstrap_state", mocked_bootstrap_state
         )
 
         payload = json.loads(f_data)
@@ -277,7 +248,7 @@ class TestPostArtifacts:
 
 
 class TestPostArtifactsDelete:
-    def test_post_delete(self, monkeypatch, test_client):
+    def test_post_delete(self, monkeypatch, test_client, fake_datetime):
         payload = {
             "artifacts": ["file-v1.0.0_i683.tar.gz", "v0.4.1/file.tar.gz"],
         }
@@ -286,38 +257,27 @@ class TestPostArtifactsDelete:
             lambda *a: pretend.stub(bootstrap=True)
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.artifacts.bootstrap_state",
-            mocked_bootstrap_state,
+            f"{MOCK_PATH}.bootstrap_state", mocked_bootstrap_state
         )
         mocked_repository_metadata = pretend.stub(
             apply_async=pretend.call_recorder(lambda **kw: None)
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.artifacts.repository_metadata",
-            mocked_repository_metadata,
+            f"{MOCK_PATH}.repository_metadata", mocked_repository_metadata
         )
         fake_task_id = uuid4().hex
-        monkeypatch.setattr(
-            "repository_service_tuf_api.artifacts.get_task_id",
-            lambda: fake_task_id,
-        )
-        fake_time = datetime.datetime(2019, 6, 16, 9, 5, 1)
-        fake_datetime = pretend.stub(
-            now=pretend.call_recorder(lambda: fake_time)
-        )
-        monkeypatch.setattr(
-            "repository_service_tuf_api.artifacts.datetime", fake_datetime
-        )
+        monkeypatch.setattr(f"{MOCK_PATH}.get_task_id", lambda: fake_task_id)
+        monkeypatch.setattr(f"{MOCK_PATH}.datetime", fake_datetime)
 
         response = test_client.post(ARTIFACTS_DELETE_URL, json=payload)
 
-        assert fake_datetime.now.calls == [pretend.call()]
+        assert fake_datetime.now.calls == [pretend.call(timezone.utc)]
         assert response.status_code == status.HTTP_202_ACCEPTED
         assert response.json() == {
             "data": {
                 "artifacts": ["file-v1.0.0_i683.tar.gz", "v0.4.1/file.tar.gz"],
                 "task_id": fake_task_id,
-                "last_update": "2019-06-16T09:05:01",
+                "last_update": "2019-06-16T09:05:01Z",
             },
             "message": "Remove Artifact(s) successfully submitted.",
         }
@@ -335,7 +295,7 @@ class TestPostArtifactsDelete:
         ]
 
     def test_post_publish_artifacts_delete_false(
-        self, monkeypatch, test_client
+        self, monkeypatch, test_client, fake_datetime
     ):
         payload = {
             "artifacts": ["file-v1.0.0_i683.tar.gz", "v0.4.1/file.tar.gz"],
@@ -346,28 +306,17 @@ class TestPostArtifactsDelete:
             lambda *a: pretend.stub(bootstrap=True)
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.artifacts.bootstrap_state",
-            mocked_bootstrap_state,
+            f"{MOCK_PATH}.bootstrap_state", mocked_bootstrap_state
         )
         mocked_repository_metadata = pretend.stub(
             apply_async=pretend.call_recorder(lambda **kw: None)
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.artifacts.repository_metadata",
-            mocked_repository_metadata,
+            f"{MOCK_PATH}.repository_metadata", mocked_repository_metadata
         )
         fake_task_id = uuid4().hex
-        monkeypatch.setattr(
-            "repository_service_tuf_api.artifacts.get_task_id",
-            lambda: fake_task_id,
-        )
-        fake_time = datetime.datetime(2019, 6, 16, 9, 5, 1)
-        fake_datetime = pretend.stub(
-            now=pretend.call_recorder(lambda: fake_time)
-        )
-        monkeypatch.setattr(
-            "repository_service_tuf_api.artifacts.datetime", fake_datetime
-        )
+        monkeypatch.setattr(f"{MOCK_PATH}.get_task_id", lambda: fake_task_id)
+        monkeypatch.setattr(f"{MOCK_PATH}.datetime", fake_datetime)
 
         response = test_client.post(ARTIFACTS_DELETE_URL, json=payload)
 
@@ -380,7 +329,7 @@ class TestPostArtifactsDelete:
             "data": {
                 "artifacts": ["file-v1.0.0_i683.tar.gz", "v0.4.1/file.tar.gz"],
                 "task_id": fake_task_id,
-                "last_update": "2019-06-16T09:05:01",
+                "last_update": "2019-06-16T09:05:01Z",
             },
             "message": msg,
         }
@@ -405,8 +354,7 @@ class TestPostArtifactsDelete:
             lambda *a: pretend.stub(bootstrap=False, state=None)
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.artifacts.bootstrap_state",
-            mocked_bootstrap_state,
+            f"{MOCK_PATH}.bootstrap_state", mocked_bootstrap_state
         )
         response = test_client.post(ARTIFACTS_DELETE_URL, json=payload)
 
@@ -429,8 +377,7 @@ class TestPostArtifactsDelete:
             lambda *a: pretend.stub(bootstrap=False, state="signing")
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.artifacts.bootstrap_state",
-            mocked_bootstrap_state,
+            f"{MOCK_PATH}.bootstrap_state", mocked_bootstrap_state
         )
         response = test_client.post(ARTIFACTS_DELETE_URL, json=payload)
 
@@ -451,33 +398,24 @@ class TestPostArtifactsDelete:
 
 
 class TestPostArtifactsPublish:
-    def test_post_publish(self, monkeypatch, test_client):
+    def test_post_publish(self, monkeypatch, test_client, fake_datetime):
         mocked_repository_metadata = pretend.stub(
             apply_async=pretend.call_recorder(lambda **kw: None)
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.artifacts.repository_metadata",
-            mocked_repository_metadata,
+            f"{MOCK_PATH}.repository_metadata", mocked_repository_metadata
         )
         fake_task_id = uuid4().hex
-        monkeypatch.setattr(
-            "repository_service_tuf_api.artifacts.get_task_id",
-            lambda: fake_task_id,
-        )
-        fake_time = datetime.datetime(2019, 6, 16, 9, 5, 1)
-        fake_datetime = pretend.stub(
-            now=pretend.call_recorder(lambda: fake_time)
-        )
-        monkeypatch.setattr(
-            "repository_service_tuf_api.artifacts.datetime", fake_datetime
-        )
+        monkeypatch.setattr(f"{MOCK_PATH}.get_task_id", lambda: fake_task_id)
+        monkeypatch.setattr(f"{MOCK_PATH}.datetime", fake_datetime)
+
         response = test_client.post(ARTIFACTS_POST_URL)
         assert response.status_code == status.HTTP_202_ACCEPTED
         assert response.json() == {
             "data": {
                 "artifacts": [],
                 "task_id": fake_task_id,
-                "last_update": "2019-06-16T09:05:01",
+                "last_update": "2019-06-16T09:05:01Z",
             },
             "message": "Publish artifacts successfully submitted.",
         }

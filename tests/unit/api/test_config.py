@@ -3,17 +3,18 @@
 #
 # SPDX-License-Identifier: MIT
 
-import datetime
 import json
+from datetime import timezone
 
 import pretend
 from fastapi import status
 
 URL = "/api/v1/config"
+MOCK_PATH = "repository_service_tuf_api.config"
 
 
 class TestPutSettings:
-    def test_put_settings(self, test_client, monkeypatch):
+    def test_put_settings(self, test_client, monkeypatch, fake_datetime):
         with open("tests/data_examples/config/update_settings.json") as f:
             f_data = f.read()
 
@@ -23,34 +24,24 @@ class TestPutSettings:
             lambda *a: pretend.stub(bootstrap=True)
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.config.bootstrap_state",
-            mocked_bootstrap_state,
+            f"{MOCK_PATH}.bootstrap_state", mocked_bootstrap_state
         )
         mocked_get_task_id = pretend.call_recorder(lambda: "task-id")
-        monkeypatch.setattr(
-            "repository_service_tuf_api.config.get_task_id", mocked_get_task_id
-        )
+        monkeypatch.setattr(f"{MOCK_PATH}.get_task_id", mocked_get_task_id)
         mocked_repository_metadata = pretend.stub(
             apply_async=pretend.call_recorder(lambda **kw: None)
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.config.repository_metadata",
-            mocked_repository_metadata,
+            f"{MOCK_PATH}.repository_metadata", mocked_repository_metadata
         )
-        fake_time = datetime.datetime(2019, 6, 16, 9, 5, 1)
-        fake_datetime = pretend.stub(
-            now=pretend.call_recorder(lambda: fake_time)
-        )
-        monkeypatch.setattr(
-            "repository_service_tuf_api.config.datetime", fake_datetime
-        )
+        monkeypatch.setattr(f"{MOCK_PATH}.datetime", fake_datetime)
         response = test_client.put(URL, json=payload)
-        assert fake_datetime.now.calls == [pretend.call()]
+        assert fake_datetime.now.calls == [pretend.call(timezone.utc)]
         assert response.status_code == status.HTTP_202_ACCEPTED
         assert response.json() == {
             "data": {
                 "task_id": "task-id",
-                "last_update": "2019-06-16T09:05:01",
+                "last_update": "2019-06-16T09:05:01Z",
             },
             "message": "Settings successfully submitted.",
         }
@@ -65,7 +56,9 @@ class TestPutSettings:
             )
         ]
 
-    def test_put_settings_with_custom_targets(self, test_client, monkeypatch):
+    def test_put_settings_with_custom_targets(
+        self, test_client, monkeypatch, fake_datetime
+    ):
         path = "tests/data_examples/config/update_settings_custom_targets.json"
         with open(path) as f:
             f_data = f.read()
@@ -76,34 +69,25 @@ class TestPutSettings:
             lambda *a: pretend.stub(bootstrap=True)
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.config.bootstrap_state",
-            mocked_bootstrap_state,
+            f"{MOCK_PATH}.bootstrap_state", mocked_bootstrap_state
         )
         mocked_get_task_id = pretend.call_recorder(lambda: "task-id")
-        monkeypatch.setattr(
-            "repository_service_tuf_api.config.get_task_id", mocked_get_task_id
-        )
+        monkeypatch.setattr(f"{MOCK_PATH}.get_task_id", mocked_get_task_id)
         mocked_repository_metadata = pretend.stub(
             apply_async=pretend.call_recorder(lambda **kw: None)
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.config.repository_metadata",
-            mocked_repository_metadata,
+            f"{MOCK_PATH}.repository_metadata", mocked_repository_metadata
         )
-        fake_time = datetime.datetime(2019, 6, 16, 9, 5, 1)
-        fake_datetime = pretend.stub(
-            now=pretend.call_recorder(lambda: fake_time)
-        )
-        monkeypatch.setattr(
-            "repository_service_tuf_api.config.datetime", fake_datetime
-        )
+
+        monkeypatch.setattr(f"{MOCK_PATH}.datetime", fake_datetime)
         response = test_client.put(URL, json=payload)
-        assert fake_datetime.now.calls == [pretend.call()]
+        assert fake_datetime.now.calls == [pretend.call(timezone.utc)]
         assert response.status_code == status.HTTP_202_ACCEPTED
         assert response.json() == {
             "data": {
                 "task_id": "task-id",
-                "last_update": "2019-06-16T09:05:01",
+                "last_update": "2019-06-16T09:05:01Z",
             },
             "message": "Settings successfully submitted.",
         }
@@ -127,8 +111,7 @@ class TestPutSettings:
             lambda *a: pretend.stub(bootstrap=False, state=None)
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.config.bootstrap_state",
-            mocked_bootstrap_state,
+            f"{MOCK_PATH}.bootstrap_state", mocked_bootstrap_state
         )
         response = test_client.put(URL, json=payload)
         assert response.status_code == status.HTTP_404_NOT_FOUND
@@ -149,8 +132,7 @@ class TestPutSettings:
             lambda *a: pretend.stub(bootstrap=False, state="signing")
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.config.bootstrap_state",
-            mocked_bootstrap_state,
+            f"{MOCK_PATH}.bootstrap_state", mocked_bootstrap_state
         )
         response = test_client.put(URL, json=payload)
         assert response.status_code == status.HTTP_404_NOT_FOUND
@@ -172,8 +154,7 @@ class TestGetSettings:
             lambda *a: pretend.stub(bootstrap=True)
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.config.bootstrap_state",
-            mocked_bootstrap_state,
+            f"{MOCK_PATH}.bootstrap_state", mocked_bootstrap_state
         )
         fake_settings = pretend.stub(
             fresh=pretend.call_recorder(lambda: None),
@@ -181,10 +162,7 @@ class TestGetSettings:
                 lambda: {"k": "v", "j": ["v1", "v2"], "l": "none"}
             ),
         )
-        monkeypatch.setattr(
-            "repository_service_tuf_api.config.settings_repository",
-            fake_settings,
-        )
+        monkeypatch.setattr(f"{MOCK_PATH}.settings_repository", fake_settings)
 
         test_response = test_client.get(url)
         assert test_response.status_code == status.HTTP_200_OK
@@ -203,8 +181,7 @@ class TestGetSettings:
             lambda *a: pretend.stub(bootstrap=False, state="None")
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.config.bootstrap_state",
-            mocked_bootstrap_state,
+            f"{MOCK_PATH}.bootstrap_state", mocked_bootstrap_state
         )
 
         test_response = test_client.get(url)
