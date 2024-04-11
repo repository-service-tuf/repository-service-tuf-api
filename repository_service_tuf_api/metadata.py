@@ -128,8 +128,9 @@ def post_metadata_online(
             },
         )
 
+    targets_in = "targets" in payload
     settings_repository.reload()
-    if not settings_repository.get_fresh("TARGETS_ONLINE_KEY"):
+    if targets_in and not settings_repository.get_fresh("TARGETS_ONLINE_KEY"):
         raise HTTPException(
             status.HTTP_200_OK,
             detail={
