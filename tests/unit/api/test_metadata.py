@@ -5,7 +5,7 @@
 
 import copy
 import json
-from datetime import timezone
+from datetime import datetime, timezone
 
 import pretend
 from fastapi import status
@@ -192,7 +192,7 @@ class TestPostMetadataOnline:
             "repository_service_tuf_api.metadata.repository_metadata",
             fake_repository_metadata,
         )
-        fake_time = datetime.datetime(2019, 6, 16, 9, 5, 1)
+        fake_time = datetime(2019, 6, 16, 9, 5, 1)
         fake_datetime = pretend.stub(
             now=pretend.call_recorder(lambda: fake_time)
         )
@@ -271,7 +271,7 @@ class TestPostMetadataOnline:
             "repository_service_tuf_api.metadata.repository_metadata",
             fake_repository_metadata,
         )
-        fake_time = datetime.datetime(2019, 6, 16, 9, 5, 1)
+        fake_time = datetime(2019, 6, 16, 9, 5, 1)
         fake_datetime = pretend.stub(
             now=pretend.call_recorder(lambda: fake_time)
         )
