@@ -16,7 +16,6 @@ from repository_service_tuf_api import (
     repository_metadata,
     settings_repository,
 )
-from repository_service_tuf_api.common_models import Roles
 
 
 class PutData(BaseModel):
@@ -43,7 +42,7 @@ class PutResponse(BaseModel):
 
 class Settings(BaseModel):
     # Only online roles can be dict keys
-    expiration: Dict[Roles.online_roles_values(), int]
+    expiration: Dict[str, int]
 
 
 with open("tests/data_examples/config/update_settings.json") as f:
