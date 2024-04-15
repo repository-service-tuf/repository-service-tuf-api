@@ -165,15 +165,16 @@ class TestPostMetadataOnline:
             mocked_bootstrap_state,
         )
 
-        def fake_get_fresh(setting: str) -> bool:
+        def fake_get_fresh(attr: str) -> bool:
+            setting = attr[0]
             if setting == "TARGETS_ONLINE_KEY":
                 return True
-            elif setting == "NUMBER_OF_DELEGATED_BINS":
-                return False
+            elif setting == "DELEGATED_ROLES_NAMES":
+                return ["bins-0", "bins-1"]
 
         mocked_settings_repository = pretend.stub(
             reload=pretend.call_recorder(lambda: None),
-            get_fresh=pretend.call_recorder(lambda a: fake_get_fresh(a)),
+            get_fresh=pretend.call_recorder(lambda *a: fake_get_fresh(a)),
         )
         monkeypatch.setattr(
             "repository_service_tuf_api.metadata.settings_repository",
@@ -213,11 +214,10 @@ class TestPostMetadataOnline:
         assert mocked_bootstrap_state.calls == [pretend.call()]
         assert mocked_settings_repository.reload.calls == [
             pretend.call(),
-            pretend.call(),
         ]
         assert mocked_settings_repository.get_fresh.calls == [
-            pretend.call("TARGETS_ONLINE_KEY"),
-            pretend.call("NUMBER_OF_DELEGATED_BINS"),
+            pretend.call("TARGETS_ONLINE_KEY", True),
+            pretend.call("DELEGATED_ROLES_NAMES"),
         ]
         assert fake_get_task_id.calls == [pretend.call()]
         assert fake_repository_metadata.apply_async.calls == [
@@ -244,15 +244,16 @@ class TestPostMetadataOnline:
             mocked_bootstrap_state,
         )
 
-        def fake_get_fresh(setting: str) -> bool:
+        def fake_get_fresh(attr: str) -> bool:
+            setting = attr[0]
             if setting == "TARGETS_ONLINE_KEY":
                 return True
-            elif setting == "NUMBER_OF_DELEGATED_BINS":
-                return False
+            elif setting == "DELEGATED_ROLES_NAMES":
+                return ["bins-0", "bins-1"]
 
         mocked_settings_repository = pretend.stub(
             reload=pretend.call_recorder(lambda: None),
-            get_fresh=pretend.call_recorder(lambda a: fake_get_fresh(a)),
+            get_fresh=pretend.call_recorder(lambda *a: fake_get_fresh(a)),
         )
         monkeypatch.setattr(
             "repository_service_tuf_api.metadata.settings_repository",
@@ -292,11 +293,10 @@ class TestPostMetadataOnline:
         assert mocked_bootstrap_state.calls == [pretend.call()]
         assert mocked_settings_repository.reload.calls == [
             pretend.call(),
-            pretend.call(),
         ]
         assert mocked_settings_repository.get_fresh.calls == [
-            pretend.call("TARGETS_ONLINE_KEY"),
-            pretend.call("NUMBER_OF_DELEGATED_BINS"),
+            pretend.call("TARGETS_ONLINE_KEY", True),
+            pretend.call("DELEGATED_ROLES_NAMES"),
         ]
         assert fake_get_task_id.calls == [pretend.call()]
         expected_payload = {"roles": common_models.Roles.online_roles_values()}
@@ -347,7 +347,7 @@ class TestPostMetadataOnline:
         )
         mocked_settings_repository = pretend.stub(
             reload=pretend.call_recorder(lambda: None),
-            get_fresh=pretend.call_recorder(lambda a: False),
+            get_fresh=pretend.call_recorder(lambda *a: False),
         )
         monkeypatch.setattr(
             "repository_service_tuf_api.metadata.settings_repository",
@@ -367,7 +367,7 @@ class TestPostMetadataOnline:
         assert mocked_bootstrap_state.calls == [pretend.call()]
         assert mocked_settings_repository.reload.calls == [pretend.call()]
         assert mocked_settings_repository.get_fresh.calls == [
-            pretend.call("TARGETS_ONLINE_KEY")
+            pretend.call("TARGETS_ONLINE_KEY", True)
         ]
 
     def test_post_metadata_online_bins_used_bad_payload(
@@ -380,9 +380,17 @@ class TestPostMetadataOnline:
             "repository_service_tuf_api.metadata.bootstrap_state",
             mocked_bootstrap_state,
         )
+
+        def fake_get_fresh(attr: str) -> bool:
+            setting = attr[0]
+            if setting == "TARGETS_ONLINE_KEY":
+                return True
+            elif setting == "DELEGATED_ROLES_NAMES":
+                return ["bins-0", "bins-1"]
+
         mocked_settings_repository = pretend.stub(
             reload=pretend.call_recorder(lambda: None),
-            get_fresh=pretend.call_recorder(lambda a: True),
+            get_fresh=pretend.call_recorder(lambda *a: fake_get_fresh(a)),
         )
         monkeypatch.setattr(
             "repository_service_tuf_api.metadata.settings_repository",
@@ -405,11 +413,10 @@ class TestPostMetadataOnline:
         assert mocked_bootstrap_state.calls == [pretend.call()]
         assert mocked_settings_repository.reload.calls == [
             pretend.call(),
-            pretend.call(),
         ]
         assert mocked_settings_repository.get_fresh.calls == [
-            pretend.call("TARGETS_ONLINE_KEY"),
-            pretend.call("NUMBER_OF_DELEGATED_BINS"),
+            pretend.call("TARGETS_ONLINE_KEY", True),
+            pretend.call("DELEGATED_ROLES_NAMES"),
         ]
 
 

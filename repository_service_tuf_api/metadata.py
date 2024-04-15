@@ -128,9 +128,10 @@ def post_metadata_online(
             },
         )
 
-    targets_in = "targets" in payload
+    targets_in = "targets" in payload.roles
     settings_repository.reload()
-    if targets_in and not settings_repository.get_fresh("TARGETS_ONLINE_KEY"):
+    targets_online = settings_repository.get_fresh("TARGETS_ONLINE_KEY", True)
+    if targets_in and not targets_online:
         raise HTTPException(
             status.HTTP_200_OK,
             detail={
@@ -140,10 +141,12 @@ def post_metadata_online(
                 ),
             },
         )
-    settings_repository.reload()
-    if settings_repository.get_fresh("NUMBER_OF_DELEGATED_BINS"):
+
+    delegated_roles = settings_repository.get_fresh("DELEGATED_ROLES_NAMES")
+    bins_used = all(r.startswith(Roles.BINS.value) for r in delegated_roles)
+    if bins_used:
         # This indicates succinct hash bins are used
-        if any(not Roles.is_role(role) for role in payload):
+        if any(not Roles.is_role(role) for role in payload.roles):
             raise HTTPException(
                 status.HTTP_200_OK,
                 detail={
