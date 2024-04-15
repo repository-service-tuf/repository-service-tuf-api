@@ -259,6 +259,18 @@ class TestPostMetadataOnline:
             "repository_service_tuf_api.metadata.settings_repository",
             mocked_settings_repository,
         )
+        fake_online_roles_return = ["snapshot", "targets", "timestamp", "bins"]
+        fake_roles = pretend.stub(
+            online_roles_values=pretend.call_recorder(
+                lambda: fake_online_roles_return
+            ),
+            BINS=pretend.stub(
+                value="bins"
+            )
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.metadata.Roles", fake_roles
+        )
         fake_id = "fake_id"
         fake_get_task_id = pretend.call_recorder(lambda: fake_id)
         monkeypatch.setattr(
@@ -297,9 +309,11 @@ class TestPostMetadataOnline:
         assert mocked_settings_repository.get_fresh.calls == [
             pretend.call("TARGETS_ONLINE_KEY", True),
             pretend.call("DELEGATED_ROLES_NAMES"),
+
         ]
+        assert fake_roles.online_roles_values.calls == [pretend.call()]
         assert fake_get_task_id.calls == [pretend.call()]
-        expected_payload = {"roles": common_models.Roles.online_roles_values()}
+        expected_payload = {"roles": fake_online_roles_return}
         assert fake_repository_metadata.apply_async.calls == [
             pretend.call(
                 kwargs={

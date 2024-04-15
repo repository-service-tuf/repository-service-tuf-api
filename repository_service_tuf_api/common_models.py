@@ -35,10 +35,18 @@ class Roles(Enum):
 
     @staticmethod
     def online_roles_values() -> List[str]:
-        online_roles = Literal["targets", "snapshot", "timestamp", "bins"]
-        settings_repository.reload()
-        if not settings_repository.get_fresh("TARGETS_ONLINE_KEY", True):
-            online_roles = Literal["snapshot", "timestamp", "bins"]
+        online_roles: List[str] = ["snapshot", "timestamp"]
+        if settings_repository.get_fresh("TARGETS_ONLINE_KEY", True):
+            online_roles.append("targets")
+
+        delegated_roles: List[str]= settings_repository.get_fresh(
+            "DELEGATED_ROLES_NAMES"
+        )
+        bins = all(r.startswith(Roles.BINS.value) for r in delegated_roles)
+        if bins:
+            online_roles.append(Roles.BINS.value)
+        else:
+            online_roles.extend(delegated_roles)
 
         return online_roles
 
