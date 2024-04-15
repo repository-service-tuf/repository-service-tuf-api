@@ -419,6 +419,54 @@ class TestPostMetadataOnline:
             pretend.call("DELEGATED_ROLES_NAMES"),
         ]
 
+    def test_post_metadata_online_custom_delegation_used_bad_payload(
+        self, test_client, monkeypatch
+    ):
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda: pretend.stub(bootstrap=True, state="ab123")
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.metadata.bootstrap_state",
+            mocked_bootstrap_state,
+        )
+
+        def fake_get_fresh(attr: str) -> bool:
+            setting = attr[0]
+            if setting == "TARGETS_ONLINE_KEY":
+                return True
+            elif setting == "DELEGATED_ROLES_NAMES":
+                return ["foo", "bar"]
+
+        mocked_settings_repository = pretend.stub(
+            reload=pretend.call_recorder(lambda: None),
+            get_fresh=pretend.call_recorder(lambda *a: fake_get_fresh(a)),
+        )
+        monkeypatch.setattr(
+            "repository_service_tuf_api.metadata.settings_repository",
+            mocked_settings_repository,
+        )
+        payload = {"roles": ["snapshot", "targets", "bins"]}
+
+        response = test_client.post(METADATA_ONLINE_URL, json=payload)
+        assert response.status_code == status.HTTP_200_OK, response.text
+        err_msg = (
+            "Custom target delegation used and bins cannot be bumped"
+        )
+        assert response.json() == {
+            "detail": {
+                "message": "Task not accepted.",
+                "error": err_msg,
+            },
+        }
+        assert mocked_bootstrap_state.calls == [pretend.call()]
+        assert mocked_settings_repository.reload.calls == [
+            pretend.call(),
+        ]
+        assert mocked_settings_repository.get_fresh.calls == [
+            pretend.call("TARGETS_ONLINE_KEY", True),
+            pretend.call("DELEGATED_ROLES_NAMES"),
+        ]
+
 
 class TestGetMetadataSign:
     def test_get_metadata_sign(self, test_client, monkeypatch):

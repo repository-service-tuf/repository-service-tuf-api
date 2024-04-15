@@ -157,6 +157,19 @@ def post_metadata_online(
                     ),
                 },
             )
+    else:
+        if Roles.BINS.value in payload.roles:
+            raise HTTPException(
+                status.HTTP_200_OK,
+                detail={
+                    "message": "Task not accepted.",
+                    "error": (
+                        "Custom target delegation used and "
+                        "bins cannot be bumped"
+                    ),
+                },
+            )
+
 
     # If no roles are provided, then bump all.
     if len(payload.roles) == 0:
