@@ -1,5 +1,3 @@
-from typing import Literal
-
 import pretend
 
 from repository_service_tuf_api import common_models
@@ -28,7 +26,7 @@ class TestRoles:
         assert result == ["snapshot", "timestamp", "targets", "bins"]
         assert mocked_settings_repository.get_fresh.calls == [
             pretend.call("TARGETS_ONLINE_KEY", True),
-            pretend.call("DELEGATED_ROLES_NAMES")
+            pretend.call("DELEGATED_ROLES_NAMES"),
         ]
 
     def test_online_values_custom_delegations(self, monkeypatch):
@@ -51,7 +49,7 @@ class TestRoles:
         assert result == ["snapshot", "timestamp", "targets", "foo", "bar"]
         assert mocked_settings_repository.get_fresh.calls == [
             pretend.call("TARGETS_ONLINE_KEY", True),
-            pretend.call("DELEGATED_ROLES_NAMES")
+            pretend.call("DELEGATED_ROLES_NAMES"),
         ]
 
     def test_getting_online_values_targets_role_is_offline(self, monkeypatch):
@@ -74,7 +72,7 @@ class TestRoles:
         assert result == ["snapshot", "timestamp", "bins"]
         assert mocked_settings_repository.get_fresh.calls == [
             pretend.call("TARGETS_ONLINE_KEY", True),
-            pretend.call("DELEGATED_ROLES_NAMES")
+            pretend.call("DELEGATED_ROLES_NAMES"),
         ]
 
     def test_is_role_true_all_roles(self):

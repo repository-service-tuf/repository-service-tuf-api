@@ -39,7 +39,7 @@ class Roles(Enum):
         if settings_repository.get_fresh("TARGETS_ONLINE_KEY", True):
             online_roles.append("targets")
 
-        delegated_roles: List[str]= settings_repository.get_fresh(
+        delegated_roles: List[str] = settings_repository.get_fresh(
             "DELEGATED_ROLES_NAMES"
         )
         # All delegated roles names should start with "bins" if we are using

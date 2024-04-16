@@ -264,9 +264,7 @@ class TestPostMetadataOnline:
             online_roles_values=pretend.call_recorder(
                 lambda: fake_online_roles_return
             ),
-            BINS=pretend.stub(
-                value="bins"
-            )
+            BINS=pretend.stub(value="bins"),
         )
         monkeypatch.setattr(
             "repository_service_tuf_api.metadata.Roles", fake_roles
@@ -309,7 +307,6 @@ class TestPostMetadataOnline:
         assert mocked_settings_repository.get_fresh.calls == [
             pretend.call("TARGETS_ONLINE_KEY", True),
             pretend.call("DELEGATED_ROLES_NAMES"),
-
         ]
         assert fake_roles.online_roles_values.calls == [pretend.call()]
         assert fake_get_task_id.calls == [pretend.call()]
@@ -463,9 +460,7 @@ class TestPostMetadataOnline:
 
         response = test_client.post(METADATA_ONLINE_URL, json=payload)
         assert response.status_code == status.HTTP_200_OK, response.text
-        err_msg = (
-            "Custom target delegation used and bins cannot be bumped"
-        )
+        err_msg = "Custom target delegation used and bins cannot be bumped"
         assert response.json() == {
             "detail": {
                 "message": "Task not accepted.",
