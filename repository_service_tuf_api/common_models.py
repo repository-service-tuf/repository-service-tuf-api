@@ -42,8 +42,11 @@ class Roles(Enum):
         delegated_roles: List[str]= settings_repository.get_fresh(
             "DELEGATED_ROLES_NAMES"
         )
-        bins = all(r.startswith(Roles.BINS.value) for r in delegated_roles)
-        if bins:
+        # All delegated roles names should start with "bins" if we are using
+        # hash bin delegation and none of the delegated roles should start with
+        # "bins" if we are using custom target delegation.
+        bins_used = True if delegated_roles[0].startswith("bins") else False
+        if bins_used:
             online_roles.append(Roles.BINS.value)
         else:
             online_roles.extend(delegated_roles)
