@@ -161,8 +161,7 @@ class TestPostMetadataOnline:
             lambda: pretend.stub(bootstrap=True, state="ab123")
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.metadata.bootstrap_state",
-            mocked_bootstrap_state,
+            f"{MOCK_PATH}.bootstrap_state", mocked_bootstrap_state
         )
 
         def fake_get_fresh(attr: str) -> bool:
@@ -177,29 +176,25 @@ class TestPostMetadataOnline:
             get_fresh=pretend.call_recorder(lambda *a: fake_get_fresh(a)),
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.metadata.settings_repository",
-            mocked_settings_repository,
+            f"{MOCK_PATH}.settings_repository", mocked_settings_repository
         )
         fake_id = "fake_id"
         fake_get_task_id = pretend.call_recorder(lambda: fake_id)
         monkeypatch.setattr(
-            "repository_service_tuf_api.metadata.get_task_id",
+            f"{MOCK_PATH}.get_task_id",
             fake_get_task_id,
         )
         fake_repository_metadata = pretend.stub(
             apply_async=pretend.call_recorder(lambda *a, **kw: None)
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.metadata.repository_metadata",
-            fake_repository_metadata,
+            f"{MOCK_PATH}.repository_metadata", fake_repository_metadata
         )
         fake_time = datetime(2019, 6, 16, 9, 5, 1)
         fake_datetime = pretend.stub(
             now=pretend.call_recorder(lambda: fake_time)
         )
-        monkeypatch.setattr(
-            "repository_service_tuf_api.metadata.datetime", fake_datetime
-        )
+        monkeypatch.setattr(f"{MOCK_PATH}.datetime", fake_datetime)
         payload = {"roles": ["snapshot", "targets"]}
 
         response = test_client.post(METADATA_ONLINE_URL, json=payload)
@@ -240,8 +235,7 @@ class TestPostMetadataOnline:
             lambda: pretend.stub(bootstrap=True, state="ab123")
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.metadata.bootstrap_state",
-            mocked_bootstrap_state,
+            f"{MOCK_PATH}.bootstrap_state", mocked_bootstrap_state
         )
 
         def fake_get_fresh(attr: str) -> bool:
@@ -256,8 +250,7 @@ class TestPostMetadataOnline:
             get_fresh=pretend.call_recorder(lambda *a: fake_get_fresh(a)),
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.metadata.settings_repository",
-            mocked_settings_repository,
+            f"{MOCK_PATH}.settings_repository", mocked_settings_repository
         )
         fake_online_roles_return = ["snapshot", "targets", "timestamp", "bins"]
         fake_roles = pretend.stub(
@@ -266,29 +259,21 @@ class TestPostMetadataOnline:
             ),
             BINS=pretend.stub(value="bins"),
         )
-        monkeypatch.setattr(
-            "repository_service_tuf_api.metadata.Roles", fake_roles
-        )
+        monkeypatch.setattr(f"{MOCK_PATH}.Roles", fake_roles)
         fake_id = "fake_id"
         fake_get_task_id = pretend.call_recorder(lambda: fake_id)
-        monkeypatch.setattr(
-            "repository_service_tuf_api.metadata.get_task_id",
-            fake_get_task_id,
-        )
+        monkeypatch.setattr(f"{MOCK_PATH}.get_task_id", fake_get_task_id)
         fake_repository_metadata = pretend.stub(
             apply_async=pretend.call_recorder(lambda *a, **kw: None)
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.metadata.repository_metadata",
-            fake_repository_metadata,
+            f"{MOCK_PATH}.repository_metadata", fake_repository_metadata
         )
         fake_time = datetime(2019, 6, 16, 9, 5, 1)
         fake_datetime = pretend.stub(
             now=pretend.call_recorder(lambda: fake_time)
         )
-        monkeypatch.setattr(
-            "repository_service_tuf_api.metadata.datetime", fake_datetime
-        )
+        monkeypatch.setattr(f"{MOCK_PATH}.datetime", fake_datetime)
         payload = {"roles": []}
 
         response = test_client.post(METADATA_ONLINE_URL, json=payload)
@@ -332,8 +317,7 @@ class TestPostMetadataOnline:
         )
         payload = {"roles": ["snapshot", "targets"]}
         monkeypatch.setattr(
-            "repository_service_tuf_api.metadata.bootstrap_state",
-            mocked_bootstrap_state,
+            f"{MOCK_PATH}.bootstrap_state", mocked_bootstrap_state
         )
 
         response = test_client.post(METADATA_ONLINE_URL, json=payload)
@@ -353,16 +337,14 @@ class TestPostMetadataOnline:
             lambda: pretend.stub(bootstrap=True, state="ab123")
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.metadata.bootstrap_state",
-            mocked_bootstrap_state,
+            f"{MOCK_PATH}.bootstrap_state", mocked_bootstrap_state
         )
         mocked_settings_repository = pretend.stub(
             reload=pretend.call_recorder(lambda: None),
             get_fresh=pretend.call_recorder(lambda *a: False),
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.metadata.settings_repository",
-            mocked_settings_repository,
+            f"{MOCK_PATH}.settings_repository", mocked_settings_repository
         )
         payload = {"roles": ["snapshot", "targets"]}
 
@@ -388,8 +370,7 @@ class TestPostMetadataOnline:
             lambda: pretend.stub(bootstrap=True, state="ab123")
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.metadata.bootstrap_state",
-            mocked_bootstrap_state,
+            f"{MOCK_PATH}.bootstrap_state", mocked_bootstrap_state
         )
 
         def fake_get_fresh(attr: str) -> bool:
@@ -404,8 +385,7 @@ class TestPostMetadataOnline:
             get_fresh=pretend.call_recorder(lambda *a: fake_get_fresh(a)),
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.metadata.settings_repository",
-            mocked_settings_repository,
+            f"{MOCK_PATH}.settings_repository", mocked_settings_repository
         )
         payload = {"roles": ["snapshot", "targets", "abcsdaw"]}
 
@@ -437,8 +417,7 @@ class TestPostMetadataOnline:
             lambda: pretend.stub(bootstrap=True, state="ab123")
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.metadata.bootstrap_state",
-            mocked_bootstrap_state,
+            f"{MOCK_PATH}.bootstrap_state", mocked_bootstrap_state
         )
 
         def fake_get_fresh(attr: str) -> bool:
@@ -453,8 +432,7 @@ class TestPostMetadataOnline:
             get_fresh=pretend.call_recorder(lambda *a: fake_get_fresh(a)),
         )
         monkeypatch.setattr(
-            "repository_service_tuf_api.metadata.settings_repository",
-            mocked_settings_repository,
+            f"{MOCK_PATH}.settings_repository", mocked_settings_repository
         )
         payload = {"roles": ["snapshot", "targets", "bins"]}
 
