@@ -8,6 +8,8 @@ from typing import Any, Dict, List, Literal, Optional
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from repository_service_tuf_api import settings_repository
+
 
 class Roles(Enum):
     ROOT = "root"
@@ -17,8 +19,39 @@ class Roles(Enum):
     BINS = "bins"
 
     @staticmethod
+    def is_role(input: Any) -> bool:
+        if not isinstance(input, str):
+            return False
+
+        return any(input == role.value for role in Roles)
+
+    @staticmethod
+    def all_str() -> str:
+        return "root, targets, snapshot, timestamp and bins"
+
+    @staticmethod
     def values() -> List[str]:
         return Literal["root", "targets", "snapshot", "timestamp", "bins"]
+
+    @staticmethod
+    def online_roles_values() -> List[str]:
+        online_roles: List[str] = ["snapshot", "timestamp"]
+        if settings_repository.get_fresh("TARGETS_ONLINE_KEY", True):
+            online_roles.append("targets")
+
+        delegated_roles: List[str] = settings_repository.get_fresh(
+            "DELEGATED_ROLES_NAMES"
+        )
+        # All delegated roles names should start with "bins" if we are using
+        # hash bin delegation and none of the delegated roles should start with
+        # "bins" if we are using custom target delegation.
+        bins_used = True if delegated_roles[0].startswith("bins") else False
+        if bins_used:
+            online_roles.append(Roles.BINS.value)
+        else:
+            online_roles.extend(delegated_roles)
+
+        return online_roles
 
 
 class BaseErrorResponse(BaseModel):
@@ -41,10 +74,7 @@ class TUFSignedDelegationsRoles(BaseModel):
 
 
 class TUFSignedDelegationsSuccinctRoles(BaseModel):
-    # We cannot add the limit range
-    # https://github.com/tiangolo/fastapi/discussions/9140
-    # bit_length: int = Field(gt=0, lt=15)
-    bit_length: int
+    bit_length: int = Field(gt=0, lt=15)
     name_prefix: str
     keyids: List[str]
     threshold: int

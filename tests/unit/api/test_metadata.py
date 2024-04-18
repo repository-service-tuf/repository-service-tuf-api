@@ -5,12 +5,15 @@
 
 import copy
 import json
-from datetime import timezone
+from datetime import datetime, timezone
 
 import pretend
 from fastapi import status
 
+import repository_service_tuf_api.common_models as common_models
+
 METADATA_URL = "/api/v1/metadata/"
+METADATA_ONLINE_URL = "/api/v1/metadata/online"
 SIGN_URL = "/api/v1/metadata/sign/"
 DELETE_SIGN_URL = "/api/v1/metadata/sign/delete"
 MOCK_PATH = "repository_service_tuf_api.metadata"
@@ -150,6 +153,306 @@ class TestPostMetadata:
                 },
             ]
         } == response.json()
+
+
+class TestPostMetadataOnline:
+    def test_post_metadata_online(self, test_client, monkeypatch):
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda: pretend.stub(bootstrap=True, state="ab123")
+        )
+        monkeypatch.setattr(
+            f"{MOCK_PATH}.bootstrap_state", mocked_bootstrap_state
+        )
+
+        def fake_get_fresh(attr: str) -> bool:
+            setting = attr[0]
+            if setting == "TARGETS_ONLINE_KEY":
+                return True
+            elif setting == "DELEGATED_ROLES_NAMES":
+                return ["bins-0", "bins-1"]
+
+        mocked_settings_repository = pretend.stub(
+            reload=pretend.call_recorder(lambda: None),
+            get_fresh=pretend.call_recorder(lambda *a: fake_get_fresh(a)),
+        )
+        monkeypatch.setattr(
+            f"{MOCK_PATH}.settings_repository", mocked_settings_repository
+        )
+        fake_id = "fake_id"
+        fake_get_task_id = pretend.call_recorder(lambda: fake_id)
+        monkeypatch.setattr(
+            f"{MOCK_PATH}.get_task_id",
+            fake_get_task_id,
+        )
+        fake_repository_metadata = pretend.stub(
+            apply_async=pretend.call_recorder(lambda *a, **kw: None)
+        )
+        monkeypatch.setattr(
+            f"{MOCK_PATH}.repository_metadata", fake_repository_metadata
+        )
+        fake_time = datetime(2019, 6, 16, 9, 5, 1)
+        fake_datetime = pretend.stub(
+            now=pretend.call_recorder(lambda: fake_time)
+        )
+        monkeypatch.setattr(f"{MOCK_PATH}.datetime", fake_datetime)
+        payload = {"roles": ["snapshot", "targets"]}
+
+        response = test_client.post(METADATA_ONLINE_URL, json=payload)
+        assert response.status_code == status.HTTP_202_ACCEPTED, response.text
+        assert response.json() == {
+            "data": {
+                "task_id": fake_id,
+                "last_update": "2019-06-16T09:05:01",
+            },
+            "message": "Force online metadata update accepted.",
+        }
+        assert mocked_bootstrap_state.calls == [pretend.call()]
+        assert mocked_settings_repository.reload.calls == [
+            pretend.call(),
+        ]
+        assert mocked_settings_repository.get_fresh.calls == [
+            pretend.call("TARGETS_ONLINE_KEY", True),
+            pretend.call("DELEGATED_ROLES_NAMES"),
+        ]
+        assert fake_get_task_id.calls == [pretend.call()]
+        assert fake_repository_metadata.apply_async.calls == [
+            pretend.call(
+                kwargs={
+                    "action": "force_online_metadata_update",
+                    "payload": payload,
+                },
+                task_id=fake_id,
+                queue="metadata_repository",
+                acks_late=True,
+            )
+        ]
+        assert fake_datetime.now.calls == [pretend.call()]
+
+    def test_post_metadata_online_empty_payload(
+        self, test_client, monkeypatch
+    ):
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda: pretend.stub(bootstrap=True, state="ab123")
+        )
+        monkeypatch.setattr(
+            f"{MOCK_PATH}.bootstrap_state", mocked_bootstrap_state
+        )
+
+        def fake_get_fresh(attr: str) -> bool:
+            setting = attr[0]
+            if setting == "TARGETS_ONLINE_KEY":
+                return True
+            elif setting == "DELEGATED_ROLES_NAMES":
+                return ["bins-0", "bins-1"]
+
+        mocked_settings_repository = pretend.stub(
+            reload=pretend.call_recorder(lambda: None),
+            get_fresh=pretend.call_recorder(lambda *a: fake_get_fresh(a)),
+        )
+        monkeypatch.setattr(
+            f"{MOCK_PATH}.settings_repository", mocked_settings_repository
+        )
+        fake_online_roles_return = ["snapshot", "targets", "timestamp", "bins"]
+        fake_roles = pretend.stub(
+            online_roles_values=pretend.call_recorder(
+                lambda: fake_online_roles_return
+            ),
+            BINS=pretend.stub(value="bins"),
+        )
+        monkeypatch.setattr(f"{MOCK_PATH}.Roles", fake_roles)
+        fake_id = "fake_id"
+        fake_get_task_id = pretend.call_recorder(lambda: fake_id)
+        monkeypatch.setattr(f"{MOCK_PATH}.get_task_id", fake_get_task_id)
+        fake_repository_metadata = pretend.stub(
+            apply_async=pretend.call_recorder(lambda *a, **kw: None)
+        )
+        monkeypatch.setattr(
+            f"{MOCK_PATH}.repository_metadata", fake_repository_metadata
+        )
+        fake_time = datetime(2019, 6, 16, 9, 5, 1)
+        fake_datetime = pretend.stub(
+            now=pretend.call_recorder(lambda: fake_time)
+        )
+        monkeypatch.setattr(f"{MOCK_PATH}.datetime", fake_datetime)
+        payload = {"roles": []}
+
+        response = test_client.post(METADATA_ONLINE_URL, json=payload)
+        assert response.status_code == status.HTTP_202_ACCEPTED, response.text
+        assert response.json() == {
+            "data": {
+                "task_id": fake_id,
+                "last_update": "2019-06-16T09:05:01",
+            },
+            "message": "Force online metadata update accepted.",
+        }
+        assert mocked_bootstrap_state.calls == [pretend.call()]
+        assert mocked_settings_repository.reload.calls == [
+            pretend.call(),
+        ]
+        assert mocked_settings_repository.get_fresh.calls == [
+            pretend.call("TARGETS_ONLINE_KEY", True),
+            pretend.call("DELEGATED_ROLES_NAMES"),
+        ]
+        assert fake_roles.online_roles_values.calls == [pretend.call()]
+        assert fake_get_task_id.calls == [pretend.call()]
+        expected_payload = {"roles": fake_online_roles_return}
+        assert fake_repository_metadata.apply_async.calls == [
+            pretend.call(
+                kwargs={
+                    "action": "force_online_metadata_update",
+                    "payload": expected_payload,
+                },
+                task_id=fake_id,
+                queue="metadata_repository",
+                acks_late=True,
+            )
+        ]
+        assert fake_datetime.now.calls == [pretend.call()]
+
+    def test_post_metadata_online_bootstrap_not_ready(
+        self, test_client, monkeypatch
+    ):
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda: pretend.stub(bootstrap=False, state="signing-")
+        )
+        payload = {"roles": ["snapshot", "targets"]}
+        monkeypatch.setattr(
+            f"{MOCK_PATH}.bootstrap_state", mocked_bootstrap_state
+        )
+
+        response = test_client.post(METADATA_ONLINE_URL, json=payload)
+        assert response.status_code == status.HTTP_200_OK, response.text
+        assert response.json() == {
+            "detail": {
+                "message": "Task not accepted.",
+                "error": "Requires bootstrap finished. State: signing-",
+            },
+        }
+        assert mocked_bootstrap_state.calls == [pretend.call()]
+
+    def test_post_metadata_online_targets_offline_role_cannot_update(
+        self, test_client, monkeypatch
+    ):
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda: pretend.stub(bootstrap=True, state="ab123")
+        )
+        monkeypatch.setattr(
+            f"{MOCK_PATH}.bootstrap_state", mocked_bootstrap_state
+        )
+        mocked_settings_repository = pretend.stub(
+            reload=pretend.call_recorder(lambda: None),
+            get_fresh=pretend.call_recorder(lambda *a: False),
+        )
+        monkeypatch.setattr(
+            f"{MOCK_PATH}.settings_repository", mocked_settings_repository
+        )
+        payload = {"roles": ["snapshot", "targets"]}
+
+        response = test_client.post(METADATA_ONLINE_URL, json=payload)
+        assert response.status_code == status.HTTP_200_OK, response.text
+        err_msg = "Targets is an offline role - use other endpoint to update"
+        assert response.json() == {
+            "detail": {
+                "message": "Task not accepted.",
+                "error": err_msg,
+            },
+        }
+        assert mocked_bootstrap_state.calls == [pretend.call()]
+        assert mocked_settings_repository.reload.calls == [pretend.call()]
+        assert mocked_settings_repository.get_fresh.calls == [
+            pretend.call("TARGETS_ONLINE_KEY", True)
+        ]
+
+    def test_post_metadata_online_bins_used_bad_payload(
+        self, test_client, monkeypatch
+    ):
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda: pretend.stub(bootstrap=True, state="ab123")
+        )
+        monkeypatch.setattr(
+            f"{MOCK_PATH}.bootstrap_state", mocked_bootstrap_state
+        )
+
+        def fake_get_fresh(attr: str) -> bool:
+            setting = attr[0]
+            if setting == "TARGETS_ONLINE_KEY":
+                return True
+            elif setting == "DELEGATED_ROLES_NAMES":
+                return ["bins-0", "bins-1"]
+
+        mocked_settings_repository = pretend.stub(
+            reload=pretend.call_recorder(lambda: None),
+            get_fresh=pretend.call_recorder(lambda *a: fake_get_fresh(a)),
+        )
+        monkeypatch.setattr(
+            f"{MOCK_PATH}.settings_repository", mocked_settings_repository
+        )
+        payload = {"roles": ["snapshot", "targets", "abcsdaw"]}
+
+        response = test_client.post(METADATA_ONLINE_URL, json=payload)
+        assert response.status_code == status.HTTP_200_OK, response.text
+        roles = common_models.Roles.all_str()
+        err_msg = (
+            f"Hash bin delegation is used and only {roles} roles can be bumped"
+        )
+        assert response.json() == {
+            "detail": {
+                "message": "Task not accepted.",
+                "error": err_msg,
+            },
+        }
+        assert mocked_bootstrap_state.calls == [pretend.call()]
+        assert mocked_settings_repository.reload.calls == [
+            pretend.call(),
+        ]
+        assert mocked_settings_repository.get_fresh.calls == [
+            pretend.call("TARGETS_ONLINE_KEY", True),
+            pretend.call("DELEGATED_ROLES_NAMES"),
+        ]
+
+    def test_post_metadata_online_custom_delegation_used_bad_payload(
+        self, test_client, monkeypatch
+    ):
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda: pretend.stub(bootstrap=True, state="ab123")
+        )
+        monkeypatch.setattr(
+            f"{MOCK_PATH}.bootstrap_state", mocked_bootstrap_state
+        )
+
+        def fake_get_fresh(attr: str) -> bool:
+            setting = attr[0]
+            if setting == "TARGETS_ONLINE_KEY":
+                return True
+            elif setting == "DELEGATED_ROLES_NAMES":
+                return ["foo", "bar"]
+
+        mocked_settings_repository = pretend.stub(
+            reload=pretend.call_recorder(lambda: None),
+            get_fresh=pretend.call_recorder(lambda *a: fake_get_fresh(a)),
+        )
+        monkeypatch.setattr(
+            f"{MOCK_PATH}.settings_repository", mocked_settings_repository
+        )
+        payload = {"roles": ["snapshot", "targets", "bins"]}
+
+        response = test_client.post(METADATA_ONLINE_URL, json=payload)
+        assert response.status_code == status.HTTP_200_OK, response.text
+        err_msg = "Custom target delegation used and bins cannot be bumped"
+        assert response.json() == {
+            "detail": {
+                "message": "Task not accepted.",
+                "error": err_msg,
+            },
+        }
+        assert mocked_bootstrap_state.calls == [pretend.call()]
+        assert mocked_settings_repository.reload.calls == [
+            pretend.call(),
+        ]
+        assert mocked_settings_repository.get_fresh.calls == [
+            pretend.call("TARGETS_ONLINE_KEY", True),
+            pretend.call("DELEGATED_ROLES_NAMES"),
+        ]
 
 
 class TestGetMetadataSign:

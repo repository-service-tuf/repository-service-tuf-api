@@ -31,6 +31,26 @@ def post(payload: metadata.MetadataPostPayload):
     return metadata.post_metadata(payload)
 
 
+@router.post(
+    "/online",
+    summary="Force a new version of online metadata role(s).",
+    description=(
+        "Force a new version of online metadata role(s). If the roles list is "
+        "empty all roles will be updated. The new metadata version(s) will "
+        "have extended expiration which will equal to: "
+        "today + ROLE_NAME_EXPIRATION number of days, where "
+        "ROLE_NAME_EXPIRATION is a tuf repository setting. Note: depending on "
+        "which metadata role you want to update other online roles will likely"
+        " be updated as well otherwise consistency will be lost."
+    ),
+    response_model=metadata.MetadataOnlinePostResponse,
+    response_model_exclude_none=True,
+    status_code=status.HTTP_202_ACCEPTED,
+)
+def post_online(payload: metadata.MetadataOnlinePostPayload):
+    return metadata.post_metadata_online(payload)
+
+
 @router.get(
     "/sign",
     summary=(
