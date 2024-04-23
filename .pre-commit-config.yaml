@@ -20,7 +20,7 @@ repos:
   - id: isort
     args: [-l79, --profile, black, --check, --diff]
 - repo: https://github.com/psf/black
-  rev: '24.3.0'
+  rev: '24.4.0'
   hooks:
   - id: black
     args: [-l79, --check, --diff, .]
@@ -38,5 +38,12 @@ repos:
       entry: tox -e requirements
       language: system
       files: ''
+      pass_filenames: false
+      verbose: true
+    - id: tox-precommit
+      name: run pre-commit version check from tox
+      description: Checks if `pre-commit autoupdate` is up-to-date
+      entry: tox -e precommit
+      language: system
       pass_filenames: false
       verbose: true
