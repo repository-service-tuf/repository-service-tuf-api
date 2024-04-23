@@ -283,13 +283,20 @@ class MetadataSignPostPayload(BaseModel):
                 "role": "root",
                 "signature": {
                     "keyid": (
-                        "800dfb5a1982b82b7893e58035e19f414f553fc08cbb1130cfbae"
-                        "302a7b7fee5"
+                        "2f685fa7546f1856b123223ab086b3def14c89d24eef18f49c325"
+                        "08c2f60e241"
                     ),
                     "sig": (
-                        "1e60e79c909affba4f8051c7b86c861048450b4b32f1b9c106c50"
-                        "203a88877650a897b0c188af0ac0a530f1bccdafbdc2f92d0ee85"
-                        "1864a6f24ddea031ef6b02"
+                        "7561c1db8a1f5e27de475f6b1f8f0d6fff7f53957784f689d86ca"
+                        "b9a76de2adf48c5e2573e81b6f5bda6c4b9fb6611df985f08d7d2"
+                        "7e22e31c73833ec130b505b3da02a78c6b730a3ebf21b4878f406"
+                        "7ddbd153f8f498e5787f2e9fd29dd4564358795664b33572919fb"
+                        "2f2a22f25182d83da4e5109d5067198bb85e20bff1385a06821e9"
+                        "3362dfbfbc1e1820965c8e555c228c27b2c4c697936c2036b163b"
+                        "2ce126c9dc936ed66c38cda504062bc88c017790ccb9c78fd6fcc"
+                        "06f329cfaf17dc4e72343c9de17b12fc699f894868bbfff5b8437"
+                        "939442dfd2887e0244038583ec6b9fd7f96247b6d45b3700c1b04"
+                        "028e04779870afb473782be9e422551a371"
                     ),
                 },
             }
