@@ -1,33 +1,33 @@
 {
-    "artifacts": [
-        {
-            "info": {
-                "length": 11342,
-                "hashes": {
-                    "blake2b-256": "716f6e863f744b9ac22c97ec7b76ea5f5908bc5b2f67c61510bfc4751384ea7a"
-                },
-                "custom": {"key": "value"}
-            },
-            "path": "file1.tar.gz"
-        },
-        {
-            "info": {
-                "length": 630,
-                "hashes": {
-                    "blake2b-256": "69217a3079908094e11121d042354a7c1f55b6482ca1a51e1b250dfd1ed0eef9"
-                }
-            },
-            "path": "file2.tar.gz"
-        },
-        {
-            "info": {
-                "length": 39,
-                "hashes": {
-                    "sha256": "452ce8308500d83ef44248d8e6062359211992fd837ea9e370e561efb1a4ca99",
-                    "sha512": "052b49a21e03606b28942db69aa597530fe52d47ee3d748ba65afcd14b857738e36bc1714c4f4adde46c3e683548552fe5c96722e0e0da3acd9050c2524902d8"
-                }
-            },
-            "path": "file3.tar.gz"
-        }
-    ]
+  "artifacts": [
+    {
+      "info": {
+          "length": 11342,
+          "hashes": {
+              "blake2b-256": "716f6e863f744b9ac22c97ec7b76ea5f5908bc5b2f67c61510bfc4751384ea7a"
+          },
+          "custom": {"key": "value"}
+      },
+      "path": "file1.tar.gz"
+    },
+    {
+      "info": {
+          "length": 630,
+          "hashes": {
+              "blake2b-256": "69217a3079908094e11121d042354a7c1f55b6482ca1a51e1b250dfd1ed0eef9"
+          }
+      },
+      "path": "file2.tar.gz"
+    },
+    {
+      "info": {
+          "length": 39,
+          "hashes": {
+              "sha256": "452ce8308500d83ef44248d8e6062359211992fd837ea9e370e561efb1a4ca99",
+              "sha512": "052b49a21e03606b28942db69aa597530fe52d47ee3d748ba65afcd14b857738e36bc1714c4f4adde46c3e683548552fe5c96722e0e0da3acd9050c2524902d8"
+          }
+      },
+      "path": "file3.tar.gz"
+    }
+  ]
 }

@@ -1,89 +1,80 @@
 {
-  "settings": {
-    "expiration": {
-      "root": 365,
-      "targets": 365,
-      "snapshot": 1,
-      "timestamp": 1,
-      "bins": 1
-    }
-  },
   "metadata": {
     "root": {
       "signatures": [
         {
-          "keyid": "1cebe343e35f0213f6136758e6c3a8f8e1f9eeb7e47a07d5cb336462ed31dcb7",
-          "sig": "c471d9376651ed68bf5b0ce61bd21ba0bef7c38f293f8a4cfb3d56934e1c2f9106d58a9d57fafdd559d1e66e2581c21755b1ef5a6cdef59c40fcdc7bb158c80b"
+          "keyid": "c6d8bf2e4f48b41ac2ce8eca21415ca8ef68c133b47fc33df03d4070a7e1e9cc",
+          "sig": "917046f9076eae41876be7c031be149aa2a960fd21f0d52f72128f55d9c423e2ec1632f98c96693dd801bd064e37efd6e5a5d32712fd5701a42099ece6b88c05"
         },
         {
-          "keyid": "7feb22ed6a1139913ebdbfac85513890814e661d94084212972ba0c0a5c8ce27",
-          "sig": "5558cdf391cc1feaeacf2a25e26b2042e50d286296c2a0c4bc3421788e8e11465b6956c3dc0e7ada29672e3740fa003b518e9d9c2a8411b5b279be94a40f750f"
+          "keyid": "50d7e110ad65f3b2dba5c3cfc8c5ca259be9774cc26be3410044ffd4be3aa5f3",
+          "sig": "3046022100e4590f8f82fd8166b37590250036d474a2f15e6e9979482fd59892b97b870b5b0221008f10b6affcf16d907ee27a41887cd360c26c9d3f7fd9fda2d23807d51c5c5822"
+        },
+        {
+          "keyid": "2f685fa7546f1856b123223ab086b3def14c89d24eef18f49c32508c2f60e241",
+          "sig": "72ebfe7ace89d79197923cd42a4e597db2fa8c3a357f8241958d619dfcb5380921cb03f226e11ac4c3ad45e9a73211d608bb94e821c7909812334905fc46ccab924bf36548e51438b409b03e58cabb121ec0383de083f0d12ed04cc6e37698bd0deb6382235a116cf49a4ec4584a40becf4e02fa17d36daddbd8db3c03fdacdd036c89180f6a9993a291c99b7d41862c9bdfd939a5fee4aa35392e5aa151babf7c35e8d02adf01523c1783de63a6849d277e8acf89674edffb66ccec4e27d4ee53cd29ea63ea1e4cbc7b4dd7ffb0de6c724eecd0eee8ebfe110aeaeb19c4fe4cca0b3fdb3cd1181209c5ece62c6a3934d6a80fa906c035bf9d12937f0f64b527"
         }
       ],
       "signed": {
         "_type": "root",
+        "version": 2,
+        "spec_version": "1.0.31",
+        "expires": "2025-12-31T23:59:59Z",
         "consistent_snapshot": true,
-        "expires": "2024-04-17T08:51:40Z",
         "keys": {
-          "1cebe343e35f0213f6136758e6c3a8f8e1f9eeb7e47a07d5cb336462ed31dcb7": {
-            "keytype": "ed25519",
+          "50d7e110ad65f3b2dba5c3cfc8c5ca259be9774cc26be3410044ffd4be3aa5f3": {
+            "keytype": "ecdsa",
+            "scheme": "ecdsa-sha2-nistp256",
             "keyval": {
-              "public": "ad1709b3cb419b99c5cd7427d6411522e5a93aec6767453e91af921a73d22a3c"
+              "public": "-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEcLYSZyFGeKdWNt5dWFbnv6N9NyHC\noUNLcG6GZIxLwN8Q8MUdHdOOxGkDnyBRSJpIZ/r/oDECSTwfCYhdogweLA==\n-----END PUBLIC KEY-----\n"
             },
-            "scheme": "ed25519"
+            "x-rstuf-key-name": "JanisJoplin's Key"
           },
-          "7feb22ed6a1139913ebdbfac85513890814e661d94084212972ba0c0a5c8ce27": {
-            "keytype": "ed25519",
+          "2f685fa7546f1856b123223ab086b3def14c89d24eef18f49c32508c2f60e241": {
+            "keytype": "rsa",
+            "scheme": "rsassa-pss-sha256",
             "keyval": {
-              "public": "664d366b6838648405e1e18e9ef5b4e326713b0c0338935e2f715b9f02a05313"
+              "public": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwhX6rioiL/cX5Ys32InF\nU52H8tL14QeX0tacZdb+AwcH6nIh97h3RSHvGD7Xy6uaMRmGldAnSVYwJHqoJ5j2\nynVzU/RFpr+6n8Ps0QFg5GmlEqZboFjLbS0bsRQcXXnqJNsVLEPT3ULvu1rFRbWz\nAMFjNtNNk5W/u0GEzXn3D03jIdhD8IKAdrTRf0VMD9TRCXLdMmEU2vkf1NVUnOTb\n/dRX5QA8TtBylVnouZknbavQ0J/pPlHLfxUgsKzodwDlJmbPG9BWwXqQCmP0DgOG\nNIZ1X281MOBaGbkNVEuntNjCSaQxQjfALVVU5NAfal2cwMINtqaoc7Wa+TWvpFEI\nWwIDAQAB\n-----END PUBLIC KEY-----\n"
             },
-            "scheme": "ed25519"
+            "x-rstuf-key-name": "JoeCocker's Key"
           },
-          "800dfb5a1982b82b7893e58035e19f414f553fc08cbb1130cfbae302a7b7fee5": {
-            "keytype": "ed25519",
+          "cb20fa1061dde8e6267e0bef0981766aaadae168e917030f7f26edc7a0bab9c2": {
+            "keytype": "ecdsa",
+            "scheme": "ecdsa-sha2-nistp256",
             "keyval": {
-              "public": "7098f769f6ab8502b50f3b58686b8a042d5d3bb75d8b3a48a2fcbc15a0223501"
+              "public": "-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEpsXQqNQPymbXz9efGsDRNyifLujg\nYRSp/TWmVDVBlLF2Ia+bSZD2GU5iPGlKsIX129yvUu1qQ49kdATqiuB6ow==\n-----END PUBLIC KEY-----\n"
             },
-            "scheme": "ed25519"
-          },
-          "f7a6872f297634219a80141caa2ec9ae8802098b07b67963272603e36cc19fd8": {
-            "keytype": "ed25519",
-            "keyval": {
-              "public": "9fe7ddccb75b977a041424a1fdc142e01be4abab918dc4c611fbfe4a3360a9a8"
-            },
-            "scheme": "ed25519"
+            "x-rstuf-key-name": "New Online Key",
+            "x-rstuf-online-key-uri": "fn:cb20fa1061dde8e6267e0bef0981766aaadae168e917030f7f26edc7a0bab9c2"
           }
         },
         "roles": {
           "root": {
             "keyids": [
-              "1cebe343e35f0213f6136758e6c3a8f8e1f9eeb7e47a07d5cb336462ed31dcb7",
-              "800dfb5a1982b82b7893e58035e19f414f553fc08cbb1130cfbae302a7b7fee5",
-              "7feb22ed6a1139913ebdbfac85513890814e661d94084212972ba0c0a5c8ce27"
+              "50d7e110ad65f3b2dba5c3cfc8c5ca259be9774cc26be3410044ffd4be3aa5f3",
+              "2f685fa7546f1856b123223ab086b3def14c89d24eef18f49c32508c2f60e241"
+            ],
+            "threshold": 2
+          },
+          "timestamp": {
+            "keyids": [
+              "cb20fa1061dde8e6267e0bef0981766aaadae168e917030f7f26edc7a0bab9c2"
             ],
             "threshold": 1
           },
           "snapshot": {
             "keyids": [
-              "f7a6872f297634219a80141caa2ec9ae8802098b07b67963272603e36cc19fd8"
+              "cb20fa1061dde8e6267e0bef0981766aaadae168e917030f7f26edc7a0bab9c2"
             ],
             "threshold": 1
           },
           "targets": {
             "keyids": [
-              "f7a6872f297634219a80141caa2ec9ae8802098b07b67963272603e36cc19fd8"
-            ],
-            "threshold": 1
-          },
-          "timestamp": {
-            "keyids": [
-              "f7a6872f297634219a80141caa2ec9ae8802098b07b67963272603e36cc19fd8"
+              "cb20fa1061dde8e6267e0bef0981766aaadae168e917030f7f26edc7a0bab9c2"
             ],
             "threshold": 1
           }
-        },
-        "spec_version": "1.0.30",
-        "version": 2
+        }
       }
     }
   }

@@ -2,19 +2,19 @@
   "settings": {
     "roles": {
       "root": {
-          "expiration": 365
-      },
-      "targets": {
-          "expiration": 365
-      },
-      "snapshot": {
-          "expiration": 1
+        "expiration": 365
       },
       "timestamp": {
-          "expiration": 1
+        "expiration": 1
+      },
+      "snapshot": {
+        "expiration": 1
+      },
+      "targets": {
+        "expiration": 365
       },
       "bins": {
-        "expiration": 30,
+        "expiration": 1,
         "number_of_delegated_bins": 4
       }
     }
@@ -23,65 +23,66 @@
     "root": {
       "signatures": [
         {
-          "keyid": "1cebe343e35f0213f6136758e6c3a8f8e1f9eeb7e47a07d5cb336462ed31dcb7",
-          "sig": "96ced044373706250cb0b031161af477acce24cc0a72593c0daa4c76413881ddc4ff520d403dda9733ef12df03653e6cd6e5b2b8017f72df4c79a61f83c49101"
+          "keyid": "c6d8bf2e4f48b41ac2ce8eca21415ca8ef68c133b47fc33df03d4070a7e1e9cc",
+          "sig": "828a659bc34972504b9dab16bc44818b8a7d49ffee2a9021df6a6be4dd3b7a026d1f890b952303d1cf32dda90fbdf60e9fcfeb5f0af6498f0f55cad31c750a02"
         }
       ],
       "signed": {
         "_type": "root",
         "version": 1,
         "spec_version": "1.0.31",
-        "expires": "2024-11-20T15:12:56Z",
+        "expires": "2025-12-31T23:59:59Z",
         "consistent_snapshot": true,
         "keys": {
-          "1cebe343e35f0213f6136758e6c3a8f8e1f9eeb7e47a07d5cb336462ed31dcb7": {
+          "c6d8bf2e4f48b41ac2ce8eca21415ca8ef68c133b47fc33df03d4070a7e1e9cc": {
             "keytype": "ed25519",
             "scheme": "ed25519",
             "keyval": {
-              "public": "ad1709b3cb419b99c5cd7427d6411522e5a93aec6767453e91af921a73d22a3c"
+              "public": "4f66dabebcf30628963786001984c0b75c175cdcf3bc4855933a2628f0cd0a0f"
             },
-            "name": "Janis Joplin"
+            "x-rstuf-key-name": "JimiHendrix's Key"
           },
-          "800dfb5a1982b82b7893e58035e19f414f553fc08cbb1130cfbae302a7b7fee5": {
-            "keytype": "ed25519",
-            "scheme": "ed25519",
+          "50d7e110ad65f3b2dba5c3cfc8c5ca259be9774cc26be3410044ffd4be3aa5f3": {
+            "keytype": "ecdsa",
+            "scheme": "ecdsa-sha2-nistp256",
             "keyval": {
-              "public": "7098f769f6ab8502b50f3b58686b8a042d5d3bb75d8b3a48a2fcbc15a0223501"
+              "public": "-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEcLYSZyFGeKdWNt5dWFbnv6N9NyHC\noUNLcG6GZIxLwN8Q8MUdHdOOxGkDnyBRSJpIZ/r/oDECSTwfCYhdogweLA==\n-----END PUBLIC KEY-----\n"
             },
-            "name": "Jimi Hendrix"
+            "x-rstuf-key-name": "JanisJoplin's Key"
           },
-          "f7a6872f297634219a80141caa2ec9ae8802098b07b67963272603e36cc19fd8": {
-            "keytype": "ed25519",
-            "scheme": "ed25519",
+          "0d9d3d4bad91c455bc03921daa95774576b86625ac45570d0cac025b08e65043": {
+            "keytype": "rsa",
+            "scheme": "rsassa-pss-sha256",
             "keyval": {
-              "public": "9fe7ddccb75b977a041424a1fdc142e01be4abab918dc4c611fbfe4a3360a9a8"
+              "public": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwJNtmJy0bky0VZHhJoVw\nVR0oIto8ndLLicnaHPDUfFsv2dTP50uLiYuYhU/RLTh+PIMm9dU5gvfSQ0YIUFHO\nfdcDCBaMNYR9z9c9kvWkfgxP4H7cMdy9ev3yh4pL+ua64AT1598QxmF0RSp9p8P4\nUDPJC4XsgVz3kKeCSQAgz02MJ+KdHyTDP+rgOuWQfVL8bz53puMSSFojiaEJTmZQ\n7eBnI2n6UF6AAV6eo6Dc4cgPQLSjhDqcfoHCyk/AzpTQO5EV+ahofYmV/kQQtr7g\nz8MQXoKRwCbfIcWhPyfPNReOo7fqVK3uK3kkD1ouoNSr9DFRcnUbsX4QR/CQLcoP\nXwIDAQAB\n-----END PUBLIC KEY-----\n"
             },
-            "name": "Online Key 1"
+            "x-rstuf-key-name": "Online Key",
+            "x-rstuf-online-key-uri": "fn:0d9d3d4bad91c455bc03921daa95774576b86625ac45570d0cac025b08e65043"
           }
         },
         "roles": {
           "root": {
             "keyids": [
-              "1cebe343e35f0213f6136758e6c3a8f8e1f9eeb7e47a07d5cb336462ed31dcb7",
-              "800dfb5a1982b82b7893e58035e19f414f553fc08cbb1130cfbae302a7b7fee5"
+              "c6d8bf2e4f48b41ac2ce8eca21415ca8ef68c133b47fc33df03d4070a7e1e9cc",
+              "50d7e110ad65f3b2dba5c3cfc8c5ca259be9774cc26be3410044ffd4be3aa5f3"
             ],
             "threshold": 2
           },
           "timestamp": {
             "keyids": [
-              "f7a6872f297634219a80141caa2ec9ae8802098b07b67963272603e36cc19fd8"
+              "0d9d3d4bad91c455bc03921daa95774576b86625ac45570d0cac025b08e65043"
             ],
             "threshold": 1
           },
           "snapshot": {
             "keyids": [
-              "f7a6872f297634219a80141caa2ec9ae8802098b07b67963272603e36cc19fd8"
+              "0d9d3d4bad91c455bc03921daa95774576b86625ac45570d0cac025b08e65043"
             ],
             "threshold": 1
           },
           "targets": {
             "keyids": [
-              "f7a6872f297634219a80141caa2ec9ae8802098b07b67963272603e36cc19fd8"
+              "0d9d3d4bad91c455bc03921daa95774576b86625ac45570d0cac025b08e65043"
             ],
             "threshold": 1
           }
