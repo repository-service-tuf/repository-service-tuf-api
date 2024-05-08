@@ -144,7 +144,10 @@ def post_metadata_online(
         )
 
     delegated_roles = settings_repository.get_fresh("DELEGATED_ROLES_NAMES")
-    bins_used = all(r.startswith(Roles.BINS.value) for r in delegated_roles)
+    # All delegated roles names should start with "bins" if we are using
+    # hash bin delegation and none of the delegated roles should start with
+    # "bins" if we are using custom target delegation.
+    bins_used = True if delegated_roles[0].startswith("bins") else False
     if bins_used:
         # This indicates succinct hash bins are used
         if len(roles) > 0 and any(not Roles.is_role(role) for role in roles):
