@@ -24,6 +24,8 @@ class TaskState(str, enum.Enum):
     RETRY = states.RETRY
     IGNORED = states.IGNORED
     ERRORED = "ERRORED"
+    # custom state used when a task is started before celery task is started
+    PRE_RUN = "PRE_RUN"
     RUNNING = "RUNNING"  # custom state used when a task is RUNNING in RSTUF
 
 
