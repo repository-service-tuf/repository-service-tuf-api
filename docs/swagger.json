@@ -2296,6 +2296,7 @@
                     "RETRY",
                     "IGNORED",
                     "ERRORED",
+                    "PRE_RUN",
                     "RUNNING"
                 ],
                 "title": "TaskState"
