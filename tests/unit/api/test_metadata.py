@@ -118,7 +118,6 @@ class TestPostMetadata:
                     "loc": ["body", "metadata"],
                     "msg": "Field required",
                     "input": {},
-                    "url": "https://errors.pydantic.dev/2.6/v/missing",
                 }
             ]
         }
@@ -135,21 +134,18 @@ class TestPostMetadata:
                     "msg": "Input should be 'root'",
                     "input": "timestamp",
                     "ctx": {"expected": "'root'"},
-                    "url": "https://errors.pydantic.dev/2.6/v/literal_error",
                 },
                 {
                     "type": "missing",
                     "loc": ["body", "metadata", "timestamp", "signatures"],
                     "msg": "Field required",
                     "input": {},
-                    "url": "https://errors.pydantic.dev/2.6/v/missing",
                 },
                 {
                     "type": "missing",
                     "loc": ["body", "metadata", "timestamp", "signed"],
                     "msg": "Field required",
                     "input": {},
-                    "url": "https://errors.pydantic.dev/2.6/v/missing",
                 },
             ]
         } == response.json()

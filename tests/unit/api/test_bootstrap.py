@@ -444,14 +444,12 @@ class TestPostBootstrap:
                     "loc": ["body", "settings"],
                     "msg": "Field required",
                     "type": "missing",
-                    "url": "https://errors.pydantic.dev/2.6/v/missing",
                 },
                 {
                     "input": {},
                     "loc": ["body", "metadata"],
                     "msg": "Field required",
                     "type": "missing",
-                    "url": "https://errors.pydantic.dev/2.6/v/missing",
                 },
             ]
         }
