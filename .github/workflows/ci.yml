@@ -27,7 +27,7 @@ jobs:
       run: tox -r
 
     - name: Codecov
-      uses: codecov/codecov-action@84508663e988701840491b86de86b666e8a86bed
+      uses: codecov/codecov-action@6d798873df2b1b8e5846dba6fb86631229fbcb17
       with:
         files: coverage.xml
         fail_ci_if_error: false
