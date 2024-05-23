@@ -7,8 +7,10 @@ Repository Service for TUF API
   This service is in Experimental stage.
 
 
-|Test Docker Image build| |Tests and Lint| |Coverage|
+|OpenSSF Scorecard| |Test Docker Image build| |Tests and Lint| |Coverage|
 
+.. |OpenSSF Scorecard| image:: https://api.scorecard.dev/projects/github.com/repository-service-tuf/repository-service-tuf-api/badge
+  :target: https://scorecard.dev/viewer/?uri=github.com/repository-service-tuf/repository-service-tuf-api
 .. |Test Docker Image build| image:: https://github.com/repository-service-tuf/repository-service-tuf-api/actions/workflows/test_docker_build.yml/badge.svg
   :target: https://github.com/repository-service-tuf/repository-service-tuf-api/actions/workflows/test_docker_build.yml
 .. |Tests and Lint| image:: https://github.com/repository-service-tuf/repository-service-tuf-api/actions/workflows/ci.yml/badge.svg
