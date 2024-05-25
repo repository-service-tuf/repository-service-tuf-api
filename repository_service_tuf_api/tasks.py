@@ -145,8 +145,8 @@ def get(task_id: str) -> Response:
             "message": str(task.result),
         }
 
-    # If the task state is SUCCESS and the task result is False we considere
-    # it an errored task.
+    # If the task state is SUCCESS and the task.result.status is False we
+    # considere it an errored task.
     if task_state == TaskState.SUCCESS and not task_result.get(
         "status", False
     ):
