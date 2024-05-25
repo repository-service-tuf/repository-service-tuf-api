@@ -74,7 +74,7 @@ sphinxcontrib-httpdomain==1.8.1; python_version >= '2.7' and python_version not 
 sphinxcontrib-jquery==4.1; python_version >= '2.7'
 sphinxcontrib-jsmath==1.0.1; python_version >= '3.5'
 sphinxcontrib-openapi==0.7.0; python_version >= '3.6'
-sphinxcontrib-plantuml==0.29
+sphinxcontrib-plantuml==0.30
 sphinxcontrib-qthelp==1.0.7; python_version >= '3.9'
 sphinxcontrib-serializinghtml==1.1.10; python_version >= '3.9'
 stevedore==5.2.0; python_version >= '3.8'
@@ -107,7 +107,7 @@ redis==5.0.4; python_version >= '3.7'
 shellingham==1.5.4; python_version >= '3.7'
 starlette==0.37.2; python_version >= '3.8'
 typer==0.12.3; python_version >= '3.7'
-typing-extensions==4.11.0; python_version >= '3.8'
+typing-extensions==4.12.0; python_version >= '3.8'
 tzdata==2024.1; python_version >= '2'
 ujson==5.10.0; python_version >= '3.8'
 uvicorn[standard]==0.29.0; python_version >= '3.8'
