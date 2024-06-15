@@ -210,7 +210,11 @@ class MetadataSignGetResponse(BaseModel):
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
-                "metadata": {"root": das_payload_example["metadata"]["root"]}
+                "data": {
+                    "metadata": {
+                        "root": das_payload_example["metadata"]["root"]
+                    }
+                }
             }
         }
     )
