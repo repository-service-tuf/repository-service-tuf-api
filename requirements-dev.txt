@@ -90,7 +90,7 @@ click-plugins==1.1.1
 click-repl==0.3.0; python_version >= '3.6'
 dnspython==2.6.1; python_version >= '3.8'
 dynaconf==3.2.5; python_version >= '3.8'
-email-validator==2.1.2; python_version >= '3.8'
+email-validator==2.2.0; python_version >= '3.8'
 fastapi==0.111.0; python_version >= '3.8'
 fastapi-cli==0.0.4; python_version >= '3.8'
 httptools==0.6.1
