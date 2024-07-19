@@ -373,7 +373,7 @@ class TestPostBootstrap:
         payload = json.loads(f_data)
         response = test_client.post(BOOTSTRAP_URL, json=payload)
 
-        assert response.status_code == status.HTTP_200_OK
+        assert response.status_code == status.HTTP_404_NOT_FOUND
         assert response.url == f"{test_client.base_url}{BOOTSTRAP_URL}"
         assert response.json() == {
             "detail": {
@@ -399,7 +399,7 @@ class TestPostBootstrap:
         payload = json.loads(f_data)
         response = test_client.post(BOOTSTRAP_URL, json=payload)
 
-        assert response.status_code == status.HTTP_200_OK
+        assert response.status_code == status.HTTP_404_NOT_FOUND
         assert response.url == f"{test_client.base_url}{BOOTSTRAP_URL}"
         assert response.json() == {
             "detail": {"error": "System already has a Metadata. State: pre"}
@@ -423,7 +423,7 @@ class TestPostBootstrap:
         payload = json.loads(f_data)
         response = test_client.post(BOOTSTRAP_URL, json=payload)
 
-        assert response.status_code == status.HTTP_200_OK
+        assert response.status_code == status.HTTP_404_NOT_FOUND
         assert response.url == f"{test_client.base_url}{BOOTSTRAP_URL}"
         assert response.json() == {
             "detail": {

@@ -159,7 +159,7 @@ def post(payload: AddPayload) -> ResponsePostAdd:
     bs_state = bootstrap_state()
     if bs_state.bootstrap is False:
         raise HTTPException(
-            status.HTTP_200_OK,
+            status.HTTP_404_NOT_FOUND,
             detail={
                 "message": "Task not accepted.",
                 "error": (
@@ -217,7 +217,7 @@ def delete(payload: DeletePayload) -> ResponsePostDelete:
     bs_state = bootstrap_state()
     if bs_state.bootstrap is False:
         raise HTTPException(
-            status.HTTP_200_OK,
+            status.HTTP_404_NOT_FOUND,
             detail={
                 "message": "Task not accepted.",
                 "error": (

@@ -69,7 +69,7 @@ class TestPostMetadata:
         payload = json.loads(f_data)
         response = test_client.post(METADATA_URL, json=payload)
 
-        assert response.status_code == status.HTTP_200_OK, response.text
+        assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
         assert response.url == f"{test_client.base_url}{METADATA_URL}"
         assert response.json() == {
             "detail": {
@@ -96,7 +96,7 @@ class TestPostMetadata:
         payload = json.loads(f_data)
         response = test_client.post(METADATA_URL, json=payload)
 
-        assert response.status_code == status.HTTP_200_OK
+        assert response.status_code == status.HTTP_404_NOT_FOUND
         assert response.url == f"{test_client.base_url}{METADATA_URL}"
         assert response.json() == {
             "detail": {
@@ -317,7 +317,7 @@ class TestPostMetadataOnline:
         )
 
         response = test_client.post(METADATA_ONLINE_URL, json=payload)
-        assert response.status_code == status.HTTP_200_OK, response.text
+        assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
         assert response.json() == {
             "detail": {
                 "message": "Task not accepted.",
@@ -345,7 +345,7 @@ class TestPostMetadataOnline:
         payload = {"roles": ["snapshot", "targets"]}
 
         response = test_client.post(METADATA_ONLINE_URL, json=payload)
-        assert response.status_code == status.HTTP_200_OK, response.text
+        assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
         err_msg = "Targets is an offline role - use other endpoint to update"
         assert response.json() == {
             "detail": {
@@ -386,7 +386,7 @@ class TestPostMetadataOnline:
         payload = {"roles": ["snapshot", "targets", "abcsdaw"]}
 
         response = test_client.post(METADATA_ONLINE_URL, json=payload)
-        assert response.status_code == status.HTTP_200_OK, response.text
+        assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
         roles = common_models.Roles.all_str()
         err_msg = (
             f"Hash bin delegation is used and only {roles} roles can be bumped"
@@ -433,7 +433,7 @@ class TestPostMetadataOnline:
         payload = {"roles": ["snapshot", "targets", "bins"]}
 
         response = test_client.post(METADATA_ONLINE_URL, json=payload)
-        assert response.status_code == status.HTTP_200_OK, response.text
+        assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
         err_msg = "Custom target delegation used and bins cannot be bumped"
         assert response.json() == {
             "detail": {
@@ -591,7 +591,7 @@ class TestGetMetadataSign:
         )
         response = test_client.get(SIGN_URL)
 
-        assert response.status_code == status.HTTP_200_OK, response.text
+        assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
         assert response.json() == {
             "detail": {
                 "message": "No metadata pending signing available",
@@ -609,7 +609,7 @@ class TestGetMetadataSign:
         )
         response = test_client.get(SIGN_URL)
 
-        assert response.status_code == status.HTTP_200_OK, response.text
+        assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
         assert response.json() == {
             "detail": {
                 "message": "No metadata pending signing available",
@@ -673,7 +673,7 @@ class TestPostMetadataSign:
         payload = {"role": "root", "signature": {"keyid": "k1", "sig": "s1"}}
 
         response = test_client.post(SIGN_URL, json=payload)
-        assert response.status_code == status.HTTP_200_OK, response.text
+        assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
         assert response.json() == {
             "detail": {
                 "message": "No signing pending.",
@@ -692,7 +692,7 @@ class TestPostMetadataSign:
         payload = {"role": "root", "signature": {"keyid": "k1", "sig": "s1"}}
 
         response = test_client.post(SIGN_URL, json=payload)
-        assert response.status_code == status.HTTP_200_OK, response.text
+        assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
         assert response.json() == {
             "detail": {
                 "message": "No signing pending.",
@@ -766,7 +766,7 @@ class TestPostMetadataSignDelete:
         payload = {"role": "root"}
 
         response = test_client.post(DELETE_SIGN_URL, json=payload)
-        assert response.status_code == status.HTTP_200_OK, response.text
+        assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
         assert response.json() == {
             "detail": {
                 "message": "No signing process for root.",

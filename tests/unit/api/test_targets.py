@@ -197,7 +197,7 @@ class TestPostArtifacts:
         payload = json.loads(f_data)
 
         response = test_client.post(ARTIFACTS_URL, json=payload)
-        assert response.status_code == status.HTTP_200_OK
+        assert response.status_code == status.HTTP_404_NOT_FOUND
         assert response.json() == {
             "detail": {
                 "message": "Task not accepted.",
@@ -222,7 +222,7 @@ class TestPostArtifacts:
         payload = json.loads(f_data)
 
         response = test_client.post(ARTIFACTS_URL, json=payload)
-        assert response.status_code == status.HTTP_200_OK
+        assert response.status_code == status.HTTP_404_NOT_FOUND
         assert response.json() == {
             "detail": {
                 "message": "Task not accepted.",
@@ -358,7 +358,7 @@ class TestPostArtifactsDelete:
         )
         response = test_client.post(ARTIFACTS_DELETE_URL, json=payload)
 
-        assert response.status_code == status.HTTP_200_OK
+        assert response.status_code == status.HTTP_404_NOT_FOUND
         assert response.json() == {
             "detail": {
                 "message": "Task not accepted.",
@@ -381,7 +381,7 @@ class TestPostArtifactsDelete:
         )
         response = test_client.post(ARTIFACTS_DELETE_URL, json=payload)
 
-        assert response.status_code == status.HTTP_200_OK
+        assert response.status_code == status.HTTP_404_NOT_FOUND
         assert response.json() == {
             "detail": {
                 "message": "Task not accepted.",
