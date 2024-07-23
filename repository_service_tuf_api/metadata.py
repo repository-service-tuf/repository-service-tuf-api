@@ -59,7 +59,7 @@ def post_metadata(payload: MetadataPostPayload) -> MetadataPostResponse:
     bs_state = bootstrap_state()
     if bs_state.bootstrap is False:
         raise HTTPException(
-            status.HTTP_200_OK,
+            status.HTTP_404_NOT_FOUND,
             detail={
                 "message": "Task not accepted.",
                 "error": (
@@ -119,7 +119,7 @@ def post_metadata_online(
     bs_state = bootstrap_state()
     if bs_state.bootstrap is False:
         raise HTTPException(
-            status.HTTP_200_OK,
+            status.HTTP_404_NOT_FOUND,
             detail={
                 "message": "Task not accepted.",
                 "error": (
@@ -134,7 +134,7 @@ def post_metadata_online(
     targets_online = settings_repository.get_fresh("TARGETS_ONLINE_KEY", True)
     if targets_in and not targets_online:
         raise HTTPException(
-            status.HTTP_200_OK,
+            status.HTTP_404_NOT_FOUND,
             detail={
                 "message": "Task not accepted.",
                 "error": (
@@ -152,7 +152,7 @@ def post_metadata_online(
         # This indicates succinct hash bins are used
         if len(roles) > 0 and any(not Roles.is_role(role) for role in roles):
             raise HTTPException(
-                status.HTTP_200_OK,
+                status.HTTP_404_NOT_FOUND,
                 detail={
                     "message": "Task not accepted.",
                     "error": (
@@ -164,7 +164,7 @@ def post_metadata_online(
     else:
         if Roles.BINS.value in roles:
             raise HTTPException(
-                status.HTTP_200_OK,
+                status.HTTP_404_NOT_FOUND,
                 detail={
                     "message": "Task not accepted.",
                     "error": (
@@ -227,7 +227,7 @@ def get_metadata_sign() -> MetadataSignGetResponse:
     # Adds support only when bootstrap is signing state
     if bs_state.bootstrap is False and bs_state.state != "signing":
         raise HTTPException(
-            status.HTTP_200_OK,
+            status.HTTP_404_NOT_FOUND,
             detail={
                 "message": "No metadata pending signing available",
                 "error": (
@@ -319,7 +319,7 @@ def post_metadata_sign(
     bs_state = bootstrap_state()
     if bs_state.bootstrap is False and bs_state.state != "signing":
         raise HTTPException(
-            status.HTTP_200_OK,
+            status.HTTP_404_NOT_FOUND,
             detail={
                 "message": "No signing pending.",
                 "error": (
@@ -377,7 +377,7 @@ def delete_metadata_sign(payload: MetadataSignDeletePayload):
     signing_status = settings_repository.get_fresh(f"{role.upper()}_SIGNING")
     if signing_status is None:
         raise HTTPException(
-            status.HTTP_200_OK,
+            status.HTTP_404_NOT_FOUND,
             detail={
                 "message": f"No signing process for {role}.",
                 "error": f"The {role} role is not in a signing process.",

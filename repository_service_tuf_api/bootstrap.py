@@ -198,7 +198,7 @@ def post_bootstrap(payload: BootstrapPayload) -> BootstrapPostResponse:
     # or is in the process of DAS signing ("signing") we consider it as locked.
     if bs_state.bootstrap is True or bs_state.state in ["pre", "signing"]:
         raise HTTPException(
-            status_code=status.HTTP_200_OK,
+            status_code=status.HTTP_404_NOT_FOUND,
             detail=BaseErrorResponse(
                 error=(
                     "System already has a Metadata. "
