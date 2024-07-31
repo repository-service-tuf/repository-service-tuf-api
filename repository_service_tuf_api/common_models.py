@@ -83,7 +83,7 @@ class TUFSignedDelegationsSuccinctRoles(BaseModel):
 class TUFKeys(BaseModel):
     keytype: str
     scheme: str
-    keyval: Dict[Literal["public"], str]
+    keyval: Dict[Literal["public", "issuer", "identity"], str]
     name: str | None = Field(
         description="Use x-rstuf-key-name instead. Key Name",
         default=None,
@@ -155,6 +155,7 @@ class TUFSigned(BaseModel):
 class TUFSignatures(BaseModel):
     keyid: str
     sig: str
+    bundle: Dict[str, Any] | None = None
 
 
 class TUFMetadata(BaseModel):
