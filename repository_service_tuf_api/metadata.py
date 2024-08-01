@@ -16,7 +16,11 @@ from repository_service_tuf_api import (
     repository_metadata,
     settings_repository,
 )
-from repository_service_tuf_api.common_models import Roles, TUFMetadata
+from repository_service_tuf_api.common_models import (
+    Roles,
+    TUFMetadata,
+    TUFSignatures,
+)
 
 with open("tests/data_examples/metadata/update-root-payload.json") as f:
     content = f.read()
@@ -278,11 +282,6 @@ class MetadataSignPostResponse(BaseModel):
     message: str
 
 
-class MetadataSignature(BaseModel):
-    keyid: str
-    sig: str
-
-
 class MetadataSignPostPayload(BaseModel):
     model_config = ConfigDict(
         json_schema_extra={
@@ -310,7 +309,7 @@ class MetadataSignPostPayload(BaseModel):
         }
     )
     role: str
-    signature: MetadataSignature
+    signature: TUFSignatures
 
 
 def post_metadata_sign(
