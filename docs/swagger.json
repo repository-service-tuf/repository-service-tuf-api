@@ -1804,6 +1804,17 @@
                     "sig": {
                         "type": "string",
                         "title": "Sig"
+                    },
+                    "bundle": {
+                        "anyOf": [
+                            {
+                                "type": "object"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Bundle"
                     }
                 },
                 "type": "object",
