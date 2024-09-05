@@ -23,6 +23,7 @@ from repository_service_tuf_api import (
 )
 from repository_service_tuf_api.common_models import (
     BaseErrorResponse,
+    TUFDelegations,
     TUFMetadata,
 )
 
@@ -64,17 +65,17 @@ class RolesData(BaseModel):
     snapshot: Role
     timestamp: Role
     bins: Optional[BinsRole] = Field(default=None)
-    delegated_roles: Optional[Dict[str, DelegatedRole]] = Field(default=None)
+    delegations: Optional[TUFDelegations] = Field(default=None)
 
     @model_validator(mode="before")
     @classmethod
     def validate_delegations(cls, values: Dict[str, Any]) -> Dict[str, Any]:
         bins = values.get("bins")
-        delegated_roles = values.get("delegated_roles")
-        if (bins is None and delegated_roles is None) or (
-            bins is not None and delegated_roles is not None
+        delegations = values.get("delegations")
+        if (bins is None and delegations is None) or (
+            bins is not None and delegations is not None
         ):
-            err_msg = "Exactly one of 'bins' and 'delegated_roles' must be set"
+            err_msg = "Exactly one of 'bins' and 'delegations' must be set"
             raise ValueError(err_msg)
 
         return values
@@ -87,10 +88,11 @@ class RolesData(BaseModel):
         # Validation of custom target delegated names is required as otherwise
         # an attacker can use a custom target name to point to a specific place
         # in a file system and override a file or cause unexpected behavior.
-        delegated_roles = values.get("delegated_roles")
-        if delegated_roles is not None:
+        delegations = values.get("delegations")
+        if delegations is not None:
             # The keys of the delegated_roles dict are the names of the roles.
-            for role_name in delegated_roles.keys():
+            for role in delegations.get("roles"):
+                role_name = role.get("name")
                 if re.fullmatch(DELEGATED_NAMES_PATTERN, role_name) is None:
                     raise ValueError(
                         f"Delegated custom target name {role_name} not allowed"
