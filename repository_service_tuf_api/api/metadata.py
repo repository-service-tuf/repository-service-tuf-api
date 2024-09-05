@@ -48,6 +48,22 @@ def post_delegation(payload: metadata.MetadataDelegationsPayload):
 
 
 @router.post(
+    "/delegation/delete",
+    summary="Post a task to create a delete delegation.",
+    description=(
+        "Submit an asynchronous task to delete delegation. "
+        "Use the task ID to retrieve the task status in the endpoint "
+        "/api/v1/task."
+    ),
+    response_model=metadata.MetadataPostResponse,
+    response_model_exclude_none=True,
+    status_code=status.HTTP_202_ACCEPTED,
+)
+def delete_delegation(payload: metadata.MetadataDelegationDeletePayload):
+    return metadata.metadata_delegation(payload, action="delete")
+
+
+@router.post(
     "/online",
     summary="Force a new version of online metadata role(s).",
     description=(
