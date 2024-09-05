@@ -71,6 +71,11 @@ class TUFSignedDelegationsRoles(BaseModel):
     threshold: int
     paths: List[str] | None = None
     path_hash_prefixes: List[str] | None = None
+    x_rstuf_expire_policy: int = Field(
+        alias="x-rstuf-expire-policy",
+        description="Expire Policy for the role",
+        default=None,
+    )
 
 
 class TUFSignedDelegationsSuccinctRoles(BaseModel):
@@ -161,3 +166,8 @@ class TUFSignatures(BaseModel):
 class TUFMetadata(BaseModel):
     signatures: List[TUFSignatures]
     signed: TUFSigned
+
+
+class TUFDelegations(BaseModel):
+    keys: Dict[str, TUFKeys]
+    roles: List[TUFSignedDelegationsRoles]
