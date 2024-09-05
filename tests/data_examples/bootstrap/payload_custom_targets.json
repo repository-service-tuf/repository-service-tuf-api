@@ -14,13 +14,9 @@
         "expiration": 365
       },
       "delegated_roles": {
-        "foo": {
+        "artifacts": {
           "expiration": 30,
-          "path_patterns": ["project/f"]
-        },
-        "bar": {
-          "expiration": 60,
-          "path_patterns": ["project/b"]
+          "path_patterns": ["*"]
         }
       }
     }
