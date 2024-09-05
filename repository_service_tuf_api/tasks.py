@@ -36,6 +36,7 @@ class TaskName(str, enum.Enum):
     UPDATE_SETTINGS = "update_settings"
     PUBLISH_ARTIFACTS = "publish_artifacts"
     METADATA_UPDATE = "metadata_update"
+    METADATA_DELEGATION = "metadata_delegation"
     SIGN_METADATA = "sign_metadata"
     DELETE_SIGN_METADATA = "delete_sign_metadata"
 

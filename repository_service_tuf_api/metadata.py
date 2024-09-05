@@ -5,7 +5,7 @@
 
 import json
 from datetime import datetime, timezone
-from typing import Dict, List, Literal, Optional
+from typing import Any, Dict, List, Literal, Optional
 
 from fastapi import HTTPException, status
 from pydantic import BaseModel, ConfigDict
@@ -18,6 +18,7 @@ from repository_service_tuf_api import (
 )
 from repository_service_tuf_api.common_models import (
     Roles,
+    TUFDelegations,
     TUFMetadata,
     TUFSignatures,
 )
@@ -29,6 +30,10 @@ update_payload_example = json.loads(content)
 with open("tests/data_examples/bootstrap/das-payload.json") as f:
     content = f.read()
 das_payload_example = json.loads(content)
+
+with open("tests/data_examples/metadata/delegation-payload.json") as f:
+    content = f.read()
+delegation_payload_example = json.loads(content)
 
 
 class MetadataPostPayload(BaseModel):
@@ -89,6 +94,50 @@ def post_metadata(payload: MetadataPostPayload) -> MetadataPostResponse:
         "task_id": task_id,
         "last_update": datetime.now(timezone.utc),
     }
+    return MetadataPostResponse(data=data, message=message)
+
+
+class MetadataDelegationsPayload(BaseModel):
+    model_config = ConfigDict(
+        json_schema_extra={"example": delegation_payload_example}
+    )
+
+    delegations: TUFDelegations
+
+
+def metadata_delegation(payload: MetadataDelegationsPayload, action: str):
+    bs_state = bootstrap_state()
+    if bs_state.bootstrap is False:
+        raise HTTPException(
+            status.HTTP_200_OK,
+            detail={
+                "message": "Task not accepted.",
+                "error": (
+                    f"Requires bootstrap finished. State: {bs_state.state}"
+                ),
+            },
+        )
+
+    task_id = get_task_id()
+    worker_payload = payload.model_dump(by_alias=True, exclude_none=True)
+    worker_payload["action"] = action
+
+    repository_metadata.apply_async(
+        kwargs={
+            "action": "metadata_delegation",
+            "payload": worker_payload,
+        },
+        task_id=task_id,
+        queue="metadata_repository",
+        acks_late=True,
+    )
+
+    message = "Metadata delegation accepted."
+    data = {
+        "task_id": task_id,
+        "last_update": datetime.now(timezone.utc),
+    }
+
     return MetadataPostResponse(data=data, message=message)
 
 
@@ -204,10 +253,11 @@ def post_metadata_online(
 class RolesData(BaseModel):
     root: TUFMetadata
     trusted_root: TUFMetadata | None = None
+    trusted_targets: TUFMetadata | None = None
 
 
 class SigningData(BaseModel):
-    metadata: RolesData
+    metadata: RolesData | Any
 
 
 class MetadataSignGetResponse(BaseModel):
@@ -246,16 +296,25 @@ def get_metadata_sign() -> MetadataSignGetResponse:
     )
 
     md_response = {}
+    trusted_root = settings_repository.get(f"TRUSTED_ROOT")
+    trusted_targets = settings_repository.get(f"TRUSTED_TARGETS")
+
+    if trusted_root:
+        md_response["trusted_root"] = trusted_root.to_dict()
+    else:
+        md_response["trusted_root"] = None
+
+    if trusted_targets:
+        md_response["trusted_targets"] = trusted_targets.to_dict()
+    else:
+        md_response["trusted_targets"] = None
+
     for role_setting in pending_signing:
         signing_role_obj = settings_repository.get(role_setting)
         if signing_role_obj is not None:
             signing_role_dict = signing_role_obj.to_dict()
             role = role_setting.split("_")[0].lower()
             md_response[role] = signing_role_dict
-
-            trusted_obj = settings_repository.get(f"TRUSTED_{role.upper()}")
-            if trusted_obj is not None:
-                md_response[f"trusted_{role}"] = trusted_obj.to_dict()
 
     if len(md_response) > 0:
         data = {"metadata": md_response}
