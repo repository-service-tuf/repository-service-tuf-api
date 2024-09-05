@@ -76,6 +76,18 @@ class TUFSignedDelegationsRoles(BaseModel):
         description="Expire Policy for the role",
         default=None,
     )
+    # Note: No validation is required for paths as these patterns are only used
+    # to distribute artifacts. No files are created based on them.
+    paths: List[str] = Field(min_length=1)
+
+    @model_validator(mode="before")
+    @classmethod
+    def validate_path_patterns(cls, values: Dict[str, Any]):
+        path_patterns = values.get("paths")
+        if any(len(pattern) < 1 for pattern in path_patterns):
+            raise ValueError("No empty strings are allowed as path patterns")
+
+        return values
 
 
 class TUFSignedDelegationsSuccinctRoles(BaseModel):

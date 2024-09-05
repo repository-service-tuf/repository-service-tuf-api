@@ -36,6 +36,9 @@ with open("tests/data_examples/metadata/delegation-payload.json") as f:
 delegation_payload_example = json.loads(content)
 
 
+#
+# Metadata Update
+#
 class MetadataPostPayload(BaseModel):
     model_config = ConfigDict(
         json_schema_extra={"example": update_payload_example}
@@ -97,6 +100,19 @@ def post_metadata(payload: MetadataPostPayload) -> MetadataPostResponse:
     return MetadataPostResponse(data=data, message=message)
 
 
+#
+# Metadata Delegation
+#
+class DelegationRolesData(BaseModel):
+    # TODO: add parameters for delegation roles, for example 'purge',
+    # 'force'  during removing or managing delegation roles
+    name: str
+
+
+class DelegationsData(BaseModel):
+    roles: List[DelegationRolesData]
+
+
 class MetadataDelegationsPayload(BaseModel):
     model_config = ConfigDict(
         json_schema_extra={"example": delegation_payload_example}
@@ -105,7 +121,23 @@ class MetadataDelegationsPayload(BaseModel):
     delegations: TUFDelegations
 
 
-def metadata_delegation(payload: MetadataDelegationsPayload, action: str):
+# Metadata Delegation (Delete)
+class MetadataDelegationDeletePayload(BaseModel):
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "delegations": {"roles": [{"name": "dev"}, {"name": "legacy"}]}
+            }
+        }
+    )
+
+    delegations: DelegationsData
+
+
+def metadata_delegation(
+    payload: MetadataDelegationsPayload | MetadataDelegationDeletePayload,
+    action: str,
+):
     bs_state = bootstrap_state()
     if bs_state.bootstrap is False:
         raise HTTPException(
@@ -132,7 +164,7 @@ def metadata_delegation(payload: MetadataDelegationsPayload, action: str):
         acks_late=True,
     )
 
-    message = "Metadata delegation accepted."
+    message = f"Metadata delegation {action} accepted."
     data = {
         "task_id": task_id,
         "last_update": datetime.now(timezone.utc),
@@ -141,6 +173,9 @@ def metadata_delegation(payload: MetadataDelegationsPayload, action: str):
     return MetadataPostResponse(data=data, message=message)
 
 
+#
+# Metadata Online Bump
+#
 class MetadataOnlinePostPayload(BaseModel):
     roles: List[str]
 
@@ -250,6 +285,9 @@ def post_metadata_online(
     return MetadataOnlinePostResponse(data=data, message=message)
 
 
+#
+# Metadata Sign
+#
 class RolesData(BaseModel):
     root: TUFMetadata
     trusted_root: TUFMetadata | None = None
@@ -408,6 +446,7 @@ def post_metadata_sign(
     return MetadataPostResponse(data=data, message=message)
 
 
+# Metadata Sign (Delete)
 class MetadataSignDeletePayload(BaseModel):
     model_config = ConfigDict(json_schema_extra={"example": {"role": "root"}})
     role: str
