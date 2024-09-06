@@ -334,8 +334,8 @@ def get_metadata_sign() -> MetadataSignGetResponse:
     )
 
     md_response = {}
-    trusted_root = settings_repository.get(f"TRUSTED_ROOT")
-    trusted_targets = settings_repository.get(f"TRUSTED_TARGETS")
+    trusted_root = settings_repository.get("TRUSTED_ROOT")
+    trusted_targets = settings_repository.get("TRUSTED_TARGETS")
 
     if trusted_root:
         md_response["trusted_root"] = trusted_root.to_dict()
