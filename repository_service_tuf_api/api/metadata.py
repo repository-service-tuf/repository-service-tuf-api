@@ -47,6 +47,22 @@ def post_delegation(payload: metadata.MetadataDelegationsPayload):
     return metadata.metadata_delegation(payload, action="add")
 
 
+@router.put(
+    "/delegation",
+    summary="Put a task to update delegation(s).",
+    description=(
+        "Submit an asynchronous task to update delegation(s). "
+        "Use the task ID to retrieve the task status in the endpoint "
+        "/api/v1/task."
+    ),
+    response_model=metadata.MetadataPostResponse,
+    response_model_exclude_none=True,
+    status_code=status.HTTP_202_ACCEPTED,
+)
+def put_delegation(payload: metadata.MetadataDelegationsPayload):
+    return metadata.metadata_delegation(payload, action="update")
+
+
 @router.post(
     "/delegation/delete",
     summary="Post a task to create a delete delegation.",
