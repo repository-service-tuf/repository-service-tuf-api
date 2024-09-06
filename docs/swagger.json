@@ -345,6 +345,139 @@
                 }
             }
         },
+        "/api/v1/delegations/": {
+            "put": {
+                "tags": [
+                    "Delegations"
+                ],
+                "summary": "Put a task to update delegation(s).",
+                "description": "Submit an asynchronous task to update delegation(s). Use the task ID to retrieve the task status in the endpoint /api/v1/task.",
+                "operationId": "put_delegation_api_v1_delegations__put",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/MetadataDelegationsPayload"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "202": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DelegationsResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Delegations"
+                ],
+                "summary": "Post a task to create a new delegation.",
+                "description": "Submit an asynchronous task to create a new delegation. Use the task ID to retrieve the task status in the endpoint /api/v1/task.",
+                "operationId": "post_delegation_api_v1_delegations__post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/MetadataDelegationsPayload"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "202": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DelegationsResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/delegations/delete": {
+            "post": {
+                "tags": [
+                    "Delegations"
+                ],
+                "summary": "Post a task to create a delete delegation.",
+                "description": "Submit an asynchronous task to delete delegation. Use the task ID to retrieve the task status in the endpoint /api/v1/task.",
+                "operationId": "delete_delegation_api_v1_delegations_delete_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/MetadataDelegationDeletePayload"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "202": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DelegationsResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/artifacts/": {
             "post": {
                 "tags": [
@@ -833,28 +966,63 @@
                     "message": "Bootstrap accepted."
                 }
             },
-            "DelegatedRole": {
+            "DelegationRolesData": {
                 "properties": {
-                    "expiration": {
-                        "type": "integer",
-                        "exclusiveMinimum": 0.0,
-                        "title": "Expiration"
-                    },
-                    "path_patterns": {
-                        "items": {
-                            "type": "string"
-                        },
-                        "type": "array",
-                        "minItems": 1,
-                        "title": "Path Patterns"
+                    "name": {
+                        "type": "string",
+                        "title": "Name"
                     }
                 },
                 "type": "object",
                 "required": [
-                    "expiration",
-                    "path_patterns"
+                    "name"
                 ],
-                "title": "DelegatedRole"
+                "title": "DelegationRolesData"
+            },
+            "DelegationsData": {
+                "properties": {
+                    "roles": {
+                        "items": {
+                            "$ref": "#/components/schemas/DelegationRolesData"
+                        },
+                        "type": "array",
+                        "title": "Roles"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "roles"
+                ],
+                "title": "DelegationsData"
+            },
+            "DelegationsResponse": {
+                "properties": {
+                    "data": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/repository_service_tuf_api__delegations__ResponseData"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "message": {
+                        "type": "string",
+                        "title": "Message"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "message"
+                ],
+                "title": "DelegationsResponse",
+                "example": {
+                    "data": {
+                        "last_update": "2022-12-01T12:10:00.578086",
+                        "task_id": "7a634b556f784ae88785d36425f9a218"
+                    }
+                }
             },
             "DeletePayload": {
                 "properties": {
@@ -974,6 +1142,79 @@
                 },
                 "type": "object",
                 "title": "HTTPValidationError"
+            },
+            "MetadataDelegationDeletePayload": {
+                "properties": {
+                    "delegations": {
+                        "$ref": "#/components/schemas/DelegationsData"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "delegations"
+                ],
+                "title": "MetadataDelegationDeletePayload",
+                "example": {
+                    "delegations": {
+                        "roles": [
+                            {
+                                "name": "dev"
+                            },
+                            {
+                                "name": "legacy"
+                            }
+                        ]
+                    }
+                }
+            },
+            "MetadataDelegationsPayload": {
+                "properties": {
+                    "delegations": {
+                        "$ref": "#/components/schemas/TUFDelegations"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "delegations"
+                ],
+                "title": "MetadataDelegationsPayload",
+                "example": {
+                    "delegations": {
+                        "keys": {
+                            "2f685fa7546f1856b123223ab086b3def14c89d24eef18f49c32508c2f60e241": {
+                                "keytype": "rsa",
+                                "keyval": {
+                                    "public": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwhX6rioiL/cX5Ys32InF\nU52H8tL14QeX0tacZdb+AwcH6nIh97h3RSHvGD7Xy6uaMRmGldAnSVYwJHqoJ5j2\nynVzU/RFpr+6n8Ps0QFg5GmlEqZboFjLbS0bsRQcXXnqJNsVLEPT3ULvu1rFRbWz\nAMFjNtNNk5W/u0GEzXn3D03jIdhD8IKAdrTRf0VMD9TRCXLdMmEU2vkf1NVUnOTb\n/dRX5QA8TtBylVnouZknbavQ0J/pPlHLfxUgsKzodwDlJmbPG9BWwXqQCmP0DgOG\nNIZ1X281MOBaGbkNVEuntNjCSaQxQjfALVVU5NAfal2cwMINtqaoc7Wa+TWvpFEI\nWwIDAQAB\n-----END PUBLIC KEY-----\n"
+                                },
+                                "scheme": "rsassa-pss-sha256",
+                                "x-rstuf-key-name": "JC"
+                            },
+                            "c6d8bf2e4f48b41ac2ce8eca21415ca8ef68c133b47fc33df03d4070a7e1e9cc": {
+                                "keytype": "ed25519",
+                                "keyval": {
+                                    "public": "4f66dabebcf30628963786001984c0b75c175cdcf3bc4855933a2628f0cd0a0f"
+                                },
+                                "scheme": "ed25519",
+                                "x-rstuf-key-name": "JH"
+                            }
+                        },
+                        "roles": [
+                            {
+                                "keyids": [
+                                    "c6d8bf2e4f48b41ac2ce8eca21415ca8ef68c133b47fc33df03d4070a7e1e9cc",
+                                    "2f685fa7546f1856b123223ab086b3def14c89d24eef18f49c32508c2f60e241"
+                                ],
+                                "name": "tenant1-group1-policy",
+                                "paths": [
+                                    "tenant1/group1/policy/*"
+                                ],
+                                "terminating": true,
+                                "threshold": 2,
+                                "x-rstuf-expire-policy": 365
+                            }
+                        ]
+                    }
+                }
             },
             "MetadataOnlinePostPayload": {
                 "properties": {
@@ -1617,19 +1858,15 @@
                             }
                         ]
                     },
-                    "delegated_roles": {
+                    "delegations": {
                         "anyOf": [
                             {
-                                "additionalProperties": {
-                                    "$ref": "#/components/schemas/DelegatedRole"
-                                },
-                                "type": "object"
+                                "$ref": "#/components/schemas/TUFDelegations"
                             },
                             {
                                 "type": "null"
                             }
-                        ],
-                        "title": "Delegated Roles"
+                        ]
                     }
                 },
                 "type": "object",
@@ -1655,6 +1892,16 @@
                                 "type": "null"
                             }
                         ]
+                    },
+                    "trusted_targets": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/TUFMetadata-Output"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
                     }
                 },
                 "type": "object",
@@ -1666,7 +1913,13 @@
             "SigningData": {
                 "properties": {
                     "metadata": {
-                        "$ref": "#/components/schemas/RolesData-Output"
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/RolesData-Output"
+                            },
+                            {}
+                        ],
+                        "title": "Metadata"
                     }
                 },
                 "type": "object",
@@ -1674,6 +1927,30 @@
                     "metadata"
                 ],
                 "title": "SigningData"
+            },
+            "TUFDelegations": {
+                "properties": {
+                    "keys": {
+                        "additionalProperties": {
+                            "$ref": "#/components/schemas/TUFKeys"
+                        },
+                        "type": "object",
+                        "title": "Keys"
+                    },
+                    "roles": {
+                        "items": {
+                            "$ref": "#/components/schemas/TUFSignedDelegationsRoles"
+                        },
+                        "type": "array",
+                        "title": "Roles"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "keys",
+                    "roles"
+                ],
+                "title": "TUFDelegations"
             },
             "TUFKeys": {
                 "properties": {
@@ -2082,17 +2359,11 @@
                         "title": "Threshold"
                     },
                     "paths": {
-                        "anyOf": [
-                            {
-                                "items": {
-                                    "type": "string"
-                                },
-                                "type": "array"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "minItems": 1,
                         "title": "Paths"
                     },
                     "path_hash_prefixes": {
@@ -2108,6 +2379,11 @@
                             }
                         ],
                         "title": "Path Hash Prefixes"
+                    },
+                    "x-rstuf-expire-policy": {
+                        "type": "integer",
+                        "title": "X-Rstuf-Expire-Policy",
+                        "description": "Expire Policy for the role"
                     }
                 },
                 "type": "object",
@@ -2115,7 +2391,8 @@
                     "name",
                     "terminating",
                     "keyids",
-                    "threshold"
+                    "threshold",
+                    "paths"
                 ],
                 "title": "TUFSignedDelegationsRoles"
             },
@@ -2195,6 +2472,7 @@
                     "update_settings",
                     "publish_artifacts",
                     "metadata_update",
+                    "metadata_delegation",
                     "sign_metadata",
                     "delete_sign_metadata"
                 ],
@@ -2417,6 +2695,31 @@
                     "expiration"
                 ],
                 "title": "Settings"
+            },
+            "repository_service_tuf_api__delegations__ResponseData": {
+                "properties": {
+                    "task_id": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Task Id"
+                    },
+                    "last_update": {
+                        "type": "string",
+                        "format": "date-time",
+                        "title": "Last Update"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "last_update"
+                ],
+                "title": "ResponseData"
             },
             "repository_service_tuf_api__metadata__ResponseData": {
                 "properties": {
