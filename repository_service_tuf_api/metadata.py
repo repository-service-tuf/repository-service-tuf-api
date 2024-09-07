@@ -339,13 +339,9 @@ def get_metadata_sign() -> MetadataSignGetResponse:
 
     if trusted_root:
         md_response["trusted_root"] = trusted_root.to_dict()
-    else:
-        md_response["trusted_root"] = None
 
     if trusted_targets:
         md_response["trusted_targets"] = trusted_targets.to_dict()
-    else:
-        md_response["trusted_targets"] = None
 
     for role_setting in pending_signing:
         signing_role_obj = settings_repository.get(role_setting)
