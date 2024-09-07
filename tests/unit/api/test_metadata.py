@@ -491,8 +491,9 @@ class TestGetMetadataSign:
         assert mocked_bootstrap_state.calls == [pretend.call()]
         assert mocked_settings_repository.reload.calls == [pretend.call()]
         assert mocked_settings_repository.get.calls == [
-            pretend.call("ROOT_SIGNING"),
             pretend.call("TRUSTED_ROOT"),
+            pretend.call("TRUSTED_TARGETS"),
+            pretend.call("ROOT_SIGNING"),
         ]
         assert fake_metadata.to_dict.calls == [pretend.call()]
 
@@ -551,8 +552,9 @@ class TestGetMetadataSign:
         assert mocked_bootstrap_state.calls == [pretend.call()]
         assert mocked_settings_repository.reload.calls == [pretend.call()]
         assert mocked_settings_repository.get.calls == [
-            pretend.call("ROOT_SIGNING"),
             pretend.call("TRUSTED_ROOT"),
+            pretend.call("TRUSTED_TARGETS"),
+            pretend.call("ROOT_SIGNING"),
         ]
         assert fake_metadata.to_dict.calls == [pretend.call()]
         assert fake_trusted_metadata.to_dict.calls == [pretend.call()]
@@ -569,6 +571,7 @@ class TestGetMetadataSign:
 
         mocked_settings_repository = pretend.stub(
             reload=pretend.call_recorder(lambda: None),
+            get=pretend.call_recorder(lambda *a: None),
         )
         monkeypatch.setattr(
             f"{MOCK_PATH}.settings_repository", mocked_settings_repository
