@@ -134,45 +134,6 @@ class MetadataDelegationDeletePayload(BaseModel):
     delegations: DelegationsData
 
 
-def metadata_delegation(
-    payload: MetadataDelegationsPayload | MetadataDelegationDeletePayload,
-    action: str,
-):
-    bs_state = bootstrap_state()
-    if bs_state.bootstrap is False:
-        raise HTTPException(
-            status.HTTP_200_OK,
-            detail={
-                "message": "Task not accepted.",
-                "error": (
-                    f"Requires bootstrap finished. State: {bs_state.state}"
-                ),
-            },
-        )
-
-    task_id = get_task_id()
-    worker_payload = payload.model_dump(by_alias=True, exclude_none=True)
-    worker_payload["action"] = action
-
-    repository_metadata.apply_async(
-        kwargs={
-            "action": "metadata_delegation",
-            "payload": worker_payload,
-        },
-        task_id=task_id,
-        queue="metadata_repository",
-        acks_late=True,
-    )
-
-    message = f"Metadata delegation {action} accepted."
-    data = {
-        "task_id": task_id,
-        "last_update": datetime.now(timezone.utc),
-    }
-
-    return MetadataPostResponse(data=data, message=message)
-
-
 #
 # Metadata Online Bump
 #
