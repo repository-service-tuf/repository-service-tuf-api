@@ -5,7 +5,7 @@
 
 import json
 from datetime import datetime, timezone
-from typing import Dict, List, Literal, Optional
+from typing import Any, Dict, List, Literal, Optional
 
 from fastapi import HTTPException, status
 from pydantic import BaseModel, ConfigDict
@@ -18,6 +18,7 @@ from repository_service_tuf_api import (
 )
 from repository_service_tuf_api.common_models import (
     Roles,
+    TUFDelegations,
     TUFMetadata,
     TUFSignatures,
 )
@@ -30,7 +31,14 @@ with open("tests/data_examples/bootstrap/das-payload.json") as f:
     content = f.read()
 das_payload_example = json.loads(content)
 
+with open("tests/data_examples/metadata/delegation-payload.json") as f:
+    content = f.read()
+delegation_payload_example = json.loads(content)
 
+
+#
+# Metadata Update
+#
 class MetadataPostPayload(BaseModel):
     model_config = ConfigDict(
         json_schema_extra={"example": update_payload_example}
@@ -92,6 +100,43 @@ def post_metadata(payload: MetadataPostPayload) -> MetadataPostResponse:
     return MetadataPostResponse(data=data, message=message)
 
 
+#
+# Metadata Delegation
+#
+class DelegationRolesData(BaseModel):
+    # TODO: add parameters for delegation roles, for example 'purge',
+    # 'force'  during removing or managing delegation roles
+    name: str
+
+
+class DelegationsData(BaseModel):
+    roles: List[DelegationRolesData]
+
+
+class MetadataDelegationsPayload(BaseModel):
+    model_config = ConfigDict(
+        json_schema_extra={"example": delegation_payload_example}
+    )
+
+    delegations: TUFDelegations
+
+
+# Metadata Delegation (Delete)
+class MetadataDelegationDeletePayload(BaseModel):
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "delegations": {"roles": [{"name": "dev"}, {"name": "legacy"}]}
+            }
+        }
+    )
+
+    delegations: DelegationsData
+
+
+#
+# Metadata Online Bump
+#
 class MetadataOnlinePostPayload(BaseModel):
     roles: List[str]
 
@@ -201,13 +246,17 @@ def post_metadata_online(
     return MetadataOnlinePostResponse(data=data, message=message)
 
 
+#
+# Metadata Sign
+#
 class RolesData(BaseModel):
     root: TUFMetadata
     trusted_root: TUFMetadata | None = None
+    trusted_targets: TUFMetadata | None = None
 
 
 class SigningData(BaseModel):
-    metadata: RolesData
+    metadata: RolesData | Any
 
 
 class MetadataSignGetResponse(BaseModel):
@@ -246,16 +295,21 @@ def get_metadata_sign() -> MetadataSignGetResponse:
     )
 
     md_response = {}
+    trusted_root = settings_repository.get("TRUSTED_ROOT")
+    trusted_targets = settings_repository.get("TRUSTED_TARGETS")
+
+    if trusted_root:
+        md_response["trusted_root"] = trusted_root.to_dict()
+
+    if trusted_targets:
+        md_response["trusted_targets"] = trusted_targets.to_dict()
+
     for role_setting in pending_signing:
         signing_role_obj = settings_repository.get(role_setting)
         if signing_role_obj is not None:
             signing_role_dict = signing_role_obj.to_dict()
             role = role_setting.split("_")[0].lower()
             md_response[role] = signing_role_dict
-
-            trusted_obj = settings_repository.get(f"TRUSTED_{role.upper()}")
-            if trusted_obj is not None:
-                md_response[f"trusted_{role}"] = trusted_obj.to_dict()
 
     if len(md_response) > 0:
         data = {"metadata": md_response}
@@ -349,6 +403,7 @@ def post_metadata_sign(
     return MetadataPostResponse(data=data, message=message)
 
 
+# Metadata Sign (Delete)
 class MetadataSignDeletePayload(BaseModel):
     model_config = ConfigDict(json_schema_extra={"example": {"role": "root"}})
     role: str

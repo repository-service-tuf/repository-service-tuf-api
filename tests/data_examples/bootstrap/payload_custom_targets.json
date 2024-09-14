@@ -13,15 +13,50 @@
       "targets": {
         "expiration": 365
       },
-      "delegated_roles": {
-        "foo": {
-          "expiration": 30,
-          "path_patterns": ["project/f"]
+      "delegations": {
+        "keys": {
+          "2f685fa7546f1856b123223ab086b3def14c89d24eef18f49c32508c2f60e241": {
+            "keytype": "rsa",
+            "scheme": "rsassa-pss-sha256",
+            "keyval": {
+              "public": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwhX6rioiL/cX5Ys32InF\nU52H8tL14QeX0tacZdb+AwcH6nIh97h3RSHvGD7Xy6uaMRmGldAnSVYwJHqoJ5j2\nynVzU/RFpr+6n8Ps0QFg5GmlEqZboFjLbS0bsRQcXXnqJNsVLEPT3ULvu1rFRbWz\nAMFjNtNNk5W/u0GEzXn3D03jIdhD8IKAdrTRf0VMD9TRCXLdMmEU2vkf1NVUnOTb\n/dRX5QA8TtBylVnouZknbavQ0J/pPlHLfxUgsKzodwDlJmbPG9BWwXqQCmP0DgOG\nNIZ1X281MOBaGbkNVEuntNjCSaQxQjfALVVU5NAfal2cwMINtqaoc7Wa+TWvpFEI\nWwIDAQAB\n-----END PUBLIC KEY-----\n"
+            },
+            "x-rstuf-key-name": "JC"
+          },
+          "c6d8bf2e4f48b41ac2ce8eca21415ca8ef68c133b47fc33df03d4070a7e1e9cc": {
+            "keytype": "ed25519",
+            "scheme": "ed25519",
+            "keyval": {
+              "public": "4f66dabebcf30628963786001984c0b75c175cdcf3bc4855933a2628f0cd0a0f"
+            },
+            "x-rstuf-key-name": "JH"
+          }
         },
-        "bar": {
-          "expiration": 60,
-          "path_patterns": ["project/b"]
-        }
+        "roles": [
+          {
+            "name": "default",
+            "terminating": true,
+            "keyids": [],
+            "threshold": 1,
+            "x-rstuf-expire-policy": 1,
+            "paths": [
+              "*"
+            ]
+          },
+          {
+            "name": "production",
+            "terminating": true,
+            "keyids": [
+              "2f685fa7546f1856b123223ab086b3def14c89d24eef18f49c32508c2f60e241",
+              "c6d8bf2e4f48b41ac2ce8eca21415ca8ef68c133b47fc33df03d4070a7e1e9cc"
+            ],
+            "threshold": 2,
+            "x-rstuf-expire-policy": 7,
+            "paths": [
+              "production/*"
+            ]
+          }
+        ]
       }
     }
   },

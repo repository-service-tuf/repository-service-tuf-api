@@ -28,6 +28,14 @@ repository\_service\_tuf\_api.api.config module
    :undoc-members:
    :show-inheritance:
 
+repository\_service\_tuf\_api.api.delegations module
+----------------------------------------------------
+
+.. automodule:: repository_service_tuf_api.api.delegations
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 repository\_service\_tuf\_api.api.metadata module
 -------------------------------------------------
 
