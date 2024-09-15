@@ -491,9 +491,9 @@ class TestGetMetadataSign:
         assert mocked_bootstrap_state.calls == [pretend.call()]
         assert mocked_settings_repository.reload.calls == [pretend.call()]
         assert mocked_settings_repository.get.calls == [
+            pretend.call("ROOT_SIGNING"),
             pretend.call("TRUSTED_ROOT"),
             pretend.call("TRUSTED_TARGETS"),
-            pretend.call("ROOT_SIGNING"),
         ]
         assert fake_metadata.to_dict.calls == [pretend.call()]
 
@@ -552,12 +552,47 @@ class TestGetMetadataSign:
         assert mocked_bootstrap_state.calls == [pretend.call()]
         assert mocked_settings_repository.reload.calls == [pretend.call()]
         assert mocked_settings_repository.get.calls == [
+            pretend.call("ROOT_SIGNING"),
             pretend.call("TRUSTED_ROOT"),
             pretend.call("TRUSTED_TARGETS"),
-            pretend.call("ROOT_SIGNING"),
         ]
         assert fake_metadata.to_dict.calls == [pretend.call()]
         assert fake_trusted_metadata.to_dict.calls == [pretend.call()]
+
+    def test_get_metadata_sign_with_trusted_root_no_pending(
+        self, test_client, monkeypatch
+    ):
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda *a: pretend.stub(bootstrap=True, state="signing")
+        )
+        monkeypatch.setattr(
+            f"{MOCK_PATH}.bootstrap_state", mocked_bootstrap_state
+        )
+        with open("tests/data_examples/bootstrap/payload_bins.json") as f:
+            md_content = f.read()
+
+        metadata_data = json.loads(md_content)
+        trusted_root_dict = copy.deepcopy(metadata_data["metadata"]["root"])
+        trusted_root_dict["signed"]["version"] = 10
+        fake_trusted_metadata = pretend.stub(
+            to_dict=pretend.call_recorder(lambda: trusted_root_dict)
+        )
+        mocked_settings_repository = pretend.stub(
+            reload=pretend.call_recorder(lambda: None),
+            get=pretend.call_recorder(lambda a: fake_trusted_metadata),
+        )
+        monkeypatch.setattr(
+            f"{MOCK_PATH}.settings_repository", mocked_settings_repository
+        )
+
+        response = test_client.get(SIGN_URL)
+        assert response.status_code == status.HTTP_200_OK, response.text
+        assert response.json() == {
+            "message": "No metadata pending signing available",
+        }
+        assert mocked_bootstrap_state.calls == [pretend.call()]
+        assert mocked_settings_repository.reload.calls == [pretend.call()]
+        assert len(mocked_settings_repository.get.calls) == 0
 
     def test_get_metadata_sign_no_pending_roles(
         self, test_client, monkeypatch
