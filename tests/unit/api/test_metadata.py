@@ -559,6 +559,91 @@ class TestGetMetadataSign:
         assert fake_metadata.to_dict.calls == [pretend.call()]
         assert fake_trusted_metadata.to_dict.calls == [pretend.call()]
 
+    def test_get_metadata_sign_with_trusted_targets(
+        self, test_client, monkeypatch
+    ):
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda *a: pretend.stub(bootstrap=True, state="signing")
+        )
+        monkeypatch.setattr(
+            f"{MOCK_PATH}.bootstrap_state", mocked_bootstrap_state
+        )
+        path = "tests/data_examples/bootstrap/payload_custom_targets.json"
+        with open(path) as f:
+            data = json.loads(f.read())
+
+        trusted_targets_dict = {
+            "signatures": [{"keyid": "keyid", "sig": "sig"}],
+            "signed": {
+                "_type": "targets",
+                "spec_version": "1.0.0",
+                "delegations": data["settings"]["roles"]["delegations"],
+                "expires": "2030-01-01T00:00:00Z",
+                "targets": {
+                    "file1.txt": {
+                        "hashes": {
+                            "sha256": "65b8c67f51c993d898250f40aa57a317d854900b3a04895464313e48785440da"  # noqa: E501
+                        },
+                        "length": 31,
+                    },
+                    "dir/file2.txt": {
+                        "hashes": {
+                            "sha256": "452ce8308500d83ef44248d8e6062359211992fd837ea9e370e561efb1a4ca99"  # noqa: E501
+                        },
+                        "length": 39,
+                    },
+                },
+                "version": 1,
+            },
+        }
+
+        # Change trusted root:
+        trusted_targets_dict = copy.deepcopy(data["metadata"]["root"])
+        trusted_targets_dict["signed"]["version"] = 10
+        fake_targets_pending_metadata = pretend.stub(
+            to_dict=pretend.call_recorder(lambda: trusted_targets_dict)
+        )
+        fake_targets_trusted_metadata = pretend.stub(
+            to_dict=pretend.call_recorder(lambda: trusted_targets_dict)
+        )
+
+        def get_role(setting: str):
+            if setting == "TARGETS_SIGNING":
+                return fake_targets_pending_metadata
+            elif setting == "TRUSTED_TARGETS":
+                return fake_targets_trusted_metadata
+
+        mocked_settings_repository = pretend.stub(
+            reload=pretend.call_recorder(lambda: None),
+            get=pretend.call_recorder(lambda a: get_role(a)),
+            TARGETS_SIGNING=fake_targets_pending_metadata,
+            TRUSTED_TARGETS=fake_targets_trusted_metadata,
+        )
+        monkeypatch.setattr(
+            f"{MOCK_PATH}.settings_repository", mocked_settings_repository
+        )
+
+        response = test_client.get(SIGN_URL)
+        assert response.status_code == status.HTTP_200_OK, response.text
+        assert response.json() == {
+            "data": {
+                "metadata": {
+                    "targets": trusted_targets_dict,
+                    "trusted_targets": trusted_targets_dict,
+                }
+            },
+            "message": "Metadata role(s) pending signing",
+        }
+        assert mocked_bootstrap_state.calls == [pretend.call()]
+        assert mocked_settings_repository.reload.calls == [pretend.call()]
+        assert mocked_settings_repository.get.calls == [
+            pretend.call("TARGETS_SIGNING"),
+            pretend.call("TRUSTED_ROOT"),
+            pretend.call("TRUSTED_TARGETS"),
+        ]
+        assert fake_targets_pending_metadata.to_dict.calls == [pretend.call()]
+        assert fake_targets_trusted_metadata.to_dict.calls == [pretend.call()]
+
     def test_get_metadata_sign_with_trusted_root_no_pending(
         self, test_client, monkeypatch
     ):
