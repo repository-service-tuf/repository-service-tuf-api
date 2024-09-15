@@ -295,15 +295,6 @@ def get_metadata_sign() -> MetadataSignGetResponse:
     )
 
     md_response = {}
-    trusted_root = settings_repository.get("TRUSTED_ROOT")
-    trusted_targets = settings_repository.get("TRUSTED_TARGETS")
-
-    if trusted_root:
-        md_response["trusted_root"] = trusted_root.to_dict()
-
-    if trusted_targets:
-        md_response["trusted_targets"] = trusted_targets.to_dict()
-
     for role_setting in pending_signing:
         signing_role_obj = settings_repository.get(role_setting)
         if signing_role_obj is not None:
@@ -312,6 +303,15 @@ def get_metadata_sign() -> MetadataSignGetResponse:
             md_response[role] = signing_role_dict
 
     if len(md_response) > 0:
+        # Add trusted_root and trusted_targets only when they are pending.
+        trusted_root = settings_repository.get("TRUSTED_ROOT")
+        trusted_targets = settings_repository.get("TRUSTED_TARGETS")
+        if trusted_root and "root" in md_response:
+            md_response["trusted_root"] = trusted_root.to_dict()
+
+        if trusted_targets and "targets" in md_response:
+            md_response["trusted_targets"] = trusted_targets.to_dict()
+
         data = {"metadata": md_response}
         msg = "Metadata role(s) pending signing"
     else:
