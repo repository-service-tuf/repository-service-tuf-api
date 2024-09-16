@@ -598,10 +598,10 @@ class TestGetMetadataSign:
         }
 
         # Change trusted root:
-        trusted_targets_dict = copy.deepcopy(data["metadata"]["root"])
-        trusted_targets_dict["signed"]["version"] = 10
+        pending_targets_dict = copy.deepcopy(trusted_targets_dict)
+        pending_targets_dict["signed"]["version"] = 10
         fake_targets_pending_metadata = pretend.stub(
-            to_dict=pretend.call_recorder(lambda: trusted_targets_dict)
+            to_dict=pretend.call_recorder(lambda: pending_targets_dict)
         )
         fake_targets_trusted_metadata = pretend.stub(
             to_dict=pretend.call_recorder(lambda: trusted_targets_dict)
@@ -628,7 +628,7 @@ class TestGetMetadataSign:
         assert response.json() == {
             "data": {
                 "metadata": {
-                    "targets": trusted_targets_dict,
+                    "targets": pending_targets_dict,
                     "trusted_targets": trusted_targets_dict,
                 }
             },
