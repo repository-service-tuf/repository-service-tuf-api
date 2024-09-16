@@ -309,7 +309,10 @@ def get_metadata_sign() -> MetadataSignGetResponse:
         if trusted_root and "root" in md_response:
             md_response["trusted_root"] = trusted_root.to_dict()
 
-        if trusted_targets and "targets" in md_response:
+        if any(
+            role["signed"]["_type"] == "targets"
+            for role in md_response.values()
+        ):
             md_response["trusted_targets"] = trusted_targets.to_dict()
 
         data = {"metadata": md_response}
