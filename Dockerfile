@@ -2,10 +2,10 @@
 #
 
 # Base
-FROM python:3.12-slim as base_os
+FROM python:3.12-slim AS base_os
 
 # Builder requirements and deps
-FROM base_os as builder
+FROM base_os AS builder
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ADD requirements.txt /builder/requirements.txt
@@ -19,7 +19,7 @@ RUN apt-get remove gcc --purge -y \
     && apt-get autoremove --yes
 
 # Final image
-FROM base_os as pre-final
+FROM base_os AS pre-final
 COPY --from=builder /root/.local/bin /usr/local/bin/
 COPY --from=builder /root/.local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages/
 

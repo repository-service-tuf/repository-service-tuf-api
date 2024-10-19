@@ -35,7 +35,7 @@ else
 endif
 
 stop:
-	docker-compose down -v
+	docker compose down -v
 
 clean:
 	$(MAKE) stop
