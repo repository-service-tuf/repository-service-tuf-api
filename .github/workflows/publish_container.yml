@@ -28,9 +28,9 @@ jobs:
         ref: ${{ inputs.image_version }}
 
     - name: Set default Python version
-      uses: actions/setup-python@f677139bbe7f9c59b41e40162b753c062f5d49a3
+      uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b
       with:
-        python-version: '3.10'
+        python-version: '3.12'
 
     - name: Set up QEMU
       uses: docker/setup-qemu-action@49b3bc8e6bdd4a60e6116a5414239cba5943d3cf
