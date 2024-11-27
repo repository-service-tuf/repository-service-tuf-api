@@ -57,17 +57,17 @@ jobs:
 
     steps:
       - name: Checkout RSTUF API source code
-        uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
 
       - name: Checkout RSTUF Umbrella (FT)
-        uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
             repository: repository-service-tuf/repository-service-tuf
             path: rstuf-umbrella
             ref: ${{ inputs.umbrella_branch }}
 
       - name: Deploy RSTUF with API container from source code
-        uses: isbang/compose-action@e5813a5909aca4ae36058edae58f6e52b9c971f8
+        uses: isbang/compose-action@f1ca7fefe3627c2dab0ae1db43a106d82740245e
         with:
           compose-file: ${{ inputs.docker_compose }}
         env:
@@ -86,17 +86,17 @@ jobs:
 
     steps:
       - name: Checkout RSTUF API source code
-        uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
 
       - name: Checkout RSTUF Umbrella (FT)
-        uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           repository: repository-service-tuf/repository-service-tuf
           path: rstuf-umbrella
           ref: ${{ inputs.umbrella_branch }}
 
       - name: Deploy RSTUF with API container from source code
-        uses: isbang/compose-action@e5813a5909aca4ae36058edae58f6e52b9c971f8
+        uses: isbang/compose-action@f1ca7fefe3627c2dab0ae1db43a106d82740245e
         with:
           compose-file: ${{ inputs.docker_compose }}
         env:
