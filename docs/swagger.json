@@ -1275,6 +1275,9 @@
                         "additionalProperties": {
                             "$ref": "#/components/schemas/TUFMetadata-Input"
                         },
+                        "propertyNames": {
+                            "const": "root"
+                        },
                         "type": "object",
                         "title": "Metadata"
                     }
@@ -1966,6 +1969,13 @@
                         "additionalProperties": {
                             "type": "string"
                         },
+                        "propertyNames": {
+                            "enum": [
+                                "public",
+                                "issuer",
+                                "identity"
+                            ]
+                        },
                         "type": "object",
                         "title": "Keyval"
                     },
@@ -2087,7 +2097,7 @@
                 "properties": {
                     "_type": {
                         "type": "string",
-                        "title": " Type"
+                        "title": "Type"
                     },
                     "version": {
                         "type": "integer",
@@ -2131,6 +2141,15 @@
                             {
                                 "additionalProperties": {
                                     "$ref": "#/components/schemas/TUFSignedRoles"
+                                },
+                                "propertyNames": {
+                                    "enum": [
+                                        "root",
+                                        "targets",
+                                        "snapshot",
+                                        "timestamp",
+                                        "bins"
+                                    ]
                                 },
                                 "type": "object"
                             },
@@ -2193,7 +2212,7 @@
                 "properties": {
                     "_type": {
                         "type": "string",
-                        "title": " Type"
+                        "title": "Type"
                     },
                     "version": {
                         "type": "integer",
@@ -2237,6 +2256,15 @@
                             {
                                 "additionalProperties": {
                                     "$ref": "#/components/schemas/TUFSignedRoles"
+                                },
+                                "propertyNames": {
+                                    "enum": [
+                                        "root",
+                                        "targets",
+                                        "snapshot",
+                                        "timestamp",
+                                        "bins"
+                                    ]
                                 },
                                 "type": "object"
                             },
@@ -2582,11 +2610,7 @@
                         "description": "Task ID"
                     },
                     "state": {
-                        "allOf": [
-                            {
-                                "$ref": "#/components/schemas/TaskState"
-                            }
-                        ],
+                        "$ref": "#/components/schemas/TaskState",
                         "description": "The Celery task state.\n\n`PENDING`: Task state is unknown (assumed pending since you know the id).\n\n`RECEIVED`: Task received by a RSTUF Worker (only used in events).\n\n`SUCCESS`: Task succeeded.\n\n`STARTED`: Task started by a RSTUF Worker.\n\n`RUNNING`: Task is running on RSTUF Worker.\n\n`FAILURE`: Task failed (unexpected).\n\n`REVOKED`: Task revoked.\n\n`RETRY`: Task is waiting for retry.\n\n`ERRORED`: Task errored. RSTUF identified an error while processing the task.\n\n`REJECTED`: Task was rejected (only used in events).\n\n`IGNORED`: Task was ignored."
                     },
                     "result": {
