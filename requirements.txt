@@ -8,7 +8,7 @@ click==8.1.8; python_version >= '3.7'
 click-didyoumean==0.3.1; python_full_version >= '3.6.2'
 click-plugins==1.1.1
 click-repl==0.3.0; python_version >= '3.6'
-dynaconf==3.2.7; python_version >= '3.8'
+dynaconf==3.2.10; python_version >= '3.8'
 fastapi==0.115.8; python_version >= '3.8'
 h11==0.14.0; python_version >= '3.7'
 idna==3.10; python_version >= '3.6'
