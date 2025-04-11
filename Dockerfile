@@ -1,6 +1,3 @@
-# Dockerfile
-#
-
 # Base
 FROM python:3.12-slim AS base_os
 
@@ -8,11 +5,23 @@ FROM python:3.12-slim AS base_os
 FROM base_os AS builder
 
 ENV PYTHONDONTWRITEBYTECODE=1
-ADD requirements.txt /builder/requirements.txt
-
 WORKDIR /builder
+
+# Install build dependencies
 RUN apt-get update && apt-get install libpq-dev gcc -y
-RUN pip install --upgrade pip && pip install --user -r requirements.txt
+
+# Install pipenv
+RUN pip install --upgrade pip && pip install pipenv
+
+# Copy Pipfile and Pipfile.lock
+COPY Pipfile* /builder/
+
+# Install dependencies using pipenv
+# --system flag installs to system python, not virtualenv
+# --deploy flag ensures Pipfile.lock is up to date
+RUN pipenv install --system --deploy
+
+# Clean up
 RUN apt-get remove gcc --purge -y \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean autoclean \
@@ -20,8 +29,8 @@ RUN apt-get remove gcc --purge -y \
 
 # Final image
 FROM base_os AS pre-final
-COPY --from=builder /root/.local/bin /usr/local/bin/
-COPY --from=builder /root/.local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages/
+COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages/
+COPY --from=builder /usr/local/bin /usr/local/bin/
 
 # Final stage
 FROM pre-final
