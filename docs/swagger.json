@@ -3,7 +3,7 @@
     "info": {
         "title": "Repository Service for TUF API",
         "description": "Repository Service for TUF Rest API",
-        "version": "1.0.0b3"
+        "version": "1.0.0rc1"
     },
     "paths": {
         "/api/v1/bootstrap/": {
@@ -740,6 +740,7 @@
                     "custom": {
                         "anyOf": [
                             {
+                                "additionalProperties": true,
                                 "type": "object"
                             },
                             {
@@ -1092,6 +1093,7 @@
             "GetResponse": {
                 "properties": {
                     "data": {
+                        "additionalProperties": true,
                         "type": "object",
                         "title": "Data"
                     },
@@ -2077,6 +2079,7 @@
                     "bundle": {
                         "anyOf": [
                             {
+                                "additionalProperties": true,
                                 "type": "object"
                             },
                             {
@@ -2571,6 +2574,7 @@
                     "details": {
                         "anyOf": [
                             {
+                                "additionalProperties": true,
                                 "type": "object"
                             },
                             {
