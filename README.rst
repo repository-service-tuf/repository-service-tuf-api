@@ -32,7 +32,7 @@ Usage
 Development tools
 =================
 
-- Python >=3.12
+- Python >=3.13
 - pip
 - Pipenv
 - Docker
