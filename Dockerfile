@@ -1,5 +1,5 @@
 # Base
-FROM python:3.12-slim AS base_os
+FROM python:3.13-slim AS base_os
 
 # Builder requirements and deps
 FROM base_os AS builder
@@ -29,7 +29,7 @@ RUN apt-get remove gcc --purge -y \
 
 # Final image
 FROM base_os AS pre-final
-COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages/
+COPY --from=builder /usr/local/lib/python3.13/site-packages /usr/local/lib/python3.13/site-packages/
 COPY --from=builder /usr/local/bin /usr/local/bin/
 
 # Final stage
