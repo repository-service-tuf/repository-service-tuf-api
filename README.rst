@@ -65,8 +65,7 @@ to make sure you stay up-to-date with our repository:
 Installing project requirements
 ===============================
 
-This repository has the ``requirements.txt`` and the ``requirements-dev.txt``
-files to help build your virtual environment.
+This repository uses Pipenv
 
 We also recommend using `Pipenv <https://pipenv.pypa.io/en/latest/>`_ to manage
 your virtual environment.
@@ -79,6 +78,9 @@ your virtual environment.
 
 Install development requirements
 
+.. note::
+  if you want to use python venv directly you can use generate the
+  requirements.txt using `pipenv requirements --dev`
 
 .. code:: shell
 
@@ -147,10 +149,3 @@ Development requirements
 
   $ pipenv install -d {package}
 
-
-Updating requirements files from Pipenv
-.......................................
-
-.. code:: shell
-
-  $ make requirements
