@@ -755,6 +755,14 @@
             "markers": "python_version >= '3.7' and python_full_version not in '3.9.0, 3.9.1'",
             "version": "==44.0.2"
         },
+        "deepmerge": {
+            "hashes": [
+                "sha256:5c3d86081fbebd04dd5de03626a0607b809a98fb6ccba5770b62466fe940ff20",
+                "sha256:6de9ce507115cff0bed95ff0ce9ecc31088ef50cbdf09bc90a09349a318b3d00"
+            ],
+            "markers": "python_version >= '3.8'",
+            "version": "==2.0"
+        },
         "distlib": {
             "hashes": [
                 "sha256:47f8c22fd27c27e25a65601af709b38e4f0a45ea4fc2e710f65755fa8caaaf87",
@@ -1047,6 +1055,14 @@
             ],
             "markers": "python_version >= '2.6'",
             "version": "==6.1.1"
+        },
+        "picobox": {
+            "hashes": [
+                "sha256:114da1b5606b2f615e8b0eb68d04198ad9de75af5adbcf5b36fe4f664ab927b6",
+                "sha256:4c27eb689fe45dabd9e64c382e04418147d0b746d155b4e80057dbb7ff82027e"
+            ],
+            "markers": "python_version >= '3.8'",
+            "version": "==4.0.0"
         },
         "platformdirs": {
             "hashes": [
@@ -1399,6 +1415,14 @@
             "markers": "python_version >= '3.11'",
             "version": "==8.2.3"
         },
+        "sphinx-mdinclude": {
+            "hashes": [
+                "sha256:447462e82cb8be61404a2204227f920769eb923d2f57608e3325f3bb88286b4c",
+                "sha256:648e78edb067c0e4bffc22943278d49d54a0714494743592032fa3ad82a86984"
+            ],
+            "markers": "python_version >= '3.8'",
+            "version": "==0.6.2"
+        },
         "sphinx-rtd-theme": {
             "hashes": [
                 "sha256:422ccc750c3a3a311de4ae327e82affdaf59eb695ba4936538552f3b00f4ee13",
@@ -1462,11 +1486,12 @@
         },
         "sphinxcontrib-openapi": {
             "hashes": [
-                "sha256:1c1bd10d7653912c59a42f727c62cbb7b75f7905ddd9ccc477ebfd1bc69f0cf3"
+                "sha256:50911c18d452d9390ee3a384ef8dc8bde6135f542ba55691f81e1fbc0b71014e",
+                "sha256:df883808a5b5e4b4113ad697185c43a3f42df3dce70453af78ba7076907e9a20"
             ],
             "index": "pypi",
-            "markers": "python_version >= '3.6'",
-            "version": "==0.7.0"
+            "markers": "python_version >= '3.7'",
+            "version": "==0.8.4"
         },
         "sphinxcontrib-plantuml": {
             "hashes": [
