@@ -10,6 +10,10 @@ updates:
       prefix: "build"
       include: "scope"
     open-pull-requests-limit: 10
+    groups:
+      pipenv:
+        patterns:
+          - "*"
   # Monitor Github Actions
   - package-ecosystem: "github-actions"
     directory: "/"
