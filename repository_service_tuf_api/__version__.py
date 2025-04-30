@@ -5,6 +5,6 @@
 #
 # SPDX-License-Identifier: MIT
 
-version = "1.0.0b3"
-copyright = "Copyright (c) 2024 Repository Service for TUF Contributors"
+version = "1.0.0rc1"
+copyright = "Copyright (c) 2025 Repository Service for TUF Contributors"
 author = "Kairo de Araujo"
