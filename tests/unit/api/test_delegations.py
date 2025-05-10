@@ -3,10 +3,11 @@
 # SPDX-License-Identifier: MIT
 
 import json
-from datetime import timezone
 
 import pretend
 from fastapi import status
+
+from repository_service_tuf_api import BootstrapState
 
 DELEGATIONS_URL = "/api/v1/delegations/"
 DELEGATIONS_DELETE_URL = "/api/v1/delegations/delete"
@@ -16,20 +17,29 @@ MOCK_PATH = "repository_service_tuf_api.delegations"
 class TestPostDelegationAPI:
     def test_post_delegation(self, test_client, monkeypatch, fake_datetime):
         """Test creating a new delegation via POST /api/v1/delegations/"""
-        # Mock metadata_delegation function
-        mocked_delegation_response = pretend.stub(
-            data=pretend.stub(
-                task_id="fake_task_id",
-                last_update=fake_datetime.now(timezone.utc),
-            ),
-            message="Metadata delegation add accepted.",
-        )
-        mocked_metadata_delegation = pretend.call_recorder(
-            lambda payload, action: mocked_delegation_response
-        )
+        # Mock bootstrap_state to return a bootstrapped state
         monkeypatch.setattr(
-            f"{MOCK_PATH}.metadata_delegation", mocked_metadata_delegation
+            f"{MOCK_PATH}.bootstrap_state",
+            pretend.call_recorder(
+                lambda: BootstrapState(bootstrap=True, state="FINISHED")
+            ),
         )
+
+        # Mock get_task_id to return a deterministic task ID
+        monkeypatch.setattr(
+            f"{MOCK_PATH}.get_task_id",
+            pretend.call_recorder(lambda: "fake_task_id"),
+        )
+
+        # Mock repository_metadata.apply_async
+        mock_apply_async = pretend.call_recorder(lambda **kw: None)
+        monkeypatch.setattr(
+            f"{MOCK_PATH}.repository_metadata",
+            pretend.stub(apply_async=mock_apply_async),
+        )
+
+        # Mock datetime
+        monkeypatch.setattr(f"{MOCK_PATH}.datetime", fake_datetime)
 
         # Load test payload
         with open("tests/data_examples/metadata/delegation-payload.json") as f:
@@ -46,26 +56,23 @@ class TestPostDelegationAPI:
         )
         assert response.json()["data"]["task_id"] == "fake_task_id"
 
-        # Verify mock was called correctly
-        assert len(mocked_metadata_delegation.calls) == 1
-        # Check that the function was called (without checking specific args)
-        assert mocked_metadata_delegation.calls
+        # Verify mocks were called correctly
+        assert mock_apply_async.calls
+        call_kwargs = mock_apply_async.calls[0].kwargs
+        assert call_kwargs["task_id"] == "fake_task_id"
+        assert call_kwargs["queue"] == "metadata_repository"
+        assert call_kwargs["kwargs"]["action"] == "metadata_delegation"
+        assert call_kwargs["kwargs"]["payload"]["action"] == "add"
 
     def test_post_delegation_no_bootstrap(self, test_client, monkeypatch):
         """Test error case when bootstrap is not complete"""
-        # Mock metadata_delegation to raise HTTPException
-        from fastapi import HTTPException
-
-        def mock_error(*args, **kwargs):
-            raise HTTPException(
-                status_code=status.HTTP_200_OK,
-                detail={
-                    "message": "Task not accepted.",
-                    "error": "Requires bootstrap finished. State: PRE",
-                },
-            )
-
-        monkeypatch.setattr(f"{MOCK_PATH}.metadata_delegation", mock_error)
+        # Mock bootstrap_state to return a non-bootstrapped state
+        monkeypatch.setattr(
+            f"{MOCK_PATH}.bootstrap_state",
+            pretend.call_recorder(
+                lambda: BootstrapState(bootstrap=False, state="PRE")
+            ),
+        )
 
         # Load test payload
         with open("tests/data_examples/metadata/delegation-payload.json") as f:
@@ -87,20 +94,29 @@ class TestPostDelegationAPI:
 class TestPutDelegationAPI:
     def test_put_delegation(self, test_client, monkeypatch, fake_datetime):
         """Test updating a delegation via PUT /api/v1/delegations/"""
-        # Mock metadata_delegation function
-        mocked_delegation_response = pretend.stub(
-            data=pretend.stub(
-                task_id="fake_task_id",
-                last_update=fake_datetime.now(timezone.utc),
-            ),
-            message="Metadata delegation update accepted.",
-        )
-        mocked_metadata_delegation = pretend.call_recorder(
-            lambda payload, action: mocked_delegation_response
-        )
+        # Mock bootstrap_state to return a bootstrapped state
         monkeypatch.setattr(
-            f"{MOCK_PATH}.metadata_delegation", mocked_metadata_delegation
+            f"{MOCK_PATH}.bootstrap_state",
+            pretend.call_recorder(
+                lambda: BootstrapState(bootstrap=True, state="FINISHED")
+            ),
         )
+
+        # Mock get_task_id to return a deterministic task ID
+        monkeypatch.setattr(
+            f"{MOCK_PATH}.get_task_id",
+            pretend.call_recorder(lambda: "fake_task_id"),
+        )
+
+        # Mock repository_metadata.apply_async
+        mock_apply_async = pretend.call_recorder(lambda **kw: None)
+        monkeypatch.setattr(
+            f"{MOCK_PATH}.repository_metadata",
+            pretend.stub(apply_async=mock_apply_async),
+        )
+
+        # Mock datetime
+        monkeypatch.setattr(f"{MOCK_PATH}.datetime", fake_datetime)
 
         # Load test payload
         with open("tests/data_examples/metadata/delegation-payload.json") as f:
@@ -118,26 +134,23 @@ class TestPutDelegationAPI:
         )
         assert response.json()["data"]["task_id"] == "fake_task_id"
 
-        # Verify mock was called correctly
-        assert len(mocked_metadata_delegation.calls) == 1
-        # Check that the function was called (without checking specific args)
-        assert mocked_metadata_delegation.calls
+        # Verify mocks were called correctly
+        assert mock_apply_async.calls
+        call_kwargs = mock_apply_async.calls[0].kwargs
+        assert call_kwargs["task_id"] == "fake_task_id"
+        assert call_kwargs["queue"] == "metadata_repository"
+        assert call_kwargs["kwargs"]["action"] == "metadata_delegation"
+        assert call_kwargs["kwargs"]["payload"]["action"] == "update"
 
     def test_put_delegation_no_bootstrap(self, test_client, monkeypatch):
         """Test error case when bootstrap is not complete"""
-        # Mock metadata_delegation to raise HTTPException
-        from fastapi import HTTPException
-
-        def mock_error(*args, **kwargs):
-            raise HTTPException(
-                status_code=status.HTTP_200_OK,
-                detail={
-                    "message": "Task not accepted.",
-                    "error": "Requires bootstrap finished. State: PRE",
-                },
-            )
-
-        monkeypatch.setattr(f"{MOCK_PATH}.metadata_delegation", mock_error)
+        # Mock bootstrap_state to return a non-bootstrapped state
+        monkeypatch.setattr(
+            f"{MOCK_PATH}.bootstrap_state",
+            pretend.call_recorder(
+                lambda: BootstrapState(bootstrap=False, state="PRE")
+            ),
+        )
 
         # Load test payload
         with open("tests/data_examples/metadata/delegation-payload.json") as f:
@@ -159,20 +172,29 @@ class TestPutDelegationAPI:
 class TestDeleteDelegationAPI:
     def test_delete_delegation(self, test_client, monkeypatch, fake_datetime):
         """Test deleting a delegation via POST /api/v1/delegations/delete"""
-        # Mock metadata_delegation function
-        mocked_delegation_response = pretend.stub(
-            data=pretend.stub(
-                task_id="fake_task_id",
-                last_update=fake_datetime.now(timezone.utc),
-            ),
-            message="Metadata delegation delete accepted.",
-        )
-        mocked_metadata_delegation = pretend.call_recorder(
-            lambda payload, action: mocked_delegation_response
-        )
+        # Mock bootstrap_state to return a bootstrapped state
         monkeypatch.setattr(
-            f"{MOCK_PATH}.metadata_delegation", mocked_metadata_delegation
+            f"{MOCK_PATH}.bootstrap_state",
+            pretend.call_recorder(
+                lambda: BootstrapState(bootstrap=True, state="FINISHED")
+            ),
         )
+
+        # Mock get_task_id to return a deterministic task ID
+        monkeypatch.setattr(
+            f"{MOCK_PATH}.get_task_id",
+            pretend.call_recorder(lambda: "fake_task_id"),
+        )
+
+        # Mock repository_metadata.apply_async
+        mock_apply_async = pretend.call_recorder(lambda **kw: None)
+        monkeypatch.setattr(
+            f"{MOCK_PATH}.repository_metadata",
+            pretend.stub(apply_async=mock_apply_async),
+        )
+
+        # Mock datetime
+        monkeypatch.setattr(f"{MOCK_PATH}.datetime", fake_datetime)
 
         # Create delete payload
         payload = {"delegations": {"roles": [{"name": "dev"}]}}
@@ -191,26 +213,23 @@ class TestDeleteDelegationAPI:
         )
         assert response.json()["data"]["task_id"] == "fake_task_id"
 
-        # Verify mock was called correctly
-        assert len(mocked_metadata_delegation.calls) == 1
-        # Check that the function was called (without checking specific args)
-        assert mocked_metadata_delegation.calls
+        # Verify mocks were called correctly
+        assert mock_apply_async.calls
+        call_kwargs = mock_apply_async.calls[0].kwargs
+        assert call_kwargs["task_id"] == "fake_task_id"
+        assert call_kwargs["queue"] == "metadata_repository"
+        assert call_kwargs["kwargs"]["action"] == "metadata_delegation"
+        assert call_kwargs["kwargs"]["payload"]["action"] == "delete"
 
     def test_delete_delegation_no_bootstrap(self, test_client, monkeypatch):
         """Test error case when bootstrap is not complete"""
-        # Mock metadata_delegation to raise HTTPException
-        from fastapi import HTTPException
-
-        def mock_error(*args, **kwargs):
-            raise HTTPException(
-                status_code=status.HTTP_200_OK,
-                detail={
-                    "message": "Task not accepted.",
-                    "error": "Requires bootstrap finished. State: PRE",
-                },
-            )
-
-        monkeypatch.setattr(f"{MOCK_PATH}.metadata_delegation", mock_error)
+        # Mock bootstrap_state to return a non-bootstrapped state
+        monkeypatch.setattr(
+            f"{MOCK_PATH}.bootstrap_state",
+            pretend.call_recorder(
+                lambda: BootstrapState(bootstrap=False, state="PRE")
+            ),
+        )
 
         # Create delete payload
         payload = {"delegations": {"roles": [{"name": "dev"}]}}
