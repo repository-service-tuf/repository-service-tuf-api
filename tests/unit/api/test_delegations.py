@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2024 Repository Service for TUF Contributors
+# SPDX-FileCopyrightText: 2025 Repository Service for TUF Contributors
 #
 # SPDX-License-Identifier: MIT
 
