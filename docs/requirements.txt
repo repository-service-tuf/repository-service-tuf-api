@@ -1,0 +1,16 @@
+-i https://pypi.org/simple
+myst-parser
+sphinx
+sphinx-rtd-theme
+sphinxcontrib-applehelp
+sphinxcontrib-devhelp
+sphinxcontrib-htmlhelp
+sphinxcontrib-jquery
+sphinxcontrib-jsmath
+sphinxcontrib-plantuml
+sphinxcontrib-qthelp
+sphinxcontrib-serializinghtml
+dynaconf
+tox
+fastapi
+celery
