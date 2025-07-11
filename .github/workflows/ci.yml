@@ -7,6 +7,10 @@ on:
     branches:
       - "main"
 
+permissions:
+  contents: read # Required: to checkout repository code and access source files
+  id-token: write # Required: for OIDC token for codecov authentication
+
 jobs:
   build:
     runs-on: ubuntu-latest

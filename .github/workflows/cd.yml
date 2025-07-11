@@ -17,6 +17,10 @@ on:
         type: string
         required: False
 
+permissions:
+  contents: write # Required: to create GitHub releases
+  packages: write # Required: to push container images to GitHub Container Registry
+
 jobs:
   publish-container-image:
     uses: ./.github/workflows/publish_container.yml

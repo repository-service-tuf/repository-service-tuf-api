@@ -47,6 +47,11 @@ on:
         type: string
         required: False
 
+permissions:
+  contents: read    # Required: to checkout source code from the repository
+  actions: read     # Required: to access workflow run information and artifacts from other workflows
+
+
 jobs:
   functional-das:
     name: "DAS"
