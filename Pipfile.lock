@@ -296,11 +296,12 @@
         },
         "starlette": {
             "hashes": [
-                "sha256:3c88d58ee4bd1bb807c0d1acb381838afc7752f9ddaec81bbe4383611d833230",
-                "sha256:77c74ed9d2720138b25875133f3a2dae6d854af2ec37dceb56aef370c1d8a227"
+                "sha256:6ae9aa5db235e4846decc1e7b79c4f346adf41e9777aebeb49dfd09bbd7023d8",
+                "sha256:c5847e96134e5c5371ee9fac6fdf1a67336d5815e09eb2a01fdb57a351ef915b"
             ],
+            "index": "pypi",
             "markers": "python_version >= '3.9'",
-            "version": "==0.46.1"
+            "version": "==0.47.2"
         },
         "typing-extensions": {
             "hashes": [
