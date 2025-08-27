@@ -4,9 +4,6 @@ on:
   pull_request:
   workflow_dispatch:
 
-permissions:
-  contents: read  # Required: to checkout repository code and access source files
-
 jobs:
   build:
     runs-on: ubuntu-latest

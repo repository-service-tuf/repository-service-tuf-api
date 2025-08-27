@@ -16,10 +16,6 @@ on:
         type: string
         required: False
 
-permissions:
-  contents: read  # Required: to checkout repository code and access source files
-  packages: write # Required: to push container images to GitHub Container Registry
-
 jobs:
   publish_container_image:
     runs-on: ubuntu-latest

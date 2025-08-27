@@ -4,11 +4,6 @@ on:
   schedule:
     # Run at 8:00 AM every day
     - cron: "0 8 * * *"
-
-permissions:
-  contents: write      # Required: to checkout repository code and create commits for updated hooks
-  pull-requests: write # Required: to create pull requests with pre-commit hook updates
-
 jobs:
   update-pre-commit-hooks:
     runs-on: ubuntu-latest
