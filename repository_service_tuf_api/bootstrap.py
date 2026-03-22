@@ -109,7 +109,9 @@ class Settings(BaseModel):
 class BootstrapPayload(BaseModel):
     model_config = ConfigDict(json_schema_extra={"example": payload_example})
     settings: Settings
-    metadata: Dict[str, TUFMetadata]
+    # Accept metadata as raw dicts to preserve canonical JSON
+    # Don't parse into TUFMetadata model which would reorder keys
+    metadata: Dict[str, Dict[str, Any]]
     timeout: int | None = Field(default=300, description="Timeout in seconds")
 
 
