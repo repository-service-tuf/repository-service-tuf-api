@@ -814,7 +814,8 @@
                     },
                     "metadata": {
                         "additionalProperties": {
-                            "$ref": "#/components/schemas/TUFMetadata-Input"
+                            "additionalProperties": true,
+                            "type": "object"
                         },
                         "type": "object",
                         "title": "Metadata"
