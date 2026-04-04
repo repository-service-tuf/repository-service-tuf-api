@@ -405,6 +405,56 @@ class TestPostBootstrap:
             ]
         }
 
+    def test_post_bootstrap_metadata_preserves_key_ordering(
+        self, test_client, monkeypatch, fake_datetime
+    ):
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda *a: pretend.stub(
+                bootstrap=False, state="finished", task_id="task_id"
+            )
+        )
+        monkeypatch.setattr(
+            f"{MOCK_PATH}.bootstrap_state", mocked_bootstrap_state
+        )
+        apply_async_kwargs = []
+        mocked_async_result = pretend.stub(state="SUCCESS")
+        mocked_repository_metadata = pretend.stub(
+            apply_async=pretend.call_recorder(
+                lambda *a, **kw: apply_async_kwargs.append(kw)
+            ),
+            AsyncResult=pretend.call_recorder(lambda *a: mocked_async_result),
+        )
+        monkeypatch.setattr(
+            f"{MOCK_PATH}.repository_metadata", mocked_repository_metadata
+        )
+        monkeypatch.setattr(f"{MOCK_PATH}.get_task_id", lambda: "123")
+        monkeypatch.setattr(f"{MOCK_PATH}.pre_lock_bootstrap", lambda *a: None)
+        monkeypatch.setattr(
+            f"{MOCK_PATH}._check_bootstrap_status",
+            pretend.call_recorder(lambda **kw: None),
+        )
+        monkeypatch.setattr(f"{MOCK_PATH}.datetime", fake_datetime)
+
+        with open("tests/data_examples/bootstrap/payload_bins.json") as f:
+            f_data = f.read()
+        payload = json.loads(f_data)
+        original_signed_keys = list(
+            payload["metadata"]["root"]["signed"].keys()
+        )
+
+        response = test_client.post(BOOTSTRAP_URL, json=payload)
+
+        assert response.status_code == status.HTTP_202_ACCEPTED
+        assert len(apply_async_kwargs) == 1
+        sent_metadata = apply_async_kwargs[0]["kwargs"]["payload"]["metadata"]
+        for role_name, role_md in sent_metadata.items():
+            assert isinstance(role_md, dict), (
+                f"metadata['{role_name}'] should be a raw dict, "
+                f"not {type(role_md).__name__}"
+            )
+        sent_signed_keys = list(sent_metadata["root"]["signed"].keys())
+        assert sent_signed_keys == original_signed_keys
+
     def test_post_payload_no_bins_or_delegations(
         self, test_client, monkeypatch
     ):
