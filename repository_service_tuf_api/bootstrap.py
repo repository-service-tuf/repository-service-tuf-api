@@ -24,7 +24,7 @@ from repository_service_tuf_api import (
 from repository_service_tuf_api.common_models import (
     BaseErrorResponse,
     TUFDelegations,
-    TUFMetadata,
+    TUFSigned,
 )
 
 # Pattern of allowed names to be used by custom target delegated roles
@@ -113,6 +113,36 @@ class BootstrapPayload(BaseModel):
     # Don't parse into TUFMetadata model which would reorder keys
     metadata: Dict[str, Dict[str, Any]]
     timeout: int | None = Field(default=300, description="Timeout in seconds")
+
+    @model_validator(mode="before")
+    @classmethod
+    def validate_signed_extension_fields(
+        cls, values: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        metadata = values.get("metadata")
+        if not isinstance(metadata, dict):
+            return values
+        known_fields = {
+            v.alias or f for f, v in TUFSigned.model_fields.items()
+        }
+        for role_md in metadata.values():
+            if not isinstance(role_md, dict):
+                continue
+            signed = role_md.get("signed")
+            if not isinstance(signed, dict):
+                continue
+            for field_name in signed:
+                if field_name not in known_fields:
+                    if (
+                        not field_name.startswith("x-")
+                        or len(field_name.split("-")) < 3
+                    ):
+                        raise ValueError(
+                            f"Invalid: `{field_name}` field name, "
+                            "unrecognized_field must use format "
+                            "x-<vendor>-<name>"
+                        )
+        return values
 
 
 class PostData(BaseModel):
