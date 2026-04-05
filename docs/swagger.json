@@ -3,7 +3,7 @@
     "info": {
         "title": "Repository Service for TUF API",
         "description": "Repository Service for TUF Rest API",
-        "version": "1.0.0rc1"
+        "version": "1.0.0"
     },
     "paths": {
         "/api/v1/bootstrap/": {
@@ -814,7 +814,8 @@
                     },
                     "metadata": {
                         "additionalProperties": {
-                            "$ref": "#/components/schemas/TUFMetadata-Input"
+                            "additionalProperties": true,
+                            "type": "object"
                         },
                         "type": "object",
                         "title": "Metadata"
@@ -2659,6 +2660,13 @@
                     "type": {
                         "type": "string",
                         "title": "Error Type"
+                    },
+                    "input": {
+                        "title": "Input"
+                    },
+                    "ctx": {
+                        "type": "object",
+                        "title": "Context"
                     }
                 },
                 "type": "object",
