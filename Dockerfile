@@ -35,10 +35,16 @@ COPY --from=builder /usr/local/bin /usr/local/bin/
 # Final stage
 FROM pre-final
 
+RUN useradd -u 1000 -m tuf
+
 WORKDIR /opt/repository-service-tuf-api
 RUN mkdir /data
 COPY app.py /opt/repository-service-tuf-api
 COPY entrypoint.sh /opt/repository-service-tuf-api
 COPY repository_service_tuf_api /opt/repository-service-tuf-api/repository_service_tuf_api
 COPY tests /opt/repository-service-tuf-api/tests
+
+RUN chown -R tuf:tuf /opt/repository-service-tuf-api /data
+
+USER 1000
 ENTRYPOINT ["bash", "entrypoint.sh"]
