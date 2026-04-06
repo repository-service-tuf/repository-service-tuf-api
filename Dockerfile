@@ -8,7 +8,15 @@ ENV PYTHONDONTWRITEBYTECODE=1
 WORKDIR /builder
 
 # Install build dependencies
-RUN apt-get update && apt-get install libpq-dev gcc -y
+RUN apt-get update && apt-get install -y \
+    libpq-dev \
+    gcc \
+    git \
+    curl \
+    wget \
+    make \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install pipenv
 RUN pip install --upgrade pip && pip install pipenv
@@ -21,24 +29,36 @@ COPY Pipfile* /builder/
 # --deploy flag ensures Pipfile.lock is up to date
 RUN pipenv install --system --deploy
 
-# Clean up
-RUN apt-get remove gcc --purge -y \
-    && rm -rf /var/lib/apt/lists/* \
-    && apt-get clean autoclean \
-    && apt-get autoremove --yes
-
 # Final image
 FROM base_os AS pre-final
+
+# Install runtime dependencies and tools needed for functional tests
+RUN apt-get update && apt-get install -y \
+    libpq5 \
+    git \
+    curl \
+    wget \
+    make \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY --from=builder /usr/local/lib/python3.13/site-packages /usr/local/lib/python3.13/site-packages/
 COPY --from=builder /usr/local/bin /usr/local/bin/
 
 # Final stage
 FROM pre-final
 
+RUN useradd -u 1000 -m tuf
+
 WORKDIR /opt/repository-service-tuf-api
 RUN mkdir /data
-COPY app.py /opt/repository-service-tuf-api
-COPY entrypoint.sh /opt/repository-service-tuf-api
-COPY repository_service_tuf_api /opt/repository-service-tuf-api/repository_service_tuf_api
-COPY tests /opt/repository-service-tuf-api/tests
-ENTRYPOINT ["bash", "entrypoint.sh"]
+
+# Copy application code
+COPY . /opt/repository-service-tuf-api
+
+# Install the package itself to ensure repository_service_tuf_api is in site-packages
+RUN pip install .
+
+RUN chown -R tuf:tuf /opt/repository-service-tuf-api /data
+
+USER 1000
+ENTRYPOINT ["bash", "entrypoint.sh"]
