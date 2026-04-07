@@ -2495,6 +2495,32 @@
                 ],
                 "title": "TUFSignedRoles"
             },
+            "TaskError": {
+                "properties": {
+                    "error": {
+                        "type": "string",
+                        "title": "Error",
+                        "description": "Error message"
+                    },
+                    "traceback": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Traceback",
+                        "description": "Error traceback"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "error"
+                ],
+                "title": "TaskError"
+            },
             "TaskName": {
                 "type": "string",
                 "enum": [
@@ -2542,11 +2568,14 @@
                                 "type": "boolean"
                             },
                             {
+                                "$ref": "#/components/schemas/TaskError"
+                            },
+                            {
                                 "type": "null"
                             }
                         ],
                         "title": "Status",
-                        "description": "Task result status. `True` Success | `False` Failure"
+                        "description": "Task result status. `True` Success | `False` Failure | `TaskError` Failure with details"
                     },
                     "task": {
                         "anyOf": [
