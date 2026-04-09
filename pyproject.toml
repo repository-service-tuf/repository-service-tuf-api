@@ -1,0 +1,44 @@
+[project]
+name = "repository-service-tuf-api"
+version = "1.0.0"
+description = "Repository Service for TUF: API"
+readme = "README.rst"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "dynaconf",
+    "celery",
+    "python-multipart",
+    "redis"
+]
+
+[project.optional-dependencies]
+dev = [
+    "black",
+    "isort",
+    "flake8",
+    "tox",
+    "coverage",
+    "pytest",
+    "pytest-cov",
+    "pytest-xdist",
+    "pretend",
+    "voluptuous",
+    "cryptography",
+    "sphinx-rtd-theme",
+    "sphinx",
+    "sphinxcontrib-applehelp",
+    "sphinxcontrib-devhelp",
+    "sphinxcontrib-htmlhelp",
+    "sphinxcontrib-jsmath",
+    "sphinxcontrib-qthelp",
+    "sphinxcontrib-serializinghtml",
+    "sphinxcontrib-plantuml",
+    "sphinxcontrib-openapi",
+    "mistune==3.2.0",
+    "myst-parser",
+    "pre-commit",
+    "bandit",
+    "httpx"
+]

@@ -10,35 +10,30 @@ WORKDIR /builder
 # Install build dependencies
 RUN apt-get update && apt-get install libpq-dev gcc -y
 
-# Install pipenv
-RUN pip install --upgrade pip && pip install pipenv
+# Install uv
+RUN pip install --upgrade pip && pip install uv
 
-# Copy Pipfile and Pipfile.lock
-COPY Pipfile* /builder/
+# Copy project configuration files
+COPY pyproject.toml README.rst uv.lock* /builder/
 
-# Install dependencies using pipenv
-# --system flag installs to system python, not virtualenv
-# --deploy flag ensures Pipfile.lock is up to date
-RUN pipenv install --system --deploy
-
-# Clean up
-RUN apt-get remove gcc --purge -y \
-    && rm -rf /var/lib/apt/lists/* \
-    && apt-get clean autoclean \
-    && apt-get autoremove --yes
-
-# Final image
-FROM base_os AS pre-final
-COPY --from=builder /usr/local/lib/python3.13/site-packages /usr/local/lib/python3.13/site-packages/
-COPY --from=builder /usr/local/bin /usr/local/bin/
+# Install dependencies using uv sync
+ENV UV_COMPILE_BYTECODE=1
+RUN uv sync --no-dev --no-install-project
 
 # Final stage
-FROM pre-final
+FROM base_os
 
 WORKDIR /opt/repository-service-tuf-api
+RUN apt-get update && apt-get install libpq5 -y \
+    && rm -rf /var/lib/apt/lists/*
+COPY --from=builder /builder/.venv /opt/repository-service-tuf-api/.venv
+ENV PATH="/opt/repository-service-tuf-api/.venv/bin:$PATH"
 RUN mkdir /data
 COPY app.py /opt/repository-service-tuf-api
 COPY entrypoint.sh /opt/repository-service-tuf-api
 COPY repository_service_tuf_api /opt/repository-service-tuf-api/repository_service_tuf_api
-COPY tests /opt/repository-service-tuf-api/tests
+
+# Only keep this if you actively run pytest against the final production container!
+# COPY tests /opt/repository-service-tuf-api/tests
+
 ENTRYPOINT ["bash", "entrypoint.sh"]
