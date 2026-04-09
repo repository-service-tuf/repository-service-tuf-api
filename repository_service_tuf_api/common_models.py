@@ -76,6 +76,11 @@ class TUFSignedDelegationsRoles(BaseModel):
         description="Expire Policy for the role",
         default=None,
     )
+    x_rstuf_num_bins: int = Field(
+        alias="x-rstuf-num-bins",
+        description="Number of bins for nested hash-bin roles",
+        default=None
+    )
     # Note: No validation is required for paths as these patterns are only used
     # to distribute artifacts. No files are created based on them.
     paths: List[str] = Field(min_length=1)
