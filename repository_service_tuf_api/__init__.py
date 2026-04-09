@@ -117,7 +117,9 @@ def bootstrap_state() -> BootstrapState:
     if bootstrap is None:
         return bootstrap_state
 
-    if len(bootstrap.split("-")) == 1:
+    bootstrap_parts = bootstrap.split("-")
+
+    if len(bootstrap_parts) == 1:
         # This is a finished bootstrap. It only contains the `<task-id>``
         bootstrap_state.bootstrap = True
         bootstrap_state.state = "finished"
@@ -125,14 +127,17 @@ def bootstrap_state() -> BootstrapState:
 
         return bootstrap_state
 
-    elif len(bootstrap.split("-")) == 2:
+    elif len(bootstrap_parts) == 2:
         # This is considered an intermediated state. It is not finished because
         # there is a `<state>-` like 'pre-<task_id>' or 'signing-<task_id>'.
         bootstrap_state.bootstrap = False
-        bootstrap_state.state = bootstrap.split("-")[0]
-        bootstrap_state.task_id = bootstrap.split("-")[1]
+        bootstrap_state.state = bootstrap_parts[0]
+        bootstrap_state.task_id = bootstrap_parts[1]
 
         return bootstrap_state
+
+    logging.warning(f"Unexpected bootstrap value format: {bootstrap!r}")
+    return BootstrapState(bootstrap=False, state="unknown", task_id=None)
 
 
 def get_task_id():
