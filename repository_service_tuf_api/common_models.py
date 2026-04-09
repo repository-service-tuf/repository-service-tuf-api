@@ -56,19 +56,15 @@ class Roles(Enum):
 
 class BaseErrorResponse(BaseModel):
     error: str = Field(description="Error message")
-    details: Dict[str, str] | None = Field(
-        description="Error details", default=None
-    )
-    code: int | None = Field(
-        description="Error code if available", default=None
-    )
+    details: Dict[str, str] | None = Field(description="Error details", default=None)
+    code: int | None = Field(description="Error code if available", default=None)
 
 
 class TUFSignedDelegationsRoles(BaseModel):
     name: str
     terminating: bool
     keyids: List[str]
-    threshold: int
+    threshold: int = Field(ge=1, description="Minimum number of signatures required")
     paths: List[str] | None = None
     path_hash_prefixes: List[str] | None = None
     x_rstuf_expire_policy: int = Field(
@@ -94,7 +90,7 @@ class TUFSignedDelegationsSuccinctRoles(BaseModel):
     bit_length: int = Field(gt=0, lt=15)
     name_prefix: str
     keyids: List[str]
-    threshold: int
+    threshold: int = Field(ge=1, description="Minimum number of signatures required")
 
 
 class TUFKeys(BaseModel):
@@ -122,12 +118,12 @@ class TUFSignedDelegations(BaseModel):
 
 
 class TUFSignedMetaFile(BaseModel):
-    version: int
+    version: int = Field(ge=1, description="Metadata version number")
 
 
 class TUFSignedRoles(BaseModel):
     keyids: List[str]
-    threshold: int
+    threshold: int = Field(ge=1, description="Minimum number of signatures required")
 
 
 class TUFSigned(BaseModel):
@@ -136,7 +132,7 @@ class TUFSigned(BaseModel):
     )
 
     type: str = Field(alias="_type")
-    version: int
+    version: int = Field(ge=1, description="Metadata version number")
     spec_version: str
     expires: str
     keys: Dict[str, TUFKeys] | None = None
@@ -149,19 +145,12 @@ class TUFSigned(BaseModel):
     # Custom Validator for the extra fields (TUF unrecognized_fields)
     @model_validator(mode="before")
     @classmethod
-    def validate_unrecognized_fields(
-        cls, values: Dict[str, Any]
-    ) -> Dict[str, Any]:
-        all_required_field_names = {
-            v.alias or f for f, v in cls.model_fields.items()
-        }
+    def validate_unrecognized_fields(cls, values: Dict[str, Any]) -> Dict[str, Any]:
+        all_required_field_names = {v.alias or f for f, v in cls.model_fields.items()}
 
         for field_name in values:
             if field_name not in all_required_field_names:
-                if (
-                    not field_name.startswith("x")
-                    or len(field_name.split("-")) < 3
-                ):
+                if not field_name.startswith("x") or len(field_name.split("-")) < 3:
                     raise ValueError(
                         f"Invalid: `{field_name}` field name, "
                         "unrecognized_field must use format x-<vendor>-<name>"
