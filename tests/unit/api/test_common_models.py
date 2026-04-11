@@ -90,7 +90,15 @@ class TestRoles:
             assert common_models.Roles.is_role(role) is True
 
     def test_is_role_false_str(self):
-        all_roles = ["root1", "1root", "root.json", "f", "bin", "bin0", ""]
+        all_roles = [
+            "root1",
+            "1root",
+            "root.json",
+            "f",
+            "bin",
+            "bin0",
+            "",
+        ]
         for role in all_roles:
             assert common_models.Roles.is_role(role) is False
 

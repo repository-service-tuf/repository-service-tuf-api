@@ -10,7 +10,11 @@ from typing import Any, Dict, List
 from fastapi import HTTPException, status
 from pydantic import BaseModel, ConfigDict, Field
 
-from repository_service_tuf_api import bootstrap_state, get_task_id, repository_metadata
+from repository_service_tuf_api import (
+    bootstrap_state,
+    get_task_id,
+    repository_metadata,
+)
 
 
 class ResponseData(BaseModel):
@@ -86,7 +90,7 @@ class ResponsePostPublish(BaseModel):
 
 
 class ArtifactInfo(BaseModel):
-    length: int = Field(ge=0, description="Length of the artifact in bytes")
+    length: int = Field(ge=0)
     hashes: Dict[str, str] = Field(
         description=(
             "The key(s) must be compatible with the algorithm(s) supported by "
@@ -158,7 +162,9 @@ def post(payload: AddPayload) -> ResponsePostAdd:
             status.HTTP_404_NOT_FOUND,
             detail={
                 "message": "Task not accepted.",
-                "error": (f"It requires bootstrap finished. State: {bs_state.state}"),
+                "error": (
+                    f"It requires bootstrap finished. State: {bs_state.state}"
+                ),
             },
         )
 
@@ -214,7 +220,9 @@ def delete(payload: DeletePayload) -> ResponsePostDelete:
             status.HTTP_404_NOT_FOUND,
             detail={
                 "message": "Task not accepted.",
-                "error": (f"It requires bootstrap finished. State: {bs_state.state}"),
+                "error": (
+                    f"It requires bootstrap finished. State: {bs_state.state}"
+                ),
             },
         )
 

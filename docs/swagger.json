@@ -728,8 +728,7 @@
                     "length": {
                         "type": "integer",
                         "minimum": 0.0,
-                        "title": "Length",
-                        "description": "Length of the artifact in bytes"
+                        "title": "Length"
                     },
                     "hashes": {
                         "additionalProperties": {
@@ -2109,8 +2108,7 @@
                     "version": {
                         "type": "integer",
                         "minimum": 1.0,
-                        "title": "Version",
-                        "description": "Metadata version number"
+                        "title": "Version"
                     },
                     "spec_version": {
                         "type": "string",
@@ -2226,8 +2224,7 @@
                     "version": {
                         "type": "integer",
                         "minimum": 1.0,
-                        "title": "Version",
-                        "description": "Metadata version number"
+                        "title": "Version"
                     },
                     "spec_version": {
                         "type": "string",
@@ -2396,8 +2393,7 @@
                     "threshold": {
                         "type": "integer",
                         "minimum": 1.0,
-                        "title": "Threshold",
-                        "description": "Minimum number of signatures required"
+                        "title": "Threshold"
                     },
                     "paths": {
                         "items": {
@@ -2459,8 +2455,7 @@
                     "threshold": {
                         "type": "integer",
                         "minimum": 1.0,
-                        "title": "Threshold",
-                        "description": "Minimum number of signatures required"
+                        "title": "Threshold"
                     }
                 },
                 "type": "object",
@@ -2477,8 +2472,7 @@
                     "version": {
                         "type": "integer",
                         "minimum": 1.0,
-                        "title": "Version",
-                        "description": "Metadata version number"
+                        "title": "Version"
                     }
                 },
                 "type": "object",
@@ -2499,8 +2493,7 @@
                     "threshold": {
                         "type": "integer",
                         "minimum": 1.0,
-                        "title": "Threshold",
-                        "description": "Minimum number of signatures required"
+                        "title": "Threshold"
                     }
                 },
                 "type": "object",

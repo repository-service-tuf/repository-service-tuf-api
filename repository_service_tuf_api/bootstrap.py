@@ -82,7 +82,9 @@ class RolesData(BaseModel):
 
     @model_validator(mode="before")
     @classmethod
-    def validate_delegated_roles_names(cls, values: Dict[str, Any]) -> Dict[str, Any]:
+    def validate_delegated_roles_names(
+        cls, values: Dict[str, Any]
+    ) -> Dict[str, Any]:
         # Validation of custom target delegated names is required as otherwise
         # an attacker can use a custom target name to point to a specific place
         # in a file system and override a file or cause unexpected behavior.
@@ -110,15 +112,21 @@ class BootstrapPayload(BaseModel):
     # Accept metadata as raw dicts to preserve canonical JSON
     # Don't parse into TUFMetadata model which would reorder keys
     metadata: Dict[str, Dict[str, Any]]
-    timeout: int | None = Field(default=300, gt=0, description="Timeout in seconds")
+    timeout: int | None = Field(
+        default=300, gt=0, description="Timeout in seconds"
+    )
 
     @model_validator(mode="before")
     @classmethod
-    def validate_signed_extension_fields(cls, values: Dict[str, Any]) -> Dict[str, Any]:
+    def validate_signed_extension_fields(
+        cls, values: Dict[str, Any]
+    ) -> Dict[str, Any]:
         metadata = values.get("metadata")
         if not isinstance(metadata, dict):
             return values
-        known_fields = {v.alias or f for f, v in TUFSigned.model_fields.items()}
+        known_fields = {
+            v.alias or f for f, v in TUFSigned.model_fields.items()
+        }
         for role_md in metadata.values():
             if not isinstance(role_md, dict):
                 continue
@@ -228,7 +236,10 @@ def post_bootstrap(payload: BootstrapPayload) -> BootstrapPostResponse:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=BaseErrorResponse(
-                error=("System already has a Metadata. " f"State: {bs_state.state}")
+                error=(
+                    "System already has a Metadata. "
+                    f"State: {bs_state.state}"
+                )
             ).dict(exclude_none=True),
         )
 
