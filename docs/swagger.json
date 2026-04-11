@@ -727,6 +727,7 @@
                 "properties": {
                     "length": {
                         "type": "integer",
+                        "minimum": 0.0,
                         "title": "Length"
                     },
                     "hashes": {
@@ -823,7 +824,8 @@
                     "timeout": {
                         "anyOf": [
                             {
-                                "type": "integer"
+                                "type": "integer",
+                                "exclusiveMinimum": 0.0
                             },
                             {
                                 "type": "null"
@@ -2105,6 +2107,7 @@
                     },
                     "version": {
                         "type": "integer",
+                        "minimum": 1.0,
                         "title": "Version"
                     },
                     "spec_version": {
@@ -2220,6 +2223,7 @@
                     },
                     "version": {
                         "type": "integer",
+                        "minimum": 1.0,
                         "title": "Version"
                     },
                     "spec_version": {
@@ -2388,6 +2392,7 @@
                     },
                     "threshold": {
                         "type": "integer",
+                        "minimum": 1.0,
                         "title": "Threshold"
                     },
                     "paths": {
@@ -2449,6 +2454,7 @@
                     },
                     "threshold": {
                         "type": "integer",
+                        "minimum": 1.0,
                         "title": "Threshold"
                     }
                 },
@@ -2465,6 +2471,7 @@
                 "properties": {
                     "version": {
                         "type": "integer",
+                        "minimum": 1.0,
                         "title": "Version"
                     }
                 },
@@ -2485,6 +2492,7 @@
                     },
                     "threshold": {
                         "type": "integer",
+                        "minimum": 1.0,
                         "title": "Threshold"
                     }
                 },
