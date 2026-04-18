@@ -11,6 +11,7 @@ from uuid import uuid4
 from celery import Celery
 from dynaconf import Dynaconf
 from dynaconf.loaders import redis_loader
+from repository_service_tuf_api import loaders as db_loader
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -33,15 +34,28 @@ class BootstrapState:
 
 settings = Dynaconf(envvar_prefix="RSTUF")
 
-settings_repository = Dynaconf(
-    redis_enabled=True,
-    redis={
-        "host": settings.REDIS_SERVER.split("redis://")[1],
-        "port": settings.get("REDIS_SERVER_PORT", 6379),
-        "db": settings.get("REDIS_SERVER_DB_REPO_SETTINGS", 1),
-        "decode_responses": True,
-    },
-)
+if settings.get("REDIS_SERVER"):
+    # Host can be redis://redis or just redis
+    redis_server = settings.REDIS_SERVER
+    if "://" in redis_server:
+        host = redis_server.split("://")[1]
+    else:
+        host = redis_server
+
+    settings_repository = Dynaconf(
+        redis_enabled=True,
+        redis={
+            "host": host,
+            "port": settings.get("REDIS_SERVER_PORT", 6379),
+            "db": settings.get("REDIS_SERVER_DB_REPO_SETTINGS", 1),
+            "decode_responses": True,
+        },
+    )
+else:
+    settings_repository = Dynaconf(
+        loaders=["repository_service_tuf_api.loaders"],
+        DB_SERVER=settings.get("DB_SERVER"),
+    )
 secrets_settings = Dynaconf(
     envvar_prefix="SECRETS_RSTUF",
     environments=True,
@@ -54,6 +68,8 @@ celery.conf.result_backend = (
     f"{settings.REDIS_SERVER}"
     f":{settings.get('REDIS_SERVER_PORT', 6379)}"
     f"/{settings.get('REDIS_SERVER_DB_RESULT', 0)}"
+    if settings.get("REDIS_SERVER")
+    else f"db+{settings.DB_SERVER}"
 )
 celery.conf.accept_content = ["json", "application/json"]
 celery.conf.task_serializer = "json"
@@ -80,7 +96,10 @@ def pre_lock_bootstrap(task_id):
         env=settings_repository.current_env
     )
     settings_data["BOOTSTRAP"] = f"pre-{task_id}"
-    redis_loader.write(settings_repository, settings_data)
+    if settings.get("REDIS_SERVER"):
+        redis_loader.write(settings_repository, settings_data)
+    else:
+        db_loader.write(settings_repository, settings_data)
 
 
 def release_bootstrap_lock():
@@ -93,7 +112,10 @@ def release_bootstrap_lock():
         env=settings_repository.current_env
     )
     settings_data["BOOTSTRAP"] = None
-    redis_loader.write(settings_repository, settings_data)
+    if settings.get("REDIS_SERVER"):
+        redis_loader.write(settings_repository, settings_data)
+    else:
+        db_loader.write(settings_repository, settings_data)
 
 
 def bootstrap_state() -> BootstrapState:
