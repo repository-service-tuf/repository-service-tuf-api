@@ -76,6 +76,7 @@ class MetadataDelegatedCustomPayload(BaseModel):
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
+                "rolename": "dev",
                 "metadata": {
                     "signatures": [
                         {
@@ -87,7 +88,7 @@ class MetadataDelegatedCustomPayload(BaseModel):
                         "_type": "targets",
                         "version": 1,
                         "spec_version": "1.0.31",
-                        "expires": "2025-01-01T00:00:00Z",
+                        "expires": "2030-01-01T00:00:00Z",
                         "targets": {}
                     }
                 }

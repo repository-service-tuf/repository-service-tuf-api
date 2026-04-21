@@ -1,8 +1,0 @@
-fastapi
-uvicorn
-dynaconf
-celery
-python-multipart
-redis
-tuf
-pydantic
