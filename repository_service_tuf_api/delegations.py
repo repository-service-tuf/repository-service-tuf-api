@@ -14,7 +14,7 @@ from repository_service_tuf_api import (
     get_task_id,
     repository_metadata,
 )
-from repository_service_tuf_api.common_models import TUFDelegations
+from repository_service_tuf_api.common_models import TUFDelegations, TUFMetadata
 
 with open("tests/data_examples/metadata/delegation-payload.json") as f:
     content = f.read()
@@ -72,11 +72,39 @@ class MetadataDelegationDeletePayload(BaseModel):
         }
     )
 
-    delegations: DelegationsData
+class MetadataDelegatedCustomPayload(BaseModel):
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "metadata": {
+                    "signatures": [
+                        {
+                            "keyid": "keyid1",
+                            "sig": "signature1"
+                        }
+                    ],
+                    "signed": {
+                        "_type": "targets",
+                        "version": 1,
+                        "spec_version": "1.0.31",
+                        "expires": "2025-01-01T00:00:00Z",
+                        "targets": {}
+                    }
+                }
+            }
+        }
+    )
+
+    rolename: str
+    metadata: TUFMetadata
 
 
 def metadata_delegation(
-    payload: MetadataDelegationsPayload | MetadataDelegationDeletePayload,
+    payload: (
+        MetadataDelegationsPayload
+        | MetadataDelegationDeletePayload
+        | MetadataDelegatedCustomPayload
+    ),
     action: str,
 ):
     bs_state = bootstrap_state()
