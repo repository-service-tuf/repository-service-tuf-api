@@ -299,12 +299,12 @@
         },
         "python-multipart": {
             "hashes": [
-                "sha256:9574c97e1c026e00bc30340ef7c7d76739512ab4dfd428fec8c330fa6a5cc3c8",
-                "sha256:9b110a98db707df01a53c194f0af075e736a770dc5058089650d70b4a182f950"
+                "sha256:6fccfad17a27334bd0193681b369f476eda3409f17381a2d65aa7df3f7275645",
+                "sha256:9870a6a8c5a20a5bf4f07c017bd1489006ff8836cff097b6933355ee2b49b602"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.10'",
-            "version": "==0.0.24"
+            "version": "==0.0.27"
         },
         "redis": {
             "hashes": [
