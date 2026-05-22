@@ -54,7 +54,7 @@ jobs:
     needs: functional-tests
     steps:
     - name: Login to GitHub Container Registry
-      uses: docker/login-action@b45d80f862d83dbcd57f89517bcf500b2ab88fb2
+      uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121
       with:
         registry: ghcr.io
         username: ${{ github.repository_owner }}
@@ -69,7 +69,7 @@ jobs:
         docker push ghcr.io/repository-service-tuf/repository-service-tuf-api:latest
 
     - name: Publish GitHub Release
-      uses: softprops/action-gh-release@153bb8e04406b158c6c84fc1615b65b24149a1fe
+      uses: softprops/action-gh-release@b4309332981a82ec1c5618f44dd2e27cc8bfbfda
       with:
         name: ${{ github.ref_name }}
         tag_name: ${{ github.ref }}
