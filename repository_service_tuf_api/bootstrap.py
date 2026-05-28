@@ -112,7 +112,9 @@ class BootstrapPayload(BaseModel):
     # Accept metadata as raw dicts to preserve canonical JSON
     # Don't parse into TUFMetadata model which would reorder keys
     metadata: Dict[str, Dict[str, Any]]
-    timeout: int | None = Field(default=300, description="Timeout in seconds")
+    timeout: int | None = Field(
+        default=300, gt=0, description="Timeout in seconds"
+    )
 
     @model_validator(mode="before")
     @classmethod

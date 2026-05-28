@@ -68,7 +68,7 @@ class TUFSignedDelegationsRoles(BaseModel):
     name: str
     terminating: bool
     keyids: List[str]
-    threshold: int
+    threshold: int = Field(ge=1)
     paths: List[str] | None = None
     path_hash_prefixes: List[str] | None = None
     x_rstuf_expire_policy: int = Field(
@@ -94,7 +94,7 @@ class TUFSignedDelegationsSuccinctRoles(BaseModel):
     bit_length: int = Field(gt=0, lt=15)
     name_prefix: str
     keyids: List[str]
-    threshold: int
+    threshold: int = Field(ge=1)
 
 
 class TUFKeys(BaseModel):
@@ -122,12 +122,12 @@ class TUFSignedDelegations(BaseModel):
 
 
 class TUFSignedMetaFile(BaseModel):
-    version: int
+    version: int = Field(ge=1)
 
 
 class TUFSignedRoles(BaseModel):
     keyids: List[str]
-    threshold: int
+    threshold: int = Field(ge=1)
 
 
 class TUFSigned(BaseModel):
@@ -136,7 +136,7 @@ class TUFSigned(BaseModel):
     )
 
     type: str = Field(alias="_type")
-    version: int
+    version: int = Field(ge=1)
     spec_version: str
     expires: str
     keys: Dict[str, TUFKeys] | None = None

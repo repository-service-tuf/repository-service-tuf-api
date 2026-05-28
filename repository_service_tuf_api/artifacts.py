@@ -90,7 +90,7 @@ class ResponsePostPublish(BaseModel):
 
 
 class ArtifactInfo(BaseModel):
-    length: int
+    length: int = Field(ge=0)
     hashes: Dict[str, str] = Field(
         description=(
             "The key(s) must be compatible with the algorithm(s) supported by "
