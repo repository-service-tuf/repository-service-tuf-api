@@ -37,8 +37,15 @@ FROM pre-final
 
 WORKDIR /opt/repository-service-tuf-api
 RUN mkdir /data
+
+RUN groupadd -g 1000 tuf && useradd -r -u 1000 -g tuf tuf
+
 COPY app.py /opt/repository-service-tuf-api
 COPY entrypoint.sh /opt/repository-service-tuf-api
 COPY repository_service_tuf_api /opt/repository-service-tuf-api/repository_service_tuf_api
 COPY tests /opt/repository-service-tuf-api/tests
+
+RUN chown -R tuf:tuf /opt/repository-service-tuf-api /data
+USER 1000
+
 ENTRYPOINT ["bash", "entrypoint.sh"]
