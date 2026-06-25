@@ -1276,7 +1276,7 @@
                 "properties": {
                     "metadata": {
                         "additionalProperties": {
-                            "$ref": "#/components/schemas/TUFMetadata-Input"
+                            "$ref": "#/components/schemas/TUFMetadata"
                         },
                         "propertyNames": {
                             "const": "root"
@@ -1887,12 +1887,12 @@
             "RolesData-Output": {
                 "properties": {
                     "root": {
-                        "$ref": "#/components/schemas/TUFMetadata-Output"
+                        "$ref": "#/components/schemas/TUFMetadata"
                     },
                     "trusted_root": {
                         "anyOf": [
                             {
-                                "$ref": "#/components/schemas/TUFMetadata-Output"
+                                "$ref": "#/components/schemas/TUFMetadata"
                             },
                             {
                                 "type": "null"
@@ -1902,7 +1902,7 @@
                     "trusted_targets": {
                         "anyOf": [
                             {
-                                "$ref": "#/components/schemas/TUFMetadata-Output"
+                                "$ref": "#/components/schemas/TUFMetadata"
                             },
                             {
                                 "type": "null"
@@ -2027,7 +2027,7 @@
                 ],
                 "title": "TUFKeys"
             },
-            "TUFMetadata-Input": {
+            "TUFMetadata": {
                 "properties": {
                     "signatures": {
                         "items": {
@@ -2037,27 +2037,7 @@
                         "title": "Signatures"
                     },
                     "signed": {
-                        "$ref": "#/components/schemas/TUFSigned-Input"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "signatures",
-                    "signed"
-                ],
-                "title": "TUFMetadata"
-            },
-            "TUFMetadata-Output": {
-                "properties": {
-                    "signatures": {
-                        "items": {
-                            "$ref": "#/components/schemas/TUFSignatures"
-                        },
-                        "type": "array",
-                        "title": "Signatures"
-                    },
-                    "signed": {
-                        "$ref": "#/components/schemas/TUFSigned-Output"
+                        "$ref": "#/components/schemas/TUFSigned"
                     }
                 },
                 "type": "object",
@@ -2097,122 +2077,7 @@
                 ],
                 "title": "TUFSignatures"
             },
-            "TUFSigned-Input": {
-                "properties": {
-                    "_type": {
-                        "type": "string",
-                        "title": "Type"
-                    },
-                    "version": {
-                        "type": "integer",
-                        "title": "Version"
-                    },
-                    "spec_version": {
-                        "type": "string",
-                        "title": "Spec Version"
-                    },
-                    "expires": {
-                        "type": "string",
-                        "title": "Expires"
-                    },
-                    "keys": {
-                        "anyOf": [
-                            {
-                                "additionalProperties": {
-                                    "$ref": "#/components/schemas/TUFKeys"
-                                },
-                                "type": "object"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Keys"
-                    },
-                    "consistent_snapshot": {
-                        "anyOf": [
-                            {
-                                "type": "boolean"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Consistent Snapshot"
-                    },
-                    "roles": {
-                        "anyOf": [
-                            {
-                                "additionalProperties": {
-                                    "$ref": "#/components/schemas/TUFSignedRoles"
-                                },
-                                "propertyNames": {
-                                    "enum": [
-                                        "root",
-                                        "targets",
-                                        "snapshot",
-                                        "timestamp",
-                                        "bins"
-                                    ]
-                                },
-                                "type": "object"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Roles"
-                    },
-                    "meta": {
-                        "anyOf": [
-                            {
-                                "additionalProperties": {
-                                    "$ref": "#/components/schemas/TUFSignedMetaFile"
-                                },
-                                "type": "object"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Meta"
-                    },
-                    "targets": {
-                        "anyOf": [
-                            {
-                                "additionalProperties": {
-                                    "type": "string"
-                                },
-                                "type": "object"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Targets"
-                    },
-                    "delegations": {
-                        "anyOf": [
-                            {
-                                "$ref": "#/components/schemas/TUFSignedDelegations"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ]
-                    }
-                },
-                "additionalProperties": true,
-                "type": "object",
-                "required": [
-                    "_type",
-                    "version",
-                    "spec_version",
-                    "expires"
-                ],
-                "title": "TUFSigned"
-            },
-            "TUFSigned-Output": {
+            "TUFSigned": {
                 "properties": {
                     "_type": {
                         "type": "string",
