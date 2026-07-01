@@ -4,6 +4,7 @@
 # SPDX-License-Identifier: MIT
 
 import logging
+import os
 from dataclasses import dataclass
 from typing import Optional
 from uuid import uuid4
@@ -12,13 +13,13 @@ from celery import Celery
 from dynaconf import Dynaconf
 from dynaconf.loaders import redis_loader
 
-logging.basicConfig(
-    level=logging.DEBUG,
-    format="%(asctime)s %(levelname)s %(message)s",
-    datefmt="%H:%M:%S",
+_log_level = getattr(
+    logging,
+    os.getenv("RSTUF_LOG_LEVEL", "INFO").upper(),
+    logging.INFO,
 )
 logging.basicConfig(
-    level=logging.INFO,
+    level=_log_level,
     format="%(asctime)s %(levelname)s %(message)s",
     datefmt="%H:%M:%S",
 )
