@@ -1,0 +1,25 @@
+{
+    "rolename": "dev",
+    "metadata": {
+        "signatures": [
+            {
+                "keyid": "2f685fa7546f1856b123223ab086b3def14c89d24eef18f49c32508c2f60e241",
+                "sig": "7561c1db8a1f5e27de475f6b1f8f0d6fff7f53957784f689d86cab9a76de2adf48c5e2573e81b6f5bda6c4b9fb6611df985f08d7d27e22e31c73833ec130b505b3da02a78c6b730a3ebf21b4878f4067ddbd153f8f498e5787f2e9fd29dd4564358795664b33572919fb2f2a22f25182d83da4e5109d5067198bb85e20bff1385a06821e93362dfbfbc1e1820965c8e555c228c27b2c4c697936c2036b163b2ce126c9dc936ed66c38cda504062bc88c017790ccb9c78fd6fcc06f329cfaf17dc4e72343c9de17b12fc699f894868bbfff5b8437939442dfd2887e0244038583ec6b9fd7f96247b6d45b3700c1b04028e04779870afb473782be9e422551a371"
+            }
+        ],
+        "signed": {
+            "_type": "targets",
+            "version": 1,
+            "spec_version": "1.0.31",
+            "expires": "2030-01-01T00:00:00Z",
+            "targets": {
+                "file1.txt": {
+                    "length": 10,
+                    "hashes": {
+                        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                    }
+                }
+            }
+        }
+    }
+}
