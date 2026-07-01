@@ -15,8 +15,8 @@ jobs:
         python-versions: [ "3.13" ]
 
     steps:
-    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
-    - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+    - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+    - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
       with:
         python-version: ${{ matrix.python-versions }}
 
@@ -27,7 +27,7 @@ jobs:
       run: tox -r
 
     - name: Codecov
-      uses: codecov/codecov-action@1af58845a975a7985b0beb0cbe6fbbb71a41dbad
+      uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f
       with:
         files: coverage.xml
         fail_ci_if_error: false
