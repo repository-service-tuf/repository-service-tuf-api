@@ -41,6 +41,11 @@ class TaskName(str, enum.Enum):
     DELETE_SIGN_METADATA = "delete_sign_metadata"
 
 
+class TaskError(BaseModel):
+    error: str = Field(description="Error message")
+    traceback: str | None = Field(description="Error traceback", default=None)
+
+
 class GetParameters(BaseModel):
     task_id: str
 
@@ -50,8 +55,11 @@ class TaskResult(BaseModel):
         description="Result detail description", default=None
     )
     error: str | None = Field(description="Error message", default=None)
-    status: None | bool = Field(
-        description="Task result status. `True` Success | `False` Failure",
+    status: None | bool | TaskError = Field(
+        description=(
+            "Task result status. `True` Success | `False` Failure | "
+            "`TaskError` Failure with details"
+        ),
         default=None,
     )
     task: TaskName | None = Field(
@@ -145,6 +153,14 @@ def get(task_id: str) -> Response:
         task_result = {
             "message": str(task.result),
         }
+
+    if task_state == TaskState.FAILURE:
+        if task_result is None:
+            task_result = {}
+
+        task_result["status"] = TaskError(
+            error=str(task.result), traceback=task.traceback
+        )
 
     # If the task state is SUCCESS and the task.result.status is False we
     # considere it an errored task.

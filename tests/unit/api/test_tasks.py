@@ -67,7 +67,9 @@ class TestGetTask:
 
     def test_get_result_is_exception(self, test_client, monkeypatch):
         mocked_task_result = pretend.stub(
-            state="FAILURE", result=ValueError("Failed to load")
+            state="FAILURE",
+            result=ValueError("Failed to load"),
+            traceback="Traceback...",
         )
         mocked_repository_metadata = pretend.stub(
             AsyncResult=pretend.call_recorder(lambda t: mocked_task_result)
@@ -84,6 +86,10 @@ class TestGetTask:
                 "state": "FAILURE",
                 "result": {
                     "message": "Failed to load",
+                    "status": {
+                        "error": "Failed to load",
+                        "traceback": "Traceback...",
+                    },
                 },
             },
             "message": "Task state.",
@@ -166,6 +172,7 @@ class TestGetTask:
         mocked_task_result = pretend.stub(
             state="FAILURE",
             result={},
+            traceback=None,
         )
         mocked_repository_metadata = pretend.stub(
             AsyncResult=pretend.call_recorder(lambda t: mocked_task_result)
@@ -181,7 +188,11 @@ class TestGetTask:
             "data": {
                 "task_id": "test_id",
                 "state": "FAILURE",
-                "result": {},
+                "result": {
+                    "status": {
+                        "error": "{}",
+                    },
+                },
             },
             "message": "Task state.",
         }
