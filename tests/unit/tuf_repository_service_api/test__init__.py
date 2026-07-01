@@ -79,3 +79,21 @@ class TestInit:
         assert result == repository_service_tuf_api.BootstrapState(
             True, "finished", "<task_id>"
         )
+
+    def test_bootstrap_state_unexpected_format(self):
+        repository_service_tuf_api.settings_repository = pretend.stub(
+            reload=pretend.call_recorder(lambda: None),
+            get_fresh=pretend.call_recorder(lambda *a: "pre-abc-def"),
+        )
+        repository_service_tuf_api.logging.warning = pretend.call_recorder(
+            lambda *a: None
+        )
+
+        result = repository_service_tuf_api.bootstrap_state()
+
+        assert result == repository_service_tuf_api.BootstrapState(
+            False, "unknown", None
+        )
+        assert repository_service_tuf_api.logging.warning.calls == [
+            pretend.call("Unexpected bootstrap value format: 'pre-abc-def'")
+        ]
