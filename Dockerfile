@@ -1,5 +1,5 @@
 # Base
-FROM python:3.13-slim AS base_os
+FROM python:3.14-slim AS base_os
 
 # Builder requirements and deps
 FROM base_os AS builder
@@ -29,16 +29,23 @@ RUN apt-get remove gcc --purge -y \
 
 # Final image
 FROM base_os AS pre-final
-COPY --from=builder /usr/local/lib/python3.13/site-packages /usr/local/lib/python3.13/site-packages/
+COPY --from=builder /usr/local/lib/python3.14/site-packages /usr/local/lib/python3.14/site-packages/
 COPY --from=builder /usr/local/bin /usr/local/bin/
 
 # Final stage
 FROM pre-final
 
+# Create a non-root user
+RUN addgroup --system rstuf && adduser --system --group rstuf
+
 WORKDIR /opt/repository-service-tuf-api
-RUN mkdir /data
-COPY app.py /opt/repository-service-tuf-api
-COPY entrypoint.sh /opt/repository-service-tuf-api
-COPY repository_service_tuf_api /opt/repository-service-tuf-api/repository_service_tuf_api
-COPY tests /opt/repository-service-tuf-api/tests
+RUN mkdir /data && chown rstuf:rstuf /data
+
+COPY --chown=rstuf:rstuf app.py /opt/repository-service-tuf-api
+COPY --chown=rstuf:rstuf entrypoint.sh /opt/repository-service-tuf-api
+COPY --chown=rstuf:rstuf repository_service_tuf_api /opt/repository-service-tuf-api/repository_service_tuf_api
+COPY --chown=rstuf:rstuf tests /opt/repository-service-tuf-api/tests
+
+USER rstuf
+
 ENTRYPOINT ["bash", "entrypoint.sh"]
