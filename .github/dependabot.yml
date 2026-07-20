@@ -28,3 +28,17 @@ updates:
       github-actions:
         patterns:
           - "*"
+  # Monitor Docker base images
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "daily"
+      time: "10:00"
+    commit-message:
+      prefix: "build"
+      include: "scope"
+    open-pull-requests-limit: 10
+    groups:
+      docker:
+        patterns:
+          - "*"
