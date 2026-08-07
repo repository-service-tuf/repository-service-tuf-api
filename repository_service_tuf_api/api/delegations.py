@@ -59,3 +59,22 @@ def put_delegation(payload: delegations.MetadataDelegationsPayload):
 )
 def delete_delegation(payload: delegations.MetadataDelegationDeletePayload):
     return delegations.metadata_delegation(payload, action="delete")
+
+
+@router.post(
+    "/metadata",
+    summary="Post a task to create a new custom delegation with metadata.",
+    description=(
+        "Submit an asynchronous task to create a new custom delegation with "
+        "pre-signed metadata. "
+        "Use the task ID to retrieve the task status in the endpoint "
+        "/api/v1/task."
+    ),
+    response_model=delegations.DelegationsResponse,
+    response_model_exclude_none=True,
+    status_code=status.HTTP_202_ACCEPTED,
+)
+def post_delegation_metadata(
+    payload: delegations.MetadataDelegatedCustomPayload,
+):
+    return delegations.metadata_delegation(payload, action="add")
