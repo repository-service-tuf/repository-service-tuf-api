@@ -76,6 +76,20 @@ class TUFSignedDelegationsRoles(BaseModel):
         description="Expire Policy for the role",
         default=None,
     )
+    x_rstuf_num_bins: int = Field(
+        alias="x-rstuf-num-bins",
+        description="Number of bins for nested hash-bin roles",
+        default=None,
+    )
+    x_rstuf_role_online_key: str | None = Field(
+        alias="x-rstuf-role-online-key",
+        description=(
+            "Keyid of the online key signing this role's nested hash bins. "
+            "The key is declared in `delegations.keys`. It never signs the "
+            "role itself, so it is not listed in `keyids`."
+        ),
+        default=None,
+    )
     # Note: No validation is required for paths as these patterns are only used
     # to distribute artifacts. No files are created based on them.
     paths: List[str] = Field(min_length=1)
@@ -88,6 +102,38 @@ class TUFSignedDelegationsRoles(BaseModel):
             raise ValueError("No empty strings are allowed as path patterns")
 
         return values
+
+    @model_validator(mode="after")
+    def validate_nested_bins(self) -> "TUFSignedDelegationsRoles":
+        num_bins = self.x_rstuf_num_bins
+        if num_bins is not None:
+            if num_bins < 2 or num_bins & (num_bins - 1) != 0:
+                raise ValueError(
+                    f"Role {self.name!r} x-rstuf-num-bins must be a power "
+                    "of 2 greater than 1"
+                )
+            # The Worker generates and signs the bins, so it must be able to
+            # sign their delegator too: threshold 1, online key.
+            if self.threshold != 1:
+                raise ValueError(
+                    f"Role {self.name!r} nested hash bins require threshold 1"
+                )
+
+        if self.x_rstuf_role_online_key is not None:
+            if num_bins is None:
+                raise ValueError(
+                    f"Role {self.name!r} declares x-rstuf-role-online-key "
+                    "without x-rstuf-num-bins; the key only ever signs the "
+                    "role's nested hash bins"
+                )
+            if self.x_rstuf_role_online_key in self.keyids:
+                raise ValueError(
+                    f"Role {self.name!r} x-rstuf-role-online-key must not "
+                    "be one of the role's own keyids: a delegation cannot "
+                    "sign itself"
+                )
+
+        return self
 
 
 class TUFSignedDelegationsSuccinctRoles(BaseModel):
@@ -180,6 +226,77 @@ class TUFMetadata(BaseModel):
     signed: TUFSigned
 
 
+# URI schemes the Worker can resolve to a signer (securesystemslib's
+# SIGNER_FOR_URI_SCHEME plus RSTUF's own file-name signer). A role online key
+# may only use one of these: the scheme selects the signer backend, so an
+# unknown scheme is unusable and an unrestricted one would let a request point
+# the Worker at an arbitrary backend.
+ALLOWED_ONLINE_KEY_URI_SCHEMES = frozenset(
+    {
+        "fn",
+        "envvar",
+        # securesystemslib's current CryptoSigner file scheme (the Worker's
+        # signer resolver registers "file2", not "file")
+        "file",
+        "file2",
+        "awskms",
+        "gcpkms",
+        "azurekms",
+        "hv",
+        "sigstore",
+    }
+)
+
+
 class TUFDelegations(BaseModel):
     keys: Dict[str, TUFKeys]
     roles: List[TUFSignedDelegationsRoles]
+
+    @model_validator(mode="after")
+    def validate_role_online_keys(self) -> "TUFDelegations":
+        """Check that every declared role online key is usable.
+
+        A role online key signs the hash bins nested below its role, so the
+        Worker must be able to resolve it to a signer, and no role may list
+        it among its own keyids.
+        """
+        names = [role.name for role in self.roles]
+        if len(names) != len(set(names)):
+            raise ValueError("Delegations contain duplicate role names")
+
+        all_keyids = {keyid for role in self.roles for keyid in role.keyids}
+        for role in self.roles:
+            keyid = role.x_rstuf_role_online_key
+            if keyid is None:
+                continue
+
+            key = self.keys.get(keyid)
+            if key is None:
+                raise ValueError(
+                    f"Role {role.name!r} x-rstuf-role-online-key {keyid!r} "
+                    "is not declared in delegations.keys"
+                )
+
+            uri = key.x_rstuf_online_key_uri
+            if not uri:
+                raise ValueError(
+                    f"Role {role.name!r} online key {keyid!r} has no "
+                    "x-rstuf-online-key-uri; the Worker cannot sign with it"
+                )
+
+            scheme = uri.split(":", 1)[0]
+            if scheme not in ALLOWED_ONLINE_KEY_URI_SCHEMES:
+                allowed = ", ".join(sorted(ALLOWED_ONLINE_KEY_URI_SCHEMES))
+                raise ValueError(
+                    f"Role {role.name!r} online key {keyid!r} uses "
+                    f"unsupported URI scheme {scheme!r}; allowed schemes: "
+                    f"{allowed}"
+                )
+
+            if keyid in all_keyids:
+                raise ValueError(
+                    f"Role online key {keyid!r} must not be used to sign a "
+                    "delegated role; it only signs nested hash bins"
+                )
+
+        return self
