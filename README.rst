@@ -32,9 +32,7 @@ Usage
 Development tools
 =================
 
-- Python >=3.13
-- pip
-- Pipenv
+- uv
 - Docker
 
 Getting source code
@@ -65,26 +63,14 @@ to make sure you stay up-to-date with our repository:
 Installing project requirements
 ===============================
 
-This repository uses Pipenv
-
-We also recommend using `Pipenv <https://pipenv.pypa.io/en/latest/>`_ to manage
+We recommend using `uv <https://docs.astral.sh/uv/>`_ to manage
 your virtual environment.
-
-.. code:: shell
-
-  $ pip install pipenv
-  $ pipenv shell
-
 
 Install development requirements
 
-.. note::
-  if you want to use python venv directly you can use generate the
-  requirements.txt using `pipenv requirements --dev`
-
 .. code:: shell
 
-  $ pipenv install -d
+    $ uv sync
 
 
 Running checks with pre-commit:
@@ -140,12 +126,5 @@ Project requirements
 
 .. code:: shell
 
-  $ pipenv install {package}
-
-
-Development requirements
-
-.. code:: shell
-
-  $ pipenv install -d {package}
+  $ uv add {package}
 
