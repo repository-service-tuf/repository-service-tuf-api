@@ -23,7 +23,7 @@ from repository_service_tuf_api.api.metadata import router as metadata_v1
 from repository_service_tuf_api.api.tasks import router as tasks_v1
 
 TITLE = "Repository Service for TUF API"
-DESCRITPTION = "Repository Service for TUF Rest API"
+DESCRIPTION = "Repository Service for TUF Rest API"
 DOCS_URL = "/"
 OPENAPI_VERSION = "3.0.0"
 
@@ -42,7 +42,7 @@ def _custom_openapi():  # pragma: no cover -- not used by RSTUF logic
         title=TITLE,
         version=__version__.version,
         openapi_version=OPENAPI_VERSION,
-        description=DESCRITPTION,
+        description=DESCRIPTION,
         routes=rstuf_app.routes,
     )
     rstuf_app.openapi_schema = openapi_schema
