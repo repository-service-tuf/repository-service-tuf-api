@@ -89,3 +89,50 @@ class TestRoles:
         all_roles = [1, None, True, [], {}]
         for role in all_roles:
             assert common_models.Roles.is_role(role) is False
+import pytest
+from repository_service_tuf_api.common_models import TUFSignedDelegationsRoles, TUFSigned
+
+def test_tuf_signed_delegations_roles_paths_validation():
+    with pytest.raises(ValueError, match="No empty strings are allowed as path patterns"):
+        TUFSignedDelegationsRoles(
+            name="test",
+            public_keys=["key1"],
+            paths=["valid", ""]
+        )
+
+def test_tuf_signed_unrecognized_fields():
+    TUFSigned(
+        _type="Root",
+        spec_version="1.0.0",
+        version=1,
+        expires="2020-01-01T00:00:00Z",
+        keys={},
+        roles={},
+        **{"x-vendor-name": "valid"}
+    )
+    with pytest.raises(ValueError, match="unrecognized_field must use format x-<vendor>-<name>"):
+        TUFSigned(
+            _type="Root",
+            spec_version="1.0.0",
+            version=1,
+            expires="2020-01-01T00:00:00Z",
+            keys={},
+            roles={},
+            **{"invalid-field": "value"}
+        )
+
+
+def test_tuf_signed_delegations_roles_paths_validation_valid():
+    from repository_service_tuf_api.common_models import TUFSignedDelegationsRoles, Roles
+    
+    # Valid paths (covers line 90)
+    TUFSignedDelegationsRoles(
+        name="test",
+        keyids=["key1"],
+        threshold=1,
+        terminating=False,
+        paths=["valid"]
+    )
+    
+    # Covers line 30
+    assert Roles.all_str() == "root, targets, snapshot, timestamp and bins"
