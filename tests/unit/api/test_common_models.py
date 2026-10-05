@@ -89,3 +89,34 @@ class TestRoles:
         all_roles = [1, None, True, [], {}]
         for role in all_roles:
             assert common_models.Roles.is_role(role) is False
+
+    def test_custom_field_invalid_format(self):
+        from repository_service_tuf_api.common_models import TUFSigned
+        from pydantic import ValidationError
+        import pytest
+
+        with pytest.raises(ValidationError) as err:
+            TUFSigned(**{
+                "_type": "root",
+                "version": 1,
+                "spec_version": "1.0",
+                "expires": "2024-01-01T00:00:00Z",
+                "invalid-field": "value"
+            })
+        
+        assert "unrecognized_field must use format x-<vendor>-<name>" in str(err.value)
+
+    def test_custom_field_empty_path_pattern(self):
+        from repository_service_tuf_api.common_models import TUFSignedDelegationsRoles
+        from pydantic import ValidationError
+        import pytest
+
+        with pytest.raises(ValidationError) as err:
+            TUFSignedDelegationsRoles(
+                name="test",
+                keyids=["key1"],
+                threshold=1,
+                terminating=False,
+                paths=[""]
+            )
+        assert "No empty strings are allowed as path patterns" in str(err.value)
