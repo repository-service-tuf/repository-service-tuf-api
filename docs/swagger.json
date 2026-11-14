@@ -2281,6 +2281,11 @@
                         "type": "integer",
                         "title": "X-Rstuf-Expire-Policy",
                         "description": "Expire Policy for the role"
+                    },
+                    "x-rstuf-num-bins": {
+                        "type": "integer",
+                        "title": "X-Rstuf-Num-Bins",
+                        "description": "Number of bins for nested hash-bin roles"
                     }
                 },
                 "type": "object",
