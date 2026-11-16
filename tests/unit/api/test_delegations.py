@@ -245,3 +245,67 @@ class TestDeleteDelegationAPI:
         assert (
             "Requires bootstrap finished" in response.json()["detail"]["error"]
         )
+class TestPostDelegationMetadataAPI:
+    def test_post_delegation_metadata(
+        self, test_client, monkeypatch, fake_datetime
+    ):
+        """
+        Test creating a new delegation with metadata via
+        POST /api/v1/delegations/metadata
+        """
+        # Mock bootstrap_state to return a bootstrapped state
+        monkeypatch.setattr(
+            f"{MOCK_PATH}.bootstrap_state",
+            pretend.call_recorder(
+                lambda: BootstrapState(bootstrap=True, state="FINISHED")
+            ),
+        )
+
+        # Mock get_task_id to return a deterministic task ID
+        monkeypatch.setattr(
+            f"{MOCK_PATH}.get_task_id",
+            pretend.call_recorder(lambda: "fake_task_id"),
+        )
+
+        # Mock repository_metadata.apply_async
+        mock_apply_async = pretend.call_recorder(lambda **kw: None)
+        monkeypatch.setattr(
+            f"{MOCK_PATH}.repository_metadata",
+            pretend.stub(apply_async=mock_apply_async),
+        )
+
+        # Mock datetime
+        monkeypatch.setattr(f"{MOCK_PATH}.datetime", fake_datetime)
+
+        # Create payload
+        payload = {
+            "rolename": "dev",
+            "metadata": {
+                "signatures": [{"keyid": "k1", "sig": "s1"}],
+                "signed": {
+                    "_type": "targets",
+                    "version": 1,
+                    "spec_version": "1.0.31",
+                    "expires": "2025-01-01T00:00:00Z",
+                    "targets": {},
+                },
+            },
+        }
+
+        # Make API request
+        url = f"{DELEGATIONS_URL}metadata"
+        response = test_client.post(url, json=payload)
+
+        # Verify response
+        assert response.status_code == status.HTTP_202_ACCEPTED
+        assert response.json()["message"] == "Metadata delegation add accepted."
+        assert response.json()["data"]["task_id"] == "fake_task_id"
+
+        # Verify mocks were called correctly
+        assert mock_apply_async.calls
+        call_kwargs = mock_apply_async.calls[0].kwargs
+        assert call_kwargs["task_id"] == "fake_task_id"
+        assert call_kwargs["kwargs"]["action"] == "metadata_delegation"
+        assert call_kwargs["kwargs"]["payload"]["action"] == "add"
+        assert call_kwargs["kwargs"]["payload"]["rolename"] == "dev"
+        assert "metadata" in call_kwargs["kwargs"]["payload"]
