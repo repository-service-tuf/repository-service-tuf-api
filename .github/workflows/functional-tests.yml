@@ -67,7 +67,7 @@ jobs:
             ref: ${{ inputs.umbrella_branch }}
 
       - name: Deploy RSTUF with API container from source code
-        uses: isbang/compose-action@b659c744ee9bed25aea2307c017ad849bd104433
+        uses: isbang/compose-action@cdaf49f2d715a87c3387e86cb35c772b14f0efe0
         with:
           compose-file: ${{ inputs.docker_compose }}
         env:
@@ -96,7 +96,7 @@ jobs:
           ref: ${{ inputs.umbrella_branch }}
 
       - name: Deploy RSTUF with API container from source code
-        uses: isbang/compose-action@b659c744ee9bed25aea2307c017ad849bd104433
+        uses: isbang/compose-action@cdaf49f2d715a87c3387e86cb35c772b14f0efe0
         with:
           compose-file: ${{ inputs.docker_compose }}
         env:
