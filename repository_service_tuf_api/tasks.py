@@ -84,6 +84,7 @@ class TasksData(BaseModel):
             "`ERRORED`: Task errored. RSTUF identified an error while "
             "processing the task.\n\n"
             "`REJECTED`: Task was rejected (only used in events).\n\n"
+            "`PRE_RUN`: Task is started before Celery task is started.\n\n"
             "`IGNORED`: Task was ignored."
         )
     )
