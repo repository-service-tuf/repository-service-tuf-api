@@ -476,3 +476,116 @@ class TestPostBootstrap:
         assert response.url == f"{test_client.base_url}{BOOTSTRAP_URL}"
         err_msg = "Exactly one of 'bins' and 'delegations' must be set"
         assert err_msg in response.text
+
+    def test_post_bootstrap_empty_path_pattern(self):
+        from repository_service_tuf_api.bootstrap import DelegatedRole
+        from pydantic import ValidationError
+        import pytest
+
+        with pytest.raises(ValidationError) as err:
+            DelegatedRole(
+                name="test",
+                keyids=["key1"],
+                threshold=1,
+                terminating=False,
+                path_patterns=[""]
+            )
+        assert "No empty strings are allowed as path patterns" in str(err.value)
+
+    def test_post_bootstrap_invalid_delegation_name(self):
+        from repository_service_tuf_api.bootstrap import RolesData
+        from pydantic import ValidationError
+        import pytest
+
+        with pytest.raises(ValidationError) as err:
+            RolesData(**{
+                "root": {"keys": {"k": {"keytype": "ed25519", "scheme": "ed25519", "keyval": {"public": "123"}}}, "threshold": 1},
+                "targets": {"keys": {"k": {"keytype": "ed25519", "scheme": "ed25519", "keyval": {"public": "123"}}}, "threshold": 1},
+                "snapshot": {"keys": {"k": {"keytype": "ed25519", "scheme": "ed25519", "keyval": {"public": "123"}}}, "threshold": 1},
+                "timestamp": {"keys": {"k": {"keytype": "ed25519", "scheme": "ed25519", "keyval": {"public": "123"}}}, "threshold": 1},
+                "delegations": {
+                    "keys": {"k": {"keytype": "ed25519", "scheme": "ed25519", "keyval": {"public": "123"}}},
+                    "roles": [{"name": "invalid name!", "keyids": ["k"], "threshold": 1, "terminating": False, "path_patterns": ["pat"]}]
+                }
+            })
+        assert "Delegated custom target name invalid name! not allowed" in str(err.value)
+
+    def test_post_bootstrap_metadata_not_dict_fixed(self):
+        from repository_service_tuf_api.bootstrap import BootstrapPayload
+        from pydantic import ValidationError
+        import pytest
+
+        with pytest.raises(ValidationError):
+            BootstrapPayload(**{
+                "settings": {"roles": {
+                    "root": {"keys": {"k": {"keytype": "ed25519", "scheme": "ed25519", "keyval": {"public": "123"}}}, "threshold": 1},
+                    "targets": {"keys": {"k": {"keytype": "ed25519", "scheme": "ed25519", "keyval": {"public": "123"}}}, "threshold": 1},
+                    "snapshot": {"keys": {"k": {"keytype": "ed25519", "scheme": "ed25519", "keyval": {"public": "123"}}}, "threshold": 1},
+                    "timestamp": {"keys": {"k": {"keytype": "ed25519", "scheme": "ed25519", "keyval": {"public": "123"}}}, "threshold": 1},
+                }},
+                "metadata": {
+                    "1.root": "not-a-dict",
+                    "2.root": {"signed": "not-a-dict"}
+                }
+            })
+
+
+    def test_post_bootstrap_empty_path_pattern(self):
+        from repository_service_tuf_api.bootstrap import DelegatedRole
+        from pydantic import ValidationError
+        import pytest
+
+        with pytest.raises(ValidationError) as err:
+            DelegatedRole(
+                name="test",
+                keyids=["key1"],
+                threshold=1,
+                terminating=False,
+                path_patterns=[""]
+            )
+        assert "No empty strings are allowed as path patterns" in str(err.value)
+
+    def test_post_bootstrap_invalid_delegation_name(self):
+        from repository_service_tuf_api.bootstrap import RolesData
+        from pydantic import ValidationError
+        import pytest
+
+        with pytest.raises(ValidationError) as err:
+            RolesData(**{
+                "root": {"keys": {"k": {"keytype": "ed25519", "scheme": "ed25519", "keyval": {"public": "123"}}}, "threshold": 1},
+                "targets": {"keys": {"k": {"keytype": "ed25519", "scheme": "ed25519", "keyval": {"public": "123"}}}, "threshold": 1},
+                "snapshot": {"keys": {"k": {"keytype": "ed25519", "scheme": "ed25519", "keyval": {"public": "123"}}}, "threshold": 1},
+                "timestamp": {"keys": {"k": {"keytype": "ed25519", "scheme": "ed25519", "keyval": {"public": "123"}}}, "threshold": 1},
+                "delegations": {
+                    "keys": {"k": {"keytype": "ed25519", "scheme": "ed25519", "keyval": {"public": "123"}}},
+                    "roles": [{"name": "invalid name!", "keyids": ["k"], "threshold": 1, "terminating": False, "path_patterns": ["pat"]}]
+                }
+            })
+        assert "Delegated custom target name invalid name! not allowed" in str(err.value)
+
+    def test_post_bootstrap_metadata_not_dict_fixed(self):
+        from repository_service_tuf_api.bootstrap import BootstrapPayload
+        from pydantic import ValidationError
+        import pytest
+
+        with pytest.raises(ValidationError):
+            BootstrapPayload(**{
+                "settings": {"roles": {
+                    "root": {"keys": {"k": {"keytype": "ed25519", "scheme": "ed25519", "keyval": {"public": "123"}}}, "threshold": 1},
+                    "targets": {"keys": {"k": {"keytype": "ed25519", "scheme": "ed25519", "keyval": {"public": "123"}}}, "threshold": 1},
+                    "snapshot": {"keys": {"k": {"keytype": "ed25519", "scheme": "ed25519", "keyval": {"public": "123"}}}, "threshold": 1},
+                    "timestamp": {"keys": {"k": {"keytype": "ed25519", "scheme": "ed25519", "keyval": {"public": "123"}}}, "threshold": 1},
+                }},
+                "metadata": {
+                    "1.root": "not-a-dict",
+                    "2.root": {"signed": "not-a-dict"}
+                }
+            })
+
+    def test_post_bootstrap_valid_path_pattern_fixed(self):
+        from repository_service_tuf_api.bootstrap import DelegatedRole
+        role = DelegatedRole(
+            expiration=365,
+            path_patterns=["valid"]
+        )
+        assert role.expiration == 365

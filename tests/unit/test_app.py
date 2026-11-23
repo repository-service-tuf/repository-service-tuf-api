@@ -49,3 +49,15 @@ class TestAPP:
             ),
             ("root", 20, "Disabled endpoint /api/v1/artifacts/"),
         ]
+
+    def test_export_swagger_json(self, tmpdir):
+        import app
+        import json
+        filepath = tmpdir / "swagger.json"
+        app.export_swagger_json(str(filepath))
+        assert filepath.exists()
+        with open(filepath, "r") as f:
+            data = json.load(f)
+        assert "openapi" in data
+        assert "info" in data
+
