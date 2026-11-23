@@ -164,8 +164,6 @@ class TestPostMetadataOnline:
             setting = attr[0]
             if setting == "TARGETS_ONLINE_KEY":
                 return True
-            elif setting == "DELEGATED_ROLES_NAMES":
-                return ["bins-0", "bins-1"]
 
         mocked_settings_repository = pretend.stub(
             reload=pretend.call_recorder(lambda: None),
@@ -208,7 +206,6 @@ class TestPostMetadataOnline:
         ]
         assert mocked_settings_repository.get_fresh.calls == [
             pretend.call("TARGETS_ONLINE_KEY", True),
-            pretend.call("DELEGATED_ROLES_NAMES"),
         ]
         assert fake_get_task_id.calls == [pretend.call()]
         assert fake_repository_metadata.apply_async.calls == [
@@ -224,86 +221,26 @@ class TestPostMetadataOnline:
         ]
         assert fake_datetime.now.calls == [pretend.call()]
 
-    def test_post_metadata_online_empty_payload(
-        self, test_client, monkeypatch
-    ):
+    def test_post_metadata_online_empty_roles(self, test_client, monkeypatch):
         mocked_bootstrap_state = pretend.call_recorder(
             lambda: pretend.stub(bootstrap=True, state="ab123")
         )
         monkeypatch.setattr(
             f"{MOCK_PATH}.bootstrap_state", mocked_bootstrap_state
         )
-
-        def fake_get_fresh(attr: str) -> bool:
-            setting = attr[0]
-            if setting == "TARGETS_ONLINE_KEY":
-                return True
-            elif setting == "DELEGATED_ROLES_NAMES":
-                return ["bins-0", "bins-1"]
-
-        mocked_settings_repository = pretend.stub(
-            reload=pretend.call_recorder(lambda: None),
-            get_fresh=pretend.call_recorder(lambda *a: fake_get_fresh(a)),
-        )
-        monkeypatch.setattr(
-            f"{MOCK_PATH}.settings_repository", mocked_settings_repository
-        )
-        fake_online_roles_return = ["snapshot", "targets", "timestamp", "bins"]
-        fake_roles = pretend.stub(
-            online_roles_values=pretend.call_recorder(
-                lambda: fake_online_roles_return
-            ),
-            BINS=pretend.stub(value="bins"),
-        )
-        monkeypatch.setattr(f"{MOCK_PATH}.Roles", fake_roles)
-        fake_id = "fake_id"
-        fake_get_task_id = pretend.call_recorder(lambda: fake_id)
-        monkeypatch.setattr(f"{MOCK_PATH}.get_task_id", fake_get_task_id)
         fake_repository_metadata = pretend.stub(
             apply_async=pretend.call_recorder(lambda *a, **kw: None)
         )
         monkeypatch.setattr(
             f"{MOCK_PATH}.repository_metadata", fake_repository_metadata
         )
-        fake_time = datetime(2019, 6, 16, 9, 5, 1)
-        fake_datetime = pretend.stub(
-            now=pretend.call_recorder(lambda: fake_time)
-        )
-        monkeypatch.setattr(f"{MOCK_PATH}.datetime", fake_datetime)
-        payload = {"roles": []}
 
-        response = test_client.post(METADATA_ONLINE_URL, json=payload)
-        assert response.status_code == status.HTTP_202_ACCEPTED, response.text
-        assert response.json() == {
-            "data": {
-                "task_id": fake_id,
-                "last_update": "2019-06-16T09:05:01",
-            },
-            "message": "Force online metadata update accepted.",
-        }
-        assert mocked_bootstrap_state.calls == [pretend.call()]
-        assert mocked_settings_repository.reload.calls == [
-            pretend.call(),
-        ]
-        assert mocked_settings_repository.get_fresh.calls == [
-            pretend.call("TARGETS_ONLINE_KEY", True),
-            pretend.call("DELEGATED_ROLES_NAMES"),
-        ]
-        assert fake_roles.online_roles_values.calls == [pretend.call()]
-        assert fake_get_task_id.calls == [pretend.call()]
-        expected_payload = {"roles": fake_online_roles_return}
-        assert fake_repository_metadata.apply_async.calls == [
-            pretend.call(
-                kwargs={
-                    "action": "force_online_metadata_update",
-                    "payload": expected_payload,
-                },
-                task_id=fake_id,
-                queue="metadata_repository",
-                acks_late=True,
-            )
-        ]
-        assert fake_datetime.now.calls == [pretend.call()]
+        response = test_client.post(METADATA_ONLINE_URL, json={"roles": []})
+
+        assert (
+            response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        ), response.text
+        assert fake_repository_metadata.apply_async.calls == []
 
     def test_post_metadata_online_bootstrap_not_ready(
         self, test_client, monkeypatch
