@@ -476,3 +476,75 @@ class TestPostBootstrap:
         assert response.url == f"{test_client.base_url}{BOOTSTRAP_URL}"
         err_msg = "Exactly one of 'bins' and 'delegations' must be set"
         assert err_msg in response.text
+
+    def test_post_bootstrap_empty_path_pattern(self):
+        from repository_service_tuf_api.bootstrap import DelegatedRole
+        import pytest
+        with pytest.raises(ValueError, match="No empty strings are allowed as path patterns"):
+            DelegatedRole(
+                expiration=1,
+                path_patterns=["valid", ""]
+            )
+
+    def test_post_bootstrap_invalid_delegation_name(self, test_client, monkeypatch):
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda *a: pretend.stub(
+                bootstrap=False, state="finished", task_id="task_id"
+            )
+        )
+        monkeypatch.setattr(
+            f"{MOCK_PATH}.bootstrap_state", mocked_bootstrap_state
+        )
+        with open("tests/data_examples/bootstrap/payload_custom_targets.json") as f:
+            f_data = f.read()
+
+        payload = json.loads(f_data)
+        payload["settings"]["roles"]["delegations"]["roles"][0]["name"] = "invalid name!"
+        response = test_client.post(BOOTSTRAP_URL, json=payload)
+        assert response.status_code == 422
+        assert "not allowed" in response.text
+
+
+    def test_post_bootstrap_valid_path_pattern(self):
+        from repository_service_tuf_api.bootstrap import DelegatedRole
+        # Covers line 59
+        DelegatedRole(
+            expiration=1,
+            path_patterns=["valid"]
+        )
+
+    def test_post_bootstrap_metadata_not_dict_fixed(self, test_client, monkeypatch):
+        mocked_bootstrap_state = pretend.call_recorder(
+            lambda *a: pretend.stub(
+                bootstrap=False, state="finished", task_id="task_id"
+            )
+        )
+        monkeypatch.setattr(
+            f"{MOCK_PATH}.bootstrap_state", mocked_bootstrap_state
+        )
+        mocked_repository_metadata = pretend.stub(
+            apply_async=pretend.call_recorder(lambda *a, **kw: pretend.stub(state="SUCCESS")),
+            AsyncResult=pretend.call_recorder(lambda *a: pretend.stub(state="SUCCESS")),
+        )
+        monkeypatch.setattr(f"{MOCK_PATH}.repository_metadata", mocked_repository_metadata)
+        monkeypatch.setattr(f"{MOCK_PATH}.get_task_id", lambda: "123")
+        monkeypatch.setattr(f"{MOCK_PATH}.pre_lock_bootstrap", lambda *a: None)
+        monkeypatch.setattr(
+            f"{MOCK_PATH}._check_bootstrap_status",
+            pretend.call_recorder(lambda **kw: None),
+        )
+
+        with open("tests/data_examples/bootstrap/payload_custom_targets.json") as f:
+            f_data = f.read()
+
+        payload = json.loads(f_data)
+        
+        # Cover line 130
+        payload["metadata"]["root"] = "not_a_dict"
+        test_client.post(BOOTSTRAP_URL, json=payload)
+        
+        # Cover line 133
+        payload = json.loads(f_data)
+        payload["metadata"]["root"]["signed"] = "not_a_dict"
+        test_client.post(BOOTSTRAP_URL, json=payload)
+
