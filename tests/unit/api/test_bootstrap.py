@@ -142,6 +142,107 @@ class TestPostBootstrap:
             pretend.call(task_id="123", timeout=300)
         ]
 
+    def test_post_bootstrap_nested_bins_with_role_online_key(
+        self, test_client, monkeypatch, fake_datetime
+    ):
+        """A ceremony may nest hash bins below a custom delegated role.
+
+        The role online key signs those bins only, so it is declared in
+        `delegations.keys` and referenced by `x-rstuf-role-online-key`, never
+        listed in the role's own keyids. Both extension fields must reach the
+        Worker.
+        """
+        monkeypatch.setattr(
+            f"{MOCK_PATH}.bootstrap_state",
+            pretend.call_recorder(
+                lambda *a: pretend.stub(
+                    bootstrap=False, state="finished", task_id="task_id"
+                )
+            ),
+        )
+        mocked_repository_metadata = pretend.stub(
+            apply_async=pretend.call_recorder(lambda *a, **kw: None),
+            AsyncResult=pretend.call_recorder(
+                lambda *a: pretend.stub(state="SUCCESS")
+            ),
+        )
+        monkeypatch.setattr(
+            f"{MOCK_PATH}.repository_metadata", mocked_repository_metadata
+        )
+        monkeypatch.setattr(f"{MOCK_PATH}.get_task_id", lambda: "123")
+        monkeypatch.setattr(f"{MOCK_PATH}.pre_lock_bootstrap", lambda *a: None)
+        monkeypatch.setattr(
+            f"{MOCK_PATH}._check_bootstrap_status", lambda *a, **kw: None
+        )
+        monkeypatch.setattr(f"{MOCK_PATH}.datetime", fake_datetime)
+
+        with open(
+            "tests/data_examples/bootstrap/payload_custom_targets.json"
+        ) as f:
+            payload = json.loads(f.read())
+
+        role_keyid = "cb20fa1061dde8e6267e0bef0981766aaadae168e91703"
+        delegations = payload["settings"]["roles"]["delegations"]
+        delegations["keys"][role_keyid] = {
+            "keytype": "ed25519",
+            "scheme": "ed25519",
+            "keyval": {"public": "4f66dabe"},
+            "x-rstuf-key-name": "default-bins-key",
+            "x-rstuf-online-key-uri": f"fn:{role_keyid}",
+        }
+        default_role = delegations["roles"][0]
+        default_role["terminating"] = False
+        default_role["x-rstuf-num-bins"] = 8
+        default_role["x-rstuf-role-online-key"] = role_keyid
+
+        response = test_client.post(BOOTSTRAP_URL, json=payload)
+
+        assert response.status_code == status.HTTP_202_ACCEPTED
+        sent = mocked_repository_metadata.apply_async.calls[0].kwargs[
+            "kwargs"
+        ]["payload"]
+        sent_role = sent["settings"]["roles"]["delegations"]["roles"][0]
+        assert sent_role["x-rstuf-num-bins"] == 8
+        assert sent_role["x-rstuf-role-online-key"] == role_keyid
+        assert role_keyid not in sent_role["keyids"]
+
+    def test_post_bootstrap_nested_bins_role_online_key_signing_own_role(
+        self, test_client, monkeypatch, fake_datetime
+    ):
+        """A delegation cannot sign itself with its bins' online key."""
+        monkeypatch.setattr(
+            f"{MOCK_PATH}.bootstrap_state",
+            pretend.call_recorder(
+                lambda *a: pretend.stub(
+                    bootstrap=False, state="finished", task_id="task_id"
+                )
+            ),
+        )
+        monkeypatch.setattr(f"{MOCK_PATH}.datetime", fake_datetime)
+
+        with open(
+            "tests/data_examples/bootstrap/payload_custom_targets.json"
+        ) as f:
+            payload = json.loads(f.read())
+
+        role_keyid = "cb20fa1061dde8e6267e0bef0981766aaadae168e91703"
+        delegations = payload["settings"]["roles"]["delegations"]
+        delegations["keys"][role_keyid] = {
+            "keytype": "ed25519",
+            "scheme": "ed25519",
+            "keyval": {"public": "4f66dabe"},
+            "x-rstuf-online-key-uri": f"fn:{role_keyid}",
+        }
+        default_role = delegations["roles"][0]
+        default_role["x-rstuf-num-bins"] = 8
+        default_role["x-rstuf-role-online-key"] = role_keyid
+        default_role["keyids"] = [role_keyid]
+
+        response = test_client.post(BOOTSTRAP_URL, json=payload)
+
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert "cannot sign itself" in response.text
+
     def test_post_bootstrap_unrecognized_field(
         self, test_client, monkeypatch, fake_datetime
     ):
