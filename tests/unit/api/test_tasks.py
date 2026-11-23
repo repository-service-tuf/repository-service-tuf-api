@@ -188,3 +188,27 @@ class TestGetTask:
         assert mocked_repository_metadata.AsyncResult.calls == [
             pretend.call("test_id")
         ]
+
+    def test_get_force_online_metadata_update(self, test_client, monkeypatch):
+        mocked_task_result = pretend.stub(
+            state="SUCCESS",
+            result={
+                "status": True,
+                "task": "force_online_metadata_update",
+                "last_update": "2023-11-17T09:54:15.762882",
+                "message": "Metadata update completed",
+                "details": {"roles": ["timestamp"]},
+            },
+        )
+        mocked_repository_metadata = pretend.stub(
+            AsyncResult=pretend.call_recorder(lambda t: mocked_task_result)
+        )
+        monkeypatch.setattr(
+            f"{MOCK_PATH}.repository_metadata", mocked_repository_metadata
+        )
+
+        test_response = test_client.get(f"{TASK_URL}?task_id=test_id")
+
+        assert test_response.status_code == status.HTTP_200_OK
+        result = test_response.json()["data"]["result"]
+        assert result["task"] == "force_online_metadata_update"

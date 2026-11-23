@@ -39,6 +39,7 @@ class TaskName(str, enum.Enum):
     METADATA_DELEGATION = "metadata_delegation"
     SIGN_METADATA = "sign_metadata"
     DELETE_SIGN_METADATA = "delete_sign_metadata"
+    FORCE_ONLINE_METADATA_UPDATE = "force_online_metadata_update"
 
 
 class GetParameters(BaseModel):
