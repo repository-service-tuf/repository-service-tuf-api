@@ -97,3 +97,22 @@ class TestInit:
         assert repository_service_tuf_api.logging.warning.calls == [
             pretend.call("Unexpected bootstrap value format: 'pre-abc-def'")
         ]
+
+    def test_get_task_id(self):
+        import repository_service_tuf_api
+        task_id = repository_service_tuf_api.get_task_id()
+        assert isinstance(task_id, str)
+        assert len(task_id) == 32
+
+    def test_repository_metadata(self, monkeypatch):
+        import repository_service_tuf_api
+        fake_logging = pretend.stub(
+            debug=pretend.call_recorder(lambda *a: None)
+        )
+        monkeypatch.setattr(repository_service_tuf_api, "logging", fake_logging)
+        result = repository_service_tuf_api.repository_metadata("action", "payload")
+        assert result is True
+        assert fake_logging.debug.calls == [
+            pretend.call("New tasks action submitted action")
+        ]
+
