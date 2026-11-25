@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 from typing import Any, Dict, List, Literal, Optional
 
 from fastapi import HTTPException, status
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 from repository_service_tuf_api import (
     bootstrap_state,
@@ -138,7 +138,7 @@ class MetadataDelegationDeletePayload(BaseModel):
 # Metadata Online Bump
 #
 class MetadataOnlinePostPayload(BaseModel):
-    roles: List[str]
+    roles: List[str] = Field(min_length=1)
 
     model_config = ConfigDict(
         json_schema_extra={"example": {"roles": ["targets", "snapshot"]}}
@@ -192,40 +192,41 @@ def post_metadata_online(
             },
         )
 
-    delegated_roles = settings_repository.get_fresh("DELEGATED_ROLES_NAMES")
-    # All delegated roles names should start with "bins" if we are using
-    # hash bin delegation and none of the delegated roles should start with
-    # "bins" if we are using custom target delegation.
-    bins_used = True if delegated_roles[0].startswith("bins") else False
-    if bins_used:
-        # This indicates succinct hash bins are used
-        if len(roles) > 0 and any(not Roles.is_role(role) for role in roles):
-            raise HTTPException(
-                status.HTTP_404_NOT_FOUND,
-                detail={
-                    "message": "Task not accepted.",
-                    "error": (
-                        "Hash bin delegation is used and only "
-                        f"{Roles.all_str()} roles can be bumped"
-                    ),
-                },
-            )
-    else:
-        if Roles.BINS.value in roles:
-            raise HTTPException(
-                status.HTTP_404_NOT_FOUND,
-                detail={
-                    "message": "Task not accepted.",
-                    "error": (
-                        "Custom target delegation used and "
-                        "bins cannot be bumped"
-                    ),
-                },
-            )
-
-    # If no roles are provided, then bump all.
-    if len(payload.roles) == 0:
-        payload.roles = Roles.online_roles_values()
+    # Requests naming only top-level online roles need no delegation checks,
+    # so they do not depend on the delegated roles setting.
+    if any(role not in ("snapshot", "timestamp", "targets") for role in roles):
+        delegated_roles = settings_repository.get_fresh(
+            "DELEGATED_ROLES_NAMES"
+        )
+        # All delegated roles names should start with "bins" if we are using
+        # hash bin delegation and none of the delegated roles should start with
+        # "bins" if we are using custom target delegation.
+        bins_used = True if delegated_roles[0].startswith("bins") else False
+        if bins_used:
+            # This indicates succinct hash bins are used
+            if any(not Roles.is_role(role) for role in roles):
+                raise HTTPException(
+                    status.HTTP_404_NOT_FOUND,
+                    detail={
+                        "message": "Task not accepted.",
+                        "error": (
+                            "Hash bin delegation is used and only "
+                            f"{Roles.all_str()} roles can be bumped"
+                        ),
+                    },
+                )
+        else:
+            if Roles.BINS.value in roles:
+                raise HTTPException(
+                    status.HTTP_404_NOT_FOUND,
+                    detail={
+                        "message": "Task not accepted.",
+                        "error": (
+                            "Custom target delegation used and "
+                            "bins cannot be bumped"
+                        ),
+                    },
+                )
 
     task_id = get_task_id()
     repository_metadata.apply_async(
